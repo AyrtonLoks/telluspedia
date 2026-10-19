@@ -1,0 +1,19 @@
+[project]
+name = "telluspedia-data-pipeline"
+version = "0.1.0"
+description = "FastAPI Data & Astronomy Pipeline for TellusPedia"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.5.0",
+    "httpx>=0.27.0",
+    "redis>=5.1.0",
+    "geojson>=3.1.0",
+    "numpy>=2.1.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

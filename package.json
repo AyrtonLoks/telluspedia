@@ -1,0 +1,20 @@
+{
+  "name": "telluspedia-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm --filter web lint",
+    "test": "pnpm --filter web test",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "db:generate": "pnpm --filter web prisma generate",
+    "db:migrate": "pnpm --filter web prisma migrate dev",
+    "db:seed": "pnpm --filter web prisma db seed",
+    "db:studio": "pnpm --filter web prisma studio"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

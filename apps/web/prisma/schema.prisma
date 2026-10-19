@@ -1,0 +1,133 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Country {
+  isoCode         String   @id // ISO 3166-1 alpha-3 (ex: BRA, DEU)
+  iso2            String   // ISO 3166-1 alpha-2 (ex: BR, DE)
+  nameCommon      String
+  nameOfficial    String
+  capital         String
+  continent       String
+  region          String
+  subregion       String?
+  population      BigInt
+  areaKm2         Float
+  latitude        Float
+  longitude       Float
+  timezone        String   // tzdb identifier (ex: America/Sao_Paulo)
+  flagSvgUrl      String?
+  coatOfArmsUrl   String?
+  currencyCode    String
+  currencyName    String
+  governmentType  String
+  headOfState     String
+  headOfGov       String?
+  geometryJson    Json     // TopoJSON / GeoJSON simplificado
+  
+  // Relacionamentos
+  indicators      CountryIndicator[]
+  dossierSections CountryDossierSection[]
+  milestones      TimelineMilestone[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CountryIndicator {
+  id              String   @id @default(cuid())
+  countryIso      String
+  indicatorCode   String   // ex: NY.GDP.MKTP.CD (PIB), SP.POP.TOTL, UNDPO.HDI
+  indicatorName   String
+  category        String   // ECONOMY, DEMOGRAPHY, HEALTH, MILITARY
+  year            Int
+  value           Float
+  unit            String
+  sourcePrimary   String   // ex: Banco Mundial, OMS, SIPRI
+  sourceUrl       String?
+  referenceDate   DateTime
+
+  country         Country  @relation(fields: [countryIso], references: [isoCode], onDelete: Cascade)
+
+  @@unique([countryIso, indicatorCode, year])
+  @@index([countryIso, category])
+  @@index([indicatorCode, year])
+}
+
+enum DossierDimension {
+  GEOGRAPHY
+  GOVERNMENT_POLITICS
+  ECONOMY_SOCIAL
+  HISTORY
+  BIOGRAPHIES
+  CULTURE_HUMANITIES
+  BIOLOGY_HEALTH
+  NEWS_CURRENT_AFFAIRS
+}
+
+model CountryDossierSection {
+  id              String           @id @default(cuid())
+  countryIso      String
+  dimension       DossierDimension
+  title           String
+  contentMarkdown String           @db.Text
+  estimatedReadMin Int             @default(5)
+  citationsJson   Json             // Metadados para citação ABNT, APA, MLA, BibTeX
+
+  country         Country          @relation(fields: [countryIso], references: [isoCode], onDelete: Cascade)
+
+  @@unique([countryIso, dimension])
+}
+
+enum MilestoneCategory {
+  POLITICS_REGIMES
+  ECONOMY
+  WAR_MILITARY
+  SCIENCE_CULTURE
+  HEALTH_PANDEMICS
+}
+
+model TimelineMilestone {
+  id              String            @id @default(cuid())
+  title           String
+  summary         String            @db.Text
+  year            Int
+  exactDate       DateTime?
+  category        MilestoneCategory
+  countryIso      String?
+  latitude        Float?
+  longitude       Float?
+  sourcePrimary   String
+  referenceUrl    String?
+
+  country         Country?          @relation(fields: [countryIso], references: [isoCode], onDelete: SetNull)
+
+  @@index([year, category])
+  @@index([countryIso])
+}
+
+model Study {
+  id                  String    @id // Nanoid slug único imutável (ex: "guerra-fria-br-de-k9x2")
+  parentId            String?   // Rastreabilidade de Fork
+  title               String
+  description         String?   @db.Text
+  timelineStartYear   Int
+  timelineEndYear     Int
+  selectedCountryIsos String[]
+  activeCategories    String[]
+  cameraLat           Float
+  cameraLng           Float
+  cameraAltitude      Float
+  markdownNotes       String?   @db.Text
+  createdAt           DateTime  @default(now())
+
+  parent              Study?    @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)
+  forks               Study[]   @relation("StudyForks")
+
+  @@index([parentId])
+}
