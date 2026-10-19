@@ -12,22 +12,62 @@ export const PresetSelector: React.FC = () => {
   const setPreset = useTimelineStore((s) => s.setPreset);
 
   const humanPresets = [
-    { id: "LAST_50_YEARS" as TimelinePreset, label: "50 Anos Padrão", start: 1974, end: 2024 },
-    { id: "21ST_CENTURY" as TimelinePreset, label: "Século XXI", start: 2000, end: 2026 },
-    { id: "COLD_WAR" as TimelinePreset, label: "Guerra Fria", start: 1947, end: 1991 },
-    { id: "WORLD_WARS" as TimelinePreset, label: "Guerras Mundiais", start: 1914, end: 1945 },
+    {
+      id: "LAST_50_YEARS" as TimelinePreset,
+      label: "50 Anos Padrão",
+      shortLabel: "50 Anos",
+      start: 1974,
+      end: 2024,
+    },
+    {
+      id: "21ST_CENTURY" as TimelinePreset,
+      label: "Século XXI",
+      shortLabel: "Séc. XXI",
+      start: 2000,
+      end: 2026,
+    },
+    {
+      id: "COLD_WAR" as TimelinePreset,
+      label: "Guerra Fria",
+      shortLabel: "Guerra Fria",
+      start: 1947,
+      end: 1991,
+    },
+    {
+      id: "WORLD_WARS" as TimelinePreset,
+      label: "Guerras Mundiais",
+      shortLabel: "Guerras Mund.",
+      start: 1914,
+      end: 1945,
+    },
   ];
 
   const geologicalPresets = [
-    { id: "PANGEA_250MA" as TimelinePreset, label: "🌋 Pangeia (250 Ma)", ma: 250 },
-    { id: "GONDWANA_150MA" as TimelinePreset, label: "🦖 Gondwana & Laurásia (150 Ma)", ma: 150 },
-    { id: "KPG_66MA" as TimelinePreset, label: "☄️ Cretáceo K-Pg (66 Ma)", ma: 66 },
+    {
+      id: "PANGEA_250MA" as TimelinePreset,
+      label: "🌋 Pangeia (250 Ma)",
+      shortLabel: "🌋 Pangeia (250 Ma)",
+      ma: 250,
+    },
+    {
+      id: "GONDWANA_150MA" as TimelinePreset,
+      label: "🦖 Gondwana & Laurásia (150 Ma)",
+      shortLabel: "🦖 Gondwana (150 Ma)",
+      ma: 150,
+    },
+    {
+      id: "KPG_66MA" as TimelinePreset,
+      label: "☄️ Cretáceo K-Pg (66 Ma)",
+      shortLabel: "☄️ Cretáceo (66 Ma)",
+      ma: 66,
+    },
   ];
 
   const routePresets = [
     {
       id: "MAGELLAN_1519" as TimelinePreset,
       label: "⛵ Circum-navegação de Magalhães (1519–1522)",
+      shortLabel: "⛵ Magalhães (1519)",
       routeId: "magellan-1519",
     },
   ];
@@ -60,7 +100,8 @@ export const PresetSelector: React.FC = () => {
                 : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent"
             }`}
           >
-            {p.label}
+            <span className="hidden 2xl:inline">{p.label}</span>
+            <span className="2xl:hidden">{p.shortLabel}</span>
           </button>
         );
       })}
@@ -80,7 +121,8 @@ export const PresetSelector: React.FC = () => {
                 : "text-amber-400/70 hover:text-amber-300 hover:bg-amber-950/30 border border-amber-900/40"
             }`}
           >
-            {p.label}
+            <span className="hidden 2xl:inline">{p.label}</span>
+            <span className="2xl:hidden">{p.shortLabel}</span>
           </button>
         );
       })}
@@ -100,7 +142,8 @@ export const PresetSelector: React.FC = () => {
                 : "text-emerald-400/80 hover:text-emerald-300 hover:bg-emerald-950/30 border border-emerald-900/40"
             }`}
           >
-            {p.label}
+            <span className="hidden 2xl:inline">{p.label}</span>
+            <span className="2xl:hidden">{p.shortLabel}</span>
           </button>
         );
       })}

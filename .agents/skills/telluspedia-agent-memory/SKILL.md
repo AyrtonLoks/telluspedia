@@ -53,9 +53,11 @@ Este documento serve como memória permanente do Antigravity para manter a conti
   - Badge flutuante contextual com reposicionamento adaptativo (`HistoricalEraBadge.tsx`) e botão de restauração para 2024.
 - **Paleogeografia & Deriva Continental (RN11) (Concluído)**:
   - Eras geológicas canônicas em Milhões de Anos (Ma): Pangeia (~250 Ma), Fragmentação (~200 Ma), Gondwana & Laurásia (~150 Ma) e Cretáceo K-Pg (~66 Ma).
+  - Texturas equirretangulares fotorrealistas de alta resolução (2048x1024) com relevo fractal harmônico, batimetria profunda para o superoceano Panthalassa, plataformas rasas tropicais de carbonato no Mar de Tétis, desertos interiores Permianos e orogenia Apalachiana-Varisca/Uraliana (`scripts/generate-paleo-textures.ts`).
   - Shaders `EarthShaderMaterial.ts` com `uPaleoTexture` e `uPaleoFactor` com blend e supressão física automática de luzes de cidades (`cityLightFactor -> 0`).
-  - Placas tectônicas e arcos de fratura da Pangeia (`PaleoPlatesLayer.tsx`) na altitude $1.002$.
-  - Badge de era geológica (`PaleoEraBadge.tsx`) e suporte a presets geológicos na timeline.
+  - Placas tectônicas e suturas autênticas da Pangeia (`PaleoPlatesLayer.tsx`) na altitude $1.002$ com iluminação geotérmica tênue e sutil (`#d97706`).
+  - Eixo geológico dedicado com separação estrita vertical na Timeline (`TimelineAxis.tsx`): nós de eras acima da linha central e rótulos de Ma abaixo, eliminando colisões.
+  - Badge de era geológica (`PaleoEraBadge.tsx`) e presets responsivos no `PresetSelector.tsx`.
 - **Trajetórias Físicas 3D (RN12) (Concluído)**:
   - **Missão Apollo 11 (1969)**: Rota translunar Catmull-Rom 3D da Terra até o Mar da Tranquilidade na Lua com nave animada, folga orbital segura ($\ge 0.270$) e HUD de telemetria científica (`Apollo11TelemetryOverlay.tsx`).
   - **Circum-navegação de Magalhães-Elcano (1519–1522)**: Traçado geodésico no raio $1.004$ com a *Nau Victoria* animada em base ortonormal, rastro de esteira (*wake*), waypoints geográficos e HUD de telemetria naval (`HistoricalRouteOverlay.tsx`) com o diário de bordo de Antonio Pigafetta.

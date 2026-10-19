@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useEffect, useRef, useState } from "react";
+import React, { useMemo, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { latLngToVector3, slerpVectors } from "@/lib/geo-spatial";
@@ -85,30 +85,28 @@ export const PANGEA_TECTONIC_ZONES: { name: string; type: "suture" | "rift" | "s
     name: "Anel de Subducção Circumpanthalassa Ocidental (Borda Pacífica Primitiva)",
     type: "subduction",
     coords: [
-      [65.0, -150.0],
-      [50.0, -135.0],
-      [35.0, -122.0],
-      [20.0, -112.0],
-      [5.0, -102.0],
-      [-12.0, -92.0],
-      [-28.0, -82.0],
-      [-45.0, -75.0],
-      [-60.0, -70.0],
+      [62.0, -125.0],
+      [48.0, -115.0],
+      [32.0, -105.0],
+      [16.0, -96.0],
+      [0.0, -86.0],
+      [-18.0, -78.0],
+      [-36.0, -74.0],
+      [-54.0, -72.0],
     ],
   },
   {
     name: "Anel de Subducção Circumpanthalassa Oriental (Borda Asiática-Austral)",
     type: "subduction",
     coords: [
-      [70.0, 160.0],
-      [55.0, 150.0],
-      [40.0, 142.0],
-      [25.0, 138.0],
-      [10.0, 136.0],
-      [-8.0, 140.0],
-      [-25.0, 148.0],
-      [-42.0, 156.0],
-      [-60.0, 165.0],
+      [68.0, 130.0],
+      [52.0, 132.0],
+      [36.0, 130.0],
+      [20.0, 126.0],
+      [5.0, 128.0],
+      [-15.0, 132.0],
+      [-32.0, 138.0],
+      [-50.0, 145.0],
     ],
   },
   {
@@ -152,67 +150,12 @@ export const PANGEA_TECTONIC_ZONES: { name: string; type: "suture" | "rift" | "s
 export const PaleoPlatesLayer: React.FC = () => {
   const lineMaterialRef = useRef<THREE.LineBasicMaterial>(null);
   const glowMaterialRef = useRef<THREE.LineBasicMaterial>(null);
-  const [externalPlateLines, setExternalPlateLines] = useState<THREE.Vector3[][]>([]);
-
-  // Attempt to load external GPlates TopoJSON / GeoJSON if available
-  useEffect(() => {
-    let isMounted = true;
-    fetch("/data/paleo/pangea-plates-250ma.json")
-      .then((res) => {
-        if (!res.ok) return null;
-        return res.json();
-      })
-      .then((data) => {
-        if (!isMounted || !data) return;
-        const lines: THREE.Vector3[][] = [];
-
-        // Parse GeoJSON FeatureCollection or TopoJSON
-        const features = data.features || (data.objects && Object.values(data.objects)[0]);
-        if (Array.isArray(features)) {
-          for (const feat of features) {
-            const geom = feat.geometry || feat;
-            if (geom && (geom.type === "LineString" || geom.type === "MultiLineString")) {
-              const multi = geom.type === "MultiLineString" ? geom.coordinates : [geom.coordinates];
-              for (const line of multi) {
-                const pts: THREE.Vector3[] = [];
-                for (let i = 0; i < line.length - 1; i++) {
-                  const [lng1, lat1] = line[i];
-                  const [lng2, lat2] = line[i + 1];
-                  const vA = latLngToVector3(lat1, lng1, PALEO_PLATES_ALTITUDE);
-                  const vB = latLngToVector3(lat2, lng2, PALEO_PLATES_ALTITUDE);
-                  const steps = 6;
-                  for (let s = 0; s < steps; s++) {
-                    const t1 = s / steps;
-                    const t2 = (s + 1) / steps;
-                    const p1 = slerpVectors(vA, vB, t1).normalize().multiplyScalar(PALEO_PLATES_ALTITUDE);
-                    const p2 = slerpVectors(vA, vB, t2).normalize().multiplyScalar(PALEO_PLATES_ALTITUDE);
-                    pts.push(p1);
-                    pts.push(p2);
-                  }
-                }
-                if (pts.length > 1) lines.push(pts);
-              }
-            }
-          }
-        }
-        if (lines.length > 0) {
-          setExternalPlateLines(lines);
-        }
-      })
-      .catch(() => {
-        // Graceful fallback to canonical embedded zones
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   // Construct plate boundaries line segments at radius 1.002
   const { coreGeometry, glowGeometry } = useMemo(() => {
     const points: THREE.Vector3[] = [];
 
-    // 1. Process canonical Pangea tectonic zones
+    // Process canonical Pangea tectonic zones
     for (const zone of PANGEA_TECTONIC_ZONES) {
       for (let i = 0; i < zone.coords.length - 1; i++) {
         const [lat1, lng1] = zone.coords[i];
@@ -221,7 +164,7 @@ export const PaleoPlatesLayer: React.FC = () => {
         const vA = latLngToVector3(lat1, lng1, PALEO_PLATES_ALTITUDE);
         const vB = latLngToVector3(lat2, lng2, PALEO_PLATES_ALTITUDE);
 
-        // Subdivide along spherical arc for curvature alignment
+        // Subdivide along spherical arc for smooth curvature alignment
         const steps = 6;
         for (let s = 0; s < steps; s++) {
           const t1 = s / steps;
@@ -234,13 +177,6 @@ export const PaleoPlatesLayer: React.FC = () => {
       }
     }
 
-    // 2. Process external loaded lines if any (only if not already duplicating canonical zones)
-    if (externalPlateLines.length > 0 && externalPlateLines.length !== PANGEA_TECTONIC_ZONES.length) {
-      for (const line of externalPlateLines) {
-        points.push(...line);
-      }
-    }
-
     const coreGeo = new THREE.BufferGeometry().setFromPoints(points);
     const glowGeo = new THREE.BufferGeometry().setFromPoints(points);
 
@@ -248,24 +184,24 @@ export const PaleoPlatesLayer: React.FC = () => {
       coreGeometry: coreGeo,
       glowGeometry: glowGeo,
     };
-  }, [externalPlateLines]);
+  }, []);
 
-  // Materials with geothermal amber glow
+  // Subtle, authentic geothermal materials
   const { coreMaterial, glowMaterial } = useMemo(() => {
     const core = new THREE.LineBasicMaterial({
-      color: "#f59e0b", // Amber gold
+      color: "#d97706", // Soft warm amber
       transparent: true,
-      opacity: 0.75,
-      linewidth: 1.5,
+      opacity: 0.32,
+      linewidth: 1,
       depthWrite: false,
     });
 
     const glow = new THREE.LineBasicMaterial({
-      color: "#d97706",
+      color: "#92400e", // Muted terracotta glow
       transparent: true,
-      opacity: 0.35,
-      blending: THREE.AdditiveBlending,
-      linewidth: 2,
+      opacity: 0.15,
+      blending: THREE.NormalBlending,
+      linewidth: 1,
       depthWrite: false,
     });
 
@@ -282,13 +218,13 @@ export const PaleoPlatesLayer: React.FC = () => {
     };
   }, [coreGeometry, glowGeometry, coreMaterial, glowMaterial]);
 
-  // Subtle geothermal energy pulse directly animating materials
+  // Subtle, delicate geothermal breath
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
-    const pulse = 0.65 + Math.sin(time * 2.2) * 0.15;
+    const pulse = 0.28 + Math.sin(time * 1.5) * 0.07;
 
     coreMaterial.opacity = pulse;
-    glowMaterial.opacity = pulse * 0.45;
+    glowMaterial.opacity = pulse * 0.5;
   });
 
   return (

@@ -147,23 +147,31 @@ export const TimelineAxis: React.FC = () => {
         {/* Central Axis Line in Terracotta / Amber Gradient */}
         <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700/60 via-amber-500/80 to-cyan-500/60" />
 
-        {/* Geological Ticks & Labels */}
+        {/* Geological Ticks & Labels (Hang strictly below central line) */}
         {geologicalTicks.map((t) => (
           <div
             key={t.ma}
-            style={{ left: `${t.percent}%` }}
-            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none"
+            style={{
+              left: t.percent === 100 ? "auto" : `${t.percent}%`,
+              right: t.percent === 100 ? 0 : "auto",
+            }}
+            className={`absolute top-1/2 pt-1 flex flex-col items-center pointer-events-none ${
+              t.percent === 100
+                ? "translate-x-0 items-end"
+                : t.percent === 0
+                ? "translate-x-0 items-start"
+                : "-translate-x-1/2"
+            }`}
           >
-            <div className="w-[1px] h-3 bg-amber-600/70" />
-            <span className="mt-1 font-mono text-[9px] text-amber-300/80 whitespace-nowrap">
+            <div className="w-[1px] h-2 bg-amber-600/70" />
+            <span className="mt-0.5 font-mono text-[9px] text-amber-300/80 whitespace-nowrap">
               {t.label}
             </span>
           </div>
         ))}
 
-        {/* Geological Milestone Nodes */}
-        {geologicalMilestones.map((m, idx) => {
-          const isTop = idx % 2 === 0;
+        {/* Geological Milestone Nodes (Float strictly above central line) */}
+        {geologicalMilestones.map((m) => {
           const isSelected =
             (m.ageMa > 0 && geologicalMa === m.ageMa) ||
             selectedMilestoneId === m.id;
@@ -186,23 +194,28 @@ export const TimelineAxis: React.FC = () => {
           return (
             <div
               key={m.id}
-              style={{ left: `${m.percent}%` }}
-              className={`absolute -translate-x-1/2 z-10 ${
-                isTop ? "top-1" : "bottom-1"
+              style={{
+                left: m.percent === 100 ? "auto" : `${m.percent}%`,
+                right: m.percent === 100 ? 0 : "auto",
+              }}
+              className={`absolute bottom-1/2 pb-1.5 z-10 ${
+                m.percent === 100 ? "translate-x-0" : "-translate-x-1/2"
               }`}
             >
               <button
                 onClick={handleClick}
                 title={`${m.title} — ${m.subtitle}`}
-                className={`group relative flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium transition-all shadow-md ${
+                className={`group relative flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-medium transition-all shadow-md ${
                   isSelected
                     ? "bg-amber-400 text-slate-950 border-amber-300 ring-2 ring-amber-400/50 scale-105"
-                    : "bg-slate-900/90 text-amber-300 border-amber-500/40 hover:bg-slate-800 hover:border-amber-400"
+                    : "bg-slate-900/95 text-amber-300 border-amber-500/40 hover:bg-slate-800 hover:border-amber-400"
                 }`}
               >
                 <span>{m.emoji}</span>
-                <span className="hidden sm:inline font-mono">{m.ageMa > 0 ? `${m.ageMa} Ma` : "Hoje"}</span>
+                <span className="font-mono">{m.ageMa > 0 ? `${m.ageMa} Ma` : "Hoje"}</span>
               </button>
+              {/* Subtle connector down to axis */}
+              <div className="w-[1px] h-1.5 mx-auto bg-amber-500/40" />
             </div>
           );
         })}

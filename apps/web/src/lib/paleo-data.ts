@@ -691,45 +691,67 @@ export function generatePaleoPangeaCanvas(
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
 
+  // 1. Deep Panthalassa Superocean gradient
   const oceanGrad = ctx.createRadialGradient(
     width * 0.5,
     height * 0.5,
-    width * 0.1,
+    width * 0.08,
     width * 0.5,
     height * 0.5,
-    width * 0.6
+    width * 0.65
   );
-  oceanGrad.addColorStop(0, "#102a4e");
-  oceanGrad.addColorStop(0.5, "#0b1d38");
-  oceanGrad.addColorStop(1, "#061022");
+  oceanGrad.addColorStop(0, "#0e294d");
+  oceanGrad.addColorStop(0.5, "#081b36");
+  oceanGrad.addColorStop(1, "#040d1c");
   ctx.fillStyle = oceanGrad;
   ctx.fillRect(0, 0, width, height);
 
   ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(width * 0.65, height * 0.52, width * 0.18, height * 0.14, -0.15, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(16, 75, 110, 0.75)";
-  ctx.fill();
-  ctx.restore();
 
-  ctx.save();
+  // 2. Continental Shelf / Shallow Bathymetric Gradient
   ctx.beginPath();
-  ctx.ellipse(width * 0.52, height * 0.28, width * 0.22, height * 0.16, 0.1, 0, Math.PI * 2);
-  ctx.ellipse(width * 0.46, height * 0.7, width * 0.2, height * 0.22, -0.2, 0, Math.PI * 2);
-  ctx.rect(width * 0.36, height * 0.36, width * 0.16, height * 0.3);
-  ctx.fillStyle = "#8a613d";
+  ctx.ellipse(width * 0.49, height * 0.48, width * 0.28, height * 0.38, 0.05, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(18, 85, 128, 0.35)";
   ctx.fill();
 
+  // 3. Tethys Sea (Azure tropical gulf on east margin)
   ctx.beginPath();
-  ctx.moveTo(width * 0.36, height * 0.44);
-  ctx.lineTo(width * 0.54, height * 0.4);
-  ctx.lineWidth = height * 0.04;
-  ctx.strokeStyle = "#c2a47a";
+  ctx.ellipse(width * 0.64, height * 0.51, width * 0.19, height * 0.15, -0.12, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(14, 60, 96, 0.85)";
+  ctx.fill();
+
+  // 4. Main Pangea Continental Landmass
+  // Northern Laurasia & Central Core
+  ctx.beginPath();
+  ctx.ellipse(width * 0.52, height * 0.32, width * 0.21, height * 0.17, 0.08, 0, Math.PI * 2);
+  ctx.ellipse(width * 0.46, height * 0.66, width * 0.19, height * 0.24, -0.18, 0, Math.PI * 2);
+  ctx.ellipse(width * 0.39, height * 0.49, width * 0.13, height * 0.18, 0.02, 0, Math.PI * 2);
+  ctx.fillStyle = "#9a6538";
+  ctx.fill();
+
+  // 5. Permian Central Arid Desert (Terracotta / Red Beds)
+  ctx.beginPath();
+  ctx.ellipse(width * 0.46, height * 0.48, width * 0.11, height * 0.15, -0.05, 0, Math.PI * 2);
+  ctx.fillStyle = "#b8703d";
+  ctx.fill();
+
+  // 6. Central Pangean Mountain Belt (Variscan-Appalachian Orogeny)
+  ctx.beginPath();
+  ctx.moveTo(width * 0.35, height * 0.46);
+  if (typeof (ctx as any).quadraticCurveTo === "function") {
+    (ctx as any).quadraticCurveTo(width * 0.45, height * 0.41, width * 0.56, height * 0.38);
+  } else {
+    ctx.lineTo(width * 0.56, height * 0.38);
+  }
+  ctx.lineWidth = height * 0.035;
+  ctx.strokeStyle = "#c8ab82";
   ctx.stroke();
 
+  // 7. Polar Glossopteris / Conifer wetlands
   ctx.beginPath();
-  ctx.ellipse(width * 0.4, height * 0.82, width * 0.12, height * 0.08, 0, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(65, 88, 48, 0.6)";
+  ctx.ellipse(width * 0.41, height * 0.82, width * 0.13, height * 0.09, 0.02, 0, Math.PI * 2);
+  ctx.ellipse(width * 0.57, height * 0.19, width * 0.12, height * 0.07, -0.05, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(75, 98, 52, 0.65)";
   ctx.fill();
 
   ctx.restore();

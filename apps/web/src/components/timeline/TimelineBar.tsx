@@ -65,8 +65,8 @@ export const TimelineBar: React.FC = () => {
           <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-mono shrink-0">
             <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-amber-950/40 border border-amber-800/60 text-amber-300">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              <span className="font-semibold">300 Ma — 0 Ma</span>
-              <span className="text-[10px] text-amber-400/70 font-sans hidden md:inline">
+              <span className="font-semibold whitespace-nowrap">300 Ma — 0 Ma</span>
+              <span className="text-[10px] text-amber-400/70 font-sans hidden lg:inline whitespace-nowrap">
                 (Tempo Geológico Profundo)
               </span>
             </div>
