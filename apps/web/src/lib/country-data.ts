@@ -417,6 +417,32 @@ export interface MilestoneItem {
 }
 
 export const GLOBAL_MILESTONES: MilestoneItem[] = [
+  {
+    id: "magellan-1519",
+    title: "Primeira Circum-navegação da Terra (Magalhães–Elcano)",
+    summary: "A armada de cinco naus parte de Sanlúcar de Barrameda sob o comando de Fernão de Magalhães, realizando a primeira travessia global da história.",
+    year: 1519,
+    exactDate: "1519-09-20",
+    category: "SCIENCE_CULTURE" as const,
+    sourcePrimary: "Arquivo Geral das Índias / Antonio Pigafetta",
+    latitude: 36.7786,
+    longitude: -6.3533,
+    countryIso: "ESP",
+    blocIsos: ["ESP", "PRT"],
+  },
+  {
+    id: "elcano-1522",
+    title: "Retorno da Nau Victoria e Conclusão da Circum-navegação",
+    summary: "Juan Sebastián Elcano e 17 sobreviventes a bordo da Nau Victoria chegam a Sanlúcar de Barrameda, comprovando a esfericidade e navegabilidade contínua da Terra.",
+    year: 1522,
+    exactDate: "1522-09-06",
+    category: "SCIENCE_CULTURE" as const,
+    sourcePrimary: "Arquivo Geral das Índias / Antonio Pigafetta",
+    latitude: 36.7786,
+    longitude: -6.3533,
+    countryIso: "ESP",
+    blocIsos: ["ESP"],
+  },
   { id: "ahu-1867", title: "Compromisso Austro-Húngaro (Ausgleich)", summary: "Criação da Monarquia Dual soberana entre a Áustria e a Hungria sob Francisco José I.", year: 1867, exactDate: "1867-06-08", category: "POLITICS_REGIMES" as const, sourcePrimary: "Österreichisches Staatsarchiv", latitude: 48.2082, longitude: 16.3738, countryIso: "AHU", blocIsos: ["AHU", "AUT", "HUN"] },
   { id: "glo-1870", title: "Batalha de Sedan e Guerra Franco-Prussiana", summary: "Capitulação do imperador francês Napoleão III perante as forças prussianas e confederadas, abrindo caminho para a unificação.", year: 1870, exactDate: "1870-09-02", category: "WAR_MILITARY" as const, sourcePrimary: "Bundesarchiv / SHD", latitude: 49.7022, longitude: 4.9436, countryIso: "FRA", blocIsos: ["PRU", "FRA", "DEU"] },
   { id: "pru-1871", title: "Unificação Alemã e Proclamação do Reich em Versalhes", summary: "Príncipes alemães aclamam Guilherme I da Prússia como Imperador Alemão na Galeria dos Espelhos no Palácio de Versalhes.", year: 1871, exactDate: "1871-01-18", category: "POLITICS_REGIMES" as const, sourcePrimary: "Preußisches Geheimes Staatsarchiv", latitude: 48.8049, longitude: 2.1204, countryIso: "PRU", blocIsos: ["PRU", "DEU"] },

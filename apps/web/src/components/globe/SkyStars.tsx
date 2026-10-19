@@ -58,38 +58,57 @@ export const SkyStars: React.FC = () => {
   }, []);
 
   // Symbolic IAU constellation lines (e.g., Southern Cross Crux, Orion belt, Big Dipper)
-  const constellationGeometry = useMemo(() => {
+  const [constellationGeometry, constellationVerticesGeometry] = useMemo(() => {
+    const radius = 100;
     const points: THREE.Vector3[] = [
       // Crux (Southern Cross)
-      new THREE.Vector3(-15, -45, 45).normalize().multiplyScalar(68),
-      new THREE.Vector3(-15, -55, 45).normalize().multiplyScalar(68),
-      new THREE.Vector3(-20, -50, 45).normalize().multiplyScalar(68),
-      new THREE.Vector3(-10, -50, 45).normalize().multiplyScalar(68),
+      new THREE.Vector3(-15, -45, 45).normalize().multiplyScalar(radius),
+      new THREE.Vector3(-15, -55, 45).normalize().multiplyScalar(radius),
+      new THREE.Vector3(-20, -50, 45).normalize().multiplyScalar(radius),
+      new THREE.Vector3(-10, -50, 45).normalize().multiplyScalar(radius),
       // Orion belt & frame
-      new THREE.Vector3(12, 10, -65).normalize().multiplyScalar(68),
-      new THREE.Vector3(10, 0, -65).normalize().multiplyScalar(68),
-      new THREE.Vector3(10, 0, -65).normalize().multiplyScalar(68),
-      new THREE.Vector3(8, -10, -65).normalize().multiplyScalar(68),
-      new THREE.Vector3(12, 10, -65).normalize().multiplyScalar(68),
-      new THREE.Vector3(22, 12, -65).normalize().multiplyScalar(68),
-      new THREE.Vector3(8, -10, -65).normalize().multiplyScalar(68),
-      new THREE.Vector3(18, -12, -65).normalize().multiplyScalar(68),
+      new THREE.Vector3(12, 10, -65).normalize().multiplyScalar(radius),
+      new THREE.Vector3(10, 0, -65).normalize().multiplyScalar(radius),
+      new THREE.Vector3(10, 0, -65).normalize().multiplyScalar(radius),
+      new THREE.Vector3(8, -10, -65).normalize().multiplyScalar(radius),
+      new THREE.Vector3(12, 10, -65).normalize().multiplyScalar(radius),
+      new THREE.Vector3(22, 12, -65).normalize().multiplyScalar(radius),
+      new THREE.Vector3(8, -10, -65).normalize().multiplyScalar(radius),
+      new THREE.Vector3(18, -12, -65).normalize().multiplyScalar(radius),
     ];
 
-    const geom = new THREE.BufferGeometry();
-    geom.setFromPoints(points);
-    return geom;
+    const lineGeom = new THREE.BufferGeometry();
+    lineGeom.setFromPoints(points);
+
+    // Stars at constellation vertices
+    const vertexGeom = new THREE.BufferGeometry();
+    vertexGeom.setFromPoints(points);
+
+    return [lineGeom, vertexGeom];
   }, []);
 
   return (
-    <group>
+    <group name="celestial-vault">
       <points geometry={starsGeometry} material={starsMaterial} raycast={() => null} />
+      {/* Constellation vertex stars */}
+      <points geometry={constellationVerticesGeometry} raycast={() => null}>
+        <pointsMaterial
+          size={1.5}
+          color="#a5f3fc"
+          transparent
+          opacity={0.8}
+          depthTest={true}
+          depthWrite={false}
+        />
+      </points>
+      {/* Constellation connection lines */}
       <lineSegments geometry={constellationGeometry} raycast={() => null}>
         <lineBasicMaterial
           color="#38bdf8"
           transparent
-          opacity={0.2}
+          opacity={0.12}
           linewidth={1}
+          depthTest={true}
           depthWrite={false}
         />
       </lineSegments>

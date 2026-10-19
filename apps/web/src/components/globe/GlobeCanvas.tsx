@@ -33,19 +33,6 @@ export const GlobeCanvas: React.FC = () => {
     (s: any) => s.geologicalMa !== undefined && s.geologicalMa !== null
   );
 
-  const isApolloActive =
-    isStudyApolloActive ||
-    selectedYear === 1969 ||
-    selectedMilestoneId === "usa-1969" ||
-    selectedMilestoneId === "glo-1969";
-
-  const isMagellanActive =
-    selectedRouteId === "magellan-1519" ||
-    isStudyRouteActive === "magellan-1519" ||
-    selectedMilestoneId === "magellan-1519" ||
-    selectedMilestoneId === "esp-1519" ||
-    selectedYear === 1519;
-
   const isGeologicalActive =
     timelineMode === "GEOLOGICAL" ||
     isStudyGeologicalActive ||
@@ -53,6 +40,22 @@ export const GlobeCanvas: React.FC = () => {
     selectedMilestoneId === "pangea-250ma" ||
     selectedMilestoneId === "gondwana-150ma" ||
     selectedMilestoneId === "kpg-66ma";
+
+  const isMagellanActive =
+    !isGeologicalActive &&
+    (selectedRouteId === "magellan-1519" ||
+      isStudyRouteActive === "magellan-1519" ||
+      selectedMilestoneId === "magellan-1519" ||
+      selectedMilestoneId === "esp-1519" ||
+      selectedYear === 1519);
+
+  const isApolloActive =
+    !isGeologicalActive &&
+    !isMagellanActive &&
+    (isStudyApolloActive ||
+      selectedYear === 1969 ||
+      selectedMilestoneId === "usa-1969" ||
+      selectedMilestoneId === "glo-1969");
 
   // Compute primary solar light position synchronized with active date
   const sunPosition = useMemo(() => {

@@ -105,21 +105,32 @@ export const EarthSphere: React.FC = () => {
 
   // Geological mode and era detection
   const timelineMode = useTimelineStore((s: any) => s.timelineMode);
+  const geologicalMa = useTimelineStore((s: any) => s.geologicalMa);
   const selectedGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
   const isStudyGeologicalActive = useStudyStore(
     (s: any) => s.geologicalMa !== undefined && s.geologicalMa !== null
   );
 
+  const effectiveGeologicalMa = useMemo(() => {
+    if (selectedGeologicalMa && selectedGeologicalMa > 0) return selectedGeologicalMa;
+    if (geologicalMa && geologicalMa > 0) return geologicalMa;
+    if (selectedMilestoneId === "pangea-250ma") return 250;
+    if (selectedMilestoneId === "gondwana-150ma") return 150;
+    if (selectedMilestoneId === "kpg-66ma") return 66;
+    if (timelineMode === "GEOLOGICAL") return 250;
+    return null;
+  }, [selectedGeologicalMa, geologicalMa, selectedMilestoneId, timelineMode]);
+
   const isGeologicalActive = useMemo(() => {
     return (
       timelineMode === "GEOLOGICAL" ||
       isStudyGeologicalActive ||
-      (selectedGeologicalMa !== null && selectedGeologicalMa !== undefined && selectedGeologicalMa > 0) ||
+      effectiveGeologicalMa !== null ||
       selectedMilestoneId === "pangea-250ma" ||
       selectedMilestoneId === "gondwana-150ma" ||
       selectedMilestoneId === "kpg-66ma"
     );
-  }, [timelineMode, isStudyGeologicalActive, selectedGeologicalMa, selectedMilestoneId]);
+  }, [timelineMode, isStudyGeologicalActive, effectiveGeologicalMa, selectedMilestoneId]);
 
   // Determine active reference year using canonical multi-parameter resolver
   const milestoneYear = useMemo(() => {
@@ -172,8 +183,8 @@ export const EarthSphere: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     const loader = new THREE.TextureLoader();
-    const paleoEra = selectedGeologicalMa ? resolveGeologicalEra(selectedGeologicalMa) : null;
-    const texturePath = paleoEra?.textureUrl || "/textures/paleo/pangea_250ma.jpg";
+    const paleoEra = effectiveGeologicalMa ? resolveGeologicalEra(effectiveGeologicalMa) : null;
+    const texturePath = paleoEra?.textureUrl || "/textures/paleo_pangea.png";
 
     loader.load(
       texturePath,
@@ -204,7 +215,7 @@ export const EarthSphere: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [earthMaterial, selectedGeologicalMa, proceduralPaleoTexture, invalidate]);
+  }, [earthMaterial, effectiveGeologicalMa, proceduralPaleoTexture, invalidate]);
 
   useEffect(() => {
     if (dayTexture) earthMaterial.uniforms.uDayTexture.value = dayTexture;
