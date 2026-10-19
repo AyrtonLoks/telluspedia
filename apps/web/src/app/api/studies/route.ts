@@ -8,6 +8,19 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const slug = `estudo-${nanoid(8)}`;
 
+    const sanitizedMa =
+      typeof body.geologicalMa === "number" &&
+      Number.isFinite(body.geologicalMa) &&
+      body.geologicalMa > 0 &&
+      body.geologicalMa <= 4600
+        ? body.geologicalMa
+        : null;
+
+    const sanitizedRouteId =
+      typeof body.activeRouteId === "string" && body.activeRouteId.trim().length > 0
+        ? body.activeRouteId.trim()
+        : null;
+
     const studyData: StudyRecord = {
       id: slug,
       parentId: body.parentId || null,
@@ -15,14 +28,16 @@ export async function POST(req: NextRequest) {
       description: body.description || "",
       timelineStartYear: body.timelineStartYear || 1974,
       timelineEndYear: body.timelineEndYear || 2024,
-      selectedCountryIsos: body.selectedCountryIsos || [],
-      activeCategories: body.activeCategories || [],
-      cameraLat: body.cameraLat ?? 0,
-      cameraLng: body.cameraLng ?? 0,
-      cameraAltitude: body.cameraAltitude ?? 2.5,
+      selectedCountryIsos: Array.isArray(body.selectedCountryIsos) ? body.selectedCountryIsos : [],
+      activeCategories: Array.isArray(body.activeCategories) ? body.activeCategories : [],
+      cameraLat: typeof body.cameraLat === "number" ? body.cameraLat : 0,
+      cameraLng: typeof body.cameraLng === "number" ? body.cameraLng : 0,
+      cameraAltitude: typeof body.cameraAltitude === "number" ? body.cameraAltitude : 2.5,
       markdownNotes: body.markdownNotes || "",
-      historicalEra: body.historicalEra ?? null,
-      isApollo11Active: body.isApollo11Active ?? false,
+      historicalEra: sanitizedMa !== null ? null : (body.historicalEra ?? null),
+      isApollo11Active: sanitizedMa !== null ? false : (body.isApollo11Active ?? false),
+      geologicalMa: sanitizedMa,
+      activeRouteId: sanitizedRouteId,
       createdAt: new Date().toISOString(),
     };
 

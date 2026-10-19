@@ -8,6 +8,9 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { resolveHistoricalEra, resolveEffectiveHistoricalYear } from "@/lib/historical-entities";
 import { findMilestoneById } from "@/lib/country-data";
+import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
+import { resolveGeologicalEra } from "@/lib/paleo-data";
+import { getHistoricalRoute } from "@/lib/historical-routes";
 
 export const StudyShareModal: React.FC = () => {
   const storeIsShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
@@ -53,6 +56,22 @@ export const StudyShareModal: React.FC = () => {
 
   const comparatorIsos = useComparatorStore((s) => s.selectedIsos);
 
+  const timelineMode = useTimelineStore((s) => s.timelineMode);
+  const storeGeologicalMa = useTimelineStore((s) => s.selectedGeologicalMa ?? s.geologicalMa);
+  const geologicalMa =
+    typeof window === "undefined"
+      ? (useTimelineStore.getState().timelineMode === "GEOLOGICAL"
+          ? (useTimelineStore.getState().selectedGeologicalMa ?? useTimelineStore.getState().geologicalMa)
+          : null)
+      : (timelineMode === "GEOLOGICAL" ? storeGeologicalMa : null);
+
+  const storeHistRouteId = useHistoricalRouteStore((s) => s.activeRouteId);
+  const storeTimeRouteId = useTimelineStore((s) => s.activeRouteId);
+  const activeRouteId =
+    typeof window === "undefined"
+      ? (useHistoricalRouteStore.getState().activeRouteId || useTimelineStore.getState().activeRouteId || null)
+      : (storeHistRouteId || storeTimeRouteId || null);
+
   const [shareUrl, setShareUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
@@ -77,11 +96,15 @@ export const StudyShareModal: React.FC = () => {
   });
 
   const eraDef = resolveHistoricalEra(effectiveYear);
-  const isHistoricalEraActive = eraDef.id !== "CONTEMPORARY";
+  const isHistoricalEraActive = !geologicalMa && eraDef.id !== "CONTEMPORARY";
   const isApollo11Active =
-    selectedMilestoneId === "glo-1969" ||
-    selectedMilestoneId === "usa-1969" ||
-    effectiveYear === 1969;
+    !geologicalMa &&
+    (selectedMilestoneId === "glo-1969" ||
+      selectedMilestoneId === "usa-1969" ||
+      effectiveYear === 1969);
+
+  const geologicalEraDef = geologicalMa ? resolveGeologicalEra(geologicalMa) : null;
+  const historicalRouteDef = activeRouteId ? getHistoricalRoute(activeRouteId) : null;
 
   const handleGenerateLink = async () => {
     setLoading(true);
@@ -103,6 +126,8 @@ export const StudyShareModal: React.FC = () => {
       markdownNotes: notes,
       historicalEra: isHistoricalEraActive ? eraDef.id : null,
       isApollo11Active,
+      geologicalMa: geologicalMa ?? null,
+      activeRouteId: activeRouteId ?? null,
     };
 
     try {
@@ -118,7 +143,7 @@ export const StudyShareModal: React.FC = () => {
         setShareUrl(`${origin}/study/${data.id}`);
 
         // Update local study store with the created study snapshot
-        useStudyStore.getState().setStudy({
+        useStudyStore.getState().restoreStudy({
           id: data.id,
           parentId: data.parentId || null,
           title,
@@ -126,6 +151,8 @@ export const StudyShareModal: React.FC = () => {
           notes,
           historicalEra: isHistoricalEraActive ? eraDef.id : null,
           isApollo11Active,
+          geologicalMa: geologicalMa ?? null,
+          activeRouteId: activeRouteId ?? null,
         });
       } else {
         setErrorMsg("Não foi possível registrar o snapshot do estudo no servidor.");
@@ -222,6 +249,42 @@ export const StudyShareModal: React.FC = () => {
             </div>
           )}
 
+          {/* Geological Era / Paleogeography Badge */}
+          {geologicalMa && (
+            <div
+              data-testid="modal-geological-era-badge"
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium animate-in fade-in"
+            >
+              <span className="text-lg select-none">🌋</span>
+              <div className="flex-1">
+                <div className="font-semibold text-emerald-200">
+                  Paleogeografia & Deriva Continental Ativa
+                </div>
+                <div className="text-[11px] text-emerald-300/80">
+                  {geologicalEraDef?.name || `Era Geológica: ${geologicalMa} Ma atrás`}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Historical Route / Expedition Badge */}
+          {activeRouteId && (
+            <div
+              data-testid="modal-historical-route-badge"
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-medium animate-in fade-in"
+            >
+              <span className="text-lg select-none">⛵</span>
+              <div className="flex-1">
+                <div className="font-semibold text-indigo-200">
+                  Rota de Expedição Histórica 3D
+                </div>
+                <div className="text-[11px] text-indigo-300/80">
+                  {historicalRouteDef?.title || `Expedição Marítima (${activeRouteId})`}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
             <div className="font-semibold text-slate-300">Recorte capturado automaticamente:</div>
             <div>• Período: {startYear} — {endYear} ({endYear - startYear} anos)</div>
@@ -232,6 +295,16 @@ export const StudyShareModal: React.FC = () => {
             )}
             {isApollo11Active && (
               <div className="text-cyan-300 font-medium">• Missão Espacial: Apollo 11 (Trajetória Translunar Ativa)</div>
+            )}
+            {geologicalMa && (
+              <div className="text-emerald-300 font-medium">
+                • Paleogeografia: {geologicalEraDef?.name || `${geologicalMa} Ma`}
+              </div>
+            )}
+            {activeRouteId && (
+              <div className="text-indigo-300 font-medium">
+                • Rota Histórica 3D: {historicalRouteDef?.title || activeRouteId}
+              </div>
             )}
           </div>
 

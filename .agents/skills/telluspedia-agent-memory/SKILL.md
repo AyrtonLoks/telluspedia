@@ -45,25 +45,23 @@ Este documento serve como memória permanente do Antigravity para manter a conti
 
 ## 3. Runbook de Execução para os Próximos Horizontes
 
-### Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D
+### Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D (Concluído)
 - **Cartografia Histórica (Concluído)**:
   - 4 Snapshots TopoJSON (`borders-1870.json`, `borders-1914.json`, `borders-1939.json`, `borders-1969.json`) com cross-fade de opacidade no R3F (`CountryBorders.tsx`) e cache de requisições in-flight (`historical-topology.ts`).
   - Entidades históricas canônicas (`PRU`, `SUN`, `AHU`, `GDR`, `FRG`, `TUR_HIST`, `YUG`, `CSK`) com bandeiras SVG autênticas, indicadores, governantes e continuidade temporal bidirecional (`resolveHistoricalEntity`).
   - Raycasting pontual instantâneo (<0.2ms) no Three.js conectado à malha da era ativa (`EarthSphere.tsx`).
   - Badge flutuante contextual com reposicionamento adaptativo (`HistoricalEraBadge.tsx`) e botão de restauração para 2024.
-- **Trajetória 3D da Apollo 11 (Concluído)**:
-  - Trajetória translunar Catmull-Rom 3D de Cabo Canaveral até o Mar da Tranquilidade na Lua (`Apollo11Trajectory.tsx`) com nave espacial animada e garantia de folga orbital ($\ge 0.270$ do centro lunar).
-  - HUD interativo de telemetria científica da missão (`Apollo11TelemetryOverlay.tsx`) com velocidade, distância e GET.
-- **Persistência de Estudos com Fork Histórico (Concluído)**:
-  - Serialização imutável de `historicalEra` e `isApollo11Active` em Prisma, API Next.js e Zustand store com suporte a fork (`/study/[slug]`).
-- **Próximo Passo — Fechamento do Horizonte 2 (Documentado em `plano_fechamento_horizonte_2.md`)**:
-  - **Paleogeografia & Deriva Continental (RN11)**:
-    - Escala geológica em Milhões de Anos (Ma): Pangeia (~250 Ma), Fragmentação (~200 Ma), Gondwana & Laurásia (~150 Ma) e Cretáceo K-Pg (~66 Ma).
-    - Uniforms `uPaleoTexture` e `uPaleoFactor` com interpolação contínua e supressão física automática de luzes noturnas urbanas (`cityLightFactor -> 0`).
-  - **Trajetórias Marítimas 3D (RN12)**:
-    - Reconstituição da **Primeira Circum-navegação da Terra por Magalhães e Elcano (1519–1522)** no raio $1.004$ com a *Nau Victoria* animada e diário de bordo com telemetria naval histórica no HUD.
-  - **Modo Geológico na Timeline & Persistência de Estudos (RN10, RN16)**:
-    - Alternância de escala anos humanos / Ma e persistência de `geologicalMa` e `activeRouteId`.
+- **Paleogeografia & Deriva Continental (RN11) (Concluído)**:
+  - Eras geológicas canônicas em Milhões de Anos (Ma): Pangeia (~250 Ma), Fragmentação (~200 Ma), Gondwana & Laurásia (~150 Ma) e Cretáceo K-Pg (~66 Ma).
+  - Shaders `EarthShaderMaterial.ts` com `uPaleoTexture` e `uPaleoFactor` com blend e supressão física automática de luzes de cidades (`cityLightFactor -> 0`).
+  - Placas tectônicas e arcos de fratura da Pangeia (`PaleoPlatesLayer.tsx`) na altitude $1.002$.
+  - Badge de era geológica (`PaleoEraBadge.tsx`) e suporte a presets geológicos na timeline.
+- **Trajetórias Físicas 3D (RN12) (Concluído)**:
+  - **Missão Apollo 11 (1969)**: Rota translunar Catmull-Rom 3D da Terra até o Mar da Tranquilidade na Lua com nave animada, folga orbital segura ($\ge 0.270$) e HUD de telemetria científica (`Apollo11TelemetryOverlay.tsx`).
+  - **Circum-navegação de Magalhães-Elcano (1519–1522)**: Traçado geodésico no raio $1.004$ com a *Nau Victoria* animada em base ortonormal, rastro de esteira (*wake*), waypoints geográficos e HUD de telemetria naval (`HistoricalRouteOverlay.tsx`) com o diário de bordo de Antonio Pigafetta.
+- **Persistência de Estudos com Fork Histórico e Geológico (RN16) (Concluído)**:
+  - Serialização imutável de `historicalEra`, `isApollo11Active`, `geologicalMa` e `activeRouteId` em Prisma, API Next.js e Zustand stores com suporte a fork (`/study/[slug]`).
+- **Suíte de Testes**: 148 testes unitários automatizados em 22 suítes com 100% de aprovação.
 
 ### Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global
 Quando o usuário solicitar o avanço para o Horizonte 3:

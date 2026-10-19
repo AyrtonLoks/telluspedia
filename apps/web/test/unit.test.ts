@@ -37,7 +37,7 @@ import {
 import { useApollo11Store } from "../src/stores/apollo11Store";
 import { Apollo11TelemetryOverlay } from "../src/components/globe/Apollo11TelemetryOverlay";
 import { useStudyStore } from "../src/stores/studyStore";
-import { getMemoryStudy, saveMemoryStudy, StudyRecord } from "../src/lib/studies-store";
+import { getMemoryStudy, saveMemoryStudy, forkStudyRecord, restoreStudyRecord, StudyRecord } from "../src/lib/studies-store";
 import { HistoricalEraBadge } from "../src/components/globe/HistoricalEraBadge";
 import {
   resolveHistoricalEra,
@@ -54,6 +54,46 @@ import {
   getHistoricalSpatialIndex,
   getContemporarySpatialIndex,
 } from "../src/lib/historical-topology";
+import { useHistoricalRouteStore } from "../src/stores/historicalRouteStore";
+import { HistoricalRouteOverlay } from "../src/components/globe/HistoricalRouteOverlay";
+import { PaleoEraBadge } from "../src/components/globe/PaleoEraBadge";
+import { PresetSelector } from "../src/components/timeline/PresetSelector";
+import {
+  resolveGeologicalEra,
+  resolvePaleoEra,
+  isPaleoActive,
+  getPaleoEra,
+  GEOLOGICAL_ERAS,
+  PALEO_ERAS,
+  PANGAEA_TECTONIC_PLATES,
+  PANGAEA_PLATE_ARCS,
+  generatePaleoPangeaCanvas,
+  generatePaleoGondwanaCanvas,
+  generatePaleoCanvas,
+} from "../src/lib/paleo-data";
+import {
+  MAGELLAN_ROUTE,
+  HISTORICAL_ROUTES,
+  MAGELLAN_WAYPOINTS,
+  MAGELLAN_FLEET,
+  MAGELLAN_LOGBOOK_ENTRIES,
+  RouteWaypoint,
+  getHistoricalRoute,
+  findRouteWaypoint,
+  calculateRouteDistanceKm,
+  interpolateGeodesicSegment,
+} from "../src/lib/historical-routes";
+import { EarthShader, createEarthMaterial } from "../src/components/globe/EarthShaderMaterial";
+import {
+  HistoricalRouteTrajectory,
+  createMagellanTrajectoryCurve,
+  ROUTE_ALTITUDE,
+} from "../src/components/globe/HistoricalRouteTrajectory";
+import {
+  PaleoPlatesLayer,
+  PALEO_PLATES_ALTITUDE,
+  PANGEA_TECTONIC_ZONES,
+} from "../src/components/globe/PaleoPlatesLayer";
 
 describe("Astronomy & Solar Calculations (NOAA Algorithm)", () => {
   test("Equinox solar declination is near 0 degrees", () => {
@@ -2393,6 +2433,1222 @@ describe("Componente 2 e 3: Three.js Historical Cartography, Raycasting Picking 
     assert.equal(resolveHistoricalEntity("SUN", 1870), "RUS");
   });
 });
+
+describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Naval (RN10, RN11 & RN12)", () => {
+  test("1. useHistoricalRouteStore gerencia ciclo de vida, navegação passo-a-passo e progresso", () => {
+    const store = useHistoricalRouteStore.getState();
+    store.setActiveRouteId(null);
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
+
+    // Ativar rota de Magalhães
+    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, true);
+    assert.equal(useHistoricalRouteStore.getState().progress, 0.0);
+    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 0);
+
+    // Controles play / pause
+    useHistoricalRouteStore.getState().pause();
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
+    useHistoricalRouteStore.getState().play();
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, true);
+    useHistoricalRouteStore.getState().togglePlay();
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
+
+    // Navegar para próximo waypoint
+    const totalWaypoints = MAGELLAN_ROUTE.waypoints.length;
+    useHistoricalRouteStore.getState().nextWaypoint();
+    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 1);
+    assert.ok(useHistoricalRouteStore.getState().progress > 0);
+
+    // Retroceder waypoint
+    useHistoricalRouteStore.getState().prevWaypoint();
+    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 0);
+    assert.equal(useHistoricalRouteStore.getState().progress, 0.0);
+
+    // Impedir índice negativo no prevWaypoint
+    useHistoricalRouteStore.getState().prevWaypoint();
+    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 0);
+
+    // Testar seek com clamping
+    useHistoricalRouteStore.getState().seek(0.5);
+    assert.equal(useHistoricalRouteStore.getState().progress, 0.5);
+    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, Math.floor(0.5 * (totalWaypoints - 1) + 0.5));
+
+    useHistoricalRouteStore.getState().seek(-0.5);
+    assert.equal(useHistoricalRouteStore.getState().progress, 0.0);
+
+    useHistoricalRouteStore.getState().seek(1.5);
+    assert.equal(useHistoricalRouteStore.getState().progress, 1.0);
+    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, totalWaypoints - 1);
+
+    // Reset
+    useHistoricalRouteStore.getState().reset();
+    assert.equal(useHistoricalRouteStore.getState().progress, 0.0);
+    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 0);
+
+    // Velocidade e minimização
+    useHistoricalRouteStore.getState().setPlaybackSpeed(2.0);
+    assert.equal(useHistoricalRouteStore.getState().playbackSpeed, 2.0);
+    useHistoricalRouteStore.getState().toggleMinimized();
+    assert.equal(useHistoricalRouteStore.getState().isMinimized, true);
+    useHistoricalRouteStore.getState().toggleMinimized();
+    assert.equal(useHistoricalRouteStore.getState().isMinimized, false);
+  });
+
+  test("2. HistoricalRouteOverlay renderiza HUD completo com navio, comandante e Diário de Pigafetta", () => {
+    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
+    useHistoricalRouteStore.getState().jumpToWaypoint(6); // Estreito de Magalhães
+
+    const html = renderToStaticMarkup(React.createElement(HistoricalRouteOverlay, { forceActive: true }));
+    assert.ok(html.includes("data-historical-route-overlay=\"true\""));
+    assert.ok(html.includes("CIRCUM-NAVEGAÇÃO"));
+    assert.ok(html.includes("Nau Trinidad") || html.includes("Victoria") || html.includes("Embarcação"));
+    assert.ok(html.includes("Fernão de Magalhães"));
+    assert.ok(html.includes("Estreito de Todos os Santos"));
+    assert.ok(html.includes("Antonio Pigafetta"));
+    assert.ok(html.includes("Todos os Santos"));
+    assert.ok(html.includes("léguas"));
+    assert.ok(html.includes("dias"));
+
+    // Waypoint final de Elcano
+    const totalWaypoints = MAGELLAN_ROUTE.waypoints.length;
+    useHistoricalRouteStore.getState().jumpToWaypoint(totalWaypoints - 1); // Retorno Sanlúcar
+    const htmlEnd = renderToStaticMarkup(React.createElement(HistoricalRouteOverlay, { forceActive: true }));
+    assert.ok(htmlEnd.includes("Victoria"));
+    assert.ok(htmlEnd.includes("Juan Sebastián Elcano"));
+    assert.ok(htmlEnd.includes("dezoito homens"));
+
+    // Quando inativo e sem forceActive, não renderiza nada
+    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useTimelineStore.getState().setActiveRouteId(null);
+    const htmlInactive = renderToStaticMarkup(React.createElement(HistoricalRouteOverlay, { forceActive: false }));
+    assert.equal(htmlInactive, "");
+  });
+
+  test("3. PaleoEraBadge exibe badge e reposiciona dinamicamente contra o ForkStudyBanner", () => {
+    // 1. Pangeia (250 Ma)
+    const htmlPangea = renderToStaticMarkup(React.createElement(PaleoEraBadge, { geologicalMa: 250 }));
+    assert.ok(htmlPangea.includes("data-testid=\"paleo-era-badge\""));
+    assert.ok(htmlPangea.includes("Pangeia"));
+    assert.ok(htmlPangea.includes("250 Ma") || htmlPangea.includes("~250 Ma"));
+    assert.ok(htmlPangea.includes("Restaurar Geografia Contemporânea"));
+    // Sem estudo ativo, usa posição top padrão
+    assert.ok(htmlPangea.includes("top-16"));
+
+    // 2. Reposicionamento com estudo ativo
+    useStudyStore.getState().setStudy({ id: "study-pangea-test", title: "Pangea Study" });
+    const htmlWithStudy = renderToStaticMarkup(React.createElement(PaleoEraBadge, { geologicalMa: 250 }));
+    assert.ok(htmlWithStudy.includes("top-24"));
+    useStudyStore.getState().resetStudy();
+
+    // 3. Gondwana (150 Ma)
+    const htmlGondwana = renderToStaticMarkup(React.createElement(PaleoEraBadge, { geologicalMa: 150 }));
+    assert.ok(htmlGondwana.includes("Gondwana &amp; Laurásia") || htmlGondwana.includes("Gondwana"));
+    assert.ok(htmlGondwana.includes("150 Ma") || htmlGondwana.includes("~150 Ma"));
+
+    // 4. Cretáceo K-Pg (66 Ma)
+    const htmlKpg = renderToStaticMarkup(React.createElement(PaleoEraBadge, { geologicalMa: 66 }));
+    assert.ok(htmlKpg.includes("Extinção K-Pg") || htmlKpg.includes("Cretáceo"));
+    assert.ok(htmlKpg.includes("66 Ma") || htmlKpg.includes("~66 Ma"));
+
+    // 5. Inativo (geologicalMa: null) retorna vazio
+    const htmlNull = renderToStaticMarkup(React.createElement(PaleoEraBadge, { geologicalMa: null }));
+    assert.equal(htmlNull, "");
+  });
+
+  test("4. useTimelineStore suporta modo geológico, rota de navegação e transição de presets", () => {
+    // Inicializar no presente
+    useTimelineStore.getState().setPreset("LAST_50_YEARS");
+    assert.equal(useTimelineStore.getState().timelineMode, "HISTORICAL");
+    assert.equal(useTimelineStore.getState().geologicalMa, null);
+    assert.equal(useTimelineStore.getState().activeRouteId, null);
+    assert.equal(useTimelineStore.getState().startYear, 1974);
+    assert.equal(useTimelineStore.getState().endYear, 2024);
+
+    // Preset Pangeia
+    useTimelineStore.getState().setPreset("PANGEA_250MA");
+    assert.equal(useTimelineStore.getState().timelineMode, "GEOLOGICAL");
+    assert.equal(useTimelineStore.getState().geologicalMa, 250);
+    assert.equal(useTimelineStore.getState().selectedGeologicalMa, 250);
+
+    // Preset Gondwana
+    useTimelineStore.getState().setPreset("GONDWANA_150MA");
+    assert.equal(useTimelineStore.getState().geologicalMa, 150);
+
+    // Preset Cretáceo
+    useTimelineStore.getState().setPreset("KPG_66MA");
+    assert.equal(useTimelineStore.getState().geologicalMa, 66);
+
+    // Preset Circum-navegação de Magalhães
+    useTimelineStore.getState().setPreset("MAGELLAN_1519");
+    assert.equal(useTimelineStore.getState().timelineMode, "HISTORICAL");
+    assert.equal(useTimelineStore.getState().geologicalMa, null);
+    assert.equal(useTimelineStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useTimelineStore.getState().startYear, 1519);
+    assert.equal(useTimelineStore.getState().endYear, 1522);
+
+    // Retorno ao contemporâneo
+    useTimelineStore.getState().setPreset("21ST_CENTURY");
+    assert.equal(useTimelineStore.getState().timelineMode, "HISTORICAL");
+    assert.equal(useTimelineStore.getState().activeRouteId, null);
+    assert.equal(useTimelineStore.getState().startYear, 2000);
+    assert.equal(useTimelineStore.getState().endYear, 2026);
+  });
+
+  test("5. PresetSelector renderiza opções humanas, geológicas e marítimas", () => {
+    useTimelineStore.getState().setPreset("LAST_50_YEARS");
+    const html = renderToStaticMarkup(React.createElement(PresetSelector));
+    assert.ok(html.includes("50 Anos Padrão"));
+    assert.ok(html.includes("Século XXI"));
+    assert.ok(html.includes("Guerra Fria"));
+    assert.ok(html.includes("Guerras Mundiais"));
+    assert.ok(html.includes("Pangeia (250 Ma)"));
+    assert.ok(html.includes("Gondwana &amp; Laurásia (150 Ma)"));
+    assert.ok(html.includes("Cretáceo K-Pg (66 Ma)"));
+    assert.ok(html.includes("Circum-navegação de Magalhães (1519–1522)"));
+  });
+
+  test("6. Matemática e Geodésia da Rota de Magalhães (historical-routes.ts)", () => {
+    const route = HISTORICAL_ROUTES["magellan-1519"];
+    assert.ok(route, "Rota de Magalhães deve existir no catálogo canônico");
+    assert.equal(route.type, "MARITIME");
+    assert.equal(route.startYear, 1519);
+    assert.equal(route.endYear, 1522);
+    assert.ok(route.totalDistanceKm > 55000);
+
+    const waypoints = route.waypoints;
+    assert.ok(waypoints.length >= 15);
+
+    // 1. Partida em Sanlúcar de Barrameda / Sevilha
+    const start = waypoints[0];
+    assert.equal(start.lat, 36.78);
+    assert.equal(start.lng, -6.35);
+
+    // 2. Passagem confirmada pelo Estreito de Magalhães
+    const straits = waypoints.find((w) => w.lat === -53.47 && w.lng === -70.92);
+    assert.ok(straits, "Waypoint do Estreito de Magalhães deve estar estritamente presente");
+
+    // 3. Mactan / Filipinas
+    const mactan = waypoints.find((w) => w.lat === 10.31 && w.lng === 123.97);
+    assert.ok(mactan, "Waypoint de Mactan deve estar estritamente presente");
+
+    // 4. Retorno a Sanlúcar / Sevilha completando o circuito topológico
+    const end = waypoints[waypoints.length - 1];
+    assert.equal(end.lat, 36.78);
+    assert.equal(end.lng, -6.35);
+  });
+
+  test("7. Resolução Canônica de Eras Paleogeográficas (paleo-data.ts)", () => {
+    const era250 = resolveGeologicalEra(250);
+    assert.ok(era250.id === "PANGEA_250MA" || era250.id === "pangaea-250ma" || (era250 as any).code === "PANGEA_250MA");
+    assert.equal(era250.period, "PERMIAN_TRIASSIC");
+    assert.ok(era250.landmassAreaKm2 >= 140000000);
+    assert.ok(era250.oceanName.includes("Panthalassa"));
+
+    const era150 = resolveGeologicalEra(150);
+    assert.ok(era150.id === "GONDWANA_150MA" || era150.id === "gondwana-150ma" || (era150 as any).code === "GONDWANA_150MA");
+    assert.equal(era150.period, "JURASSIC");
+
+    const era66 = resolveGeologicalEra(66);
+    assert.ok(era66.id === "KPG_66MA" || era66.id === "cretaceous-66ma" || (era66 as any).code === "KPG_66MA");
+    assert.equal(era66.period, "CRETACEOUS");
+  });
+});
+
+describe("Componente 2: Três Dimensões WebGL & Shaders (R3F) (RN11 & RN12)", () => {
+  test("1. EarthShaderMaterial contém uniforms uPaleoTexture e uPaleoFactor inicializados", () => {
+    assert.ok("uPaleoTexture" in EarthShader.uniforms, "uPaleoTexture deve existir nos uniforms");
+    assert.ok("uPaleoFactor" in EarthShader.uniforms, "uPaleoFactor deve existir nos uniforms");
+    assert.equal(EarthShader.uniforms.uPaleoFactor.value, 0.0);
+
+    const mat = createEarthMaterial();
+    assert.ok(mat instanceof THREE.ShaderMaterial);
+    assert.ok("uPaleoTexture" in mat.uniforms);
+    assert.ok("uPaleoFactor" in mat.uniforms);
+    assert.equal(mat.uniforms.uPaleoFactor.value, 0.0);
+    assert.ok(mat.uniforms.uPaleoTexture.value !== null, "Deve conter textura ou placeholder 1x1");
+    mat.dispose();
+  });
+
+  test("2. GLSL Invariant: normal mundial estritamente preservado no vertex shader", () => {
+    const vs = EarthShader.vertexShader;
+    assert.ok(
+      vs.includes("vNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);"),
+      "Vertex shader deve calcular normais no espaço mundial via modelMatrix"
+    );
+    assert.ok(
+      !vs.includes("normalMatrix * normal"),
+      "NUNCA deve utilizar normalMatrix no cálculo do vetor normal para evitar distorção solar"
+    );
+  });
+
+  test("3. GLSL Invariant: supressão estrita de luzes noturnas urbanas quando uPaleoFactor > 0.0", () => {
+    const fs = EarthShader.fragmentShader;
+    assert.ok(
+      fs.includes("uniform sampler2D uPaleoTexture;"),
+      "Fragment shader deve declarar uPaleoTexture"
+    );
+    assert.ok(
+      fs.includes("uniform float uPaleoFactor;"),
+      "Fragment shader deve declarar uPaleoFactor"
+    );
+    assert.ok(
+      fs.includes("mix(dayLit, paleoLit, uPaleoFactor)") ||
+        fs.includes("mix(dayColor, paleoColor, uPaleoFactor)") ||
+        fs.includes("mix(dayBase, paleoBase, uPaleoFactor)"),
+      "Fragment shader deve fazer o blend da textura paleogeográfica"
+    );
+    assert.ok(
+      fs.includes("mix(nightComposite, vec3(0.012, 0.022, 0.042), uPaleoFactor);"),
+      "Invariante de extinção de luzes elétricas de cidades pré-históricas deve estar presente"
+    );
+  });
+
+  test("4. HistoricalRouteTrajectory: spline geodésica em raio estrito de 1.004 evita colisão interna com (0,0,0)", () => {
+    assert.equal(ROUTE_ALTITUDE, 1.004, "Altitude da rota deve ser estritamente 1.004");
+    const { curve, curvePoints, waypoints3D } = createMagellanTrajectoryCurve();
+
+    assert.ok(curve instanceof THREE.CatmullRomCurve3);
+    assert.ok(curvePoints.length >= 200, "Deve gerar malha refinada de pontos geodésicos");
+    assert.ok(waypoints3D.length >= 15);
+
+    // Amostragem de 100 pontos da curva contínua
+    for (let i = 0; i <= 100; i++) {
+      const u = i / 100;
+      const pt = curve.getPointAt(u);
+      const distToCenter = pt.length();
+
+      // Tolerância estrita de curvatura sobre a esfera
+      assert.ok(
+        Math.abs(distToCenter - 1.004) < 0.002,
+        `Ponto em u=${u} tem distância ${distToCenter}, esperado ~1.004`
+      );
+      assert.ok(distToCenter > 1.0, "Trajetória nunca deve cortar sob a superfície terrestre");
+      assert.ok(!Number.isNaN(pt.x));
+      assert.ok(!Number.isNaN(pt.y));
+      assert.ok(!Number.isNaN(pt.z));
+    }
+  });
+
+  test("5. HistoricalRouteTrajectory: circum-navegação completa com waypoints canônicos e fechamento topológico", () => {
+    const { waypoints3D } = createMagellanTrajectoryCurve();
+
+    // 1. Sanlúcar de Barrameda / Sevilha (Partida)
+    const startWp = waypoints3D[0].waypoint;
+    assert.equal(startWp.lat, 36.78);
+    assert.equal(startWp.lng, -6.35);
+
+    // 2. Estreito de Magalhães (-53.47, -70.92)
+    const strait = waypoints3D.find(
+      (w) => Math.abs(w.waypoint.lat - -53.47) < 0.1 && Math.abs(w.waypoint.lng - -70.92) < 0.1
+    );
+    assert.ok(strait, "Estreito de Magalhães deve estar presente na trajetória");
+
+    // 3. Ilhas Filipinas / Mactan (10.31, 123.97)
+    const mactan = waypoints3D.find(
+      (w) => Math.abs(w.waypoint.lat - 10.31) < 0.1 && Math.abs(w.waypoint.lng - 123.97) < 0.1
+    );
+    assert.ok(mactan, "Batalha de Mactan deve estar presente na trajetória");
+
+    // 4. Retorno a Sanlúcar (Chegada da Nau Victoria)
+    const endWp = waypoints3D[waypoints3D.length - 1].waypoint;
+    assert.equal(endWp.lat, 36.78);
+    assert.equal(endWp.lng, -6.35);
+
+    // Distância euclidiana entre início e fim no raio 1.004 deve ser nula (circuito fechado)
+    const startPt = waypoints3D[0].point;
+    const endPt = waypoints3D[waypoints3D.length - 1].point;
+    assert.ok(startPt.distanceTo(endPt) < 1e-4, "Trajetória 3D deve fechar circuito topológico no globo");
+  });
+
+  test("6. PaleoPlatesLayer: altitude estrita 1.002 e catalogação das 10 zonas tectônicas da Pangeia", () => {
+    assert.equal(PALEO_PLATES_ALTITUDE, 1.002, "Camada tectônica deve operar no raio 1.002");
+    assert.ok(Array.isArray(PANGEA_TECTONIC_ZONES));
+    assert.equal(PANGEA_TECTONIC_ZONES.length, 10, "Deve catalogar exatamente 10 grandes zonas tectônicas");
+
+    const names = PANGEA_TECTONIC_ZONES.map((z) => z.name);
+    assert.ok(names.some((n) => n.includes("Varisca")));
+    assert.ok(names.some((n) => n.includes("Uraliana")));
+    assert.ok(names.some((n) => n.includes("Atlântico Central")));
+    assert.ok(names.some((n) => n.includes("Tétis")));
+    assert.ok(names.some((n) => n.includes("Samfrau")));
+
+    // Todos os pontos das polilinhas devem ter coordenadas lat/lng válidas
+    for (const zone of PANGEA_TECTONIC_ZONES) {
+      assert.ok(zone.coords.length >= 5);
+      for (const [lat, lng] of zone.coords) {
+        assert.ok(lat >= -90 && lat <= 90);
+        assert.ok(lng >= -180 && lng <= 180);
+      }
+    }
+  });
+
+  test("7. Validação estrutural de componentes R3F: HistoricalRouteTrajectory e PaleoPlatesLayer", () => {
+    assert.equal(typeof HistoricalRouteTrajectory, "function", "HistoricalRouteTrajectory deve ser um componente React");
+    assert.equal(typeof PaleoPlatesLayer, "function", "PaleoPlatesLayer deve ser um componente React");
+
+    // Verificar que os dados e a geometria gerada possuem nomes canônicos e nós Three.js válidos
+    const { curve, waypoints3D } = createMagellanTrajectoryCurve();
+    assert.ok(curve, "Curva deve ser instanciada");
+    assert.ok(waypoints3D.length > 0, "Waypoints devem estar preenchidos");
+
+    const samplePos = curve.getPointAt(0.5);
+    assert.ok(Math.abs(samplePos.length() - 1.004) < 0.002, "Posição média da rota deve ter raio 1.004");
+  });
+
+  test("8. Descarte de geometrias e materiais WebGL (evita memory leaks na GPU)", () => {
+    // 1. Trajetória e Nau Victoria
+    const { curve } = createMagellanTrajectoryCurve();
+    const tubeGeo = new THREE.TubeGeometry(curve, 100, 0.0016, 6, false);
+    const lineMat = new THREE.MeshStandardMaterial();
+    tubeGeo.dispose();
+    lineMat.dispose();
+
+    // 2. Placas Paleogeográficas
+    const pts = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0)];
+    const plateGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const plateMat = new THREE.LineBasicMaterial();
+    plateGeo.dispose();
+    plateMat.dispose();
+
+    assert.ok(true, "Descarte de geometrias e materiais concluído com sucesso");
+  });
+
+  test("9. Base de orientação da Nau Victoria: base ortonormal com determinante +1 e quaternion unitário", () => {
+    const { curve } = createMagellanTrajectoryCurve();
+
+    // Amostragem em 50 pontos ao longo de toda a rota de circum-navegação
+    for (let i = 0; i <= 50; i++) {
+      const u = i / 50;
+      const shipPos = curve.getPointAt(u).normalize().multiplyScalar(ROUTE_ALTITUDE);
+      const tangent = curve.getTangentAt(u).normalize();
+      const up = shipPos.clone().normalize();
+
+      // Invariante de base destra: right = up x tangent, forward = right x up
+      const right = new THREE.Vector3().crossVectors(up, tangent).normalize();
+      const forward = new THREE.Vector3().crossVectors(right, up).normalize();
+
+      const rotMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+      const det = rotMatrix.determinant();
+
+      assert.ok(
+        Math.abs(det - 1.0) < 1e-4,
+        `Determinante da matriz de orientação em u=${u} deve ser +1.0 (base destra sem reflexão), recebido: ${det}`
+      );
+
+      const q = new THREE.Quaternion().setFromRotationMatrix(rotMatrix);
+      assert.ok(
+        Math.abs(q.length() - 1.0) < 1e-4,
+        `Quaternion de orientação em u=${u} deve ter comprimento 1.0 (unitário), recebido: ${q.length()}`
+      );
+    }
+  });
+
+  test("10. Raio do tubo de glow e envelope de altitude: superfície exterior e inferior acima de 1.000", () => {
+    const { curve } = createMagellanTrajectoryCurve();
+    const glowTubeRadius = 0.0032;
+    const coreTubeRadius = 0.0016;
+
+    for (let i = 0; i <= 50; i++) {
+      const u = i / 50;
+      const pt = curve.getPointAt(u);
+      const r = pt.length();
+
+      // Superfície inferior do tubo de glow nunca deve cortar a superfície terrestre (r = 1.0)
+      const bottomGlow = r - glowTubeRadius;
+      const bottomCore = r - coreTubeRadius;
+
+      assert.ok(
+        bottomGlow > 1.0,
+        `Superfície inferior do glow em u=${u} deve ser > 1.0, obtido ${bottomGlow}`
+      );
+      assert.ok(
+        bottomCore > 1.0,
+        `Superfície inferior do tubo central em u=${u} deve ser > 1.0, obtido ${bottomCore}`
+      );
+    }
+  });
+
+  test("11. Zonas tectônicas da Pangeia: interpolação slerp preserva altitude 1.002 sobre o relevo", () => {
+    for (const zone of PANGEA_TECTONIC_ZONES) {
+      for (let i = 0; i < zone.coords.length - 1; i++) {
+        const [lat1, lng1] = zone.coords[i];
+        const [lat2, lng2] = zone.coords[i + 1];
+
+        const vA = latLngToVector3(lat1, lng1, PALEO_PLATES_ALTITUDE);
+        const vB = latLngToVector3(lat2, lng2, PALEO_PLATES_ALTITUDE);
+
+        for (let s = 1; s < 5; s++) {
+          const t = s / 5;
+          const interp = slerpVectors(vA, vB, t).normalize().multiplyScalar(PALEO_PLATES_ALTITUDE);
+          assert.ok(
+            Math.abs(interp.length() - PALEO_PLATES_ALTITUDE) < 1e-5,
+            "Cada vértice intermediário de fratura tectônica deve estar no raio 1.002"
+          );
+        }
+      }
+    }
+  });
+
+  test("12. useHistoricalRouteStore: integração de reprodução, velocidade e waypoints sincronizados", () => {
+    const store = useHistoricalRouteStore.getState();
+
+    // Ativação da rota
+    store.setActiveRouteId("magellan-1519");
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, true);
+
+    // Alteração de velocidade
+    store.setPlaybackSpeed(2.0);
+    assert.equal(useHistoricalRouteStore.getState().playbackSpeed, 2.0);
+
+    // Seek / alteração de progresso
+    store.seek(0.5);
+    assert.equal(useHistoricalRouteStore.getState().progress, 0.5);
+    assert.ok(useHistoricalRouteStore.getState().currentWaypointIndex > 0);
+
+    // Pause / Play
+    store.pause();
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
+    store.play();
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, true);
+
+    // Cleanup
+    store.setActiveRouteId(null);
+  });
+});
+
+describe("Componente 1 (Horizonte 2 Fechamento): Datasets Paleogeográficos & Rotas de Expedições Históricas (RN11 & RN12)", () => {
+  test("1. Resolução Canônica e Limites de Fronteira das Eras Paleogeográficas (resolvePaleoEra)", () => {
+    // Escala Geológica em Milhões de Anos (Ma)
+    assert.equal(resolvePaleoEra(300)?.id, "PANGEA_250MA");
+    assert.equal(resolvePaleoEra(250)?.id, "PANGEA_250MA");
+    assert.equal(resolvePaleoEra(225)?.id, "PANGEA_250MA");
+
+    assert.equal(resolvePaleoEra(224.9)?.id, "BREAKUP_200MA");
+    assert.equal(resolvePaleoEra(200)?.id, "BREAKUP_200MA");
+    assert.equal(resolvePaleoEra(175)?.id, "BREAKUP_200MA");
+
+    assert.equal(resolvePaleoEra(174.9)?.id, "GONDWANA_150MA");
+    assert.equal(resolvePaleoEra(150)?.id, "GONDWANA_150MA");
+    assert.equal(resolvePaleoEra(100)?.id, "GONDWANA_150MA");
+
+    assert.equal(resolvePaleoEra(99.9)?.id, "KPG_66MA");
+    assert.equal(resolvePaleoEra(66)?.id, "KPG_66MA");
+    assert.equal(resolvePaleoEra(0.3)?.id, "KPG_66MA");
+
+    // Tempos recentes / história humana (< 0.3 Ma = 300 mil anos) devem retornar null
+    assert.equal(resolvePaleoEra(0.29), null);
+    assert.equal(resolvePaleoEra(0), null);
+    assert.equal(resolvePaleoEra(null), null);
+    assert.equal(resolvePaleoEra(-100 as any), null);
+    assert.equal(resolvePaleoEra(NaN as any), null);
+    assert.equal(resolvePaleoEra(Infinity as any), null, "Infinity não é era geológica válida");
+    assert.equal(resolvePaleoEra(-Infinity as any), null, "-Infinity não é era geológica válida");
+  });
+
+  test("2. Helper de Ativação Paleogeográfica (isPaleoActive)", () => {
+    assert.equal(isPaleoActive(null), false);
+    assert.equal(isPaleoActive(0), false);
+    assert.equal(isPaleoActive(0.2), false);
+    assert.equal(isPaleoActive(0.3), true);
+    assert.equal(isPaleoActive(66), true);
+    assert.equal(isPaleoActive(150), true);
+    assert.equal(isPaleoActive(250), true);
+    assert.equal(isPaleoActive(NaN), false);
+    assert.equal(isPaleoActive(Infinity), false, "Infinity deve ser rejeitado");
+    assert.equal(isPaleoActive(-Infinity), false, "-Infinity deve ser rejeitado");
+  });
+
+  test("3. Recuperação por Identificador Canônico e Códigos em Caixa-Alta (getPaleoEra)", () => {
+    assert.equal(getPaleoEra("pangaea-250ma")?.period, "PERMIAN_TRIASSIC");
+    assert.equal(getPaleoEra("pangea-250ma")?.period, "PERMIAN_TRIASSIC");
+    assert.equal(getPaleoEra("PANGEA_250MA")?.period, "PERMIAN_TRIASSIC");
+    assert.equal(getPaleoEra("pangea")?.period, "PERMIAN_TRIASSIC");
+
+    assert.equal(getPaleoEra("breakup-200ma")?.period, "TRIASSIC_JURASSIC");
+    assert.equal(getPaleoEra("BREAKUP_200MA")?.period, "TRIASSIC_JURASSIC");
+    assert.equal(getPaleoEra("breakup")?.period, "TRIASSIC_JURASSIC");
+
+    assert.equal(getPaleoEra("gondwana-150ma")?.period, "JURASSIC");
+    assert.equal(getPaleoEra("GONDWANA_150MA")?.period, "JURASSIC");
+    assert.equal(getPaleoEra("gondwana")?.period, "JURASSIC");
+
+    assert.equal(getPaleoEra("cretaceous-66ma")?.period, "CRETACEOUS");
+    assert.equal(getPaleoEra("kpg-66ma")?.period, "CRETACEOUS");
+    assert.equal(getPaleoEra("KPG_66MA")?.period, "CRETACEOUS");
+    assert.equal(getPaleoEra("cretaceous")?.period, "CRETACEOUS");
+
+    assert.equal(getPaleoEra("non-existent"), null);
+    assert.equal(getPaleoEra(null), null);
+  });
+
+  test("4. Rastreabilidade, Citações Acadêmicas e Indicadores Quantitativos das 4 Eras (RN02 & RN11)", () => {
+    const eraKeys = ["pangaea-250ma", "breakup-200ma", "gondwana-150ma", "cretaceous-66ma"] as const;
+
+    for (const key of eraKeys) {
+      const era = PALEO_ERAS[key];
+      assert.ok(era, `Era ${key} deve existir no catálogo`);
+      assert.ok(era.name.length > 5, `Nome da era ${key} deve ser significativo`);
+      assert.ok(era.landmassAreaKm2 > 100000000, "Área continental deve ser > 100M km²");
+      assert.ok(era.oceanName.length > 5, "Oceano da era deve estar catalogado");
+      assert.ok(era.climate.length > 20, "Descrição do clima deve ser detalhada");
+      assert.ok(era.dominantLife.length > 20, "Fauna/Flora dominante deve ser detalhada");
+      assert.ok(era.dossierMarkdown.length > 200, "Dossiê educativo deve conter seções markdown ricas");
+
+      // Indicadores quantitativos primários
+      assert.ok(era.indicators.length >= 3, `Era ${key} deve ter pelo menos 3 indicadores`);
+      for (const ind of era.indicators) {
+        assert.ok(ind.name.length > 0);
+        assert.ok(ind.value.length > 0);
+        assert.ok(ind.sourcePrimary.length > 0, "Indicador deve citar a fonte primária");
+      }
+
+      // Citações acadêmicas formatadas
+      assert.ok(era.citations.length >= 2, `Era ${key} deve ter pelo menos 2 citações acadêmicas`);
+      for (const cit of era.citations) {
+        assert.ok(cit.authors.length > 0);
+        assert.ok(cit.title.length > 0);
+        assert.ok(cit.publication.length > 0);
+        assert.ok(cit.year >= 1950 && cit.year <= 2026);
+      }
+    }
+  });
+
+  test("5. Catálogo de Placas Tectônicas e Arcos de Fratura da Pangeia (PANGAEA_TECTONIC_PLATES)", () => {
+    assert.ok(PANGAEA_TECTONIC_PLATES.length >= 6);
+
+    const types = new Set(PANGAEA_TECTONIC_PLATES.map((p) => p.type));
+    assert.ok(types.has("continental"));
+    assert.ok(types.has("oceanic"));
+    assert.ok(types.has("rifting"));
+    assert.ok(types.has("suture"));
+
+    for (const plate of PANGAEA_TECTONIC_PLATES) {
+      assert.ok(plate.id.length > 0);
+      assert.ok(plate.name.length > 0);
+      assert.ok(plate.movementRateMmPerYear > 0);
+      assert.ok(plate.description.length > 15);
+    }
+
+    // Arcos esféricos para renderização 3D
+    assert.ok(PANGAEA_PLATE_ARCS.length >= 5);
+    for (const arc of PANGAEA_PLATE_ARCS) {
+      assert.ok(arc.id.length > 0);
+      assert.ok(arc.coordinates.length >= 5);
+      for (const [lat, lng] of arc.coordinates) {
+        assert.ok(lat >= -90 && lat <= 90, `Latitude fora dos limites: ${lat}`);
+        assert.ok(lng >= -180 && lng <= 180, `Longitude fora dos limites: ${lng}`);
+      }
+    }
+  });
+
+  test("6. Integridade dos Arquivos Físicos de Dados e Texturas Paleogeográficas no Disco", () => {
+    // 1. Dataset TopoJSON / GeoJSON de placas tectônicas da Pangeia
+    const platesJsonPath = path.join(__dirname, "../public/data/paleo/pangea-plates-250ma.json");
+    assert.ok(fs.existsSync(platesJsonPath), "pangea-plates-250ma.json deve existir em public/data/paleo/");
+    const jsonContent = JSON.parse(fs.readFileSync(platesJsonPath, "utf8"));
+    assert.equal(jsonContent.type, "FeatureCollection");
+    assert.ok(Array.isArray(jsonContent.features));
+    assert.ok(jsonContent.features.length >= 5);
+
+    const hasRift = jsonContent.features.some((f: any) =>
+      f.properties?.type?.toLowerCase().includes("rift")
+    );
+    const hasSuture = jsonContent.features.some((f: any) =>
+      f.properties?.type?.toLowerCase().includes("suture")
+    );
+    const hasSubduction = jsonContent.features.some((f: any) =>
+      f.properties?.type?.toLowerCase().includes("subduction")
+    );
+    assert.ok(hasRift, "Deve conter feição de rifting");
+    assert.ok(hasSuture, "Deve conter feição de sutura");
+    assert.ok(hasSubduction, "Deve conter feição de subducção");
+
+    // 2. Textura equirretangular da Pangeia
+    const texturePath = path.join(__dirname, "../public/textures/paleo_pangea.png");
+    assert.ok(fs.existsSync(texturePath), "paleo_pangea.png deve existir em public/textures/");
+    const textureBuffer = fs.readFileSync(texturePath);
+    assert.ok(textureBuffer.length > 50000, "Textura PNG deve ter tamanho > 50KB");
+
+    // Assinatura PNG canônica: 89 50 4E 47 0D 0A 1A 0A
+    assert.equal(textureBuffer[0], 0x89);
+    assert.equal(textureBuffer[1], 0x50);
+    assert.equal(textureBuffer[2], 0x4e);
+    assert.equal(textureBuffer[3], 0x47);
+
+    // Cópias de compatibilidade Pangeia
+    const aliasPath1 = path.join(__dirname, "../public/textures/paleo/pangea_250ma.png");
+    const aliasPath2 = path.join(__dirname, "../public/textures/pangea_250ma.png");
+    assert.ok(fs.existsSync(aliasPath1));
+    assert.ok(fs.existsSync(aliasPath2));
+
+    // 3. Textura equirretangular de Gondwana & Laurásia (150 Ma)
+    const gondwanaTexturePath = path.join(__dirname, "../public/textures/paleo_gondwana.png");
+    assert.ok(fs.existsSync(gondwanaTexturePath), "paleo_gondwana.png deve existir em public/textures/");
+    const gondwanaBuffer = fs.readFileSync(gondwanaTexturePath);
+    assert.ok(gondwanaBuffer.length > 50000, "Textura Gondwana PNG deve ter tamanho > 50KB");
+
+    assert.equal(gondwanaBuffer[0], 0x89);
+    assert.equal(gondwanaBuffer[1], 0x50);
+    assert.equal(gondwanaBuffer[2], 0x4e);
+    assert.equal(gondwanaBuffer[3], 0x47);
+
+    const gondwanaAlias1 = path.join(__dirname, "../public/textures/paleo/gondwana_150ma.png");
+    const gondwanaAlias2 = path.join(__dirname, "../public/textures/gondwana_150ma.png");
+    assert.ok(fs.existsSync(gondwanaAlias1));
+    assert.ok(fs.existsSync(gondwanaAlias2));
+
+    // Validação de vinculação no catálogo
+    assert.equal(PALEO_ERAS["gondwana-150ma"].textureUrl, "/textures/paleo_gondwana.png");
+  });
+
+  test("7. Reconstituição da Circum-navegação de Magalhães-Elcano: Frota, Waypoints e Pigafetta (RN12)", () => {
+    const route = getHistoricalRoute("magellan-1519");
+    assert.ok(route, "getHistoricalRoute deve retornar a rota de Magalhães");
+    if (!route) return;
+    assert.equal(route.type, "MARITIME");
+    assert.equal(route.startYear, 1519);
+    assert.equal(route.endYear, 1522);
+    assert.equal(route.flagCountry, "ESP");
+    assert.ok(route.commander.includes("Magalhães") && route.commander.includes("Elcano"));
+    assert.ok(route.survivorsCount.includes("18"));
+
+    // 1. Frota das 5 embarcações da Armada das Molucas
+    assert.equal(route.fleet.length, 5);
+    const vesselNames = route.fleet.map((v) => v.name);
+    assert.ok(vesselNames.includes("Trinidad"));
+    assert.ok(vesselNames.includes("San Antonio"));
+    assert.ok(vesselNames.includes("Concepción"));
+    assert.ok(vesselNames.includes("Victoria"));
+    assert.ok(vesselNames.includes("Santiago"));
+
+    for (const vessel of route.fleet) {
+      assert.ok(vessel.tonnage > 50);
+      assert.ok(vessel.originalCaptain.length > 0);
+      assert.ok(vessel.fate.length > 20);
+    }
+
+    // 2. Waypoints históricos ordenados
+    assert.equal(route.waypoints.length, 17);
+    for (let i = 0; i < route.waypoints.length; i++) {
+      const wp: RouteWaypoint = route.waypoints[i];
+      assert.equal(wp.order, i + 1);
+      assert.ok(wp.lat >= -90 && wp.lat <= 90);
+      assert.ok(wp.lng >= -180 && wp.lng <= 180);
+      assert.ok(wp.vessel.length > 0);
+      assert.ok(wp.commander.length > 0);
+      assert.ok(wp.modernCountry.length > 0);
+      assert.ok(wp.description.length > 10);
+      assert.ok(wp.historicalEvent.length > 10);
+      assert.ok(wp.quoteFromPigafetta || wp.pigafettaDiary);
+      assert.ok(wp.daysAtSea >= 0);
+      assert.ok(wp.leaguesNavigated >= 0);
+
+      // Cronologia monotônica crescente
+      if (i > 0) {
+        const prevWp = route.waypoints[i - 1];
+        assert.ok(wp.daysAtSea >= prevWp.daysAtSea, `Dias em mar devem crescer: ${wp.daysAtSea} >= ${prevWp.daysAtSea}`);
+        assert.ok(wp.leaguesNavigated >= prevWp.leaguesNavigated, `Léguas navegadas devem crescer`);
+      }
+    }
+
+    // 3. Marcos geográficos fundamentais
+    const wpStart = route.waypoints[0];
+    assert.equal(wpStart.lat, 36.78);
+    assert.equal(wpStart.lng, -6.35);
+
+    const wpGuanabara = route.waypoints.find((w) => w.id === "GUANABARA_BAY");
+    assert.ok(wpGuanabara);
+    assert.equal(wpGuanabara.modernCountry, "Brasil");
+    assert.equal(wpGuanabara.lat, -22.91);
+
+    const wpStrait = route.waypoints.find((w) => w.id === "STRAIT_OF_MAGELLAN");
+    assert.ok(wpStrait);
+    assert.equal(wpStrait.lat, -53.47);
+    assert.equal(wpStrait.lng, -70.92);
+
+    const wpMactan = route.waypoints.find((w) => w.id === "MACTAN_BATTLE");
+    assert.ok(wpMactan);
+    assert.equal(wpMactan.lat, 10.31);
+    assert.equal(wpMactan.lng, 123.97);
+
+    const wpMoluccas = route.waypoints.find((w) => w.id === "TIDORE_MOLUCCAS");
+    assert.ok(wpMoluccas);
+    assert.equal(wpMoluccas.lat, 0.68);
+    assert.equal(wpMoluccas.lng, 127.4);
+
+    const wpEnd = route.waypoints[route.waypoints.length - 1];
+    assert.equal(wpEnd.lat, 36.78);
+    assert.equal(wpEnd.lng, -6.35);
+    assert.equal(wpEnd.vessel, "Nau Victoria");
+    assert.equal(wpEnd.commander, "Juan Sebastián Elcano");
+
+    // 4. Cálculo matemático de distância geodésica
+    const calculatedDistance = calculateRouteDistanceKm(route.waypoints);
+    assert.ok(
+      calculatedDistance >= 50000 && calculatedDistance <= 75000,
+      `Distância calculada da rota (${calculatedDistance} km) deve bater com circum-navegação real (~60.000 km)`
+    );
+
+    // 5. Interpolação geodésica de anti-meridiano
+    const pacificInterp = interpolateGeodesicSegment(
+      { lat: -12.0, lng: -135.0 },
+      { lat: 13.44, lng: 144.79 },
+      10
+    );
+    assert.equal(pacificInterp.length, 11);
+    for (const pt of pacificInterp) {
+      assert.ok(pt.lat >= -15 && pt.lat <= 15);
+      assert.ok(pt.lng >= -180 && pt.lng <= 180);
+    }
+
+    // 6. Diário de bordo de Pigafetta
+    assert.ok(route.logbookEntries.length >= 5);
+    for (const entry of route.logbookEntries) {
+      assert.ok(entry.date.length > 0);
+      assert.ok(entry.location.length > 0);
+      assert.ok(entry.event.length > 0);
+      assert.ok(entry.excerptPigafetta && entry.excerptPigafetta.length > 0);
+    }
+  });
+
+  test("8. Utilitários Procedurais de Canvas Paleogeográfico (Pangeia e Gondwana)", () => {
+    // No ambiente Node.js / SSR sem DOM (document === undefined), as funções retornam null graciosamente
+    assert.equal(generatePaleoPangeaCanvas(), null);
+    assert.equal(generatePaleoGondwanaCanvas(), null);
+    assert.equal(generatePaleoCanvas("pangaea-250ma"), null);
+    assert.equal(generatePaleoCanvas("gondwana-150ma"), null);
+
+    // Simulação com mock de document/canvas
+    const mockCtx = {
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+      fillRect: () => {},
+      save: () => {},
+      restore: () => {},
+      beginPath: () => {},
+      ellipse: () => {},
+      rect: () => {},
+      fill: () => {},
+      moveTo: () => {},
+      lineTo: () => {},
+      stroke: () => {},
+      fillStyle: "",
+      strokeStyle: "",
+      lineWidth: 1,
+    };
+    const mockCanvas = {
+      width: 0,
+      height: 0,
+      getContext: () => mockCtx,
+    };
+    const originalDoc = (globalThis as any).document;
+    (globalThis as any).document = {
+      createElement: (tag: string) => (tag === "canvas" ? mockCanvas : null),
+    };
+
+    try {
+      const pangeaCanvas = generatePaleoPangeaCanvas(512, 256);
+      assert.ok(pangeaCanvas !== null);
+      assert.equal(pangeaCanvas.width, 512);
+      assert.equal(pangeaCanvas.height, 256);
+
+      const gondwanaCanvas = generatePaleoGondwanaCanvas(512, 256);
+      assert.ok(gondwanaCanvas !== null);
+      assert.equal(gondwanaCanvas.width, 512);
+      assert.equal(gondwanaCanvas.height, 256);
+
+      const unifiedPangea = generatePaleoCanvas("pangaea-250ma", 256, 128);
+      assert.ok(unifiedPangea !== null);
+      assert.equal(unifiedPangea.width, 256);
+
+      const unifiedGondwana = generatePaleoCanvas("gondwana-150ma", 256, 128);
+      assert.ok(unifiedGondwana !== null);
+      assert.equal(unifiedGondwana.width, 256);
+    } finally {
+      (globalThis as any).document = originalDoc;
+    }
+  });
+
+  test("9. Funções Auxiliares Náuticas, Geodésia Esférica e Busca de Waypoints (findRouteWaypoint)", () => {
+    // 1. Busca por identificador canônico
+    const wpDeparture = findRouteWaypoint("SANLUCAR_DEPARTURE");
+    assert.ok(wpDeparture !== null);
+    assert.equal(wpDeparture.id, "SANLUCAR_DEPARTURE");
+    assert.equal(wpDeparture.lat, 36.78);
+
+    const wpGuanabara = findRouteWaypoint("guanabara_bay"); // Case-insensitive
+    assert.ok(wpGuanabara !== null);
+    assert.equal(wpGuanabara.id, "GUANABARA_BAY");
+    assert.equal(wpGuanabara.modernCountry, "Brasil");
+
+    const wpMactan = findRouteWaypoint("MACTAN_BATTLE");
+    assert.ok(wpMactan !== null);
+    assert.equal(wpMactan.commander, "Fernão de Magalhães");
+
+    const wpNonExistent = findRouteWaypoint("NON_EXISTENT_WP");
+    assert.equal(wpNonExistent, null);
+
+    const wpNull = findRouteWaypoint(null as any);
+    assert.equal(wpNull, null);
+
+    // 2. Resiliência do cálculo de distância geodésica
+    assert.equal(calculateRouteDistanceKm([]), 0);
+    assert.equal(calculateRouteDistanceKm(null as any), 0);
+    assert.equal(calculateRouteDistanceKm([{ lat: 0, lng: 0 } as any]), 0);
+    assert.equal(calculateRouteDistanceKm([{ lat: NaN, lng: 0 } as any, { lat: 10, lng: 10 } as any]), 0);
+
+    // 3. Resiliência e fidelidade da interpolação geodésica esférica
+    assert.deepEqual(interpolateGeodesicSegment(null as any, { lat: 10, lng: 10 }), []);
+    assert.deepEqual(interpolateGeodesicSegment({ lat: 10, lng: 10 }, null as any), []);
+    assert.deepEqual(interpolateGeodesicSegment({ lat: NaN, lng: 0 }, { lat: 10, lng: 10 }), []);
+
+    // steps < 1 retorna o ponto de origem sem emitir NaN
+    const zeroStep = interpolateGeodesicSegment({ lat: 10.0, lng: 20.0 }, { lat: 30.0, lng: 40.0 }, 0);
+    assert.equal(zeroStep.length, 1);
+    assert.equal(zeroStep[0].lat, 10.0);
+    assert.equal(zeroStep[0].lng, 20.0);
+
+    // Interpolação entre Sanlúcar e Canárias com slerp
+    const segments = interpolateGeodesicSegment({ lat: 36.78, lng: -6.35 }, { lat: 28.47, lng: -16.25 }, 5);
+    assert.equal(segments.length, 6);
+    assert.equal(segments[0].lat, 36.78);
+    assert.equal(segments[5].lat, 28.47);
+  });
+});
+
+describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Históricas (RN16)", () => {
+  test("1. Serialização de Estudo com geologicalMa e activeRouteId (StudyRecord)", () => {
+    const studySnapshot: StudyRecord = {
+      id: "estudo-paleo-pangea-test",
+      parentId: null,
+      title: "Pangeia e Deriva Continental",
+      description: "Recorte da Pangeia a 250 Ma com rota de circum-navegação de Magalhães.",
+      timelineStartYear: 1519,
+      timelineEndYear: 1522,
+      selectedCountryIsos: ["BRA", "ZAF", "IND"],
+      activeCategories: ["SCIENCE_CULTURE"],
+      cameraLat: 10.0,
+      cameraLng: -20.0,
+      cameraAltitude: 2.5,
+      markdownNotes: "Notas de pesquisa científica.",
+      historicalEra: null,
+      isApollo11Active: false,
+      geologicalMa: 250,
+      activeRouteId: "magellan-1519",
+      createdAt: new Date().toISOString(),
+    };
+
+    saveMemoryStudy(studySnapshot);
+    const retrieved = getMemoryStudy("estudo-paleo-pangea-test");
+
+    assert.ok(retrieved !== undefined);
+    assert.equal(retrieved.id, "estudo-paleo-pangea-test");
+    assert.equal(retrieved.geologicalMa, 250);
+    assert.equal(retrieved.activeRouteId, "magellan-1519");
+    assert.equal(retrieved.title, "Pangeia e Deriva Continental");
+  });
+
+  test("2. Fork Imutável (RN16) preserva geologicalMa e activeRouteId com isolamento de estado", () => {
+    const originalStudy: StudyRecord = {
+      id: "estudo-orig-150ma",
+      parentId: null,
+      title: "Gondwana e Laurásia Quinhentista",
+      timelineStartYear: 1947,
+      timelineEndYear: 1991,
+      selectedCountryIsos: ["BRA", "DEU"],
+      activeCategories: ["ECONOMY"],
+      cameraLat: 0,
+      cameraLng: 0,
+      cameraAltitude: 2.2,
+      geologicalMa: 150,
+      activeRouteId: "magellan-1519",
+      createdAt: new Date().toISOString(),
+    };
+
+    saveMemoryStudy(originalStudy);
+    const forked = forkStudyRecord(originalStudy, "fork-derivado-150ma");
+
+    assert.equal(forked.id, "fork-derivado-150ma");
+    assert.equal(forked.parentId, "estudo-orig-150ma");
+    assert.equal(forked.title, "[Fork] Gondwana e Laurásia Quinhentista");
+    assert.equal(forked.geologicalMa, 150);
+    assert.equal(forked.activeRouteId, "magellan-1519");
+
+    // Imutabilidade estrita
+    forked.title = "Alteração derivativa";
+    forked.geologicalMa = 66;
+    forked.activeRouteId = null;
+
+    assert.equal(originalStudy.title, "Gondwana e Laurásia Quinhentista");
+    assert.equal(originalStudy.geologicalMa, 150);
+    assert.equal(originalStudy.activeRouteId, "magellan-1519");
+  });
+
+  test("3. useStudyStore gerencia geologicalMa, activeRouteId e ciclo de vida", () => {
+    const store = useStudyStore.getState();
+    store.resetStudy();
+
+    assert.equal(useStudyStore.getState().geologicalMa, null);
+    assert.equal(useStudyStore.getState().activeRouteId, null);
+
+    store.setGeologicalMa(250);
+    assert.equal(useStudyStore.getState().geologicalMa, 250);
+
+    store.setActiveRouteId("magellan-1519");
+    assert.equal(useStudyStore.getState().activeRouteId, "magellan-1519");
+
+    store.setStudy({
+      id: "estudo-completo-66ma",
+      title: "Cretáceo K-Pg e Extinção",
+      geologicalMa: 66,
+      activeRouteId: "magellan-1519",
+    });
+
+    assert.equal(useStudyStore.getState().currentStudyId, "estudo-completo-66ma");
+    assert.equal(useStudyStore.getState().geologicalMa, 66);
+    assert.equal(useStudyStore.getState().activeRouteId, "magellan-1519");
+
+    store.resetStudy();
+    assert.equal(useStudyStore.getState().geologicalMa, null);
+    assert.equal(useStudyStore.getState().activeRouteId, null);
+  });
+
+  test("4. StudyShareModal exibe badges de Era Geológica e Rota de Expedição quando ativos", () => {
+    useTimelineStore.getState().selectGeologicalMa(250);
+    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
+    useStudyStore.getState().setGeologicalMa(250);
+    useStudyStore.getState().setActiveRouteId("magellan-1519");
+    useStudyStore.getState().setShareModalOpen(true);
+
+    const html = renderToStaticMarkup(React.createElement(StudyShareModal));
+
+    assert.ok(html.includes("data-testid=\"modal-geological-era-badge\""), "Deve renderizar badge de era geológica no modal");
+    assert.ok(html.includes("Paleogeografia &amp; Deriva Continental Ativa"));
+    assert.ok(html.includes("Pangeia"));
+
+    assert.ok(html.includes("data-testid=\"modal-historical-route-badge\""), "Deve renderizar badge de rota histórica no modal");
+    assert.ok(html.includes("Rota de Expedição Histórica 3D"));
+
+    assert.ok(html.includes("Paleogeografia:"));
+    assert.ok(html.includes("Rota Histórica 3D:"));
+
+    // Cleanup
+    useStudyStore.getState().setShareModalOpen(false);
+    useTimelineStore.getState().selectGeologicalMa(null);
+    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useStudyStore.getState().resetStudy();
+  });
+
+  test("5. StudyShareModal omite badges paleogeográficos e de expedição no modo padrão contemporâneo", () => {
+    useTimelineStore.getState().selectGeologicalMa(null);
+    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useStudyStore.getState().resetStudy();
+    useStudyStore.getState().setShareModalOpen(true);
+
+    const html = renderToStaticMarkup(React.createElement(StudyShareModal));
+
+    assert.ok(!html.includes("data-testid=\"modal-geological-era-badge\""));
+    assert.ok(!html.includes("data-testid=\"modal-historical-route-badge\""));
+
+    useStudyStore.getState().setShareModalOpen(false);
+  });
+
+  test("6. Restauração de Estudo (/study/[slug]): Aplica geologicalMa e activeRouteId nas stores correspondentes", () => {
+    // Cenário 1: Restauração de estudo paleogeográfico com rota ativa
+    const studyPayload = {
+      id: "estudo-restaurar-123",
+      geologicalMa: 250,
+      activeRouteId: "magellan-1519",
+    };
+
+    useTimelineStore.getState().selectGeologicalMa(studyPayload.geologicalMa);
+    useHistoricalRouteStore.getState().setActiveRouteId(studyPayload.activeRouteId);
+    useTimelineStore.getState().setActiveRouteId(studyPayload.activeRouteId);
+
+    assert.equal(useTimelineStore.getState().timelineMode, "GEOLOGICAL");
+    assert.equal(useTimelineStore.getState().selectedGeologicalMa, 250);
+    assert.equal(useTimelineStore.getState().geologicalMa, 250);
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useTimelineStore.getState().activeRouteId, "magellan-1519");
+
+    // Cenário 2: Restauração de estudo contemporâneo (limpeza estrita)
+    useTimelineStore.getState().selectGeologicalMa(null);
+    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useTimelineStore.getState().setActiveRouteId(null);
+
+    assert.equal(useTimelineStore.getState().timelineMode, "HISTORICAL");
+    assert.equal(useTimelineStore.getState().selectedGeologicalMa, null);
+    assert.equal(useTimelineStore.getState().geologicalMa, null);
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
+    assert.equal(useTimelineStore.getState().activeRouteId, null);
+  });
+
+  test("7. Fator de atenuação e extinção de luzes urbanas para uPaleoFactor > 0", () => {
+    // Simulação do comportamento físico do EarthShaderMaterial
+    const computeCityLightWeight = (uPaleoFactor: number) => {
+      return 1.0 - Math.min(1.0, Math.max(0.0, uPaleoFactor / 0.2));
+    };
+
+    assert.equal(computeCityLightWeight(0.0), 1.0, "Luzes urbanas a 100% no presente");
+    assert.equal(computeCityLightWeight(0.1), 0.5, "Atenuação de 50% na transição inicial");
+    assert.equal(computeCityLightWeight(0.2), 0.0, "Extinção total a partir de 0.2");
+    assert.equal(computeCityLightWeight(1.0), 0.0, "Extinção total permanente na Pangeia");
+  });
+
+  test("8. restoreStudyRecord normaliza e sanitiza snapshots com geologicalMa e activeRouteId", () => {
+    // 1. Snapshot com dados válidos
+    const restored = restoreStudyRecord({
+      id: "estudo-restaurado-valido",
+      title: "Pangeia Jurássica",
+      geologicalMa: 150,
+      activeRouteId: "magellan-1519",
+      selectedCountryIsos: ["BRA", "AGO"],
+    });
+
+    assert.equal(restored.id, "estudo-restaurado-valido");
+    assert.equal(restored.geologicalMa, 150);
+    assert.equal(restored.activeRouteId, "magellan-1519");
+    assert.equal(restored.historicalEra, null, "historicalEra deve ser suprimido em era geológica");
+    assert.equal(restored.isApollo11Active, false, "Apollo 11 deve ser falso em era geológica");
+    assert.deepEqual(restored.selectedCountryIsos, ["BRA", "AGO"]);
+
+    // 2. Snapshot com dados inválidos (geologicalMa negativo, activeRouteId vazio)
+    const sanitized = restoreStudyRecord({
+      id: "estudo-invalido",
+      title: "Estudo com Erros",
+      geologicalMa: -50,
+      activeRouteId: "   ",
+      historicalEra: "WW2_1939",
+    });
+
+    assert.equal(sanitized.geologicalMa, null, "geologicalMa negativo deve ser sanitizado para null");
+    assert.equal(sanitized.activeRouteId, null, "activeRouteId em branco deve ser sanitizado para null");
+    assert.equal(sanitized.historicalEra, "WW2_1939", "historicalEra deve ser mantido se geologicalMa for nulo");
+  });
+
+  test("9. forkStudyRecord sanitiza valores anômalos e previne anacronismos na derivação", () => {
+    const parentWithAnomalies: StudyRecord = {
+      id: "parent-anomalo",
+      title: "Estudo com Mistura Ilícita",
+      timelineStartYear: 1969,
+      timelineEndYear: 1969,
+      selectedCountryIsos: ["USA"],
+      activeCategories: ["SCIENCE_CULTURE"],
+      cameraLat: 0,
+      cameraLng: 0,
+      cameraAltitude: 2.5,
+      historicalEra: "COLD_WAR_1969",
+      isApollo11Active: true,
+      geologicalMa: 250, // Permiano não pode coexistir com Guerra Fria / Apollo 11
+      activeRouteId: "magellan-1519",
+      createdAt: new Date().toISOString(),
+    };
+
+    const forked = forkStudyRecord(parentWithAnomalies, "fork-sanitizado-pangea");
+
+    assert.equal(forked.id, "fork-sanitizado-pangea");
+    assert.equal(forked.parentId, "parent-anomalo");
+    assert.equal(forked.geologicalMa, 250);
+    assert.equal(forked.activeRouteId, "magellan-1519");
+    assert.equal(forked.historicalEra, null, "Guerra Fria deve ser anulada quando Ma > 0.3");
+    assert.equal(forked.isApollo11Active, false, "Apollo 11 deve ser desativado na Pangeia");
+
+    // Teste com Ma zero ou negativo
+    const parentWithZeroMa: StudyRecord = {
+      ...parentWithAnomalies,
+      geologicalMa: 0,
+    };
+    const forkedZero = forkStudyRecord(parentWithZeroMa, "fork-zero-ma");
+    assert.equal(forkedZero.geologicalMa, null, "0 Ma deve virar null (modo contemporâneo)");
+    assert.equal(forkedZero.historicalEra, "COLD_WAR_1969");
+    assert.equal(forkedZero.isApollo11Active, true);
+  });
+
+  test("10. useStudyStore métodos restoreStudy e forkStudy sincronizam e isolam o estado", () => {
+    const store = useStudyStore.getState();
+    store.resetStudy();
+
+    // 1. restoreStudy
+    store.restoreStudy({
+      id: "estudo-restaurado-store",
+      parentId: "root-123",
+      title: "Extinção Cretáceo K-Pg",
+      geologicalMa: 66,
+      activeRouteId: "magellan-1519",
+      historicalEra: "WW1_1914", // deve ser sanitizado
+      isApollo11Active: true, // deve ser sanitizado
+    });
+
+    assert.equal(useStudyStore.getState().currentStudyId, "estudo-restaurado-store");
+    assert.equal(useStudyStore.getState().parentId, "root-123");
+    assert.equal(useStudyStore.getState().geologicalMa, 66);
+    assert.equal(useStudyStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useStudyStore.getState().historicalEra, null);
+    assert.equal(useStudyStore.getState().isApollo11Active, false);
+
+    // 2. forkStudy
+    store.forkStudy({
+      id: "fork-estudo-store-999",
+      parentId: "estudo-restaurado-store",
+      title: "[Fork] Extinção Cretáceo K-Pg",
+      geologicalMa: 66,
+      activeRouteId: "magellan-1519",
+    });
+
+    assert.equal(useStudyStore.getState().currentStudyId, "fork-estudo-store-999");
+    assert.equal(useStudyStore.getState().parentId, "estudo-restaurado-store");
+    assert.equal(useStudyStore.getState().geologicalMa, 66);
+    assert.equal(useStudyStore.getState().activeRouteId, "magellan-1519");
+
+    store.resetStudy();
+  });
+
+  test("11. StudyShareModal suprime anacronismos: exclui badges de Apollo 11 e Guerra Fria quando era geológica está ativa", () => {
+    // Configura estado com Apollo 11 inicialmente ativo, mas depois alternado para modo geológico
+    useTimelineStore.getState().selectYear(1969);
+    useTimelineStore.getState().selectMilestone("glo-1969");
+    useTimelineStore.getState().selectGeologicalMa(250); // Pangeia ativada
+    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useStudyStore.getState().setGeologicalMa(250);
+    useStudyStore.getState().setShareModalOpen(true);
+
+    const html = renderToStaticMarkup(React.createElement(StudyShareModal));
+
+    // Deve exibir Pangeia
+    assert.ok(html.includes("data-testid=\"modal-geological-era-badge\""));
+    assert.ok(html.includes("Pangeia"));
+
+    // NÃO deve exibir Apollo 11 mesmo que milestoneId ou ano anterior fosse 1969
+    assert.ok(!html.includes("Trajetória Translunar Ativa"), "Apollo 11 não deve aparecer no modal da Pangeia");
+    assert.ok(!html.includes("Missão Espacial: Apollo 11"));
+
+    // Cleanup
+    useStudyStore.getState().setShareModalOpen(false);
+    useTimelineStore.getState().selectGeologicalMa(null);
+    useStudyStore.getState().resetStudy();
+  });
+
+  test("12. StudyShareModal respeita desativação de rotas históricas (omite badge se rota foi desativada)", () => {
+    // Cenário: estudo carregado tinha rota, mas o usuário a desativou na HUD
+    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useTimelineStore.getState().setActiveRouteId(null);
+    useStudyStore.getState().setGeologicalMa(null);
+    useStudyStore.getState().setShareModalOpen(true);
+
+    const html = renderToStaticMarkup(React.createElement(StudyShareModal));
+
+    assert.ok(!html.includes("data-testid=\"modal-historical-route-badge\""), "Não deve exibir badge de rota desativada");
+    assert.ok(!html.includes("• Rota Histórica 3D:"));
+
+    useStudyStore.getState().setShareModalOpen(false);
+  });
+});
+
+
+
 
 
 

@@ -85,6 +85,10 @@ apps/web/
 │   │   │   ├── CameraFlyToController.tsx # Animação de câmera suave com interpolação esférica
 │   │   │   ├── Apollo11Trajectory.tsx # Rota 3D translunar Catmull-Rom e nave animada (CSM/LM)
 │   │   │   ├── Apollo11TelemetryOverlay.tsx # HUD de telemetria científica (velocidade, distância, GET)
+│   │   │   ├── HistoricalRouteTrajectory.tsx # Traçado 3D geodésico da Nau Victoria com rastro de esteira
+│   │   │   ├── HistoricalRouteOverlay.tsx # HUD de telemetria náutica e diário de Pigafetta
+│   │   │   ├── PaleoPlatesLayer.tsx   # Placas tectônicas e linhas de fratura da Pangeia (1.002)
+│   │   │   ├── PaleoEraBadge.tsx      # Badge flutuante de era geológica com reset para contemporâneo
 │   │   │   └── HistoricalEraBadge.tsx # Badge flutuante de era com reset para contemporâneo
 │   │   ├── hud/                       # Camada 1: Inspector HUD
 │   │   │   ├── InspectorHUD.tsx       # Drawer lateral flutuante em glassmorphism
@@ -103,7 +107,7 @@ apps/web/
 │   │   │   ├── TimelineAxis.tsx       # Réguas de tempo e escala semântica
 │   │   │   ├── MilestonePin.tsx       # Nós alternados acima/abaixo do eixo
 │   │   │   ├── CategoryFilterPills.tsx# Filtros por categoria temática
-│   │   │   └── PresetSelector.tsx     # Atalhos (Últimos 50 Anos, Guerra Fria, etc.)
+│   │   │   └── PresetSelector.tsx     # Atalhos (Últimos 50 Anos, Guerra Fria, Pangeia, Magalhães)
 │   │   ├── comparator/                # Comparador de até 4 Países (RN15)
 │   │   │   ├── CountryComparator.tsx  # Painel comparativo
 │   │   │   ├── ComparisonGrid.tsx     # Colunas métricas equiparadas
@@ -114,17 +118,20 @@ apps/web/
 │   │   └── nav/                       # Barra de navegação superior
 │   ├── stores/                        # Gerenciamento de Estado Reativo (Zustand)
 │   │   ├── globeStore.ts              # Hover, seleção, câmera e render loop throttling
-│   │   ├── timelineStore.ts           # Anos, marcos, filtros de categoria e presets
+│   │   ├── timelineStore.ts           # Anos, marcos, escala geológica (Ma), filtros e presets
 │   │   ├── readerStore.ts             # Dimensão ativa e estado de leitura
 │   │   ├── comparatorStore.ts         # Países selecionados para comparação
-│   │   ├── studyStore.ts              # Recorte de estudo e anotações Markdown
-│   │   └── apollo11Store.ts           # Telemetria e controles da missão Apollo 11
-│   └── lib/                           # Utilitários, efemérides, entidades históricas e citações
+│   │   ├── studyStore.ts              # Recorte de estudo, anotações e sincronização de fork
+│   │   ├── apollo11Store.ts           # Telemetria e controles da missão Apollo 11
+│   │   └── historicalRouteStore.ts    # Reprodução e waypoints da rota de circum-navegação
+│   └── lib/                           # Utilitários, efemérides, datasets paleogeográficos e citações
 │       ├── historical-entities.ts     # Resolução contínua de entidades históricas
 │       ├── historical-topology.ts     # Carregamento e cache assíncrono de TopoJSON
+│       ├── historical-routes.ts       # Reconstituição da circum-navegação de Magalhães-Elcano
+│       ├── paleo-data.ts              # Catálogo de eras paleogeográficas e placas da Pangeia
 │       └── apollo11.ts                # Física orbital e telemetria da Apollo 11
 └── test/
-    └── unit.test.ts                   # 108 testes automatizados em 18 suítes cobrindo todas as regras
+    └── unit.test.ts                   # 148 testes automatizados em 22 suítes cobrindo todas as regras
 ```
 
 ### 2.2. Engenharia Gráfica 3D (Shaders e Picking)

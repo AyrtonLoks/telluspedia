@@ -9,6 +9,7 @@ import { latLngToVector3 } from "@/lib/geo-spatial";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useTimelineStore } from "@/stores/timelineStore";
+import { useStudyStore } from "@/stores/studyStore";
 import {
   NUMERIC_TO_ISO,
   NAME_TO_ISO,
@@ -35,6 +36,21 @@ export const CountryBorders: React.FC = () => {
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const startYear = useTimelineStore((s) => s.startYear);
   const endYear = useTimelineStore((s) => s.endYear);
+
+  // Geological mode detection
+  const timelineMode = useTimelineStore((s: any) => s.timelineMode);
+  const selectedGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
+  const isStudyGeologicalActive = useStudyStore(
+    (s: any) => s.geologicalMa !== undefined && s.geologicalMa !== null
+  );
+
+  const isGeologicalActive =
+    timelineMode === "GEOLOGICAL" ||
+    isStudyGeologicalActive ||
+    (selectedGeologicalMa !== null && selectedGeologicalMa !== undefined && selectedGeologicalMa > 0) ||
+    selectedMilestoneId === "pangea-250ma" ||
+    selectedMilestoneId === "gondwana-150ma" ||
+    selectedMilestoneId === "kpg-66ma";
 
   // Material refs for smooth cross-fading via useFrame
   const baseMaterialRef = useRef<THREE.LineBasicMaterial>(null);
@@ -152,6 +168,7 @@ export const CountryBorders: React.FC = () => {
 
   // Highlighted borders for selected / hovered / comparator entities and active milestone bloc
   const highlightGeometry = useMemo(() => {
+    if (isGeologicalActive) return null;
     const isHistorical = era.id !== "CONTEMPORARY" && !!historicalTopology;
     const topology = isHistorical ? historicalTopology : (worldAtlas as any);
     if (!topology || !topology.objects?.countries?.geometries) return null;
@@ -241,6 +258,7 @@ export const CountryBorders: React.FC = () => {
     era.id,
     effectiveYear,
     historicalTopology,
+    isGeologicalActive,
   ]);
 
   // Clean up WebGL buffer geometries on update/unmount to prevent GPU memory leaks
@@ -265,8 +283,8 @@ export const CountryBorders: React.FC = () => {
   // Smooth cross-fade of border opacities via useFrame with THREE.MathUtils.lerp
   useFrame((_, delta) => {
     const isHistoricalActive = era.id !== "CONTEMPORARY";
-    const targetBaseOpacity = isHistoricalActive ? 0.0 : 0.35;
-    const targetHistOpacity = isHistoricalActive ? 0.45 : 0.0;
+    const targetBaseOpacity = isHistoricalActive || isGeologicalActive ? 0.0 : 0.35;
+    const targetHistOpacity = isHistoricalActive && !isGeologicalActive ? 0.45 : 0.0;
     const lerpSpeed = Math.min(delta * 4, 1.0);
 
     if (baseMaterialRef.current) {

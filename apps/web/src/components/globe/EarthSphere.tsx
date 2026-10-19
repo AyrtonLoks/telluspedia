@@ -26,6 +26,68 @@ import {
   getHistoricalSpatialIndex,
   getContemporarySpatialIndex,
 } from "@/lib/historical-topology";
+import { resolveGeologicalEra } from "@/lib/paleo-data";
+import { useStudyStore } from "@/stores/studyStore";
+
+/**
+ * Generates an authentic equirectangular DataTexture of Pangea (~250 Ma)
+ * featuring the Panthalassa superocean, Tethys Sea indentation, and Permian terracotta landmass.
+ */
+function createProceduralPangeaTexture(width = 256, height = 128): THREE.DataTexture {
+  const size = width * height * 4;
+  const data = new Uint8Array(size);
+
+  for (let y = 0; y < height; y++) {
+    const lat = 90 - (y / height) * 180;
+    for (let x = 0; x < width; x++) {
+      const lng = (x / width) * 360 - 180;
+      const idx = (y * width + x) * 4;
+
+      // Pangea landmass geometry:
+      // Central supercontinent from lat -75 to +68, lng -55 to +50
+      // With Tethys Sea triangular gulf on eastern side
+      const inTethys = lng > 18 && lng < 85 && lat > -18 && lat < 28 && lng > (30 - Math.abs(lat));
+      const inPangeaCore =
+        lng > -55 &&
+        lng < 50 &&
+        lat > -70 &&
+        lat < 65 &&
+        !inTethys;
+      const inSouthGondwana =
+        lng > -65 &&
+        lng < 95 &&
+        lat > -80 &&
+        lat <= -35;
+      const inNorthLaurasia =
+        lng > -20 &&
+        lng < 110 &&
+        lat >= 45 &&
+        lat < 75;
+
+      const isLand = (inPangeaCore || inSouthGondwana || inNorthLaurasia) && !inTethys;
+
+      if (isLand) {
+        // Terracotta / ochre Permian arid supercontinent
+        const noise = (Math.sin(lat * 0.25) * Math.cos(lng * 0.25) + 1.0) * 0.5;
+        data[idx] = Math.floor(165 + noise * 30);     // R
+        data[idx + 1] = Math.floor(110 + noise * 25); // G
+        data[idx + 2] = Math.floor(60 + noise * 20);  // B
+        data[idx + 3] = 255;
+      } else {
+        // Deep primordial Panthalassa ocean
+        data[idx] = 4;
+        data[idx + 1] = 18;
+        data[idx + 2] = 48;
+        data[idx + 3] = 255;
+      }
+    }
+  }
+
+  const texture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat);
+  texture.needsUpdate = true;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
 
 export const EarthSphere: React.FC = () => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -40,6 +102,24 @@ export const EarthSphere: React.FC = () => {
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
   const startYear = useTimelineStore((s) => s.startYear);
   const endYear = useTimelineStore((s) => s.endYear);
+
+  // Geological mode and era detection
+  const timelineMode = useTimelineStore((s: any) => s.timelineMode);
+  const selectedGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
+  const isStudyGeologicalActive = useStudyStore(
+    (s: any) => s.geologicalMa !== undefined && s.geologicalMa !== null
+  );
+
+  const isGeologicalActive = useMemo(() => {
+    return (
+      timelineMode === "GEOLOGICAL" ||
+      isStudyGeologicalActive ||
+      (selectedGeologicalMa !== null && selectedGeologicalMa !== undefined && selectedGeologicalMa > 0) ||
+      selectedMilestoneId === "pangea-250ma" ||
+      selectedMilestoneId === "gondwana-150ma" ||
+      selectedMilestoneId === "kpg-66ma"
+    );
+  }, [timelineMode, isStudyGeologicalActive, selectedGeologicalMa, selectedMilestoneId]);
 
   // Determine active reference year using canonical multi-parameter resolver
   const milestoneYear = useMemo(() => {
@@ -70,21 +150,83 @@ export const EarthSphere: React.FC = () => {
     return [day, night];
   }, [invalidate]);
 
+  // Procedural Pangea texture initialized immediately as base fallback
+  const proceduralPaleoTexture = useMemo(() => {
+    return createProceduralPangeaTexture();
+  }, []);
+
   // Initialize shader material
   const earthMaterial = useMemo(() => {
-    const mat = createEarthMaterial(dayTexture, nightTexture);
+    const mat = createEarthMaterial(dayTexture, nightTexture, proceduralPaleoTexture);
     const initialSubsolar = calculateSubsolarPoint(new Date());
     mat.uniforms.uSunDirection.value.copy(
       getSunDirectionVector(initialSubsolar.latitude, initialSubsolar.longitude)
     );
     return mat;
-  }, [dayTexture, nightTexture]);
+  }, [dayTexture, nightTexture, proceduralPaleoTexture]);
+
+  // Ref to track loaded raster paleogeographic texture for proper WebGL GPU disposal
+  const loadedPaleoTextureRef = useRef<THREE.Texture | null>(null);
+
+  // Load raster paleogeographic texture from public directory if available
+  useEffect(() => {
+    let isMounted = true;
+    const loader = new THREE.TextureLoader();
+    const paleoEra = selectedGeologicalMa ? resolveGeologicalEra(selectedGeologicalMa) : null;
+    const texturePath = paleoEra?.textureUrl || "/textures/paleo/pangea_250ma.jpg";
+
+    loader.load(
+      texturePath,
+      (tex) => {
+        if (!isMounted) {
+          tex.dispose();
+          return;
+        }
+        tex.colorSpace = THREE.SRGBColorSpace;
+        // Dispose previously loaded raster texture to prevent VRAM accumulation
+        if (
+          loadedPaleoTextureRef.current &&
+          loadedPaleoTextureRef.current !== proceduralPaleoTexture
+        ) {
+          loadedPaleoTextureRef.current.dispose();
+        }
+        loadedPaleoTextureRef.current = tex;
+        earthMaterial.uniforms.uPaleoTexture.value = tex;
+        earthMaterial.needsUpdate = true;
+        invalidate();
+      },
+      undefined,
+      () => {
+        // Fallback procedural texture already loaded
+      }
+    );
+
+    return () => {
+      isMounted = false;
+    };
+  }, [earthMaterial, selectedGeologicalMa, proceduralPaleoTexture, invalidate]);
 
   useEffect(() => {
     if (dayTexture) earthMaterial.uniforms.uDayTexture.value = dayTexture;
     if (nightTexture) earthMaterial.uniforms.uNightTexture.value = nightTexture;
     earthMaterial.needsUpdate = true;
   }, [earthMaterial, dayTexture, nightTexture]);
+
+  // Dispose earth material, planetary textures, and procedural texture on unmount
+  useEffect(() => {
+    return () => {
+      earthMaterial.dispose();
+      proceduralPaleoTexture.dispose();
+      dayTexture?.dispose();
+      nightTexture?.dispose();
+      if (
+        loadedPaleoTextureRef.current &&
+        loadedPaleoTextureRef.current !== proceduralPaleoTexture
+      ) {
+        loadedPaleoTextureRef.current.dispose();
+      }
+    };
+  }, [earthMaterial, proceduralPaleoTexture, dayTexture, nightTexture]);
 
   // Dynamic spatial index (<0.2ms) switching seamlessly between contemporary and historical eras
   const [historicalSpatialIndex, setHistoricalSpatialIndex] = useState<any>(() => {
@@ -145,9 +287,24 @@ export const EarthSphere: React.FC = () => {
     }
   }, [effectiveYear, setSelectedIso]);
 
-  // Update shader animation frame
+  // Update shader animation frame & smooth 60 FPS lerp for paleogeographic cross-fade
   useFrame((_, delta) => {
     earthMaterial.uniforms.uTime.value += delta;
+
+    const targetPaleoFactor = isGeologicalActive ? 1.0 : 0.0;
+    const currentPaleoFactor = earthMaterial.uniforms.uPaleoFactor.value;
+
+    if (Math.abs(currentPaleoFactor - targetPaleoFactor) > 0.001) {
+      earthMaterial.uniforms.uPaleoFactor.value = THREE.MathUtils.lerp(
+        currentPaleoFactor,
+        targetPaleoFactor,
+        Math.min(delta * 3.5, 1.0)
+      );
+      invalidate();
+    } else if (currentPaleoFactor !== targetPaleoFactor) {
+      earthMaterial.uniforms.uPaleoFactor.value = targetPaleoFactor;
+      invalidate();
+    }
   });
 
   // Astronomical Sun Synchronization (RN10)
@@ -203,6 +360,10 @@ export const EarthSphere: React.FC = () => {
   // Handle Raycasting Pointer Movement (<0.2ms in-memory lookup)
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
+    if (isGeologicalActive) {
+      setHoveredIso(null);
+      return;
+    }
     if (!e.point || !activeSpatialIndex) return;
 
     const { lat, lng } = vector3ToLatLng(e.point);
@@ -219,6 +380,11 @@ export const EarthSphere: React.FC = () => {
   // Handle Click & FlyTo
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
+    if (isGeologicalActive) {
+      setSelectedIso(null);
+      setHoveredIso(null);
+      return;
+    }
     if (!e.point || !activeSpatialIndex) return;
 
     const { lat, lng } = vector3ToLatLng(e.point);

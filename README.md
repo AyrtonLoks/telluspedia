@@ -71,10 +71,10 @@ Abra [http://localhost:3000](http://localhost:3000) no seu navegador para intera
 
 ## 🧪 Testes Automatizados e Qualidade de Código
 
-O projeto conta com **108 testes unitários automatizados distribuídos em 18 suítes**, cobrindo 100% das regras matemáticas, geoespaciais, cartografia histórica, efemérides translunares e formatação acadêmica:
+O projeto conta com **148 testes unitários automatizados distribuídos em 22 suítes**, cobrindo 100% das regras matemáticas, geoespaciais, cartografia histórica, paleogeografia, efemérides translunares, telemetria naval e formatação acadêmica:
 
 ```bash
-# Executar a suíte de testes unitários (108 testes / 18 suítes passando)
+# Executar a suíte de testes unitários (148 testes / 22 suítes passando)
 pnpm test
 
 # Executar linting do código (0 erros / 0 warnings)
@@ -89,15 +89,17 @@ pnpm build
 
 ---
 
-## 🏛️ Cartografia Histórica & Trajetórias 3D (Horizonte 2)
+## 🏛️ Cartografia Histórica, Paleogeografia & Trajetórias 3D (Horizonte 2 Concluído)
 
-O TellusPedia inclui suporte nativo a reconstituição histórica e espacial:
+O TellusPedia inclui suporte nativo a reconstituição histórica, paleogeográfica e espacial:
+- **Paleogeografia & Deriva Continental (RN11)**: Escala geológica em Milhões de Anos (Ma) cobrindo **Pangeia (~250 Ma)**, fragmentação (~200 Ma), **Gondwana & Laurásia (~150 Ma)** e **Cretáceo K-Pg (~66 Ma)** com blend procedural no shader Three.js (`uPaleoTexture`, `uPaleoFactor`), linhas de fratura tectônica e **supressão física automática de luzes elétricas urbanas** (`cityLightFactor -> 0`).
+- **Circum-navegação de Magalhães-Elcano (1519–1522) (RN12)**: Reconstrução tridimensional geodésica no raio $1.004$ com a *Nau Victoria* navegando em base ortonormal, rastro de esteira (*wake effect*), waypoints históricos e HUD de telemetria naval com extratos do diário de Antonio Pigafetta.
 - **Snapshots TopoJSON Históricos**: Mapas mundiais autênticos dos anos **1870**, **1914**, **1939** e **1969** com interpolação de opacidade (*cross-fade*) no Three.js e descarte seguro de buffers de memória GPU.
 - **Entidades Históricas Extintas**: Reconstituição de fronteiras e fichas de nações do passado (Reino da Prússia, União Soviética, Império Austro-Húngaro, Alemanha Oriental/RDA, Alemanha Ocidental/RFA, Império Otomano, Iugoslávia e Tchecoslováquia) com continuidade temporal bidirecional para as nações contemporâneas.
 - **Picking Espacial (<0.2ms)**: Raycasting interativo na esfera unitária que se adapta em tempo de execução ao mapa histórico ativo.
 - **Trajetória 3D da Missão Apollo 11 (1969)**: Reconstrução tridimensional do voo translunar da Terra até o Mar da Tranquilidade na Lua com curva de Catmull-Rom, animação da nave (CSM Columbia / LM Eagle) e HUD de telemetria científica (velocidade, distância e tempo de missão decorrido GET).
-- **Badge de Era Histórica Contextual**: Indicador flutuante no globo com reposicionamento dinâmico contra banners de estudo e atalho de restauração imediata para o presente.
-- **Estudos Históricos com Fork Imutável**: Preservação do estado da cartografia histórica e da missão Apollo 11 em links de estudo compartilháveis `/study/[slug]`.
+- **Badges de Era Contextuais**: Indicadores flutuantes no globo (`HistoricalEraBadge`, `PaleoEraBadge`) com proteção contra colisões e restauração imediata para 2024.
+- **Estudos Históricos com Fork Imutável**: Preservação do estado da cartografia histórica, era geológica (`geologicalMa`) e rotas ativas (`activeRouteId`) em links compartilháveis `/study/[slug]`.
 
 ---
 

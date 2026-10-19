@@ -13,11 +13,11 @@ timeline
                            : Modo Leitura & Citações (Camada 2)
                            : Comparador (Até 4 Países)
                            : Estudos Imutáveis & Forks
-    section Horizonte 2 (Próximo)
-        Cartografia Histórica : Mutação de Fronteiras (CShapes / OHM)
-                              : Paleogeografia & Pangeia (GPlates)
-                              : Trajetórias 3D (Apollo 11, Guerras)
-    section Horizonte 3
+    section Horizonte 2 (Concluído)
+        Cartografia Histórica : Mutação de Fronteiras (1870-1969)
+                              : Paleogeografia & Pangeia (250-66 Ma)
+                              : Trajetórias 3D (Apollo 11, Magalhães)
+    section Horizonte 3 (Próximo)
         Observatório Planetário : Camadas NASA GIBS & FIRMS
                                : Rastreamento ISS & Satélites
                                : Tráfego Aéreo & Rotas Marítimas
@@ -41,20 +41,22 @@ timeline
 
 ---
 
-### Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D *(Status: Fase 1 Concluída | Fechamento Planejado)*
+### Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D *(Status: Concluído)*
 - **Cartografia Histórica Dinâmica (Concluído)**:
   - Snapshots TopoJSON para **1870** (Unificação Alemã / Guerra Franco-Prussiana), **1914** (Primeira Guerra Mundial), **1939** (Segunda Guerra Mundial) e **1969** (Guerra Fria) com interpolação de opacidade (*cross-fade*) e descarte de geometria no Three.js.
   - Catálogo e resolução contínua de entidades históricas (`PRU`, `SUN`, `AHU`, `GDR`, `FRG`, `TUR_HIST`, `YUG`, `CSK`) com bandeiras SVG autênticas, indicadores, governantes e continuidade territorial bidirecional (`resolveHistoricalEntity`).
   - Raycast picking instantâneo (<0.2ms) adaptado à malha da era histórica ativa.
   - Badge flutuante contextual (`HistoricalEraBadge`) com proteção contra colisões de layout.
-- **Trajetórias Físicas 3D — Missões Espaciais (Concluído)**:
-  - Visualização translunar 3D completa da **Apollo 11 (1969)** com curva Catmull-Rom da Terra até o Mar da Tranquilidade na Lua.
-  - Modelo animado (CSM Columbia / LM Eagle) percorrendo a rota, folga orbital garantida sem colisão lunar ($\ge 0.270$) e HUD de telemetria científica (distância, velocidade e GET).
-- **Persistência de Estudos Históricos com Fork (Concluído)**:
-  - Serialização imutável dos campos `historicalEra` e `isApollo11Active` em Prisma, endpoints de fork (`/api/studies/[slug]/fork`) e Zustand stores.
-- **Fechamento do Horizonte 2 (Planejado / Em Execução)**:
-  - *Paleogeografia & Deriva Continental (RN11)*: Escala geológica em Milhões de Anos (Ma) com conformação continental da **Pangeia (~250 Ma)**, fragmentação (~200 Ma), **Gondwana & Laurásia (~150 Ma)** e Cretáceo K-Pg (~66 Ma) via blend no shader (`uPaleoTexture`, `uPaleoFactor`) e supressão física de luzes elétricas urbanas.
-  - *Trajetórias Marítimas 3D (RN12)*: Reconstituição geodésica 3D da **Primeira Circum-navegação da Terra por Fernão de Magalhães e Juan Sebastián Elcano (1519–1522)** com a *Nau Victoria* animada e diário de bordo com telemetria naval histórica.
+- **Paleogeografia & Deriva Continental (RN11) (Concluído)**:
+  - Escala geológica em Milhões de Anos (Ma) cobrindo **Pangeia (~250 Ma)**, fragmentação inicial (~200 Ma), **Gondwana & Laurásia (~150 Ma)** e **Cretáceo K-Pg (~66 Ma)**.
+  - Shader `EarthShaderMaterial.ts` com uniforms `uPaleoTexture` e `uPaleoFactor` com interpolação contínua e **supressão física automática de luzes elétricas urbanas** (`cityLightFactor -> 0`).
+  - Camada de placas tectônicas e linhas de fratura paleogeográficas (`PaleoPlatesLayer.tsx`) na altitude $1.002$.
+  - Badge de era geológica (`PaleoEraBadge.tsx`) com retorno imediato à contemporaneidade.
+- **Trajetórias Físicas 3D (RN12) (Concluído)**:
+  - *Missão Apollo 11 (1969)*: Rota translunar 3D Catmull-Rom da Terra ao Mar da Tranquilidade na Lua com nave animada (CSM/LM), folga orbital estrita ($\ge 0.270$) e HUD de telemetria científica (distância, velocidade e GET).
+  - *Circum-navegação de Magalhães-Elcano (1519–1522)*: Traçado geodésico esférico no raio $1.004$ com a *Nau Victoria* animada em base ortonormal, rastro de esteira (*wake effect*), waypoints geográficos e HUD de telemetria náutica com extratos do diário de Antonio Pigafetta.
+- **Persistência de Estudos com Fork Histórico e Geológico (RN16) (Concluído)**:
+  - Serialização imutável dos campos `historicalEra`, `isApollo11Active`, `geologicalMa` e `activeRouteId` em Prisma, endpoints de fork (`/api/studies/[slug]/fork`), modal de compartilhamento e Zustand stores.
 
 ---
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { prisma } from "@/lib/prisma";
-import { getMemoryStudy, saveMemoryStudy, StudyRecord } from "@/lib/studies-store";
+import { getMemoryStudy, saveMemoryStudy, forkStudyRecord, StudyRecord } from "@/lib/studies-store";
 
 export async function POST(
   req: NextRequest,
@@ -27,23 +27,7 @@ export async function POST(
   }
 
   const newSlug = `fork-${nanoid(8)}`;
-  const forkedData: StudyRecord = {
-    id: newSlug,
-    parentId: original.id,
-    title: `[Fork] ${original.title}`,
-    description: original.description,
-    timelineStartYear: original.timelineStartYear,
-    timelineEndYear: original.timelineEndYear,
-    selectedCountryIsos: original.selectedCountryIsos,
-    activeCategories: original.activeCategories,
-    cameraLat: original.cameraLat,
-    cameraLng: original.cameraLng,
-    cameraAltitude: original.cameraAltitude,
-    markdownNotes: original.markdownNotes,
-    historicalEra: original.historicalEra ?? null,
-    isApollo11Active: original.isApollo11Active ?? false,
-    createdAt: new Date().toISOString(),
-  };
+  const forkedData: StudyRecord = forkStudyRecord(original, newSlug);
 
   try {
     const created = await prisma.study.create({

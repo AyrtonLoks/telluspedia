@@ -4,6 +4,8 @@ import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { TopNavBar } from "@/components/nav/TopNavBar";
 import { HistoricalEraBadge } from "@/components/globe/HistoricalEraBadge";
+import { PaleoEraBadge } from "@/components/globe/PaleoEraBadge";
+import { HistoricalRouteOverlay } from "@/components/globe/HistoricalRouteOverlay";
 import { InspectorHUD } from "@/components/hud/InspectorHUD";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
 import { ReaderMode } from "@/components/reader/ReaderMode";
@@ -40,6 +42,12 @@ export default function HomePage() {
 
       {/* Floating Historical Era Badge */}
       <HistoricalEraBadge />
+
+      {/* Floating Paleogeographical Deep-Time Era Badge (RN10 & RN11) */}
+      <PaleoEraBadge />
+
+      {/* Floating Historical Expedition / Magellan Route HUD Overlay (RN12) */}
+      <HistoricalRouteOverlay />
 
       {/* Camada 1: Inspector HUD (Floating Right Glassmorphism Drawer) */}
       <InspectorHUD />

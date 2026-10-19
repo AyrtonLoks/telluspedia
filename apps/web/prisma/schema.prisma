@@ -126,6 +126,8 @@ model Study {
   markdownNotes       String?   @db.Text
   historicalEra       String?
   isApollo11Active    Boolean?  @default(false)
+  geologicalMa        Float?
+  activeRouteId       String?
   createdAt           DateTime  @default(now())
 
   parent              Study?    @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)

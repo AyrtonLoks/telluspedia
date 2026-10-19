@@ -10,6 +10,8 @@ import { SkyStars } from "./SkyStars";
 import { CameraFlyToController } from "./CameraFlyToController";
 import { Apollo11Trajectory } from "./Apollo11Trajectory";
 import { Apollo11TelemetryOverlay } from "./Apollo11TelemetryOverlay";
+import { HistoricalRouteTrajectory } from "./HistoricalRouteTrajectory";
+import { PaleoPlatesLayer } from "./PaleoPlatesLayer";
 import { useGlobeStore, MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "@/stores/globeStore";
 import { calculateSubsolarPoint, getSunDirectionVector } from "@/lib/astronomy";
 
@@ -21,13 +23,36 @@ export const GlobeCanvas: React.FC = () => {
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const isStudyApolloActive = useStudyStore((s) => s.isApollo11Active);
+  const timelineMode = useTimelineStore((s: any) => s.timelineMode);
+  const selectedGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
+  const selectedRouteId = useTimelineStore((s: any) => s.selectedRouteId);
+
+  const isStudyApolloActive = useStudyStore((s: any) => s.isApollo11Active);
+  const isStudyRouteActive = useStudyStore((s: any) => s.activeRouteId);
+  const isStudyGeologicalActive = useStudyStore(
+    (s: any) => s.geologicalMa !== undefined && s.geologicalMa !== null
+  );
 
   const isApolloActive =
     isStudyApolloActive ||
     selectedYear === 1969 ||
     selectedMilestoneId === "usa-1969" ||
     selectedMilestoneId === "glo-1969";
+
+  const isMagellanActive =
+    selectedRouteId === "magellan-1519" ||
+    isStudyRouteActive === "magellan-1519" ||
+    selectedMilestoneId === "magellan-1519" ||
+    selectedMilestoneId === "esp-1519" ||
+    selectedYear === 1519;
+
+  const isGeologicalActive =
+    timelineMode === "GEOLOGICAL" ||
+    isStudyGeologicalActive ||
+    (selectedGeologicalMa !== null && selectedGeologicalMa !== undefined && selectedGeologicalMa > 0) ||
+    selectedMilestoneId === "pangea-250ma" ||
+    selectedMilestoneId === "gondwana-150ma" ||
+    selectedMilestoneId === "kpg-66ma";
 
   // Compute primary solar light position synchronized with active date
   const sunPosition = useMemo(() => {
@@ -100,6 +125,12 @@ export const GlobeCanvas: React.FC = () => {
 
         {/* High-Resolution TopoJSON Borders */}
         <CountryBorders />
+
+        {/* Paleogeographic Tectonic Plates & Suture Zones (Pangea) */}
+        {isGeologicalActive && <PaleoPlatesLayer />}
+
+        {/* 3D Circumnavigation Trajectory & Animated Nau Victoria */}
+        {isMagellanActive && <HistoricalRouteTrajectory />}
 
         {/* 3D Translunar Trajectory & Animated Apollo 11 Spacecraft */}
         {isApolloActive && <Apollo11Trajectory />}

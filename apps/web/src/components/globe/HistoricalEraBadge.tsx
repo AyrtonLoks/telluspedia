@@ -66,6 +66,23 @@ export const HistoricalEraBadge: React.FC<HistoricalEraBadgeProps> = (props) => 
     }
   }
 
+  const storeGeologicalMa = useTimelineStore((s) => s.geologicalMa);
+  const storeTimelineMode = useTimelineStore((s) => s.timelineMode);
+
+  const geologicalMa =
+    typeof window === "undefined"
+      ? useTimelineStore.getState().geologicalMa
+      : storeGeologicalMa;
+  const timelineMode =
+    typeof window === "undefined"
+      ? useTimelineStore.getState().timelineMode
+      : storeTimelineMode;
+
+  // Deep-time geological eras take precedence and have their own PaleoEraBadge
+  if (geologicalMa !== null || timelineMode === "GEOLOGICAL") {
+    return null;
+  }
+
   const effectiveYear = resolveEffectiveHistoricalYear({
     selectedYear,
     milestoneYear,
