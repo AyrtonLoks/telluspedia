@@ -3,10 +3,9 @@
 import React from "react";
 import { X, ArrowLeft } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
-import { PILOT_COUNTRIES } from "@/lib/country-data";
+import { getCountryData } from "@/lib/country-data";
 import { ReaderTableOfContents } from "./ReaderTableOfContents";
 import { ReaderContent } from "./ReaderContent";
-import { CitationModal } from "./CitationModal";
 import { useReaderStore } from "@/stores/readerStore";
 
 export const ReaderMode: React.FC = () => {
@@ -14,35 +13,36 @@ export const ReaderMode: React.FC = () => {
   const setReaderOpen = useGlobeStore((s) => s.setReaderOpen);
   const selectedIso = useGlobeStore((s) => s.selectedIso);
   const activeDimension = useReaderStore((s) => s.activeDimension);
+  const resetActiveDimension = useReaderStore((s) => s.resetActiveDimension);
+  const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
+
+  const [flagError, setFlagError] = React.useState(false);
+  const prevIsoRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    setFlagError(false);
+  }, [selectedIso]);
+
+  React.useEffect(() => {
+    if (selectedIso && prevIsoRef.current && prevIsoRef.current !== selectedIso) {
+      const c = getCountryData(selectedIso);
+      const hasGeography = c.dossierSections?.some((s) => s.dimension === "GEOGRAPHY");
+      if (hasGeography) {
+        resetActiveDimension();
+      } else if (c.dossierSections && c.dossierSections.length > 0) {
+        setActiveDimension(c.dossierSections[0].dimension);
+      } else {
+        resetActiveDimension();
+      }
+    }
+    if (selectedIso) {
+      prevIsoRef.current = selectedIso;
+    }
+  }, [selectedIso, resetActiveDimension, setActiveDimension]);
 
   if (!isReaderOpen || !selectedIso) return null;
 
-  const country = PILOT_COUNTRIES[selectedIso] || {
-    isoCode: selectedIso,
-    iso2: selectedIso.slice(0, 2),
-    numericCode: "000",
-    nameCommon: selectedIso,
-    nameOfficial: `República de ${selectedIso}`,
-    capital: "Capital Central",
-    continent: "Global",
-    region: "Terra",
-    population: 10000000,
-    areaKm2: 250000,
-    latitude: 0,
-    longitude: 0,
-    timezone: "UTC",
-    flagSvgUrl: "",
-    currencyCode: "USD",
-    currencyName: "Dólar",
-    governmentType: "Estado Soberano",
-    headOfState: "Presidente",
-    summary: "Dossiê em expansão pela comunidade TellusPedia.",
-    indicators: [],
-    dossierSections: [],
-    milestones: [],
-  };
-
-  const currentSection = country.dossierSections?.find((s) => s.dimension === activeDimension);
+  const country = getCountryData(selectedIso);
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-xl animate-in fade-in zoom-in-95">
@@ -58,12 +58,17 @@ export const ReaderMode: React.FC = () => {
           </button>
 
           <div className="flex items-center gap-3">
-            {country.flagSvgUrl && (
+            {country.flagSvgUrl && !flagError ? (
               <img
                 src={country.flagSvgUrl}
-                alt=""
+                alt={`Bandeira de ${country.nameCommon}`}
+                onError={() => setFlagError(true)}
                 className="w-5 h-3.5 object-cover rounded shadow"
               />
+            ) : (
+              <span className="w-6 h-4 rounded bg-cyan-950 text-[9px] font-mono text-cyan-300 font-bold flex items-center justify-center border border-cyan-800/60 shadow">
+                {country.isoCode}
+              </span>
             )}
             <span className="font-semibold text-sm text-slate-100">{country.nameCommon}</span>
             <span className="text-xs font-mono text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800/60">
@@ -85,13 +90,6 @@ export const ReaderMode: React.FC = () => {
           <ReaderContent country={country} />
         </div>
       </div>
-
-      {/* Citation Export Modal */}
-      <CitationModal
-        countryName={country.nameCommon}
-        dimensionTitle={currentSection?.title || `${country.nameCommon}: Dossiê Geral`}
-        countryIso={country.isoCode}
-      />
     </div>
   );
 };

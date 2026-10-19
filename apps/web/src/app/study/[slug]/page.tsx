@@ -6,6 +6,7 @@ import { ForkStudyBanner } from "@/components/study/ForkStudyBanner";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
+import { useStudyStore } from "@/stores/studyStore";
 
 function StudyContent({
   params,
@@ -19,7 +20,10 @@ function StudyContent({
   const flyTo = useGlobeStore((s) => s.flyTo);
   const setSelectedIso = useGlobeStore((s) => s.setSelectedIso);
   const setYearRange = useTimelineStore((s) => s.setYearRange);
+  const selectYear = useTimelineStore((s) => s.selectYear);
+  const selectMilestone = useTimelineStore((s) => s.selectMilestone);
   const setSelectedIsos = useComparatorStore((s) => s.setSelectedIsos);
+  const setStudyStore = useStudyStore((s) => s.setStudy);
 
   useEffect(() => {
     fetch(`/api/studies/${slug}`)
@@ -27,8 +31,35 @@ function StudyContent({
       .then((data) => {
         if (data) {
           setStudy(data);
+          setStudyStore({
+            id: data.id,
+            parentId: data.parentId,
+            title: data.title,
+            description: data.description,
+            notes: data.markdownNotes,
+            historicalEra: data.historicalEra,
+            isApollo11Active: data.isApollo11Active,
+          });
           if (data.timelineStartYear && data.timelineEndYear) {
             setYearRange(data.timelineStartYear, data.timelineEndYear);
+          }
+          if (data.historicalEra) {
+            if (data.historicalEra === "PRUSSIA_1870") selectYear(1870);
+            else if (data.historicalEra === "WW1_1914") selectYear(1914);
+            else if (data.historicalEra === "WW2_1939") selectYear(1939);
+            else if (data.historicalEra === "COLD_WAR_1969") {
+              if (data.isApollo11Active) {
+                selectYear(1969);
+              } else {
+                selectYear(1968);
+              }
+            }
+          }
+          if (data.isApollo11Active) {
+            selectMilestone("glo-1969");
+            selectYear(1969);
+          } else {
+            selectMilestone(null);
           }
           if (data.selectedCountryIsos && data.selectedCountryIsos.length > 0) {
             setSelectedIso(data.selectedCountryIsos[0]);
@@ -40,7 +71,7 @@ function StudyContent({
         }
       })
       .catch((err) => console.error("Error loading study:", err));
-  }, [slug, flyTo, setSelectedIso, setYearRange, setSelectedIsos]);
+  }, [slug, flyTo, setSelectedIso, setYearRange, selectYear, selectMilestone, setSelectedIsos, setStudyStore]);
 
   return (
     <>

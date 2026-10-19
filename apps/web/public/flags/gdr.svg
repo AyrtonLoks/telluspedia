@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="1000" height="600">
+  <rect width="1000" height="200" fill="#000000" />
+  <rect y="200" width="1000" height="200" fill="#dd0000" />
+  <rect y="400" width="1000" height="200" fill="#ffce00" />
+  <!-- GDR Coat of Arms: Compass, Hammer, Rye wreath -->
+  <g transform="translate(500, 300) scale(0.9)">
+    <!-- Wreath of rye -->
+    <circle cx="0" cy="0" r="100" fill="#dd0000" stroke="#ffce00" stroke-width="12" />
+    <!-- Hammer -->
+    <rect x="-8" y="-70" width="16" height="130" fill="#ffce00" />
+    <rect x="-30" y="-80" width="60" height="24" fill="#ffce00" rx="3" />
+    <!-- Compass -->
+    <path d="M 0,-40 L -45,60 M 0,-40 L 45,60" stroke="#000000" stroke-width="8" stroke-linecap="round" />
+  </g>
+</svg>

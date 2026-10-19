@@ -40,6 +40,8 @@ export async function POST(
     cameraLng: original.cameraLng,
     cameraAltitude: original.cameraAltitude,
     markdownNotes: original.markdownNotes,
+    historicalEra: original.historicalEra ?? null,
+    isApollo11Active: original.isApollo11Active ?? false,
     createdAt: new Date().toISOString(),
   };
 

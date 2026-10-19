@@ -3,11 +3,13 @@
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { TopNavBar } from "@/components/nav/TopNavBar";
+import { HistoricalEraBadge } from "@/components/globe/HistoricalEraBadge";
 import { InspectorHUD } from "@/components/hud/InspectorHUD";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
 import { ReaderMode } from "@/components/reader/ReaderMode";
 import { CountryComparator } from "@/components/comparator/CountryComparator";
 import { StudyShareModal } from "@/components/study/StudyShareModal";
+import { CitationModal } from "@/components/reader/CitationModal";
 
 // Load 3D WebGL Canvas client-side only (disables SSR for R3F / Three.js)
 const GlobeCanvas = dynamic(
@@ -36,6 +38,9 @@ export default function HomePage() {
         <TopNavBar />
       </Suspense>
 
+      {/* Floating Historical Era Badge */}
+      <HistoricalEraBadge />
+
       {/* Camada 1: Inspector HUD (Floating Right Glassmorphism Drawer) */}
       <InspectorHUD />
 
@@ -50,6 +55,9 @@ export default function HomePage() {
 
       {/* Shareable Study Snapshot & Fork Modal */}
       <StudyShareModal />
+
+      {/* Citation Generator Modal (Global) */}
+      <CitationModal />
     </main>
   );
 }

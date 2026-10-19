@@ -35,7 +35,7 @@ interface TimelineState {
 export const useTimelineStore = create<TimelineState>((set) => ({
   startYear: 1974,
   endYear: 2024,
-  selectedYear: 2024,
+  selectedYear: null,
   selectedMilestoneId: null,
   activeCategories: [...ALL_CATEGORIES],
   isExpanded: true,

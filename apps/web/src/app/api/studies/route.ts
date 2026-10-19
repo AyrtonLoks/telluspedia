@@ -21,6 +21,8 @@ export async function POST(req: NextRequest) {
       cameraLng: body.cameraLng ?? 0,
       cameraAltitude: body.cameraAltitude ?? 2.5,
       markdownNotes: body.markdownNotes || "",
+      historicalEra: body.historicalEra ?? null,
+      isApollo11Active: body.isApollo11Active ?? false,
       createdAt: new Date().toISOString(),
     };
 

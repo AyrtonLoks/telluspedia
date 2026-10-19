@@ -8,35 +8,38 @@ import { CountryBorders } from "./CountryBorders";
 import { OrbitingMoon } from "./OrbitingMoon";
 import { SkyStars } from "./SkyStars";
 import { CameraFlyToController } from "./CameraFlyToController";
-import { useGlobeStore } from "@/stores/globeStore";
+import { Apollo11Trajectory } from "./Apollo11Trajectory";
+import { Apollo11TelemetryOverlay } from "./Apollo11TelemetryOverlay";
+import { useGlobeStore, MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "@/stores/globeStore";
 import { calculateSubsolarPoint, getSunDirectionVector } from "@/lib/astronomy";
 
 import { useTimelineStore } from "@/stores/timelineStore";
-import { GLOBAL_MILESTONES, PILOT_COUNTRIES } from "@/lib/country-data";
+import { useStudyStore } from "@/stores/studyStore";
+import { findMilestoneById } from "@/lib/country-data";
 
 export const GlobeCanvas: React.FC = () => {
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
+  const isStudyApolloActive = useStudyStore((s) => s.isApollo11Active);
+
+  const isApolloActive =
+    isStudyApolloActive ||
+    selectedYear === 1969 ||
+    selectedMilestoneId === "usa-1969" ||
+    selectedMilestoneId === "glo-1969";
 
   // Compute primary solar light position synchronized with active date
   const sunPosition = useMemo(() => {
     let targetDate = new Date();
 
     if (selectedMilestoneId) {
-      let milestone = GLOBAL_MILESTONES.find((m) => m.id === selectedMilestoneId);
-      if (!milestone) {
-        for (const c of Object.values(PILOT_COUNTRIES)) {
-          const found = c.milestones.find((m) => m.id === selectedMilestoneId);
-          if (found) {
-            milestone = found as any;
-            break;
-          }
-        }
-      }
+      const milestone = findMilestoneById(selectedMilestoneId);
       if (milestone) {
         if (milestone.exactDate) {
-          targetDate = new Date(milestone.exactDate);
+          targetDate = milestone.exactDate.includes("T")
+            ? new Date(milestone.exactDate)
+            : new Date(`${milestone.exactDate}T12:00:00Z`);
         } else if (milestone.year) {
           targetDate = new Date(Date.UTC(milestone.year, 5, 21, 12, 0, 0));
         }
@@ -50,26 +53,36 @@ export const GlobeCanvas: React.FC = () => {
     return [dir.x * 10, dir.y * 10, dir.z * 10] as [number, number, number];
   }, [selectedYear, selectedMilestoneId]);
 
+  // Click-outside handler on celestial vault to deselect active selection
+  const handlePointerMissed = (event: MouseEvent) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    useGlobeStore.getState().setSelectedIso(null);
+    useGlobeStore.getState().setHoveredIso(null);
+    useTimelineStore.getState().selectMilestone(null);
+  };
+
   return (
     <div className="absolute inset-0 w-full h-full bg-[#030712] overflow-hidden">
       <Canvas
         camera={{ position: [0, 0, 2.5], fov: 45 }}
         frameloop={isThrottled ? "demand" : "always"}
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+        onPointerMissed={handlePointerMissed}
       >
         {/* Ambient & Directional Sun Lighting */}
         <ambientLight intensity={0.15} />
         <directionalLight position={sunPosition} intensity={2.2} color="#ffffff" />
 
-        {/* Orbit Controls with Natural Inertia */}
+        {/* Orbit Controls with Natural Inertia & Calibrated Damping */}
         <OrbitControls
+          makeDefault
           enablePan={false}
           enableZoom={true}
-          minDistance={1.3}
-          maxDistance={6.0}
+          minDistance={MIN_CAMERA_ALTITUDE}
+          maxDistance={MAX_CAMERA_ALTITUDE}
           rotateSpeed={0.65}
           zoomSpeed={0.8}
-          dampingFactor={0.06}
+          dampingFactor={0.05}
           enableDamping={true}
         />
 
@@ -87,7 +100,13 @@ export const GlobeCanvas: React.FC = () => {
 
         {/* High-Resolution TopoJSON Borders */}
         <CountryBorders />
+
+        {/* 3D Translunar Trajectory & Animated Apollo 11 Spacecraft */}
+        {isApolloActive && <Apollo11Trajectory />}
       </Canvas>
+
+      {/* Floating Apollo 11 Space Flight Telemetry HUD Overlay */}
+      <Apollo11TelemetryOverlay />
     </div>
   );
 };

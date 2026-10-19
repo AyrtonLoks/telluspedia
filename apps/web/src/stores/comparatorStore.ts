@@ -17,7 +17,7 @@ interface ComparatorState {
 
 export const useComparatorStore = create<ComparatorState>((set) => ({
   isOpen: false,
-  selectedIsos: ["BRA", "DEU"],
+  selectedIsos: [],
   activeMetric: "GDP",
 
   openComparator: () => set({ isOpen: true }),

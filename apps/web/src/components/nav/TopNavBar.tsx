@@ -3,9 +3,10 @@
 import React, { useState } from "react";
 import { Globe, Search, BarChart2, Share2, RotateCcw } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
+import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
-import { PILOT_COUNTRIES } from "@/lib/country-data";
+import { PILOT_COUNTRIES, getCountryData } from "@/lib/country-data";
 
 export const TopNavBar: React.FC = () => {
   const setSelectedIso = useGlobeStore((s) => s.setSelectedIso);
@@ -18,8 +19,9 @@ export const TopNavBar: React.FC = () => {
 
   const handleCountrySelect = (iso: string) => {
     setSelectedIso(iso);
-    const country = PILOT_COUNTRIES[iso];
-    if (country) {
+    useTimelineStore.getState().selectMilestone(null);
+    const country = PILOT_COUNTRIES[iso] || getCountryData(iso);
+    if (country && country.latitude && country.longitude) {
       flyTo(country.latitude, country.longitude, 2.0);
     }
     setSearchQuery("");

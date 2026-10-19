@@ -24,19 +24,28 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
   isoCode,
 }) => {
   const resetView = useGlobeStore((s) => s.resetView);
+  const [flagError, setFlagError] = React.useState(false);
+
+  React.useEffect(() => {
+    setFlagError(false);
+  }, [isoCode, flagSvgUrl]);
 
   return (
     <div className="relative pb-4 border-b border-slate-700/60">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          {flagSvgUrl ? (
+          {flagSvgUrl && !flagError ? (
             <img
               src={flagSvgUrl}
               alt={`Bandeira de ${nameCommon}`}
+              onError={() => setFlagError(true)}
               className="w-10 h-7 object-cover rounded shadow-md border border-slate-700/50"
             />
           ) : (
-            <div className="w-10 h-7 rounded bg-cyan-950/60 border border-cyan-800/40 flex items-center justify-center font-bold text-xs text-cyan-300">
+            <div
+              className="w-10 h-7 rounded bg-gradient-to-br from-cyan-950 via-slate-900 to-cyan-950 border border-cyan-800/60 flex items-center justify-center font-mono font-bold text-xs text-cyan-300 shadow-md"
+              title={`Código ISO: ${isoCode}`}
+            >
               {isoCode}
             </div>
           )}

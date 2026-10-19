@@ -57,8 +57,14 @@ flowchart TD
 ### 2.1. Estrutura de Diretórios (Feature-Driven / Layered)
 ```
 apps/web/
+├── public/
+│   ├── data/
+│   │   ├── history/                   # Snapshots TopoJSON (borders-1870, 1914, 1939, 1969)
+│   │   └── ne_110m_admin_0_countries.json # TopoJSON contemporâneo (177 países)
+│   ├── flags/                         # Bandeiras contemporâneas e históricas em SVG
+│   └── textures/                      # Texturas NASA (earth_day, earth_night, moon)
 ├── prisma/
-│   ├── schema.prisma                  # Esquema Prisma (Country, Indicator, Milestone, Study)
+│   ├── schema.prisma                  # Esquema Prisma (Country, Indicator, Milestone, Study com historicalEra)
 │   └── seed.ts                        # Seed de países piloto, TopoJSON e marcos históricos
 ├── src/
 │   ├── app/                           # App Router (Páginas, SEO e Route Handlers)
@@ -67,16 +73,19 @@ apps/web/
 │   │   ├── compare/page.tsx           # Comparador de até 4 países (/compare)
 │   │   ├── pais/[iso]/page.tsx        # Página canônica do país para SEO (/pais/BRA)
 │   │   ├── study/[slug]/page.tsx      # Estudo imutável compartilhado (/study/[slug])
-│   │   └── api/                       # Endpoints Next.js com fallback local
+│   │   └── api/                       # Endpoints Next.js com suporte a fork e histórico
 │   ├── components/
 │   │   ├── globe/                     # Motor 3D Three.js / React Three Fiber
 │   │   │   ├── GlobeCanvas.tsx        # Canvas, iluminação solar sincronizada e render loop
 │   │   │   ├── EarthSphere.tsx        # Esfera da Terra com shader dia/noite e Fresnel
 │   │   │   ├── EarthShaderMaterial.ts # Shader GLSL em espaço mundial
-│   │   │   ├── CountryBorders.tsx     # Malha vetorial esférica (Natural Earth TopoJSON)
+│   │   │   ├── CountryBorders.tsx     # Malha vetorial esférica com cross-fade histórico
 │   │   │   ├── OrbitingMoon.tsx       # Lua em órbita com fase proporcional
 │   │   │   ├── SkyStars.tsx           # Abóbada celeste com estrelas e constelações IAU
-│   │   │   └── CameraFlyToController.tsx # Animação de câmera suave com interpolação esférica
+│   │   │   ├── CameraFlyToController.tsx # Animação de câmera suave com interpolação esférica
+│   │   │   ├── Apollo11Trajectory.tsx # Rota 3D translunar Catmull-Rom e nave animada (CSM/LM)
+│   │   │   ├── Apollo11TelemetryOverlay.tsx # HUD de telemetria científica (velocidade, distância, GET)
+│   │   │   └── HistoricalEraBadge.tsx # Badge flutuante de era com reset para contemporâneo
 │   │   ├── hud/                       # Camada 1: Inspector HUD
 │   │   │   ├── InspectorHUD.tsx       # Drawer lateral flutuante em glassmorphism
 │   │   │   ├── CountryHeader.tsx      # Bandeira vetorial, nome oficial e capital
@@ -108,10 +117,14 @@ apps/web/
 │   │   ├── timelineStore.ts           # Anos, marcos, filtros de categoria e presets
 │   │   ├── readerStore.ts             # Dimensão ativa e estado de leitura
 │   │   ├── comparatorStore.ts         # Países selecionados para comparação
-│   │   └── studyStore.ts              # Recorte de estudo e anotações Markdown
-│   └── lib/                           # Utilitários, efemérides e formatadores
+│   │   ├── studyStore.ts              # Recorte de estudo e anotações Markdown
+│   │   └── apollo11Store.ts           # Telemetria e controles da missão Apollo 11
+│   └── lib/                           # Utilitários, efemérides, entidades históricas e citações
+│       ├── historical-entities.ts     # Resolução contínua de entidades históricas
+│       ├── historical-topology.ts     # Carregamento e cache assíncrono de TopoJSON
+│       └── apollo11.ts                # Física orbital e telemetria da Apollo 11
 └── test/
-    └── unit.test.ts                   # 19 testes automatizados cobrindo todas as regras
+    └── unit.test.ts                   # 108 testes automatizados em 18 suítes cobrindo todas as regras
 ```
 
 ### 2.2. Engenharia Gráfica 3D (Shaders e Picking)

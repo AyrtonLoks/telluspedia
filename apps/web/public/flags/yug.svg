@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <rect width="900" height="200" fill="#003893"/>
+  <rect y="200" width="900" height="200" fill="#ffffff"/>
+  <rect y="400" width="900" height="200" fill="#de0000"/>
+  <!-- Yugoslav socialist red star with gold border -->
+  <polygon points="450,165 478,252 569,252 495,306 523,393 450,339 377,393 405,306 331,252 422,252" fill="#de0000" stroke="#fcd116" stroke-width="14" stroke-linejoin="round"/>
+</svg>

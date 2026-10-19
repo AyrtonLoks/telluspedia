@@ -71,10 +71,10 @@ Abra [http://localhost:3000](http://localhost:3000) no seu navegador para intera
 
 ## 🧪 Testes Automatizados e Qualidade de Código
 
-O projeto conta com **19 testes unitários automatizados** cobrindo todas as regras matemáticas, geoespaciais e de formatação acadêmica:
+O projeto conta com **108 testes unitários automatizados distribuídos em 18 suítes**, cobrindo 100% das regras matemáticas, geoespaciais, cartografia histórica, efemérides translunares e formatação acadêmica:
 
 ```bash
-# Executar a suíte de testes unitários
+# Executar a suíte de testes unitários (108 testes / 18 suítes passando)
 pnpm test
 
 # Executar linting do código (0 erros / 0 warnings)
@@ -86,6 +86,18 @@ pnpm --filter web exec tsc --noEmit
 # Compilação de produção do Next.js
 pnpm build
 ```
+
+---
+
+## 🏛️ Cartografia Histórica & Trajetórias 3D (Horizonte 2)
+
+O TellusPedia inclui suporte nativo a reconstituição histórica e espacial:
+- **Snapshots TopoJSON Históricos**: Mapas mundiais autênticos dos anos **1870**, **1914**, **1939** e **1969** com interpolação de opacidade (*cross-fade*) no Three.js e descarte seguro de buffers de memória GPU.
+- **Entidades Históricas Extintas**: Reconstituição de fronteiras e fichas de nações do passado (Reino da Prússia, União Soviética, Império Austro-Húngaro, Alemanha Oriental/RDA, Alemanha Ocidental/RFA, Império Otomano, Iugoslávia e Tchecoslováquia) com continuidade temporal bidirecional para as nações contemporâneas.
+- **Picking Espacial (<0.2ms)**: Raycasting interativo na esfera unitária que se adapta em tempo de execução ao mapa histórico ativo.
+- **Trajetória 3D da Missão Apollo 11 (1969)**: Reconstrução tridimensional do voo translunar da Terra até o Mar da Tranquilidade na Lua com curva de Catmull-Rom, animação da nave (CSM Columbia / LM Eagle) e HUD de telemetria científica (velocidade, distância e tempo de missão decorrido GET).
+- **Badge de Era Histórica Contextual**: Indicador flutuante no globo com reposicionamento dinâmico contra banners de estudo e atalho de restauração imediata para o presente.
+- **Estudos Históricos com Fork Imutável**: Preservação do estado da cartografia histórica e da missão Apollo 11 em links de estudo compartilháveis `/study/[slug]`.
 
 ---
 

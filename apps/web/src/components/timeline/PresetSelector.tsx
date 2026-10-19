@@ -16,7 +16,7 @@ export const PresetSelector: React.FC = () => {
   ] as const;
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 flex-wrap">
       {presets.map((p) => {
         const isSelected = startYear === p.start && endYear === p.end;
         return (

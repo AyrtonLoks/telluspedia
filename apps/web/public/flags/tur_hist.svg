@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 666" width="1000" height="666">
+  <rect width="1000" height="666" fill="#c8102e" />
+  <!-- Crescent moon -->
+  <circle cx="420" cy="333" r="160" fill="#ffffff" />
+  <circle cx="460" cy="333" r="128" fill="#c8102e" />
+  <!-- Eight-pointed Ottoman star -->
+  <g transform="translate(620, 333) scale(0.6)">
+    <polygon points="0,-70 20,-20 70,0 20,20 0,70 -20,20 -70,0 -20,-20" fill="#ffffff" />
+    <polygon points="0,-70 20,-20 70,0 20,20 0,70 -20,20 -70,0 -20,-20" fill="#ffffff" transform="rotate(45)" />
+  </g>
+</svg>

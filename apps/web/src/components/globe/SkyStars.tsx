@@ -83,8 +83,8 @@ export const SkyStars: React.FC = () => {
 
   return (
     <group>
-      <points geometry={starsGeometry} material={starsMaterial} />
-      <lineSegments geometry={constellationGeometry}>
+      <points geometry={starsGeometry} material={starsMaterial} raycast={() => null} />
+      <lineSegments geometry={constellationGeometry} raycast={() => null}>
         <lineBasicMaterial
           color="#38bdf8"
           transparent

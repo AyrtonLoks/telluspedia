@@ -10,19 +10,20 @@ description: >-
 
 Este documento serve como memória permanente do Antigravity para manter a continuidade técnica, o conhecimento acumulado e o roteiro exato de engenharia do TellusPedia.
 
-## 1. Visão Geral da Arquitetura e Estado Atual (Horizonte 1 Concluído)
+## 1. Visão Geral da Arquitetura e Estado Atual (Horizonte 1 Concluído & Refinado)
 - **Monorepo**: Orquestrado por `pnpm-workspace.yaml` (`apps/web` e `services/data-pipeline`).
 - **Web App (`apps/web`)**: Next.js 15 (App Router), React 19, Tailwind CSS, Lucide, Recharts e Prisma ORM.
 - **Motor 3D (`src/components/globe/`)**:
-  - `GlobeCanvas.tsx`: Renderizador Three.js/R3F com luz direcional sincronizada por efemérides solares.
-  - `EarthSphere.tsx` + `EarthShaderMaterial.ts`: Shader customizado com textura diurna, luzes noturnas da NASA e Fresnel atmosférico alinhados ao vetor mundial do Sol.
-  - `OrbitingMoon.tsx` & `SkyStars.tsx`: Órbita lunar com fase calculada e constelações IAU.
-  - `CountryBorders.tsx`: Malha vetorial esférica TopoJSON com 100% dos 177 países mapeados e zero-padding.
+  - `GlobeCanvas.tsx`: Renderizador Three.js/R3F com iluminação diurna/noturna e luz direcional sincronizada por efemérides solares da NOAA.
+  - `EarthSphere.tsx` + `EarthShaderMaterial.ts`: Shader customizado com texturas diurnas e noturnas da NASA (`earth_day.jpg`, `earth_night.png`), anel de crepúsculo atenuado e Fresnel atmosférico em espaço mundial.
+  - `OrbitingMoon.tsx` & `SkyStars.tsx`: Órbita lunar com textura (`moon.jpg`), acoplamento de marés (tidal locking) estrito e constelações IAU com bypass de raycasting (`raycast={() => null}`).
+  - `CountryBorders.tsx`: Malha vetorial esférica TopoJSON com 100% dos 177 países mapeados, zero-padding e suporte a iluminação de blocos multinacionais (`blocIsos`).
+  - `CameraFlyToController.tsx`: Transição de câmera em grande círculo via `slerpVectors` com preservação de altitude segura ($\ge 1.5$) e isolamento de deltas inerciais do `OrbitControls`.
 - **UI em Duas Camadas**:
-  - `InspectorHUD.tsx` (Camada 1): Drawer lateral em glassmorphism com clima em tempo real (Open-Meteo), relógio local (tzdb) e ficha técnica.
-  - `ReaderMode.tsx` (Camada 2): Painel imersivo com sumário fixo, hover preview e exportador de citações formatadas (ABNT NBR 6023, APA, MLA, BibTeX).
-- **Timeline (`TimelineBar.tsx`)**: Janela padrão de 50 anos, nós alternados acima/abaixo, filtros de categorias e presets rápidos.
-- **Comparador (`CountryComparator.tsx`)**: Comparação lado a lado de até 4 países com gráficos temporais Recharts.
+  - `InspectorHUD.tsx` (Camada 1): Drawer lateral em glassmorphism com clima em tempo real (Open-Meteo), relógio local com suporte a fusos IANA mundiais (`ISO3_TO_TIMEZONE`), ficha técnica, fontes clicáveis e expansão vertical dinâmica ao recolher a timeline.
+  - `ReaderMode.tsx` (Camada 2): Painel imersivo com sumário fixo, hover previews com hit-box contínua, notas de rodapé com hover cards de citação e exportador para ABNT NBR 6023, APA 7, MLA 9 e BibTeX (.bib).
+- **Timeline (`TimelineBar.tsx` & `MilestonePin.tsx`)**: Janela padrão de 50 anos com presets (incluindo Guerras Mundiais e Guerra Fria), nós com abertura para cima (`bottom-7` / `bottom-24`), deseleção via toggle / Escape / clique no oceano e links diretos para globo, dossiê e fontes.
+- **Comparador (`CountryComparator.tsx`)**: Comparação lado a lado de até 4 países com gráficos temporais Recharts e citação das fontes primárias.
 - **Estudos com Fork (`StudyShareModal.tsx`)**: Links `/study/[slug]` imutáveis com derivação rastreável por `parentId`.
 
 ---
@@ -32,22 +33,37 @@ Este documento serve como memória permanente do Antigravity para manter a conti
 2. **Zero-Padding em IDs TopoJSON**: Natural Earth entrega inteiros como `76` em vez de `076`. Sempre usar `.padStart(3, "0")` e resolver pelo mapa `NUMERIC_TO_ISO`.
 3. **Versões de R3F para React 19**: Requer `@react-three/fiber@^9.8.2` e `@react-three/drei@^10.7.9`.
 4. **Desconexão de Refs em Materiais**: Nunca passe materiais instanciados externamente sem atribuir uniforms diretamente ou vincular a ref correspondente.
+5. **Espelhamento Cartográfico Three.js (Gotcha de Sin/Cos)**: O desdobramento UV equirretangular de texturas Three.js e coordenadas esféricas requer `x = -R*sin(phi)*cos(theta)` e `z = R*sin(phi)*sin(theta)`. Trocar senos e cossenos produz uma reflexão diagonal que espelha os continentes horizontalmente (ex.: Brasil com a costa atlântica virada para o oeste).
+6. **Congelamento por NaN no OrbitControls (LERP vs SLERP)**: A interpolação linear clássica entre polos ou hemisférios distantes passa por `(0,0,0)`. O Three.js gera `NaN` na conversão de raio nulo para coordenadas esféricas (`atan2(0,0)`), corrompendo permanentemente o estado de rotação do `OrbitControls`. A solução é o Great-Circle SLERP (`slerpVectors`) com altitude mínima estrita de 1.5 e reset de deltas residuais inerciais (`_sphericalDelta`, `_scale`, `_panOffset`).
+7. **Iluminação Solar & Equação do Tempo (NOAA)**: O cálculo da longitude subsolar requer `subsolarLng = -15.0 * (hourUtc - 12.0 + eqtime / 60.0)`. Inverter o sinal ou o offset projeta meio-dia solar para a calada da noite. O anel crepuscular (`sunsetRing`) deve utilizar gradiente suave (`0.08` a `0.28`), sem ruído procedural de blocos.
+8. **Zonas Mortas de Hover e Popover Bridges**: Popovers acionados por hover que usem margem CSS (`mt-2` ou `bottom-full mb-2`) sofrem queda imediata de cursor ao cruzar os 8px de gap. A solução obrigatória é usar container de padding (`pt-1.5`), ponte de hit area invisível, temporizador de debounce (250ms) e suporte a clique para fixar (*pin on click*).
+9. **Descarte de Memória GPU (BufferGeometry Dispose)**: A recalibração frequente de linhas e malhas de fronteira no Three.js sem invocar `geometry.dispose()` vaza buffers VRAM na GPU. Sempre incluir hook de limpeza com `.dispose()`.
+10. **Invariante de Conteúdo de Fraseamento HTML5 no React (Hydration Error)**: Qualquer badge, popup de citação ou preview embutido dentro de parágrafos de texto (`<p>`) DEVE utilizar tags `<span>` (estilizadas via `flex`, `block`, `inline-flex` no Tailwind). Tags `<div>` dentro de `<p>` violam a especificação HTML5, forçam o fechamento prematuro do parágrafo no DOM e causam erro fatal de hidratação no React 19 (`validateDOMNesting`). Listas markdown (`- `) devem ser particionadas em blocos irmãos `<ul>` e `<li>`.
+11. **Reset Reativo de Dimensão na Leitura Profunda**: Ao alternar países no globo ou abrir o Reader Mode, o estado `activeDimension` da store de leitura deve sempre ser redefinido para `"GEOGRAPHY"` para garantir que o visitante inicie pela visão panorâmica do novo território.
 
 ---
 
 ## 3. Runbook de Execução para os Próximos Horizontes
 
 ### Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D
-Quando o usuário solicitar o avanço para o Horizonte 2:
-1. **Cartografia Histórica**:
-   - Consumir malhas vetoriais do **CShapes 2.0** (fronteiras de 1886 até o presente) e **OpenHistoricalMap**.
-   - Criar componente `HistoricalBorders.tsx` no R3F que substitui as linhas do `CountryBorders.tsx` dependendo do ano selecionado na `useTimelineStore` (ex.: Prússia unificando-se na Alemanha em 1871).
-2. **Paleogeografia (Pangeia)**:
-   - Conectar ao **GPlates Web Service (GWS)** para obter malhas continentais de eras geológicas (Mesozóico/Paleozóico).
-   - Ao selecionar datas anteriores a 66 Ma na timeline, alternar a geometria da Terra para a malha da Pangeia.
-3. **Trajetórias Físicas 3D**:
-   - *Apollo 11*: Usar telemetria do **NASA SPICE Toolkit** para plotar a curva 3D de transição orbital da Terra à órbita lunar quando o marco de 1969 for acionado.
-   - *Campanhas Militares & Rotas Aéreas*: Plotar linhas esféricas animadas (geodésicas) sobre o globo.
+- **Cartografia Histórica (Concluído)**:
+  - 4 Snapshots TopoJSON (`borders-1870.json`, `borders-1914.json`, `borders-1939.json`, `borders-1969.json`) com cross-fade de opacidade no R3F (`CountryBorders.tsx`) e cache de requisições in-flight (`historical-topology.ts`).
+  - Entidades históricas canônicas (`PRU`, `SUN`, `AHU`, `GDR`, `FRG`, `TUR_HIST`, `YUG`, `CSK`) com bandeiras SVG autênticas, indicadores, governantes e continuidade temporal bidirecional (`resolveHistoricalEntity`).
+  - Raycasting pontual instantâneo (<0.2ms) no Three.js conectado à malha da era ativa (`EarthSphere.tsx`).
+  - Badge flutuante contextual com reposicionamento adaptativo (`HistoricalEraBadge.tsx`) e botão de restauração para 2024.
+- **Trajetória 3D da Apollo 11 (Concluído)**:
+  - Trajetória translunar Catmull-Rom 3D de Cabo Canaveral até o Mar da Tranquilidade na Lua (`Apollo11Trajectory.tsx`) com nave espacial animada e garantia de folga orbital ($\ge 0.270$ do centro lunar).
+  - HUD interativo de telemetria científica da missão (`Apollo11TelemetryOverlay.tsx`) com velocidade, distância e GET.
+- **Persistência de Estudos com Fork Histórico (Concluído)**:
+  - Serialização imutável de `historicalEra` e `isApollo11Active` em Prisma, API Next.js e Zustand store com suporte a fork (`/study/[slug]`).
+- **Próximo Passo — Fechamento do Horizonte 2 (Documentado em `plano_fechamento_horizonte_2.md`)**:
+  - **Paleogeografia & Deriva Continental (RN11)**:
+    - Escala geológica em Milhões de Anos (Ma): Pangeia (~250 Ma), Fragmentação (~200 Ma), Gondwana & Laurásia (~150 Ma) e Cretáceo K-Pg (~66 Ma).
+    - Uniforms `uPaleoTexture` e `uPaleoFactor` com interpolação contínua e supressão física automática de luzes noturnas urbanas (`cityLightFactor -> 0`).
+  - **Trajetórias Marítimas 3D (RN12)**:
+    - Reconstituição da **Primeira Circum-navegação da Terra por Magalhães e Elcano (1519–1522)** no raio $1.004$ com a *Nau Victoria* animada e diário de bordo com telemetria naval histórica no HUD.
+  - **Modo Geológico na Timeline & Persistência de Estudos (RN10, RN16)**:
+    - Alternância de escala anos humanos / Ma e persistência de `geologicalMa` e `activeRouteId`.
 
 ### Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global
 Quando o usuário solicitar o avanço para o Horizonte 3:

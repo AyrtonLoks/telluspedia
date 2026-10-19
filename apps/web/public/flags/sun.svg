@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="1000" height="500">
+  <rect width="1000" height="500" fill="#cc0000" />
+  <g transform="translate(100, 40) scale(1.1)">
+    <!-- Five-pointed star outline -->
+    <polygon points="120,40 127,62 150,62 131,76 138,98 120,84 102,98 109,76 90,62 113,62" fill="none" stroke="#ffd700" stroke-width="6" stroke-linejoin="round" />
+    <!-- Sickle -->
+    <path d="M 70,200 A 75,75 0 1,1 170,125 A 65,65 0 1,0 85,185 Z" fill="#ffd700" />
+    <!-- Hammer -->
+    <g transform="rotate(45 120 160)">
+      <rect x="112" y="90" width="16" height="120" fill="#ffd700" rx="3" />
+      <rect x="95" y="80" width="50" height="24" fill="#ffd700" rx="2" />
+    </g>
+  </g>
+</svg>

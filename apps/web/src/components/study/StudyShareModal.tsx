@@ -1,14 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Share2, Copy, Check, Globe } from "lucide-react";
+import { X, Share2, Copy, Check } from "lucide-react";
 import { useStudyStore } from "@/stores/studyStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
+import { resolveHistoricalEra, resolveEffectiveHistoricalYear } from "@/lib/historical-entities";
+import { findMilestoneById } from "@/lib/country-data";
 
 export const StudyShareModal: React.FC = () => {
-  const isShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
+  const storeIsShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
+  const isShareModalOpen =
+    typeof window === "undefined"
+      ? (useStudyStore.getState().isShareModalOpen ?? storeIsShareModalOpen)
+      : storeIsShareModalOpen;
   const setShareModalOpen = useStudyStore((s) => s.setShareModalOpen);
   const title = useStudyStore((s) => s.title);
   const setTitle = useStudyStore((s) => s.setTitle);
@@ -22,8 +28,27 @@ export const StudyShareModal: React.FC = () => {
   const cameraLng = useGlobeStore((s) => s.cameraLng);
   const cameraAltitude = useGlobeStore((s) => s.cameraAltitude);
 
-  const startYear = useTimelineStore((s) => s.startYear);
-  const endYear = useTimelineStore((s) => s.endYear);
+  const storeStartYear = useTimelineStore((s) => s.startYear);
+  const storeEndYear = useTimelineStore((s) => s.endYear);
+  const startYear =
+    typeof window === "undefined"
+      ? (useTimelineStore.getState().startYear ?? storeStartYear)
+      : storeStartYear;
+  const endYear =
+    typeof window === "undefined"
+      ? (useTimelineStore.getState().endYear ?? storeEndYear)
+      : storeEndYear;
+
+  const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
+  const storeSelectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
+  const selectedYear =
+    typeof window === "undefined"
+      ? (useTimelineStore.getState().selectedYear ?? storeSelectedYear)
+      : storeSelectedYear;
+  const selectedMilestoneId =
+    typeof window === "undefined"
+      ? (useTimelineStore.getState().selectedMilestoneId ?? storeSelectedMilestoneId)
+      : storeSelectedMilestoneId;
   const activeCategories = useTimelineStore((s) => s.activeCategories);
 
   const comparatorIsos = useComparatorStore((s) => s.selectedIsos);
@@ -34,6 +59,29 @@ export const StudyShareModal: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string>("");
 
   if (!isShareModalOpen) return null;
+
+  // Compute active historical era and Apollo 11 status using canonical resolver
+  let milestoneYear: number | null = null;
+  if (selectedMilestoneId) {
+    const milestone = findMilestoneById(selectedMilestoneId);
+    if (milestone?.year) {
+      milestoneYear = milestone.year;
+    }
+  }
+
+  const effectiveYear = resolveEffectiveHistoricalYear({
+    selectedYear,
+    milestoneYear,
+    startYear,
+    endYear,
+  });
+
+  const eraDef = resolveHistoricalEra(effectiveYear);
+  const isHistoricalEraActive = eraDef.id !== "CONTEMPORARY";
+  const isApollo11Active =
+    selectedMilestoneId === "glo-1969" ||
+    selectedMilestoneId === "usa-1969" ||
+    effectiveYear === 1969;
 
   const handleGenerateLink = async () => {
     setLoading(true);
@@ -53,6 +101,8 @@ export const StudyShareModal: React.FC = () => {
       cameraLng,
       cameraAltitude,
       markdownNotes: notes,
+      historicalEra: isHistoricalEraActive ? eraDef.id : null,
+      isApollo11Active,
     };
 
     try {
@@ -66,6 +116,17 @@ export const StudyShareModal: React.FC = () => {
         const data = await res.json();
         const origin = window.location.origin;
         setShareUrl(`${origin}/study/${data.id}`);
+
+        // Update local study store with the created study snapshot
+        useStudyStore.getState().setStudy({
+          id: data.id,
+          parentId: data.parentId || null,
+          title,
+          description,
+          notes,
+          historicalEra: isHistoricalEraActive ? eraDef.id : null,
+          isApollo11Active,
+        });
       } else {
         setErrorMsg("Não foi possível registrar o snapshot do estudo no servidor.");
       }
@@ -125,11 +186,53 @@ export const StudyShareModal: React.FC = () => {
             />
           </div>
 
+          {/* Historical Era Badge inside Modal */}
+          {isHistoricalEraActive && (
+            <div
+              data-testid="modal-historical-era-badge"
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium animate-in fade-in"
+            >
+              <span className="text-lg select-none">🏛️</span>
+              <div className="flex-1">
+                <div className="font-semibold text-amber-200">
+                  Cartografia Histórica Ativa Capturada
+                </div>
+                <div className="text-[11px] text-amber-300/80">
+                  {eraDef.label}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Apollo 11 Space Mission Badge */}
+          {isApollo11Active && (
+            <div
+              data-testid="modal-apollo11-badge"
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-medium animate-in fade-in"
+            >
+              <span className="text-lg select-none">🚀</span>
+              <div className="flex-1">
+                <div className="font-semibold text-cyan-200">
+                  Missão Espacial Apollo 11 (1969)
+                </div>
+                <div className="text-[11px] text-cyan-300/80">
+                  Trajetória Translunar 3D e telemetria incluídas no estudo.
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
             <div className="font-semibold text-slate-300">Recorte capturado automaticamente:</div>
             <div>• Período: {startYear} — {endYear} ({endYear - startYear} anos)</div>
             <div>• Países: {[selectedIso, ...comparatorIsos].filter(Boolean).join(", ") || "Visão Global"}</div>
             <div>• Coordenadas da Câmera: ({cameraLat.toFixed(1)}°, {cameraLng.toFixed(1)}°)</div>
+            {isHistoricalEraActive && (
+              <div className="text-amber-300 font-medium">• Era Histórica: {eraDef.label}</div>
+            )}
+            {isApollo11Active && (
+              <div className="text-cyan-300 font-medium">• Missão Espacial: Apollo 11 (Trajetória Translunar Ativa)</div>
+            )}
           </div>
 
           {errorMsg && (

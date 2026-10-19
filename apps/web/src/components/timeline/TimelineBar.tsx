@@ -15,6 +15,7 @@ export const TimelineBar: React.FC = () => {
   const endYear = useTimelineStore((s) => s.endYear);
   const setYearRange = useTimelineStore((s) => s.setYearRange);
   const isReaderOpen = useGlobeStore((s) => s.isReaderOpen);
+  const selectedIso = useGlobeStore((s) => s.selectedIso);
 
   // If reader is open, hide timeline to maximize reading immersion
   if (isReaderOpen) return null;
@@ -34,25 +35,32 @@ export const TimelineBar: React.FC = () => {
   };
 
   return (
-    <footer className="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-[95vw] max-w-6xl glass-panel rounded-2xl px-5 py-3 transition-all duration-300">
+    <footer
+      data-timeline-bar="true"
+      className={`fixed bottom-4 z-20 glass-panel rounded-2xl px-4 md:px-5 py-3 transition-all duration-300 ${
+        selectedIso
+          ? "left-4 right-4 lg:right-[26.5rem] lg:left-6 max-w-[calc(100vw-2rem)] lg:max-w-[calc(100vw-28.5rem)] translate-x-0"
+          : "left-1/2 -translate-x-1/2 right-auto w-[95vw] max-w-6xl"
+      }`}
+    >
       {/* Header bar: Presets, Range Indicator, Category Filters, Collapse Toggle */}
-      <div className="flex items-center justify-between gap-4 pb-2 border-b border-slate-700/40">
-        <div className="flex items-center gap-3">
+      <div className={`flex items-center justify-between gap-2.5 pb-2 border-b border-slate-700/40 flex-wrap ${selectedIso ? "2xl:flex-nowrap" : "xl:flex-nowrap"}`}>
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400">
             <Clock className="w-4 h-4" />
-            <span>Linha do Tempo</span>
+            <span className="hidden sm:inline">Linha do Tempo</span>
           </div>
 
           <PresetSelector />
         </div>
 
         {/* Year Range Inputs */}
-        <div className="flex items-center gap-2 text-xs font-mono">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-mono shrink-0">
           <input
             type="number"
             value={startYear}
             onChange={handleStartChange}
-            className="w-16 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-slate-100 text-center"
+            className="w-14 sm:w-16 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-slate-100 text-center"
             min={1500}
             max={endYear - 1}
           />
@@ -61,16 +69,16 @@ export const TimelineBar: React.FC = () => {
             type="number"
             value={endYear}
             onChange={handleEndChange}
-            className="w-16 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-slate-100 text-center"
+            className="w-14 sm:w-16 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-slate-100 text-center"
             min={startYear + 1}
             max={2030}
           />
-          <span className="text-[10px] text-slate-400 font-sans">
+          <span className="text-[10px] text-slate-400 font-sans hidden md:inline">
             ({endYear - startYear} anos)
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
           <CategoryFilterPills />
 
           <button
