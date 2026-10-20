@@ -1,6 +1,7 @@
 # Documentação de Discovery de Negócio — TellusPedia
 
 ## 1. Contexto
+
 O acesso ao conhecimento sobre a história humana, a geopolítica, as ciências naturais e o próprio planeta Terra encontra-se fragmentado em ferramentas isoladas na web:
 
 - **Enciclopédias tradicionais (ex.: Wikipédia)**: Possuem alta profundidade textual e hiperlinks, mas são espacialmente cegas e temporalmente dispersas (o estudante perde a noção de vizinhança geográfica, relevo e simultaneidade histórica entre países).
@@ -31,6 +32,7 @@ Construir o **TellusPedia**, uma plataforma web enciclopédica voltada para pesq
 ## 4. Regras de Negócio (RN)
 
 ### 4.1. Governança de Conteúdo, Rigor Acadêmico e Experiência de Estudo (Base Enciclopédica)
+
 - **RN01 — Curadoria Centralizada pelo Sistema**: O acervo base da plataforma será alimentado, tratado e controlado exclusivamente pelo sistema e seus administradores (via pipelines de ingestão e tratamento de dados da Wikipédia/Wikidata, IBGE, Banco Mundial, NASA, OMS e portais de notícias), sem edição aberta por usuários anônimos nos verbetes oficiais.
 - **RN02 — Rastreabilidade Temporal e Gerador de Citações Acadêmicas**:
   - Todo indicador quantitativo ou político (ex.: PIB, população, IDH, chefe de Estado vigente) deve exibir explicitamente a fonte primária e a data de referência.
@@ -44,6 +46,7 @@ Construir o **TellusPedia**, uma plataforma web enciclopédica voltada para pesq
 - **RN05 — Endereçamento Semântico Direto (SEO e Links de Pesquisa)**: Todo país, período histórico, evento ou personalidade deve possuir uma URL semântica própria e indexável (ex.: `/pais/alemanha/historia`), permitindo acesso direto via motores de busca (Google) ou salvamento de favoritos de estudo.
 
 ### 4.2. Globo 3D, Seleção Espacial e Contexto em Tempo Real
+
 - **RN06 — Acesso Imediato (Zero-Click to Explore) e Manipulação 3D**: O globo 3D é exibido imediatamente na tela inicial com rotação em 3 eixos, inércia de movimento, zoom progressivo, botão de realinhamento ao eixo norte e animação suave de aproximação (*fly-to*) ao selecionar um país via clique ou barra de busca.
 - **RN07 — Unidade Geopolítica e Destaque Visual Persistente**:
   - A seleção contempla Estados-Nação soberanos (padrão ISO 3166-1), territórios disputados ou regiões autônomas (com sinalização visual diferenciada) e formações estatais históricas.
@@ -53,6 +56,7 @@ Construir o **TellusPedia**, uma plataforma web enciclopédica voltada para pesq
   - A seleção de um país deve exibir em tempo real sua hora local (fuso horário) e seus dados climáticos/meteorológicos atuais.
 
 ### 4.3. Linha do Tempo, Mapas Históricos, Paleogeografia e Trajetórias 3D
+
 - **RN09 — Eixo Sincrônico (Presente) vs. Eixo Diacrônico (Histórico)**: A plataforma separa claramente os dados vigentes do país (governo atual, indicadores atuais e notícias) de sua evolução histórica ao longo das eras.
 - **RN10 — Controle de Linha do Tempo Deslizável, Editável e Filtrável (Padrão: 50 Anos)**:
   - A linha do tempo será uma barra horizontal deslizável segmentada por anos/períodos, apresentando marcos (*milestones*) com ponteiros indicadores distribuídos acima e abaixo do eixo temporal.
@@ -68,31 +72,40 @@ Construir o **TellusPedia**, uma plataforma web enciclopédica voltada para pesq
     - *Eventos Terrestres, Aéreos e Marítimos*: Representação física no mapa de marchas de exércitos em guerras, grandes expedições e trajetórias de aeronaves envolvidas em acidentes históricos.
 
 ### 4.4. Taxonomia Multidisciplinar, Pesquisa Transversal, Comparação e Compartilhamento
-- **RN13 — Matriz Enciclopédica Multidisciplinar por País/Região**: O dossiê de cada território organiza seu conteúdo nas seguintes 8 dimensões:
+
+- **RN13 — Matriz Enciclopédica Multidisciplinar por País/Região**: O dossiê de cada território deve organizar seu conteúdo nas seguintes dimensões:
   1. *Geografia Física e Humana*: Área, relevo, hidrografia, biomas, clima, demografia, idiomas e fronteiras.
   2. *Estado, Governo, Política e Defesa*: Forma e sistema de governo, constituição vigente, divisão de poderes, histórico de governantes/chefes de Estado, partidos, relações exteriores e poderio militar.
   3. *Economia e Indicadores Sociais*: PIB, renda per capita, IDH, moeda, matriz produtiva e blocos econômicos.
   4. *História e Linha do Tempo*: Periodização histórica, marcos fundacionais, revoluções, tratados e mudanças de regime.
   5. *Personalidades e Figuras Importantes*: Biografias conectadas à linha do tempo (líderes políticos, cientistas, pensadores, artistas, figuras militares).
   6. *Cultura, Humanidades e Sociedade*: Arte, Filosofia, Sociologia, Antropologia, Cultura, Culinária e Esportes.
-  7. *Biologia e Saúde Pública*: Biodiversidade local e dados históricos/atuais de Saúde (impacto e evolução da COVID-19, endemias, epidemias históricas e saúde populacional).
+  7. *Biologia e Saúde Pública*: Biodiversidade local e dados históricos/atuais de Saúde (como impacto e evolução da pandemia da COVID-19, endemias, epidemias históricas e saúde populacional).
   8. *Notícias e Atualidades*: Fatos jornalísticos recentes vinculados ao país.
-- **RN14 — Linha do Tempo Transversal de Tema ou Personalidade Influente**: Ao selecionar um tema de interesse ou uma pessoa influente (ex.: Donald Trump, chefes de Estado, cientistas), o sistema deve agregar e exibir toda a linha do tempo transversal daquela entidade, conectando locais no globo, relevo, contexto político, acontecimentos históricos e notícias associadas.
+- **RN14 — Linha do Tempo Transversal de Tema ou Personalidade Influente**:
+  - Ao selecionar um tema de interesse ou uma pessoa influente (ex.: Donald Trump, chefes de Estado, cientistas), o sistema deve agregar e exibir toda a linha do tempo transversal daquela entidade, conectando locais no globo, relevo, contexto político, acontecimentos históricos e notícias associadas.
 - **RN15 — Comparador Configurável de Países (Até 4 Países)**:
   - O usuário pode selecionar simultaneamente até 4 países para estudo comparativo lado a lado.
   - Os eixos de comparação são configuráveis pelo usuário, permitindo escolher quais categorias cruzar (dados militares, políticos, econômicos, geográficos, saúde, demográficos ou culturais) dentro do mesmo recorte temporal.
 - **RN16 — Estudo Personalizado e Compartilhamento Imutável (Fork de Estudo)**:
   - O usuário pode configurar para seu estudo uma combinação de: (a) período na timeline, (b) países selecionados e (c) assuntos de interesse, gerando um painel interativo consolidado (*insight/estudo*).
   - O sistema gera um link único compartilhável que leva exatamente a esse conjunto de dados agregado pelo criador.
-  - Qualquer pessoa que acessar o link poderá interagir com o estudo e terá a opção de editar para si (gerando um novo link/cópia própria com `parentId`), mas nunca poderá alterar ou sobrescrever o link original do usuário criador.
+  - Qualquer pessoa que acessar o link poderá interagir com o estudo e terá a opção de editar para si (gerando um novo link/cópia própria), mas nunca poderá alterar ou sobrescrever o link original do usuário criador.
 
 ### 4.5. Observatório Planetário (NASA), Tráfego Global, Céu e Cosmos
-- **RN17 — Camadas Geofísicas e Ambientais (NASA e Agências Governamentais)**: Integração de bases de dados da NASA e agências governamentais para renderizar relevos específicos, dados meteorológicos, fluxos de ventos, dados da natureza, monitoramento de queimadas, situações climáticas severas e fluxo/concentração de lixo marítimo.
-- **RN18 — Lua, Estação Espacial, Satélites e Tráfego Aéreo/Marítimo**: Renderização da Lua orbitando a Terra, bem como da Estação Espacial Internacional (ISS) e de satélites artificiais em órbita. Adição de camadas de visualização de aeronaves sobrevoando o globo e rotas marítimas nos oceanos.
-- **RN19 — Abóbada Celeste e Constelações por Data**: O sistema deve exibir no céu ao redor do globo as constelações exatas visíveis na data selecionada pelo usuário na linha do tempo; caso nenhuma data histórica esteja selecionada, exibe-se o céu correspondente ao dia atual.
-- **RN20 — Expansão para o Sistema Solar e Cosmos**: A arquitetura visual deve permitir expandir o zoom além da órbita terrestre e lunar para visualizar o Sistema Solar e o Cosmos (outros planetas, estrelas, meteoros e corpos celestes).
+
+- **RN17 — Camadas Geofísicas e Ambientais (NASA e Agências Governamentais)**:
+  - Integração de bases de dados da NASA e agências governamentais para renderizar relevos específicos, dados meteorológicos, fluxos de ventos, dados da natureza, monitoramento de queimadas, situações climáticas severas e fluxo/concentração de lixo marítimo.
+- **RN18 — Lua, Estação Espacial, Satélites e Tráfego Aéreo/Marítimo**:
+  - Renderização da Lua orbitando a Terra, bem como da Estação Espacial Internacional (ISS) e de satélites artificiais em órbita.
+  - Adição de camadas de visualização de aeronaves sobrevoando o globo e rotas marítimas nos oceanos.
+- **RN19 — Abóbada Celeste e Constelações por Data**:
+  - O sistema deve exibir no céu ao redor do globo as constelações exatas visíveis na data selecionada pelo usuário na linha do tempo; caso nenhuma data histórica esteja selecionada, exibe-se o céu correspondente ao dia atual.
+- **RN20 — Expansão para o Sistema Solar e Cosmos**:
+  - A arquitetura visual deve permitir expandir o zoom além da órbita terrestre e lunar para visualizar o Sistema Solar e o Cosmos (outros planetas, estrelas, meteoros e corpos celestes).
 
 ### 4.6. Diretrizes de Qualidade e Comportamento do Sistema (Requisitos Não-Funcionais)
+
 - **RN21 — Performance Gráfica (LoD) e Carregamento Progressivo**: A geometria do globo e das fronteiras deve utilizar níveis de detalhe (*Level of Detail*) conforme o zoom e carregamento sob demanda (*lazy loading*) de texturas densas, malhas históricas e artigos longos, garantindo fluidez (60 FPS em desktop / 30+ FPS em mobile) e tempo de inicialização rápido na tela inicial.
 - **RN22 — Economia de Recursos no Modo de Leitura Profunda**: Quando o usuário expandir a Camada 2 (Modo Leitura de artigos longos) e o globo 3D ficar oculto ou em segundo plano, o motor gráfico deve reduzir ou pausar sua taxa de atualização (*render loop throttling*) para evitar consumo excessivo de GPU/bateria durante sessões prolongadas de estudo.
 - **RN23 — Segregação de Cache por Volatilidade de Dados**: Dados imutáveis (mapas históricos, paleogeografia, eventos passados consolidados), dados semi-estáticos (indicadores anuais de governo/economia) e dados altamente voláteis (clima, notícias, posição da ISS/voos) devem possuir políticas distintas de atualização e armazenamento em cache.
@@ -101,38 +114,85 @@ Construir o **TellusPedia**, uma plataforma web enciclopédica voltada para pesq
 
 ## 5. Fluxos Macro
 
-1. **Fluxo 01 — Acesso Imediato e Observatório Planetário/Celeste**: Usuário acessa o TellusPedia $\rightarrow$ Visualiza de imediato o Globo 3D com iluminação solar em tempo real (dia/noite), Lua em órbita, ISS/satélites e constelações do dia atual $\rightarrow$ Ativa camadas científicas.
-2. **Fluxo 02 — Navegação na Linha do Tempo e Mapas Históricos**: Usuário manipula a timeline (range de 50 anos ou personalizado) $\rightarrow$ Ao deslocar o tempo para eras passadas, o globo adapta suas fronteiras ou continentes e atualiza o céu.
-3. **Fluxo 03 — Seleção de País e Exploração em Duas Camadas**: Usuário clica no país $\rightarrow$ Animação *fly-to* e destaque visual $\rightarrow$ Abre Inspector HUD (Camada 1) com clima, hora local e infobox $\rightarrow$ Abre Modo Leitura (Camada 2) com dossiê completo, link preview e citação ABNT/APA.
-4. **Fluxo 04 — Reprodução 3D de Acontecimentos Físicos**: Usuário seleciona marco espacial ou territorial (ex.: Apollo 11) $\rightarrow$ Renderização de trajetórias 3D físicas na órbita ou superfície.
-5. **Fluxo 05 — Dossiê Cronológico de Personalidade ou Tema**: Seleciona personalidade influente $\rightarrow$ Exibe timeline transversal articulando locais no globo e acontecimentos.
-6. **Fluxo 06 — Comparação Configurável (Até 4 Países)**: Usuário seleciona até 4 países $\rightarrow$ Visualiza dados equiparados lado a lado em colunas e gráficos Recharts.
-7. **Fluxo 07 — Criação e Compartilhamento de Estudo (Fork Imutável)**: Usuário monta estudo $\rightarrow$ Gera link único imutável $\rightarrow$ Destinatário abre e pode clicar em "Fazer Fork para Mim", criando derivação com `parentId`.
-8. **Fluxo 08 — Expansão para o Sistema Solar e Cosmos**: Zoom afasta além da Terra/Lua $\rightarrow$ Navegação cósmica.
+- **Fluxo 01 — Acesso Imediato e Observatório Planetário/Celeste**:
+  Usuário acessa o TellusPedia $\rightarrow$ Visualiza de imediato o Globo 3D com iluminação solar em tempo real (dia/noite), Lua em órbita, ISS/satélites e as constelações do dia atual $\rightarrow$ Pode ativar camadas científicas da NASA (ventos, queimadas, lixo marítimo) ou camadas de rotas aéreas e marítimas.
+- **Fluxo 02 — Navegação na Linha do Tempo, Mapas Históricos e Pangeia**:
+  Usuário manipula a barra de linha do tempo deslizável (com range padrão de 50 anos ou intervalo customizado) e aplica filtros temáticos $\rightarrow$ Ao deslocar o tempo para eras passadas ou geológicas, o globo adapta suas fronteiras políticas (ex.: Prússia $\rightarrow$ Alemanha) ou continentes (ex.: Pangeia) e atualiza as constelações do céu para a data escolhida.
+- **Fluxo 03 — Seleção de País e Exploração em Duas Camadas (Inspector + Modo Leitura)**:
+  Usuário clica em um país (ou pesquisa na busca global) $\rightarrow$ Câmera executa *fly-to* e mantém o território em destaque visual ativo $\rightarrow$ Abre o Inspector HUD (Camada 1) com hora local, clima atual, Country Infobox e linha do tempo resumida $\rightarrow$ Usuário clica para aprofundar um tema e abre o Modo Leitura (Camada 2) com texto completo sobre Política, História, Geografia, Saúde/COVID-19, Arte, Filosofia, Sociologia, Antropologia, Biologia, Culinária, Esportes e Notícias, usando link preview e gerador de citação ABNT/APA.
+- **Fluxo 04 — Reprodução 3D de Acontecimentos Históricos Físicos**:
+  Usuário seleciona um marco histórico espacial ou territorial na barra da timeline (ex.: Pouso na Lua ou campanha militar) $\rightarrow$ O globo renderiza a interação física 3D (trajetória e órbita do foguete entre a Terra e a Lua, marchas de exércitos ou rota da aeronave).
+- **Fluxo 05 — Dossiê Cronológico de Personalidade ou Tema**:
+  Usuário seleciona uma personalidade influente (ex.: Donald Trump) ou tema específico $\rightarrow$ O sistema reúne e exibe toda a linha do tempo transversal daquela entidade, articulando locais no globo, relevo, decisões políticas, fatos históricos e notícias.
+- **Fluxo 06 — Comparação Configurável (Até 4 Países)**:
+  Usuário aciona o modo de comparação $\rightarrow$ Seleciona até 4 países e define quais dimensões comparar (militar, política, econômica, saúde, cultura, etc.) $\rightarrow$ Visualiza os dados e linhas do tempo equiparados lado a lado.
+- **Fluxo 07 — Criação e Compartilhamento de Estudo (Fork Imutável)**:
+  Usuário configura um recorte de estudo (período na timeline + países + assuntos de interesse) $\rightarrow$ Gera e compartilha o link único $\rightarrow$ Destinatário abre o link, visualiza exatamente o estudo montado e, caso queira modificar filtros ou adicionar anotações, utiliza a opção "Editar para mim", criando um novo link derivado sem alterar o original.
+- **Fluxo 08 — Expansão para o Sistema Solar e Cosmos**:
+  Usuário afasta o nível de zoom além da órbita da Terra/Lua (ou alterna para a visão cósmica) $\rightarrow$ Navega pela visualização do Sistema Solar, outros planetas, estrelas e meteoros.
 
 ---
 
 ## 6. Critérios de Aceite / Sucesso
 
-| Código | Área de Aceite | Critério de Aceite Detalhado |
+| Código | Área de Aceite | Critério de Aceite / Sucesso Detalhado |
 | :--- | :--- | :--- |
 | **CA01** | Globo e Seleção | Renderização fluida do Globo 3D na página inicial com terminador solar (dia/noite), transição fly-to, destaque visual persistente do país selecionado e exibição de hora local e clima atual. |
-| **CA02** | Linha do Tempo e Cartografia | Linha do tempo deslizável operando com janela padrão de 50 anos, edição livre de intervalo, marcadores de eventos distribuídos ao longo do eixo, filtros temáticos e adaptação do globo. |
-| **CA03** | Experiência Enciclopédica | Funcionamento das duas camadas de leitura (Infobox rápida + Modo Leitura profunda com sumário fixo), pré-visualização de links internos (hover preview), URLs semânticas diretas, rastreabilidade de fontes e exportação de citações (ABNT/APA/MLA/BibTeX). |
-| **CA04** | Cobertura Multidisciplinar | Exibição estruturada das dimensões de Política/Governo, Geografia, Economia, Militar, História, Figuras Importantes, Saúde (COVID-19), Arte, Filosofia, Sociologia, Antropologia, Biologia, Culinária, Esportes e Notícias. |
-| **CA05** | Trajetórias 3D e Personalidades | Renderização de trajetórias físicas para marcos históricos e geração da linha do tempo transversal de personalidades/temas. |
-| **CA06** | Comparação e Compartilhamento | Comparador para até 4 países simultâneos com filtros configuráveis e geração de link compartilhável de estudo que preserva imutabilidade do original e suporta forks. |
-| **CA07** | Observatório Planetário | Exibição da Lua em órbita, constelações correspondentes à data selecionada (ou dia atual) e suporte à expansão para camadas científicas da NASA e Cosmos. |
+| **CA02** | Linha do Tempo e Cartografia | Linha do tempo deslizável operando com janela padrão de 50 anos, edição livre de intervalo, marcadores de eventos distribuídos ao longo do eixo, filtros temáticos e adaptação efetiva do globo para fronteiras históricas (ex.: Prússia $\rightarrow$ Alemanha) e eras geológicas (ex.: Pangeia). |
+| **CA03** | Experiência Enciclopédica | Funcionamento das duas camadas de leitura (Infobox rápida + Modo Leitura profunda com sumário fixo), pré-visualização de links internos (hover preview), URLs semânticas diretas, rastreabilidade de fontes e exportação de citações (ABNT/APA/MLA). |
+| **CA04** | Cobertura Multidisciplinar | Exibição estruturada das dimensões de Política/Governo, Geografia, Economia, Militar, História, Figuras Importantes, Saúde (incluindo pandemias/COVID-19), Arte, Filosofia, Sociologia, Antropologia, Biologia, Culinária, Esportes e Notícias. |
+| **CA05** | Trajetórias 3D e Personalidades | Renderização de trajetórias físicas para marcos históricos selecionados (ex.: órbita/trajetória Terra-Lua no pouso lunar, marchas militares, rotas aéreas) e geração da linha do tempo completa ao selecionar uma personalidade influente ou tema. |
+| **CA06** | Comparação e Compartilhamento | Comparador funcionando para até 4 países simultâneos com filtros configuráveis e geração de link compartilhável de estudo que preserva a imutabilidade do link original (permitindo fork/edição em cópia separada para quem acessa). |
+| **CA07** | Observatório Planetário | Exibição da Lua em órbita, ISS, satélites, constelações correspondentes à data selecionada (ou dia atual), rotas aéreas/marítimas e camadas de dados científicos da NASA (relevo, ventos, queimadas, clima e lixo marítimo), além da estrutura para expansão ao Sistema Solar/Cosmos. |
 
 ---
 
-## 7. Status de Implementação dos Horizontes Evolutivos
+## 7. Restrições e Premissas
 
-1. **Horizonte 1 — Core Enciclopédico, Globo Base & Estudos** *(Concluído)*:
-   - Atende **RN01 a RN08**, **RN13**, **RN15**, **RN16**, **RN21 a RN23** (Critérios CA01, CA03, CA04, CA06).
-2. **Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D** *(Concluído)*:
-   - Atende **RN09 a RN12**, **RN16** (Critérios CA02, CA05, CA06).
-3. **Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global** *(Concluído)*:
-   - Atende **RN17**, **RN18**, **RN09/10** (supressão temporal), **RN16** (estudos com camadas científicas ativas), **RN21** e **RN23** (Critérios CA06, CA07).
-4. **Horizonte 4 — Expansão Cósmica** *(Próximo)*:
-   - Expandir a navegação para além da órbita da Terra e Lua, modelando os corpos celestes do Sistema Solar e Cosmos (**RN19**, **RN20**).
+### 7.1. Roadmap Incremental de Entrega (4 Horizontes)
+
+Todas as funcionalidades descritas fazem parte do escopo oficial do TellusPedia, sendo organizadas em 4 horizontes evolutivos para garantir qualidade de engenharia:
+
+- **Horizonte 1 — Core Enciclopédico, Globo Base & Estudos**: Globo 3D com luz solar (dia/noite), Lua em órbita, constelações por data, seleção destacada (clima/hora), linha do tempo deslizável (range padrão 50 anos) com filtros, Camadas 1 e 2 de leitura (Infobox + Modo Leitura com link preview e citação ABNT/APA), acervo multidisciplinar completo (Política, História, Saúde/COVID-19, Artes, Filosofia, Ciências, etc.), timeline transversal por personalidade/tema, comparador de até 4 países e link compartilhável de estudo (fork imutável).
+- **Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D**: Mutação dinâmica das fronteiras no globo por período histórico (ex.: Prússia $\rightarrow$ Alemanha), formações paleogeográficas (Pangeia) e reconstrução 3D de trajetórias de acontecimentos (missão lunar Terra-Lua, marchas de exércitos, rotas de aviação histórica).
+- **Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global**: Integração das camadas de dados científicos da NASA/agências (fluxos de ventos, queimadas, anomalias climáticas, lixo marítimo, relevos avançados) e rastreamento de ISS, satélites artificiais, aeronaves e rotas marítimas.
+- **Horizonte 4 — Expansão Cósmica**: Navegação expandida para visualização do Sistema Solar e do Cosmos (planetas, estrelas e meteoros).
+
+### 7.2. Governança e Fontes de Dados
+
+- **Restrição de Governança Editorial**: A curadoria de dados enciclopédicos permanece centralizada no sistema/administrador; usuários finais criam e compartilham recortes/estudos personalizados sem alterar a base oficial de dados.
+- **Premissa de Fontes Externas**: A atualização dos dados dinâmicos e científicos baseia-se no consumo e processamento de APIs e datasets públicos (Wikidata/Wikipédia, Banco Mundial, IBGE, OMS, NASA Open Data, NOAA e serviços de efemérides astronômicas/orbitais).
+
+---
+
+## 8. Anexo — Mapeamento de Fontes de Dados e APIs Oficiais
+
+### 8.1. Fontes para Base Enciclopédica, Grafo de Conhecimento e Citações (RN01 a RN05)
+- **Núcleo Enciclopédico e Hover Preview**: Wikimedia / Wikipedia REST API e Wikidata Query Service (SPARQL) & Wikibase API.
+- **Metadados Bibliográficos e Citações (ABNT, APA, MLA)**: Crossref API, OpenAlex & Wikimedia Citoid.
+
+### 8.2. Fontes para Globo 3D Base, Fronteiras Contemporâneas, Clima e Hora (RN06 a RN08)
+- **Malha Geopolítica Contemporânea (LoD)**: Natural Earth Data (Escalas 1:110m, 1:50m e 1:10m) e REST Countries / ISO 3166-1.
+- **Iluminação Solar, Fuso Horário e Clima**: Algoritmo NOAA Solar Position / NASA JPL Horizons, IANA Time Zone Database (tzdb) e Open-Meteo API / NOAA GFS.
+
+### 8.3. Fontes para Linha do Tempo, Mapas Históricos, Paleogeografia e Trajetórias 3D (RN09 a RN12)
+- **Periodização Histórica**: PeriodO (Gazetteer of Historical Periods) & Wikidata Temporal Entities.
+- **Paleogeografia (Pangeia)**: GPlates Web Service (GWS) & PALEOMAP Project.
+- **Cartografia Histórica e Fronteiras**: CShapes 2.0 Dataset (ETH Zürich), OpenHistoricalMap (OHM) & Clio-Infra / Euratlas.
+- **Reconstrução Espacial 3D**: NASA SPICE Toolkit Archives & JPL Horizons (missão Apollo 11), Aviation Safety Network e OpenHistoricalMap.
+
+### 8.4. Fontes para a Matriz Multidisciplinar, Personalidades e Comparador (RN13 a RN16)
+- **Geografia**: IBGE API, Natural Earth Physical, WorldPop e FAO AQUASTAT.
+- **Governo, Política e Defesa**: V-Dem Dataset, SIPRI Databases e Correlates of War.
+- **Economia e Sociais**: World Bank Indicators API, IBGE, IMF Data API e UNDP Human Development Data.
+- **História e Timeline**: Wikidata Historical Events, Seshat e PeriodO.
+- **Personalidades**: MIT Pantheon Dataset, Wikidata Biographies e VIAF.
+- **Cultura, Humanidades e Sociedade (Arte, Filosofia, Sociologia, Antropologia, Culinária, Esportes)**: UNESCO World Heritage & Intangible Cultural Heritage APIs, Europeana / Met Museum Open Access API, Stanford Encyclopedia of Philosophy / PhilPapers, D-PLACE e Olympedia / Wikidata Sports.
+- **Biologia e Saúde Pública (incluindo COVID-19)**: WHO Global Health Observatory (GHO) OData API, Our World in Data / WHO COVID-19 Dashboard e GBIF / IUCN Red List API.
+- **Notícias e Atualidades**: GDELT Project API (Global Database of Events, Language, and Tone) e agências oficiais.
+- **Timeline Transversal de Personalidade/Tema**: Wikidata Entity Graph & GDELT Knowledge Graph.
+
+### 8.5. Fontes para Observatório Planetário (NASA), Tráfego Global, Céu e Cosmos (RN17 a RN20)
+- **Camadas Geofísicas, Queimadas, Ventos e Lixo Marítimo**: NASA GIBS (WMTS/WMS), NASA FIRMS (MODIS/VIIRS) & INPE BDQueimadas, NASA EONET, NOAA GFS & NASA Earthdata, e NOAA Marine Debris Program / Global Drifter Program.
+- **Lua, ISS, Satélites e Tráfego Aéreo/Marítimo**: CelesTrak GP API & Space-Track.org (TLE/OMM), OpenSky Network API, e Global Fishing Watch / OpenSeaMap.
+- **Abóbada Celeste, Constelações e Cosmos**: HYG Star Database + Limites Oficiais da IAU (União Astronômica Internacional), NASA JPL Horizons API & Minor Planet Center (MPC).
