@@ -21,6 +21,12 @@ export async function POST(req: NextRequest) {
         ? body.activeRouteId.trim()
         : null;
 
+    const isAnachronistic =
+      sanitizedMa !== null ||
+      (typeof body.timelineEndYear === "number" && body.timelineEndYear < 1957) ||
+      sanitizedRouteId === "magellan-1519" ||
+      ["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(body.historicalEra || "");
+
     const studyData: StudyRecord = {
       id: slug,
       parentId: body.parentId || null,
@@ -38,6 +44,12 @@ export async function POST(req: NextRequest) {
       isApollo11Active: sanitizedMa !== null ? false : (body.isApollo11Active ?? false),
       geologicalMa: sanitizedMa,
       activeRouteId: sanitizedRouteId,
+      activeObservatoryLayers:
+        isAnachronistic
+          ? []
+          : Array.isArray(body.activeObservatoryLayers)
+            ? body.activeObservatoryLayers
+            : [],
       createdAt: new Date().toISOString(),
     };
 

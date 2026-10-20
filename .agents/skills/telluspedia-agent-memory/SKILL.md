@@ -65,15 +65,24 @@ Este documento serve como memória permanente do Antigravity para manter a conti
   - Serialização imutável de `historicalEra`, `isApollo11Active`, `geologicalMa` e `activeRouteId` em Prisma, API Next.js e Zustand stores com suporte a fork (`/study/[slug]`).
 - **Suíte de Testes**: 148 testes unitários automatizados em 22 suítes com 100% de aprovação.
 
-### Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global
-Quando o usuário solicitar o avanço para o Horizonte 3:
-1. **Camadas Científicas da NASA**:
-   - Integrar **NASA GIBS** (tiles WMTS de satélite em tempo real).
-   - Integrar **NASA FIRMS** (pontos de calor e queimadas ativas via GeoJSON).
-   - Integrar **NASA EONET** para eventos severos em tempo real (furacões, vulcões).
-2. **Tráfego Global e Órbitas**:
-   - Integrar **CelesTrak GP API** com propagador SGP4 para renderizar a posição da ISS e satélites em tempo real.
-   - Integrar **OpenSky Network** para renderizar aeronaves sobrevoando o globo.
+### Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global (Concluído)
+- **Camadas Científicas da NASA (Concluído)**:
+  - **NASA FIRMS**: Focos de calor e queimadas ativas via `THREE.Points` (`NasaFirmsLayer.tsx`) na altitude $R=1.0025$ com buffers `Float32Array` de posição e cor (FRP) desacoplados da opacidade para máximo FPS.
+  - **NASA EONET**: Marcadores de eventos severos interativos (`NasaEonetLayer.tsx`) com anéis pulsantes e raycast picking para ciclones, vulcões e tempestades.
+  - **Proxies Server-Side com SWR/Cache em Memória (RN23)**: Rotas `/api/observatory/firms` e `/api/observatory/eonet` com TTL de 15 min e fallbacks de alta fidelidade integrados.
+- **Tráfego Global e Órbitas (Concluído)**:
+  - **ISS (Estação Espacial Internacional)**: Propagação orbital contínua a 60 FPS no `useFrame` via `calculateIssPosition(Date.now())` (`IssOrbitLayer.tsx`) em $R=1.18$ com malha 3D poligonal, painéis solares orientados pelo vetor tangente à órbita e linha orbital memoizada.
+  - **Tráfego Aéreo Global**: Frotas de aeronaves comerciais via `THREE.InstancedMesh` (`AirTrafficLayer.tsx`) na altitude de cruzeiro $R=1.018$ orientadas por rumo (*heading*) em base ortonormal.
+  - **Rotas Marítimas Comerciais**: Grandes estreitos geopolíticos e corredores mercantes em arcos geodésicos luminosos (`MaritimeRoutesLayer.tsx`) em $R=1.003$ com interpolação `slerpVectors`.
+  - **Proxies Server-Side**: `/api/observatory/iss` (cache 60s) e `/api/observatory/traffic` (cache 120s) com deduplicação de requisições.
+- **UI & Telemetria Científica (Concluído)**:
+  - Botão dedicado na barra superior (`TopNavBar.tsx`) com indicador luminoso de camadas ativas.
+  - Painel flutuante de camadas (`ObservatoryPanel.tsx`) com switches individuais, contadores de métricas globais e aviso de anacronismo em eras históricas.
+  - Card flutuante de telemetria científica (`ObservatoryTelemetryHUD.tsx`) com ticker ao vivo para a ISS, eventos severos e aeronaves, com foco de câmera automático.
+- **Sincronização Histórica e Persistência de Estudos (RN09, RN10, RN16) (Concluído)**:
+  - Supressão automática de satélites e aviação contemporânea em épocas anteriores a 1957 e eras geológicas (`isContemporaryEpoch`).
+  - Serialização imutável do campo `activeObservatoryLayers String[]` no Prisma `Study`, Zustand `studyStore.ts`, `studies-store.ts`, modal de compartilhamento e endpoints de fork (`/study/[slug]`).
+- **Suíte de Testes**: 166 testes unitários automatizados em 23 suítes com 100% de aprovação e 0 erros de linter.
 
 ### Horizonte 4 — Expansão Cósmica
 Quando o usuário solicitar o avanço para o Horizonte 4:

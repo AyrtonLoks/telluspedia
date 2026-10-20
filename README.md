@@ -71,10 +71,10 @@ Abra [http://localhost:3000](http://localhost:3000) no seu navegador para intera
 
 ## 🧪 Testes Automatizados e Qualidade de Código
 
-O projeto conta com **148 testes unitários automatizados distribuídos em 22 suítes**, cobrindo 100% das regras matemáticas, geoespaciais, cartografia histórica, paleogeografia, efemérides translunares, telemetria naval e formatação acadêmica:
+O projeto conta com **166 testes unitários automatizados distribuídos em 23 suítes**, cobrindo 100% das regras matemáticas, geoespaciais, cartografia histórica, paleogeografia, telemetria orbital da NASA, tráfego aéreo/marítimo e formatação acadêmica:
 
 ```bash
-# Executar a suíte de testes unitários (148 testes / 22 suítes passando)
+# Executar a suíte de testes unitários (166 testes / 23 suítes passando)
 pnpm test
 
 # Executar linting do código (0 erros / 0 warnings)
@@ -86,6 +86,21 @@ pnpm --filter web exec tsc --noEmit
 # Compilação de produção do Next.js
 pnpm build
 ```
+
+---
+
+## 🛰️ Observatório Planetário (NASA) & Tráfego Global (Horizonte 3 Concluído)
+
+O TellusPedia integra telemetria em tempo quase real e camadas científicas das principais agências espaciais e de navegação mundial:
+- **Queimadas e Anomalias Térmicas (NASA FIRMS - RN17)**: Focos ativos das últimas 24h via sensores MODIS e VIIRS renderizados em nuvem de pontos `THREE.Points` a $R = 1.0025$ com buffers `Float32Array` mapeando intensidade térmica (*FRP*), mantendo 60 FPS estáveis na GPU.
+- **Eventos Severos Globais (NASA EONET - RN17)**: Monitoramento geolocalizado de ciclones tropicais, erupções vulcânicas, inundações e tempestades severas em marcadores 3D a $R = 1.006$ com anéis pulsantes e *raycast picking*.
+- **Estação Espacial Internacional (ISS) & Satélites (RN18)**: Malha 3D poligonal da ISS navegando em altitude LEO ($R = 1.18$) com propagação orbital física em tempo real no `useFrame` via `calculateIssPosition(Date.now())` (inclinação $51.64^\circ$, altitude $408\text{ km}$, velocidade $27.600\text{ km/h}$) e traçado de grande círculo da órbita.
+- **Tráfego Aéreo Global (OpenSky Network ADS-B - RN18)**: Frota comercial no ar renderizada via `THREE.InstancedMesh` na altitude de cruzeiro $R = 1.018$, orientando as aeronaves em tempo real na direção de seu rumo (*heading*) em base ortonormal.
+- **Rotas Marítimas Comerciais (AIS - RN18)**: Grandes estreitos geopolíticos (Suez, Panamá, Malaca) e corredores oceânicos de cargueiros renderizados em arcos geodésicos esféricos luminosos a $R = 1.003$ com interpolação `slerpVectors`.
+- **Painel Flutuante do Observatório (`ObservatoryPanel`)**: Drawer lateral em *glassmorphism* acionado na barra superior com alternadores independentes, contadores dinâmicos ao vivo e controles de opacidade.
+- **HUD de Telemetria Científica (`ObservatoryTelemetryHUD`)**: Card flutuante com contadores de telemetria atualizados a cada 1 segundo (coordenadas, altitude, velocidade, iluminação orbital dia/noite) e botão interativo para focar a câmera na ISS.
+- **Supressão Automática de Anacronismos (RN09 & RN10)**: Ao navegar na Linha do Tempo para antes de 1957 ou eras paleogeográficas, a telemetria moderna é suprimida do globo e o painel alerta que o recorte histórico pertence ao passado.
+- **Persistência de Estudos com Camadas Ativas (RN16)**: O modelo Prisma `Study` serializa `activeObservatoryLayers String[]`, permitindo compartilhar e fazer *fork* imutável de recortes científicos pelo link `/study/[slug]`.
 
 ---
 
@@ -111,10 +126,10 @@ telluspedia/
 │   └── web/                               # Aplicação Web Next.js 15 + Three.js/R3F
 │       ├── prisma/                        # Schema Prisma e seed de dados
 │       ├── src/
-│       │   ├── app/                       # Rotas da aplicação (/, /pais/[iso], /study/[slug], /compare)
-│       │   ├── components/                # Globe 3D, Inspector HUD, Reader Mode, Timeline
-│       │   ├── stores/                    # Zustand Stores desacopladas
-│       │   └── lib/                       # Efemérides solares, índice espacial e citações
+│       │   ├── app/                       # Rotas da aplicação (/, /pais/[iso], /study/[slug], /api/observatory)
+│       │   ├── components/                # Globe 3D, Observatory Panel/HUD, Inspector HUD, Reader Mode, Timeline
+│       │   ├── stores/                    # Stores Zustand (globeStore, timelineStore, observatoryStore, studyStore)
+│       │   └── lib/                       # Efemérides solares, órbita ISS, índice espacial e citações
 │       └── test/                          # Testes unitários com Node TAP runner
 ├── services/
 │   └── data-pipeline/                     # Microsserviço Python FastAPI

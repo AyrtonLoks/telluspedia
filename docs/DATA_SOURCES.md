@@ -84,7 +84,7 @@ Mapear, classificar e documentar todas as APIs públicas, repositórios científ
 ### 5.1. Fluxos de Ingestão por Ciclo
 1. **Dados Imutáveis e Consolidados (Ciclo Longo)**: Malhas de fronteiras (Natural Earth), paleogeografia (GPlates), cartografia histórica (CShapes), catálogos estelares (HYG/IAU) e telemetria histórica (Apollo 11). Cache permanente e headers HTTP imutáveis.
 2. **Sincronização de Indicadores e Dossiês (Ciclo Periódico)**: Ingestão programada de APIs do Banco Mundial, IBGE, OMS (WHO GHO), SIPRI, V-Dem e Wikidata. Registro obrigatório da data de referência e metadados para citação ABNT/APA. Cache de 24h a 7 dias no Redis.
-3. **Telemetria Planetária e Dados Voláteis (Ciclo Curto / Quase Real)**: Queimadas (NASA FIRMS), eventos severos (NASA EONET), clima (Open-Meteo), órbitas (CelesTrak) e notícias (GDELT). Cache no Redis com TTL curto (15 minutos) e proxies server-side contra rate limits e bloqueios de CORS.
+3. **Telemetria Planetária e Dados Voláteis (Ciclo Curto / Quase Real)**: Queimadas (NASA FIRMS), eventos severos (NASA EONET), clima (Open-Meteo), órbitas (CelesTrak / ISS), tráfego aéreo (OpenSky ADS-B) e rotas marinhas (AIS). Implementados via Route Handlers dedicados em `apps/web/src/app/api/observatory/...` com cache server-side em memória/SWR (TTL de 60s a 15 min), deduplicação de chamadas in-flight e conjuntos de fallback de alta fidelidade contra rate limits ou indisponibilidade externa.
 
 ### 5.2. Atribuição Institucional de Créditos
 Conforme as políticas de dados abertos da NASA (Earthdata / GIBS / FIRMS), OMS, IBGE e Wikidata, a interface do TellusPedia exibe os créditos institucionais obrigatórios no rodapé e nos cards de citação sempre que uma camada ou indicador estiver ativo na tela (**RN02, RN17**).

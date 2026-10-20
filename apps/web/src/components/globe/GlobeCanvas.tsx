@@ -12,11 +12,19 @@ import { Apollo11Trajectory } from "./Apollo11Trajectory";
 import { Apollo11TelemetryOverlay } from "./Apollo11TelemetryOverlay";
 import { HistoricalRouteTrajectory } from "./HistoricalRouteTrajectory";
 import { PaleoPlatesLayer } from "./PaleoPlatesLayer";
+import { NasaFirmsLayer } from "./NasaFirmsLayer";
+import { NasaEonetLayer } from "./NasaEonetLayer";
+import { IssOrbitLayer } from "./IssOrbitLayer";
+import { AirTrafficLayer } from "./AirTrafficLayer";
+import { MaritimeRoutesLayer } from "./MaritimeRoutesLayer";
+import { ObservatoryTelemetryHUD } from "@/components/observatory/ObservatoryTelemetryHUD";
 import { useGlobeStore, MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "@/stores/globeStore";
 import { calculateSubsolarPoint, getSunDirectionVector } from "@/lib/astronomy";
 
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useStudyStore } from "@/stores/studyStore";
+import { useObservatoryStore } from "@/stores/observatoryStore";
+import { isContemporaryEpoch } from "@/lib/observatory-data";
 import { findMilestoneById } from "@/lib/country-data";
 
 export const GlobeCanvas: React.FC = () => {
@@ -57,6 +65,12 @@ export const GlobeCanvas: React.FC = () => {
       selectedMilestoneId === "usa-1969" ||
       selectedMilestoneId === "glo-1969");
 
+  const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
+  const isContemporary = isContemporaryEpoch(
+    selectedYear,
+    isGeologicalActive ? (selectedGeologicalMa || 250) : null
+  );
+
   // Compute primary solar light position synchronized with active date
   const sunPosition = useMemo(() => {
     let targetDate = new Date();
@@ -87,6 +101,7 @@ export const GlobeCanvas: React.FC = () => {
     useGlobeStore.getState().setSelectedIso(null);
     useGlobeStore.getState().setHoveredIso(null);
     useTimelineStore.getState().selectMilestone(null);
+    useObservatoryStore.getState().setSelectedEntity(null);
   };
 
   return (
@@ -137,10 +152,20 @@ export const GlobeCanvas: React.FC = () => {
 
         {/* 3D Translunar Trajectory & Animated Apollo 11 Spacecraft */}
         {isApolloActive && <Apollo11Trajectory />}
+
+        {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
+        {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
+        {isContemporary && activeObservatoryLayers.includes("NASA_EONET") && <NasaEonetLayer />}
+        {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && <IssOrbitLayer />}
+        {isContemporary && activeObservatoryLayers.includes("FLIGHTS_OPENSKY") && <AirTrafficLayer />}
+        {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
       </Canvas>
 
       {/* Floating Apollo 11 Space Flight Telemetry HUD Overlay */}
       <Apollo11TelemetryOverlay />
+
+      {/* Floating Planetary Observatory Telemetry HUD Overlay */}
+      {isContemporary && <ObservatoryTelemetryHUD />}
     </div>
   );
 };

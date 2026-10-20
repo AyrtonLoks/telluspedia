@@ -123,3 +123,16 @@ Construir o **TellusPedia**, uma plataforma web enciclopédica voltada para pesq
 | **CA05** | Trajetórias 3D e Personalidades | Renderização de trajetórias físicas para marcos históricos e geração da linha do tempo transversal de personalidades/temas. |
 | **CA06** | Comparação e Compartilhamento | Comparador para até 4 países simultâneos com filtros configuráveis e geração de link compartilhável de estudo que preserva imutabilidade do original e suporta forks. |
 | **CA07** | Observatório Planetário | Exibição da Lua em órbita, constelações correspondentes à data selecionada (ou dia atual) e suporte à expansão para camadas científicas da NASA e Cosmos. |
+
+---
+
+## 7. Status de Implementação dos Horizontes Evolutivos
+
+1. **Horizonte 1 — Core Enciclopédico, Globo Base & Estudos** *(Concluído)*:
+   - Atende **RN01 a RN08**, **RN13**, **RN15**, **RN16**, **RN21 a RN23** (Critérios CA01, CA03, CA04, CA06).
+2. **Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D** *(Concluído)*:
+   - Atende **RN09 a RN12**, **RN16** (Critérios CA02, CA05, CA06).
+3. **Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global** *(Concluído)*:
+   - Atende **RN17**, **RN18**, **RN09/10** (supressão temporal), **RN16** (estudos com camadas científicas ativas), **RN21** e **RN23** (Critérios CA06, CA07).
+4. **Horizonte 4 — Expansão Cósmica** *(Próximo)*:
+   - Expandir a navegação para além da órbita da Terra e Lua, modelando os corpos celestes do Sistema Solar e Cosmos (**RN19**, **RN20**).

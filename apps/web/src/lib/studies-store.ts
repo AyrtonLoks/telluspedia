@@ -1,3 +1,5 @@
+import { isContemporaryEpoch } from "./observatory-data";
+
 export interface StudyRecord {
   id: string;
   parentId?: string | null;
@@ -15,6 +17,7 @@ export interface StudyRecord {
   isApollo11Active?: boolean | null;
   geologicalMa?: number | null;
   activeRouteId?: string | null;
+  activeObservatoryLayers?: string[];
   createdAt: string;
 }
 
@@ -39,6 +42,7 @@ Este estudo examina as repercussões da bipolaridade EUA-URSS nas instituições
   isApollo11Active: false,
   geologicalMa: null,
   activeRouteId: null,
+  activeObservatoryLayers: [],
   createdAt: new Date("2026-10-19T00:00:00Z").toISOString(),
 });
 
@@ -59,10 +63,22 @@ export function forkStudyRecord(original: StudyRecord, newId?: string): StudyRec
       ? original.geologicalMa
       : null;
 
-  const sanitizedRouteId =
+    const sanitizedRouteId =
     typeof original.activeRouteId === "string" && original.activeRouteId.trim().length > 0
       ? original.activeRouteId.trim()
       : null;
+
+  const isForkContemporary =
+    isContemporaryEpoch(original.timelineEndYear, sanitizedMa) &&
+    sanitizedRouteId !== "magellan-1519" &&
+    !["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(original.historicalEra || "");
+
+  const sanitizedObservatoryLayers =
+    !isForkContemporary
+      ? []
+      : Array.isArray(original.activeObservatoryLayers)
+        ? [...original.activeObservatoryLayers]
+        : [];
 
   return {
     id: newId || `fork-${Math.random().toString(36).substring(2, 10)}`,
@@ -81,6 +97,7 @@ export function forkStudyRecord(original: StudyRecord, newId?: string): StudyRec
     isApollo11Active: sanitizedMa !== null ? false : (original.isApollo11Active ?? false),
     geologicalMa: sanitizedMa,
     activeRouteId: sanitizedRouteId,
+    activeObservatoryLayers: sanitizedObservatoryLayers,
     createdAt: new Date().toISOString(),
   };
 }
@@ -99,6 +116,18 @@ export function restoreStudyRecord(raw: Partial<StudyRecord> & { id: string; tit
       ? raw.activeRouteId.trim()
       : null;
 
+  const isRestoreContemporary =
+    isContemporaryEpoch(raw.timelineEndYear ?? 2026, sanitizedMa) &&
+    sanitizedRouteId !== "magellan-1519" &&
+    !["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(raw.historicalEra || "");
+
+  const sanitizedObservatoryLayers =
+    !isRestoreContemporary
+      ? []
+      : Array.isArray(raw.activeObservatoryLayers)
+        ? [...raw.activeObservatoryLayers]
+        : [];
+
   return {
     id: raw.id,
     parentId: raw.parentId ?? null,
@@ -116,6 +145,7 @@ export function restoreStudyRecord(raw: Partial<StudyRecord> & { id: string; tit
     isApollo11Active: sanitizedMa !== null ? false : (raw.isApollo11Active ?? false),
     geologicalMa: sanitizedMa,
     activeRouteId: sanitizedRouteId,
+    activeObservatoryLayers: sanitizedObservatoryLayers,
     createdAt: raw.createdAt ?? new Date().toISOString(),
   };
 }

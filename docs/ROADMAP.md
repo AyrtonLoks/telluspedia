@@ -17,11 +17,11 @@ timeline
         Cartografia Histórica : Mutação de Fronteiras (1870-1969)
                               : Paleogeografia & Pangeia (250-66 Ma)
                               : Trajetórias 3D (Apollo 11, Magalhães)
-    section Horizonte 3 (Próximo)
+    section Horizonte 3 (Concluído)
         Observatório Planetário : Camadas NASA GIBS & FIRMS
                                : Rastreamento ISS & Satélites
                                : Tráfego Aéreo & Rotas Marítimas
-    section Horizonte 4
+    section Horizonte 4 (Próximo)
         Expansão Cósmica : Sistema Solar 3D
                         : Exploração de Planetas & Órbitas
                         : Navegação pelo Cosmos & Constelações
@@ -60,7 +60,7 @@ timeline
 
 ---
 
-### Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global
+### Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global *(Status: Concluído)*
 - **Camadas Científicas da NASA**:
   - **NASA GIBS**: Mais de 1.000 camadas de imagens de satélite atualizadas diariamente (neve/gelo, relevo, cobertura vegetal).
   - **NASA FIRMS & INPE BDQueimadas**: Monitoramento global de focos ativos de queimadas em tempo quase real.

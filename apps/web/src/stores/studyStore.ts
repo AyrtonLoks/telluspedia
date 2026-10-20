@@ -10,6 +10,7 @@ interface StudyState {
   isApollo11Active: boolean;
   geologicalMa: number | null;
   activeRouteId: string | null;
+  activeObservatoryLayers: string[];
   isShareModalOpen: boolean;
 
   setStudy: (study: {
@@ -18,10 +19,13 @@ interface StudyState {
     title: string;
     description?: string | null;
     notes?: string | null;
+    timelineStartYear?: number | null;
+    timelineEndYear?: number | null;
     historicalEra?: string | null;
     isApollo11Active?: boolean | null;
     geologicalMa?: number | null;
     activeRouteId?: string | null;
+    activeObservatoryLayers?: string[] | null;
   }) => void;
   restoreStudy: (study: {
     id: string;
@@ -29,10 +33,13 @@ interface StudyState {
     title: string;
     description?: string | null;
     notes?: string | null;
+    timelineStartYear?: number | null;
+    timelineEndYear?: number | null;
     historicalEra?: string | null;
     isApollo11Active?: boolean | null;
     geologicalMa?: number | null;
     activeRouteId?: string | null;
+    activeObservatoryLayers?: string[] | null;
   }) => void;
   forkStudy: (forked: {
     id: string;
@@ -40,10 +47,13 @@ interface StudyState {
     title?: string;
     description?: string | null;
     notes?: string | null;
+    timelineStartYear?: number | null;
+    timelineEndYear?: number | null;
     historicalEra?: string | null;
     isApollo11Active?: boolean | null;
     geologicalMa?: number | null;
     activeRouteId?: string | null;
+    activeObservatoryLayers?: string[] | null;
   }) => void;
   setCurrentStudyId: (id: string | null) => void;
   setTitle: (title: string) => void;
@@ -53,6 +63,7 @@ interface StudyState {
   setIsApollo11Active: (active: boolean) => void;
   setGeologicalMa: (ma: number | null) => void;
   setActiveRouteId: (routeId: string | null) => void;
+  setActiveObservatoryLayers: (layers: string[]) => void;
   setShareModalOpen: (isOpen: boolean) => void;
   resetStudy: () => void;
 }
@@ -67,6 +78,7 @@ export const useStudyStore = create<StudyState>((set) => ({
   isApollo11Active: false,
   geologicalMa: null,
   activeRouteId: null,
+  activeObservatoryLayers: [],
   isShareModalOpen: false,
 
   restoreStudy: (study) => {
@@ -78,6 +90,18 @@ export const useStudyStore = create<StudyState>((set) => ({
         ? study.geologicalMa
         : null;
 
+    const isAnachronistic =
+      sanitizedMa !== null ||
+      study.activeRouteId === "magellan-1519" ||
+      ["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(study.historicalEra || "");
+
+    const sanitizedLayers =
+      isAnachronistic
+        ? []
+        : Array.isArray(study.activeObservatoryLayers)
+          ? [...study.activeObservatoryLayers]
+          : [];
+
     set({
       currentStudyId: study.id,
       parentId: study.parentId || null,
@@ -88,6 +112,7 @@ export const useStudyStore = create<StudyState>((set) => ({
       isApollo11Active: sanitizedMa !== null ? false : Boolean(study.isApollo11Active),
       geologicalMa: sanitizedMa,
       activeRouteId: study.activeRouteId || null,
+      activeObservatoryLayers: sanitizedLayers,
     });
   },
 
@@ -104,6 +129,18 @@ export const useStudyStore = create<StudyState>((set) => ({
         ? forked.geologicalMa
         : null;
 
+    const isAnachronistic =
+      sanitizedMa !== null ||
+      forked.activeRouteId === "magellan-1519" ||
+      ["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(forked.historicalEra || "");
+
+    const sanitizedLayers =
+      isAnachronistic
+        ? []
+        : Array.isArray(forked.activeObservatoryLayers)
+          ? [...forked.activeObservatoryLayers]
+          : [];
+
     set({
       currentStudyId: forked.id,
       parentId: forked.parentId,
@@ -114,6 +151,7 @@ export const useStudyStore = create<StudyState>((set) => ({
       isApollo11Active: sanitizedMa !== null ? false : Boolean(forked.isApollo11Active),
       geologicalMa: sanitizedMa,
       activeRouteId: forked.activeRouteId || null,
+      activeObservatoryLayers: sanitizedLayers,
     });
   },
 
@@ -125,6 +163,7 @@ export const useStudyStore = create<StudyState>((set) => ({
   setIsApollo11Active: (isApollo11Active) => set({ isApollo11Active }),
   setGeologicalMa: (geologicalMa) => set({ geologicalMa }),
   setActiveRouteId: (activeRouteId) => set({ activeRouteId }),
+  setActiveObservatoryLayers: (layers) => set({ activeObservatoryLayers: layers }),
   setShareModalOpen: (isOpen) => set({ isShareModalOpen: isOpen }),
   resetStudy: () =>
     set({
@@ -137,6 +176,7 @@ export const useStudyStore = create<StudyState>((set) => ({
       isApollo11Active: false,
       geologicalMa: null,
       activeRouteId: null,
+      activeObservatoryLayers: [],
       isShareModalOpen: false,
     }),
 }));

@@ -128,6 +128,7 @@ model Study {
   isApollo11Active    Boolean?  @default(false)
   geologicalMa        Float?
   activeRouteId       String?
+  activeObservatoryLayers String[]  @default([])
   createdAt           DateTime  @default(now())
 
   parent              Study?    @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)

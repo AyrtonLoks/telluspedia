@@ -8,6 +8,7 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
+import { useObservatoryStore } from "@/stores/observatoryStore";
 
 function StudyContent({
   params,
@@ -42,7 +43,24 @@ function StudyContent({
             isApollo11Active: data.isApollo11Active,
             geologicalMa: data.geologicalMa,
             activeRouteId: data.activeRouteId,
+            activeObservatoryLayers: data.activeObservatoryLayers,
           });
+
+          // Restauração das camadas do observatório com proteção contra anacronismos
+          const isStudyAnachronistic =
+            (data.geologicalMa !== undefined && data.geologicalMa !== null && data.geologicalMa > 0) ||
+            (typeof data.timelineEndYear === "number" && data.timelineEndYear < 1957) ||
+            data.activeRouteId === "magellan-1519" ||
+            ["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(data.historicalEra || "");
+
+          if (isStudyAnachronistic) {
+            useObservatoryStore.getState().setAllLayers([]);
+          } else if (Array.isArray(data.activeObservatoryLayers)) {
+            useObservatoryStore.getState().setAllLayers(data.activeObservatoryLayers);
+          } else {
+            useObservatoryStore.getState().setAllLayers([]);
+          }
+
           if (data.timelineStartYear && data.timelineEndYear) {
             setYearRange(data.timelineStartYear, data.timelineEndYear);
           }

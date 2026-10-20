@@ -12,6 +12,7 @@ import { ReaderMode } from "@/components/reader/ReaderMode";
 import { CountryComparator } from "@/components/comparator/CountryComparator";
 import { StudyShareModal } from "@/components/study/StudyShareModal";
 import { CitationModal } from "@/components/reader/CitationModal";
+import { ObservatoryPanel } from "@/components/observatory/ObservatoryPanel";
 
 // Load 3D WebGL Canvas client-side only (disables SSR for R3F / Three.js)
 const GlobeCanvas = dynamic(
@@ -66,6 +67,9 @@ export default function HomePage() {
 
       {/* Citation Generator Modal (Global) */}
       <CitationModal />
+
+      {/* Planetary Observatory Floating Control Drawer */}
+      <ObservatoryPanel />
     </main>
   );
 }

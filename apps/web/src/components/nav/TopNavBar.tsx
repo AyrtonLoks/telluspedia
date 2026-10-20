@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Globe, Search, BarChart2, Share2, RotateCcw } from "lucide-react";
+import { Globe, Search, BarChart2, Share2, RotateCcw, Radio } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
+import { useObservatoryStore } from "@/stores/observatoryStore";
 import { PILOT_COUNTRIES, getCountryData } from "@/lib/country-data";
 
 export const TopNavBar: React.FC = () => {
@@ -14,6 +15,18 @@ export const TopNavBar: React.FC = () => {
   const resetView = useGlobeStore((s) => s.resetView);
   const openComparator = useComparatorStore((s) => s.openComparator);
   const setShareModalOpen = useStudyStore((s) => s.setShareModalOpen);
+  const storeIsPanelOpen = useObservatoryStore((s) => s.isPanelOpen);
+  const isObservatoryPanelOpen =
+    typeof window === "undefined"
+      ? useObservatoryStore.getState().isPanelOpen
+      : storeIsPanelOpen;
+  const toggleObservatoryPanel = useObservatoryStore((s) => s.togglePanel);
+  const storeActiveLayers = useObservatoryStore((s) => s.activeLayers);
+  const activeObservatoryLayers =
+    typeof window === "undefined"
+      ? useObservatoryStore.getState().activeLayers
+      : storeActiveLayers;
+  const hasActiveLayers = activeObservatoryLayers.length > 0;
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -89,6 +102,28 @@ export const TopNavBar: React.FC = () => {
       </div>
 
       {/* Action Buttons */}
+      <button
+        onClick={toggleObservatoryPanel}
+        data-testid="top-nav-observatory-button"
+        className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl glass-panel text-xs font-medium transition-all relative ${
+          isObservatoryPanelOpen || hasActiveLayers
+            ? "border-cyan-500/70 text-cyan-300 shadow-md shadow-cyan-950/40 bg-cyan-950/20"
+            : "hover:border-cyan-500/50 text-slate-200 hover:text-cyan-300"
+        }`}
+        title="Abrir Observatório Planetário (NASA / Tráfego Global)"
+      >
+        <Radio
+          className={`w-4 h-4 text-cyan-400 ${hasActiveLayers ? "animate-pulse" : ""}`}
+        />
+        <span className="hidden sm:inline">Observatório</span>
+        {hasActiveLayers && (
+          <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500" />
+          </span>
+        )}
+      </button>
+
       <button
         onClick={openComparator}
         className="flex items-center gap-1.5 px-3 py-2 rounded-2xl glass-panel hover:border-cyan-500/50 text-xs font-medium text-slate-200 transition-all hover:text-cyan-300"

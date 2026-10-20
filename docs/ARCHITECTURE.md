@@ -16,18 +16,22 @@ flowchart TD
         Reader["Modo Leitura (Camada 2)\nTOC Fixo, Citações ABNT/APA"]
         Timeline["Timeline Deslizável\n50 Anos, Presets, Nós Alternados"]
         Compare["Comparador de Países\nAté 4 Países, Gráficos Recharts"]
-        Zustand["Zustand Stores\n(Globe, Timeline, Reader, Study)"]
+        ObsPanel["Observatório Planetário\nNASA FIRMS, EONET, ISS, Voos, Rotas"]
+        TelemetryHUD["HUD de Telemetria Científica\nISS 408km, 27.600km/h, Eventos"]
+        Zustand["Zustand Stores\n(Globe, Timeline, Reader, Study, Observatory)"]
 
         R3F <--> Zustand
         HUD <--> Zustand
         Reader <--> Zustand
         Timeline <--> Zustand
         Compare <--> Zustand
+        ObsPanel <--> Zustand
+        TelemetryHUD <--> Zustand
     end
 
     subgraph WebServer["apps/web (Next.js 15 App Router)"]
         Pages["Páginas SSR & SEO (/pais/[iso], /study/[slug])"]
-        RouteHandlers["Route Handlers (/api/countries, /api/studies)"]
+        RouteHandlers["Route Handlers (/api/countries, /api/studies, /api/observatory)"]
         PrismaClient["Prisma ORM Client"]
     end
 
@@ -73,7 +77,10 @@ apps/web/
 │   │   ├── compare/page.tsx           # Comparador de até 4 países (/compare)
 │   │   ├── pais/[iso]/page.tsx        # Página canônica do país para SEO (/pais/BRA)
 │   │   ├── study/[slug]/page.tsx      # Estudo imutável compartilhado (/study/[slug])
-│   │   └── api/                       # Endpoints Next.js com suporte a fork e histórico
+│   │   └── api/                       # Endpoints Next.js com suporte a fork, histórico e observatório
+│   │       ├── countries/             # Metadados e busca de países
+│   │       ├── studies/               # Criação, busca e fork de estudos (/api/studies/[slug]/fork)
+│   │       └── observatory/           # Proxies científicos e telemetria (/firms, /eonet, /iss, /traffic)
 │   ├── components/
 │   │   ├── globe/                     # Motor 3D Three.js / React Three Fiber
 │   │   │   ├── GlobeCanvas.tsx        # Canvas, iluminação solar sincronizada e render loop
@@ -89,7 +96,15 @@ apps/web/
 │   │   │   ├── HistoricalRouteOverlay.tsx # HUD de telemetria náutica e diário de Pigafetta
 │   │   │   ├── PaleoPlatesLayer.tsx   # Placas tectônicas e linhas de fratura da Pangeia (1.002)
 │   │   │   ├── PaleoEraBadge.tsx      # Badge flutuante de era geológica com reset para contemporâneo
-│   │   │   └── HistoricalEraBadge.tsx # Badge flutuante de era com reset para contemporâneo
+│   │   │   ├── HistoricalEraBadge.tsx # Badge flutuante de era com reset para contemporâneo
+│   │   │   ├── NasaFirmsLayer.tsx     # Focos de queimadas globais via THREE.Points a R=1.0025
+│   │   │   ├── NasaEonetLayer.tsx     # Marcadores 3D pulsantes de eventos severos a R=1.006
+│   │   │   ├── IssOrbitLayer.tsx      # Malha poligonal 3D e órbita física da ISS a R=1.18
+│   │   │   ├── AirTrafficLayer.tsx    # Frota comercial via THREE.InstancedMesh a R=1.018
+│   │   │   └── MaritimeRoutesLayer.tsx# Arcos geodésicos marinhos mercantes a R=1.003
+│   │   ├── observatory/               # Camada 3: Observatório Planetário & Tráfego Global
+│   │   │   ├── ObservatoryPanel.tsx   # Drawer lateral com toggles de camadas e contadores ao vivo
+│   │   │   └── ObservatoryTelemetryHUD.tsx # HUD flutuante com telemetria contínua da ISS/voos
 │   │   ├── hud/                       # Camada 1: Inspector HUD
 │   │   │   ├── InspectorHUD.tsx       # Drawer lateral flutuante em glassmorphism
 │   │   │   ├── CountryHeader.tsx      # Bandeira vetorial, nome oficial e capital
@@ -121,17 +136,19 @@ apps/web/
 │   │   ├── timelineStore.ts           # Anos, marcos, escala geológica (Ma), filtros e presets
 │   │   ├── readerStore.ts             # Dimensão ativa e estado de leitura
 │   │   ├── comparatorStore.ts         # Países selecionados para comparação
-│   │   ├── studyStore.ts              # Recorte de estudo, anotações e sincronização de fork
+│   │   ├── studyStore.ts              # Recorte de estudo, activeObservatoryLayers e fork
+│   │   ├── observatoryStore.ts        # Camadas ativas, opacidades, seleção de telemetria e cache
 │   │   ├── apollo11Store.ts           # Telemetria e controles da missão Apollo 11
 │   │   └── historicalRouteStore.ts    # Reprodução e waypoints da rota de circum-navegação
-│   └── lib/                           # Utilitários, efemérides, datasets paleogeográficos e citações
+│   └── lib/                           # Utilitários, efemérides, datasets e citações
 │       ├── historical-entities.ts     # Resolução contínua de entidades históricas
 │       ├── historical-topology.ts     # Carregamento e cache assíncrono de TopoJSON
 │       ├── historical-routes.ts       # Reconstituição da circum-navegação de Magalhães-Elcano
 │       ├── paleo-data.ts              # Catálogo de eras paleogeográficas e placas da Pangeia
-│       └── apollo11.ts                # Física orbital e telemetria da Apollo 11
+│       ├── apollo11.ts                # Física orbital e telemetria da Apollo 11
+│       └── observatory-data.ts        # Propagação orbital SGP4 da ISS, tipos e fallbacks
 └── test/
-    └── unit.test.ts                   # 148 testes automatizados em 22 suítes cobrindo todas as regras
+    └── unit.test.ts                   # 166 testes automatizados em 23 suítes cobrindo todas as regras
 ```
 
 ### 2.2. Engenharia Gráfica 3D (Shaders e Picking)
@@ -162,6 +179,25 @@ apps/web/
 #### Render Loop Throttling (RN22)
 Quando o usuário expande a Camada 2 (Modo Leitura Profunda), o estado `isReaderOpen` aciona a desaceleração do loop gráfico do Three.js, reduzindo o consumo de energia e ciclos de GPU durante o estudo textual prolongado.
 
+### 2.3. Engenharia do Observatório Planetário & Tráfego Global (Horizonte 3)
+
+O Horizonte 3 introduz uma arquitetura de visualização em tempo quase real de dados científicos e telemetria:
+1. **Queimadas Ativas (NASA FIRMS - RN17)**:
+   - Renderização em nuvem de pontos via `THREE.Points` a $R = 1.0025$.
+   - Buffers `Float32Array` de posição e cor (mapeamento térmico de Fire Radiative Power - FRP) isolados da opacidade para evitar re-alocações desnecessárias na GPU durante a manipulação do painel.
+2. **Eventos Naturais Severos (NASA EONET - RN17)**:
+   - Marcadores esféricos a $R = 1.006$ com anéis pulsantes e raycast picking para inspeção de ciclones, tempestades tropicais e erupções vulcânicas.
+3. **Estação Espacial Internacional (ISS) & Satélites (RN18)**:
+   - Malha poligonal 3D da ISS posicionada em altitude LEO realista ($R = 1.18$).
+   - Propagação contínua a 60 FPS no `useFrame` via `calculateIssPosition(Date.now())` com orientação dos painéis solares pelo vetor velocidade tangente da órbita (inclinação $51.64^\circ$, altitude 408 km e velocidade $27.600\text{ km/h}$).
+   - Traçado de órbita elíptica completa em grande círculo memoizado (`Line`).
+4. **Tráfego Aéreo Comercial (OpenSky ADS-B - RN18)**:
+   - Renderização via `THREE.InstancedMesh` em altitude de cruzeiro $R = 1.018$ orientando as aeronaves em base ortonormal indexada pelo rumo (*heading*).
+5. **Rotas Marítimas Comerciais (AIS - RN18)**:
+   - Grandes estreitos (Suez, Panamá, Malaca) e corredores oceânicos traçados em arcos geodésicos esféricos a $R = 1.003$ com interpolação `slerpVectors`.
+6. **Supressão Automática de Anacronismos (RN09 & RN10)**:
+   - Quando a Linha do Tempo for posicionada antes de 1957 (início da era espacial com o Sputnik) ou em eras geológicas (Pangeia), a função canônica `isContemporaryEpoch` suprime instantaneamente as camadas de satélites e aviação moderna da cena 3D, exibindo banner contextual no `ObservatoryPanel`.
+
 ---
 
 ## 3. Arquitetura do Backend (`services/data-pipeline`)
@@ -182,9 +218,12 @@ O microsserviço Python em **FastAPI** segue a **Clean Architecture**, segregado
 
 | Camada de Dados | Fontes | Armazenamento | Política de Cache / TTL |
 | :--- | :--- | :--- | :--- |
-| **Alta Volatilidade** | Clima (Open-Meteo), efemérides solares em tempo real. | Redis 7 | **15 minutos** com renovação automática. |
+| **Alta Volatilidade (Tempo Real)** | Posição orbital da ISS (CelesTrak / SGP4). | In-Memory Route Proxy | **60 segundos** com renovação automática. |
+| **Alta Volatilidade (Tráfego)** | Tráfego Aéreo (OpenSky ADS-B) e Rotas AIS. | In-Memory Route Proxy | **120 segundos** com deduplicação de requisições. |
+| **Média-Alta Volatilidade (Satélite)** | Queimadas (NASA FIRMS) e Eventos Severos (NASA EONET). | In-Memory Route Proxy / Redis | **15 minutos** com fallbacks integrados. |
+| **Média-Alta Volatilidade (Clima)** | Clima ao vivo (Open-Meteo), efemérides solares NOAA. | Redis 7 | **15 minutos** com circuit breaker. |
 | **Média Volatilidade** | Indicadores socioeconômicos anuais (Banco Mundial, IBGE), notícias GDELT. | PostgreSQL + Redis | **24 horas a 7 dias**; atualizados por jobs em lote. |
-| **Imutável** | Polígonos de fronteiras (TopoJSON), marcos históricos consolidados, estudos compartilhados. | PostgreSQL 16 (PostGIS) | **Permanente**. Headers `Cache-Control: public, max-age=31536000, immutable`. |
+| **Imutável** | Polígonos de fronteiras (TopoJSON), eras paleogeográficas, marcos consolidados, estudos compartilhados. | PostgreSQL 16 (PostGIS) | **Permanente**. Headers `Cache-Control: public, max-age=31536000, immutable`. |
 
 ---
 
@@ -239,6 +278,10 @@ erDiagram
         int timelineStartYear "1947"
         int timelineEndYear "1991"
         string[] selectedCountryIsos "['BRA', 'DEU']"
+        string[] activeObservatoryLayers "['NASA_FIRMS', 'ISS_SATELLITES']"
         string markdownNotes "Anotações do pesquisador"
+        string historicalEra "COLD_WAR_1969"
+        float geologicalMa "null"
+        string activeRouteId "null"
     }
 ```

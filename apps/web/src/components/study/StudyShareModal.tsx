@@ -11,6 +11,8 @@ import { findMilestoneById } from "@/lib/country-data";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { getHistoricalRoute } from "@/lib/historical-routes";
+import { useObservatoryStore } from "@/stores/observatoryStore";
+import { isContemporaryEpoch } from "@/lib/observatory-data";
 
 export const StudyShareModal: React.FC = () => {
   const storeIsShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
@@ -72,6 +74,12 @@ export const StudyShareModal: React.FC = () => {
       ? (useHistoricalRouteStore.getState().activeRouteId || useTimelineStore.getState().activeRouteId || null)
       : (storeHistRouteId || storeTimeRouteId || null);
 
+  const storeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
+  const activeObservatoryLayers =
+    typeof window === "undefined"
+      ? (useObservatoryStore.getState().activeLayers || [])
+      : (storeObservatoryLayers || []);
+
   const [shareUrl, setShareUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
@@ -106,6 +114,13 @@ export const StudyShareModal: React.FC = () => {
   const geologicalEraDef = geologicalMa ? resolveGeologicalEra(geologicalMa) : null;
   const historicalRouteDef = activeRouteId ? getHistoricalRoute(activeRouteId) : null;
 
+  const isContemporary =
+    !geologicalMa &&
+    isContemporaryEpoch(effectiveYear, null) &&
+    activeRouteId !== "magellan-1519";
+
+  const effectiveObservatoryLayers = isContemporary ? activeObservatoryLayers : [];
+
   const handleGenerateLink = async () => {
     setLoading(true);
     setErrorMsg("");
@@ -128,6 +143,7 @@ export const StudyShareModal: React.FC = () => {
       isApollo11Active,
       geologicalMa: geologicalMa ?? null,
       activeRouteId: activeRouteId ?? null,
+      activeObservatoryLayers: effectiveObservatoryLayers,
     };
 
     try {
@@ -153,6 +169,7 @@ export const StudyShareModal: React.FC = () => {
           isApollo11Active,
           geologicalMa: geologicalMa ?? null,
           activeRouteId: activeRouteId ?? null,
+          activeObservatoryLayers: effectiveObservatoryLayers,
         });
       } else {
         setErrorMsg("Não foi possível registrar o snapshot do estudo no servidor.");
@@ -285,6 +302,24 @@ export const StudyShareModal: React.FC = () => {
             </div>
           )}
 
+          {/* Planetary Observatory Badge */}
+          {effectiveObservatoryLayers.length > 0 && (
+            <div
+              data-testid="modal-observatory-badge"
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-medium animate-in fade-in"
+            >
+              <span className="text-lg select-none">📡</span>
+              <div className="flex-1">
+                <div className="font-semibold text-cyan-200">
+                  Observatório Planetário Ativo
+                </div>
+                <div className="text-[11px] text-cyan-300/80">
+                  {effectiveObservatoryLayers.length} camada(s) científica(s) capturada(s) ({effectiveObservatoryLayers.join(", ")}).
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
             <div className="font-semibold text-slate-300">Recorte capturado automaticamente:</div>
             <div>• Período: {startYear} — {endYear} ({endYear - startYear} anos)</div>
@@ -304,6 +339,11 @@ export const StudyShareModal: React.FC = () => {
             {activeRouteId && (
               <div className="text-indigo-300 font-medium">
                 • Rota Histórica 3D: {historicalRouteDef?.title || activeRouteId}
+              </div>
+            )}
+            {effectiveObservatoryLayers.length > 0 && (
+              <div className="text-cyan-300 font-medium">
+                • Observatório: {effectiveObservatoryLayers.length} camada(s) ativa(s)
               </div>
             )}
           </div>
