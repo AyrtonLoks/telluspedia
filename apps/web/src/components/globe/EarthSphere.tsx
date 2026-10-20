@@ -28,6 +28,7 @@ import {
 } from "@/lib/historical-topology";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { useStudyStore } from "@/stores/studyStore";
+import { useCosmicStore } from "@/stores/cosmicStore";
 
 /**
  * Generates an authentic equirectangular DataTexture of Pangea (~250 Ma)
@@ -405,6 +406,11 @@ export const EarthSphere: React.FC = () => {
   // Handle Raycasting Pointer Movement (<0.2ms in-memory lookup)
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
+    if (useCosmicStore.getState().isCosmicMode) {
+      useCosmicStore.getState().setHoveredBody("EARTH");
+      setHoveredIso(null);
+      return;
+    }
     if (isGeologicalActive) {
       setHoveredIso(null);
       return;
@@ -419,12 +425,26 @@ export const EarthSphere: React.FC = () => {
   };
 
   const handlePointerOut = () => {
+    if (useCosmicStore.getState().isCosmicMode) {
+      useCosmicStore.getState().setHoveredBody(null);
+    }
     setHoveredIso(null);
   };
 
   // Handle Click & FlyTo
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
+    // In Cosmic Mode, clicking Earth selects Earth as a celestial body
+    if (useCosmicStore.getState().isCosmicMode) {
+      useCosmicStore.getState().focusBody("EARTH");
+      return;
+    }
+
+    // In Normal Mode, if Moon was focused, clicking Earth restores focus to Earth
+    if (useCosmicStore.getState().focusedBodyId === "MOON") {
+      useCosmicStore.getState().focusBody(null);
+    }
+
     if (isGeologicalActive) {
       setSelectedIso(null);
       setHoveredIso(null);

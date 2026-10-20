@@ -18,6 +18,9 @@ export interface StudyRecord {
   geologicalMa?: number | null;
   activeRouteId?: string | null;
   activeObservatoryLayers?: string[];
+  isCosmicMode?: boolean | null;
+  focusedCelestialBody?: string | null;
+  activeCosmicLayers?: string[];
   createdAt: string;
 }
 
@@ -43,6 +46,9 @@ Este estudo examina as repercussões da bipolaridade EUA-URSS nas instituições
   geologicalMa: null,
   activeRouteId: null,
   activeObservatoryLayers: [],
+  isCosmicMode: false,
+  focusedCelestialBody: null,
+  activeCosmicLayers: [],
   createdAt: new Date("2026-10-19T00:00:00Z").toISOString(),
 });
 
@@ -63,7 +69,7 @@ export function forkStudyRecord(original: StudyRecord, newId?: string): StudyRec
       ? original.geologicalMa
       : null;
 
-    const sanitizedRouteId =
+  const sanitizedRouteId =
     typeof original.activeRouteId === "string" && original.activeRouteId.trim().length > 0
       ? original.activeRouteId.trim()
       : null;
@@ -79,6 +85,11 @@ export function forkStudyRecord(original: StudyRecord, newId?: string): StudyRec
       : Array.isArray(original.activeObservatoryLayers)
         ? [...original.activeObservatoryLayers]
         : [];
+
+  const isCosmic = Boolean(original.isCosmicMode);
+  const sanitizedCosmicLayers = Array.isArray(original.activeCosmicLayers)
+    ? [...original.activeCosmicLayers]
+    : [];
 
   return {
     id: newId || `fork-${Math.random().toString(36).substring(2, 10)}`,
@@ -98,6 +109,9 @@ export function forkStudyRecord(original: StudyRecord, newId?: string): StudyRec
     geologicalMa: sanitizedMa,
     activeRouteId: sanitizedRouteId,
     activeObservatoryLayers: sanitizedObservatoryLayers,
+    isCosmicMode: isCosmic,
+    focusedCelestialBody: original.focusedCelestialBody ?? null,
+    activeCosmicLayers: sanitizedCosmicLayers,
     createdAt: new Date().toISOString(),
   };
 }
@@ -128,6 +142,11 @@ export function restoreStudyRecord(raw: Partial<StudyRecord> & { id: string; tit
         ? [...raw.activeObservatoryLayers]
         : [];
 
+  const isCosmic = Boolean(raw.isCosmicMode);
+  const sanitizedCosmicLayers = Array.isArray(raw.activeCosmicLayers)
+    ? [...raw.activeCosmicLayers]
+    : [];
+
   return {
     id: raw.id,
     parentId: raw.parentId ?? null,
@@ -146,7 +165,9 @@ export function restoreStudyRecord(raw: Partial<StudyRecord> & { id: string; tit
     geologicalMa: sanitizedMa,
     activeRouteId: sanitizedRouteId,
     activeObservatoryLayers: sanitizedObservatoryLayers,
+    isCosmicMode: isCosmic,
+    focusedCelestialBody: raw.focusedCelestialBody ?? null,
+    activeCosmicLayers: sanitizedCosmicLayers,
     createdAt: raw.createdAt ?? new Date().toISOString(),
   };
 }
-

@@ -129,6 +129,9 @@ model Study {
   geologicalMa        Float?
   activeRouteId       String?
   activeObservatoryLayers String[]  @default([])
+  isCosmicMode          Boolean?  @default(false)
+  focusedCelestialBody  String?
+  activeCosmicLayers    String[]  @default([])
   createdAt           DateTime  @default(now())
 
   parent              Study?    @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)

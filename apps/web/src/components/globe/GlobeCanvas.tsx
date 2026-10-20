@@ -18,12 +18,21 @@ import { IssOrbitLayer } from "./IssOrbitLayer";
 import { AirTrafficLayer } from "./AirTrafficLayer";
 import { MaritimeRoutesLayer } from "./MaritimeRoutesLayer";
 import { ObservatoryTelemetryHUD } from "@/components/observatory/ObservatoryTelemetryHUD";
+import { CosmicCameraController } from "./CosmicCameraController";
+import { SunCore } from "./SunCore";
+import { PlanetarySystem } from "./PlanetarySystem";
+import { AsteroidBeltLayer } from "./AsteroidBeltLayer";
+import { CometHalleyTrajectory } from "./CometHalleyTrajectory";
+import { MeteorShowersLayer } from "./MeteorShowersLayer";
+
 import { useGlobeStore, MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "@/stores/globeStore";
 import { calculateSubsolarPoint, getSunDirectionVector } from "@/lib/astronomy";
+import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
 
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useCosmicStore } from "@/stores/cosmicStore";
 import { isContemporaryEpoch } from "@/lib/observatory-data";
 import { findMilestoneById } from "@/lib/country-data";
 
@@ -71,6 +80,15 @@ export const GlobeCanvas: React.FC = () => {
     isGeologicalActive ? (selectedGeologicalMa || 250) : null
   );
 
+  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+
+  // Compute Earth's position in cosmic space or origin for earth mode
+  const earthPosition = useMemo(() => {
+    if (!isCosmicMode) return [0, 0, 0] as [number, number, number];
+    const pos = calculatePlanetaryPosition("EARTH", selectedYear || new Date().getUTCFullYear()).scenePosition;
+    return [pos.x, pos.y, pos.z] as [number, number, number];
+  }, [isCosmicMode, selectedYear]);
+
   // Compute primary solar light position synchronized with active date
   const sunPosition = useMemo(() => {
     let targetDate = new Date();
@@ -102,6 +120,10 @@ export const GlobeCanvas: React.FC = () => {
     useGlobeStore.getState().setHoveredIso(null);
     useTimelineStore.getState().selectMilestone(null);
     useObservatoryStore.getState().setSelectedEntity(null);
+    useCosmicStore.getState().setHoveredBody(null);
+    if (!useCosmicStore.getState().isCosmicMode && useCosmicStore.getState().focusedBodyId === "MOON") {
+      useCosmicStore.getState().focusBody(null);
+    }
   };
 
   return (
@@ -113,8 +135,10 @@ export const GlobeCanvas: React.FC = () => {
         onPointerMissed={handlePointerMissed}
       >
         {/* Ambient & Directional Sun Lighting */}
-        <ambientLight intensity={0.15} />
-        <directionalLight position={sunPosition} intensity={2.2} color="#ffffff" />
+        <ambientLight intensity={isCosmicMode ? 0.25 : 0.15} />
+        {!isCosmicMode && (
+          <directionalLight position={sunPosition} intensity={2.2} color="#ffffff" />
+        )}
 
         {/* Orbit Controls with Natural Inertia & Calibrated Damping */}
         <OrbitControls
@@ -129,40 +153,57 @@ export const GlobeCanvas: React.FC = () => {
           enableDamping={true}
         />
 
-        {/* Camera FlyTo Interpolator */}
-        <CameraFlyToController />
+        {/* Earth Camera FlyTo Interpolator (Active in Earth Mode) */}
+        {!isCosmicMode && <CameraFlyToController />}
 
-        {/* Deep Space Celestial Vault */}
+        {/* Cosmic Camera Target Handover Controller (Active in Cosmic Mode) */}
+        <CosmicCameraController />
+
+        {/* Deep Space Celestial Vault (HYG 3,500+ Stars & IAU Constellations) */}
         <SkyStars />
 
-        {/* Realistic Moon Orbit */}
-        <OrbitingMoon />
+        {/* Solar System Components (Active in Cosmic Mode) */}
+        {isCosmicMode && (
+          <>
+            <SunCore />
+            <PlanetarySystem />
+            <AsteroidBeltLayer />
+            <CometHalleyTrajectory />
+            <MeteorShowersLayer />
+          </>
+        )}
 
-        {/* 3D Earth Mesh with Shader */}
-        <EarthSphere />
+        {/* Earth Core Entities Group (Positioned at Origin in Earth View, or Orbit in Cosmic View) */}
+        <group position={earthPosition}>
+          {/* Realistic Moon Orbit */}
+          <OrbitingMoon />
 
-        {/* High-Resolution TopoJSON Borders */}
-        <CountryBorders />
+          {/* 3D Earth Mesh with Shader */}
+          <EarthSphere />
 
-        {/* Paleogeographic Tectonic Plates & Suture Zones (Pangea) */}
-        {isGeologicalActive && <PaleoPlatesLayer />}
+          {/* High-Resolution TopoJSON Borders */}
+          <CountryBorders />
 
-        {/* 3D Circumnavigation Trajectory & Animated Nau Victoria */}
-        {isMagellanActive && <HistoricalRouteTrajectory />}
+          {/* Paleogeographic Tectonic Plates & Suture Zones (Pangea) */}
+          {isGeologicalActive && <PaleoPlatesLayer />}
 
-        {/* 3D Translunar Trajectory & Animated Apollo 11 Spacecraft */}
-        {isApolloActive && <Apollo11Trajectory />}
+          {/* 3D Circumnavigation Trajectory & Animated Nau Victoria */}
+          {isMagellanActive && <HistoricalRouteTrajectory />}
 
-        {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
-        {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
-        {isContemporary && activeObservatoryLayers.includes("NASA_EONET") && <NasaEonetLayer />}
-        {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && <IssOrbitLayer />}
-        {isContemporary && activeObservatoryLayers.includes("FLIGHTS_OPENSKY") && <AirTrafficLayer />}
-        {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
+          {/* 3D Translunar Trajectory & Animated Apollo 11 Spacecraft */}
+          {isApolloActive && <Apollo11Trajectory />}
+
+          {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
+          {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
+          {isContemporary && activeObservatoryLayers.includes("NASA_EONET") && <NasaEonetLayer />}
+          {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && <IssOrbitLayer />}
+          {isContemporary && activeObservatoryLayers.includes("FLIGHTS_OPENSKY") && <AirTrafficLayer />}
+          {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
+        </group>
       </Canvas>
 
       {/* Floating Apollo 11 Space Flight Telemetry HUD Overlay */}
-      <Apollo11TelemetryOverlay />
+      {isApolloActive && <Apollo11TelemetryOverlay />}
 
       {/* Floating Planetary Observatory Telemetry HUD Overlay */}
       {isContemporary && <ObservatoryTelemetryHUD />}

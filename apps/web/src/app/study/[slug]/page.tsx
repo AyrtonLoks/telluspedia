@@ -9,6 +9,7 @@ import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useCosmicStore } from "@/stores/cosmicStore";
 
 function StudyContent({
   params,
@@ -44,7 +45,20 @@ function StudyContent({
             geologicalMa: data.geologicalMa,
             activeRouteId: data.activeRouteId,
             activeObservatoryLayers: data.activeObservatoryLayers,
+            isCosmicMode: data.isCosmicMode,
+            focusedCelestialBody: data.focusedCelestialBody,
+            activeCosmicLayers: data.activeCosmicLayers,
           });
+
+          // Restauração do modo cósmico e corpo focado
+          if (data.isCosmicMode) {
+            useCosmicStore.getState().enterCosmicView(data.focusedCelestialBody || undefined);
+            if (Array.isArray(data.activeCosmicLayers) && data.activeCosmicLayers.length > 0) {
+              useCosmicStore.getState().setLayers(data.activeCosmicLayers);
+            }
+          } else {
+            useCosmicStore.getState().exitToEarthView();
+          }
 
           // Restauração das camadas do observatório com proteção contra anacronismos
           const isStudyAnachronistic =

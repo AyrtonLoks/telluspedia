@@ -7,6 +7,7 @@ import { HistoricalEraBadge } from "@/components/globe/HistoricalEraBadge";
 import { PaleoEraBadge } from "@/components/globe/PaleoEraBadge";
 import { HistoricalRouteOverlay } from "@/components/globe/HistoricalRouteOverlay";
 import { InspectorHUD } from "@/components/hud/InspectorHUD";
+import { CosmicInspectorHUD } from "@/components/hud/CosmicInspectorHUD";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
 import { ReaderMode } from "@/components/reader/ReaderMode";
 import { CountryComparator } from "@/components/comparator/CountryComparator";
@@ -50,8 +51,11 @@ export default function HomePage() {
       {/* Floating Historical Expedition / Magellan Route HUD Overlay (RN12) */}
       <HistoricalRouteOverlay />
 
-      {/* Camada 1: Inspector HUD (Floating Right Glassmorphism Drawer) */}
+      {/* Camada 1: Inspector HUD (Floating Right Glassmorphism Drawer for Countries) */}
       <InspectorHUD />
+
+      {/* Cosmic Inspector HUD (Floating Right Glassmorphism Drawer for Solar System) */}
+      <CosmicInspectorHUD />
 
       {/* Bottom Semantic Dynamic Timeline (50 Years Default) */}
       <TimelineBar />

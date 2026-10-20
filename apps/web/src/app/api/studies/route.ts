@@ -50,6 +50,9 @@ export async function POST(req: NextRequest) {
           : Array.isArray(body.activeObservatoryLayers)
             ? body.activeObservatoryLayers
             : [],
+      isCosmicMode: Boolean(body.isCosmicMode),
+      focusedCelestialBody: body.focusedCelestialBody ?? null,
+      activeCosmicLayers: Array.isArray(body.activeCosmicLayers) ? body.activeCosmicLayers : [],
       createdAt: new Date().toISOString(),
     };
 

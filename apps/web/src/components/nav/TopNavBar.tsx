@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Globe, Search, BarChart2, Share2, RotateCcw, Radio } from "lucide-react";
+import { Globe, Search, BarChart2, Share2, RotateCcw, Radio, Orbit } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useCosmicStore } from "@/stores/cosmicStore";
 import { PILOT_COUNTRIES, getCountryData } from "@/lib/country-data";
 
 export const TopNavBar: React.FC = () => {
@@ -27,6 +28,9 @@ export const TopNavBar: React.FC = () => {
       ? useObservatoryStore.getState().activeLayers
       : storeActiveLayers;
   const hasActiveLayers = activeObservatoryLayers.length > 0;
+
+  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  const toggleCosmicMode = useCosmicStore((s) => s.toggleCosmicMode);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -102,6 +106,26 @@ export const TopNavBar: React.FC = () => {
       </div>
 
       {/* Action Buttons */}
+      <button
+        onClick={toggleCosmicMode}
+        data-testid="top-nav-cosmos-button"
+        className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl glass-panel text-xs font-medium transition-all relative ${
+          isCosmicMode
+            ? "border-amber-500/80 text-amber-300 shadow-md shadow-amber-950/40 bg-amber-950/20"
+            : "hover:border-cyan-500/50 text-slate-200 hover:text-cyan-300"
+        }`}
+        title="Alternar entre Terra e Sistema Solar / Cosmos"
+      >
+        <Orbit className="w-4 h-4 text-amber-400" />
+        <span className="hidden sm:inline">{isCosmicMode ? "Sistema Solar" : "Cosmos"}</span>
+        {isCosmicMode && (
+          <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
+          </span>
+        )}
+      </button>
+
       <button
         onClick={toggleObservatoryPanel}
         data-testid="top-nav-observatory-button"

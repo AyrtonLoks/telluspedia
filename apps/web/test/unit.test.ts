@@ -4277,6 +4277,9 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
   });
 });
 
+import "./cosmic.test";
+
+
 
 
 

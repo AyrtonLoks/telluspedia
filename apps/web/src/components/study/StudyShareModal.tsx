@@ -13,6 +13,7 @@ import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { getHistoricalRoute } from "@/lib/historical-routes";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { isContemporaryEpoch } from "@/lib/observatory-data";
+import { useCosmicStore } from "@/stores/cosmicStore";
 
 export const StudyShareModal: React.FC = () => {
   const storeIsShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
@@ -80,6 +81,22 @@ export const StudyShareModal: React.FC = () => {
       ? (useObservatoryStore.getState().activeLayers || [])
       : (storeObservatoryLayers || []);
 
+  const storeCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  const isCosmicMode =
+    typeof window === "undefined"
+      ? (useCosmicStore.getState().isCosmicMode ?? storeCosmicMode)
+      : storeCosmicMode;
+  const storeFocusedBody = useCosmicStore((s) => s.focusedBodyId);
+  const focusedBodyId =
+    typeof window === "undefined"
+      ? (useCosmicStore.getState().focusedBodyId ?? storeFocusedBody)
+      : storeFocusedBody;
+  const storeCosmicLayers = useCosmicStore((s) => s.activeCosmicLayers);
+  const activeCosmicLayers =
+    typeof window === "undefined"
+      ? (useCosmicStore.getState().activeCosmicLayers || [])
+      : (storeCosmicLayers || []);
+
   const [shareUrl, setShareUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
@@ -144,6 +161,9 @@ export const StudyShareModal: React.FC = () => {
       geologicalMa: geologicalMa ?? null,
       activeRouteId: activeRouteId ?? null,
       activeObservatoryLayers: effectiveObservatoryLayers,
+      isCosmicMode: Boolean(isCosmicMode),
+      focusedCelestialBody: focusedBodyId,
+      activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
     };
 
     try {
@@ -170,6 +190,9 @@ export const StudyShareModal: React.FC = () => {
           geologicalMa: geologicalMa ?? null,
           activeRouteId: activeRouteId ?? null,
           activeObservatoryLayers: effectiveObservatoryLayers,
+          isCosmicMode: Boolean(isCosmicMode),
+          focusedCelestialBody: focusedBodyId,
+          activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
         });
       } else {
         setErrorMsg("Não foi possível registrar o snapshot do estudo no servidor.");
@@ -320,6 +343,24 @@ export const StudyShareModal: React.FC = () => {
             </div>
           )}
 
+          {/* Cosmic / Solar System Mode Badge */}
+          {isCosmicMode && (
+            <div
+              data-testid="modal-cosmic-badge"
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium animate-in fade-in"
+            >
+              <span className="text-lg select-none">🪐</span>
+              <div className="flex-1">
+                <div className="font-semibold text-amber-200">
+                  Estudo Cósmico / Sistema Solar Ativo
+                </div>
+                <div className="text-[11px] text-amber-300/80">
+                  {focusedBodyId ? `Foco Orbital: ${focusedBodyId}` : "Visão Panorâmica Heliocêntrica"} • {activeCosmicLayers.length} camadas cósmicas capturadas.
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
             <div className="font-semibold text-slate-300">Recorte capturado automaticamente:</div>
             <div>• Período: {startYear} — {endYear} ({endYear - startYear} anos)</div>
@@ -344,6 +385,11 @@ export const StudyShareModal: React.FC = () => {
             {effectiveObservatoryLayers.length > 0 && (
               <div className="text-cyan-300 font-medium">
                 • Observatório: {effectiveObservatoryLayers.length} camada(s) ativa(s)
+              </div>
+            )}
+            {isCosmicMode && (
+              <div className="text-amber-300 font-medium">
+                • Expansão Cósmica: Sistema Solar ({focusedBodyId || "Visão Geral"}, {activeCosmicLayers.length} camadas)
               </div>
             )}
           </div>

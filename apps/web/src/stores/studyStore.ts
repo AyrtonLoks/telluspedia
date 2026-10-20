@@ -11,6 +11,9 @@ interface StudyState {
   geologicalMa: number | null;
   activeRouteId: string | null;
   activeObservatoryLayers: string[];
+  isCosmicMode: boolean;
+  focusedCelestialBody: string | null;
+  activeCosmicLayers: string[];
   isShareModalOpen: boolean;
 
   setStudy: (study: {
@@ -26,6 +29,9 @@ interface StudyState {
     geologicalMa?: number | null;
     activeRouteId?: string | null;
     activeObservatoryLayers?: string[] | null;
+    isCosmicMode?: boolean | null;
+    focusedCelestialBody?: string | null;
+    activeCosmicLayers?: string[] | null;
   }) => void;
   restoreStudy: (study: {
     id: string;
@@ -40,6 +46,9 @@ interface StudyState {
     geologicalMa?: number | null;
     activeRouteId?: string | null;
     activeObservatoryLayers?: string[] | null;
+    isCosmicMode?: boolean | null;
+    focusedCelestialBody?: string | null;
+    activeCosmicLayers?: string[] | null;
   }) => void;
   forkStudy: (forked: {
     id: string;
@@ -54,6 +63,9 @@ interface StudyState {
     geologicalMa?: number | null;
     activeRouteId?: string | null;
     activeObservatoryLayers?: string[] | null;
+    isCosmicMode?: boolean | null;
+    focusedCelestialBody?: string | null;
+    activeCosmicLayers?: string[] | null;
   }) => void;
   setCurrentStudyId: (id: string | null) => void;
   setTitle: (title: string) => void;
@@ -64,6 +76,9 @@ interface StudyState {
   setGeologicalMa: (ma: number | null) => void;
   setActiveRouteId: (routeId: string | null) => void;
   setActiveObservatoryLayers: (layers: string[]) => void;
+  setIsCosmicMode: (isCosmic: boolean) => void;
+  setFocusedCelestialBody: (body: string | null) => void;
+  setActiveCosmicLayers: (layers: string[]) => void;
   setShareModalOpen: (isOpen: boolean) => void;
   resetStudy: () => void;
 }
@@ -79,6 +94,9 @@ export const useStudyStore = create<StudyState>((set) => ({
   geologicalMa: null,
   activeRouteId: null,
   activeObservatoryLayers: [],
+  isCosmicMode: false,
+  focusedCelestialBody: null,
+  activeCosmicLayers: [],
   isShareModalOpen: false,
 
   restoreStudy: (study) => {
@@ -102,6 +120,11 @@ export const useStudyStore = create<StudyState>((set) => ({
           ? [...study.activeObservatoryLayers]
           : [];
 
+    const isCosmic = Boolean(study.isCosmicMode);
+    const sanitizedCosmicLayers = Array.isArray(study.activeCosmicLayers)
+      ? [...study.activeCosmicLayers]
+      : [];
+
     set({
       currentStudyId: study.id,
       parentId: study.parentId || null,
@@ -113,6 +136,9 @@ export const useStudyStore = create<StudyState>((set) => ({
       geologicalMa: sanitizedMa,
       activeRouteId: study.activeRouteId || null,
       activeObservatoryLayers: sanitizedLayers,
+      isCosmicMode: isCosmic,
+      focusedCelestialBody: study.focusedCelestialBody || null,
+      activeCosmicLayers: sanitizedCosmicLayers,
     });
   },
 
@@ -141,6 +167,11 @@ export const useStudyStore = create<StudyState>((set) => ({
           ? [...forked.activeObservatoryLayers]
           : [];
 
+    const isCosmic = Boolean(forked.isCosmicMode);
+    const sanitizedCosmicLayers = Array.isArray(forked.activeCosmicLayers)
+      ? [...forked.activeCosmicLayers]
+      : [];
+
     set({
       currentStudyId: forked.id,
       parentId: forked.parentId,
@@ -152,6 +183,9 @@ export const useStudyStore = create<StudyState>((set) => ({
       geologicalMa: sanitizedMa,
       activeRouteId: forked.activeRouteId || null,
       activeObservatoryLayers: sanitizedLayers,
+      isCosmicMode: isCosmic,
+      focusedCelestialBody: forked.focusedCelestialBody || null,
+      activeCosmicLayers: sanitizedCosmicLayers,
     });
   },
 
@@ -164,6 +198,9 @@ export const useStudyStore = create<StudyState>((set) => ({
   setGeologicalMa: (geologicalMa) => set({ geologicalMa }),
   setActiveRouteId: (activeRouteId) => set({ activeRouteId }),
   setActiveObservatoryLayers: (layers) => set({ activeObservatoryLayers: layers }),
+  setIsCosmicMode: (isCosmic) => set({ isCosmicMode: isCosmic }),
+  setFocusedCelestialBody: (body) => set({ focusedCelestialBody: body }),
+  setActiveCosmicLayers: (layers) => set({ activeCosmicLayers: layers }),
   setShareModalOpen: (isOpen) => set({ isShareModalOpen: isOpen }),
   resetStudy: () =>
     set({
@@ -177,6 +214,9 @@ export const useStudyStore = create<StudyState>((set) => ({
       geologicalMa: null,
       activeRouteId: null,
       activeObservatoryLayers: [],
+      isCosmicMode: false,
+      focusedCelestialBody: null,
+      activeCosmicLayers: [],
       isShareModalOpen: false,
     }),
 }));
