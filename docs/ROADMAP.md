@@ -21,10 +21,11 @@ timeline
         Observatório Planetário : Camadas NASA GIBS & FIRMS
                                : Rastreamento ISS & Satélites
                                : Tráfego Aéreo & Rotas Marítimas
-    section Horizonte 4 (Próximo)
+    section Horizonte 4 (Concluído)
         Expansão Cósmica : Sistema Solar 3D
                         : Exploração de Planetas & Órbitas
                         : Navegação pelo Cosmos & Constelações
+                        : Seleção Interativa da Terra & Lua
 ```
 
 ---
@@ -73,6 +74,28 @@ timeline
 
 ---
 
-### Horizonte 4 — Expansão Cósmica
-- **Navegação além da Órbita Terrestre**: Zoom contínuo expandindo para a visualização do **Sistema Solar**.
-- **Modelagem de Corpos Celestes**: Planetas, luas, asteroides, cometas e meteoros com efemérides de alta precisão do **NASA JPL Horizons API** e **Minor Planet Center (MPC)**.
+### Horizonte 4 — Expansão Cósmica *(Status: Concluído)*
+- **Sistema Solar 3D & Efemérides Keplerianas (RN18, RN20) (Concluído)**:
+  - Resolução analítica em tempo real da Equação de Kepler com algoritmo de Newton-Raphson e convergência $< 10^{-10}$ a 60 FPS no loop gráfico, cobrindo todos os 8 planetas do Sistema Solar + Plutão via formulação Standish (1992)/NASA JPL (`apps/web/src/lib/astronomy-planets.ts`).
+  - Mapeamento de escala didática balanceada ($R_{\text{scene}} = 28 \cdot r^{0.55}$) garantindo preservação de ordem, visualização contínua das órbitas internas e externas e supressão de z-fighting no frustum da câmera.
+  - Sol emissivo central (`SunCore.tsx`) com shader GLSL customizado de corona pulsante e `pointLight` com atenuação física.
+  - Planetas com texturas PBR, anéis translúcidos de Saturno e Urano e curvas orbitais fechadas (`generateOrbitalPathPoints`) em `PlanetarySystem.tsx`.
+  - Desduplicação da Terra no modo cósmico (`id !== "EARTH"`), preservando a malha fotorrealista com shader dia/noite e Fresnel de `EarthSphere.tsx`.
+- **Cinturão de Asteroides, Cometa Halley e Meteoros (RN18, RN20) (Concluído)**:
+  - Mais de 3.000 asteroides do cinturão principal entre Marte e Júpiter renderizados via `THREE.InstancedMesh` com matrizes de rotação e tamanhos heterogêneos (`AsteroidBeltLayer.tsx`).
+  - Dinâmica orbital de alta excentricidade ($e = 0.967$) do Cometa 1P/Halley com cauda iônica/poeira orientada radialmente em oposição ao vetor solar e intensidade luminosa inversamente proporcional ao quadrado da distância ao Sol (`CometHalleyTrajectory.tsx`).
+  - Chuvas sazonais de meteoros (Perseidas em Agosto e Geminídeas em Dezembro) renderizadas em feixes pontuais convergentes (`MeteorShowersLayer.tsx`).
+- **Abóbada Celeste HYG & 88 Constelações IAU (RN19) (Concluído)**:
+  - Catálogo estelar HYG com 3.500+ estrelas ($V \le 5.5$) em coordenadas equatoriais J2000 convertidas em coordenadas esféricas tridimensionais no raio $R = 900$ (`hyg-star-data.ts`).
+  - Índice de cor $B-V$ mapeado proceduralmente para classes espectrais reais (azuis $O/B$ a avermelhadas $M$).
+  - Malha vetorial dos 88 asterismos e constelações oficiais da União Astronômica Internacional (IAU) com rótulos tipográficos na abóbada celeste (`SkyStars.tsx`).
+- **HUD de Inspeção Cósmica & Controles de Reprodução (RN03, RN10) (Concluído)**:
+  - Painel lateral em glassmorphism (`CosmicInspectorHUD.tsx`) com ficha técnica astrofísica padronizada (raio, massa, gravidade, período orbital, temperatura média, atmosfera), cálculo dinâmico de distâncias Terra/Sol em UA e km, fases lunares via `getLunarPhase`, missões espaciais históricas e referências acadêmicas com links diretos (NASA/JPL/IAU).
+  - Controles de reprodução e velocidade orbital na `TimelineBar.tsx` ($1\times, 30\times, 365\times$) acoplados à store reativa `useCosmicStore`.
+  - Botão de acesso rápido "Sistema Solar / Cosmos" na barra superior (`TopNavBar.tsx`).
+- **Seleção Interativa da Terra e da Lua (Concluído)**:
+  - Seleção da Terra no modo cosmos: suprime seleção de países, foca a Terra com ficha planetária e botão contextual "Explorar Superfície / Países".
+  - Seleção da Lua no modo normal e no modo cósmico: cálculo e sincronização contínua de `currentMoonWorldPos`, anel luminoso de seleção, HUD com fase lunar e botões contextuais "Voltar à Terra" / "Focar na Terra".
+  - Transição e reancoramento suave de `controls.target` via `CosmicCameraController.tsx` entre o centro da Terra `(0, 0, 0)`, a Lua e qualquer planeta sem causar `NaN` no `OrbitControls`.
+- **Persistência de Estudos Cósmicos com Fork Imutável (RN16) (Concluído)**:
+  - Extensão do esquema Prisma `Study` e `useStudyStore` com os campos `isCosmicMode`, `focusedCelestialBody` e `activeCosmicLayers`, garantindo integridade nos endpoints de fork e modal de compartilhamento (`StudyShareModal.tsx`).

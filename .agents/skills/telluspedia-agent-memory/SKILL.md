@@ -84,10 +84,27 @@ Este documento serve como memória permanente do Antigravity para manter a conti
   - Serialização imutável do campo `activeObservatoryLayers String[]` no Prisma `Study`, Zustand `studyStore.ts`, `studies-store.ts`, modal de compartilhamento e endpoints de fork (`/study/[slug]`).
 - **Suíte de Testes**: 166 testes unitários automatizados em 23 suítes com 100% de aprovação e 0 erros de linter.
 
-### Horizonte 4 — Expansão Cósmica
-Quando o usuário solicitar o avanço para o Horizonte 4:
-1. **Navegação além da Órbita**:
-   - Permitir zoom out extremo (distâncias em Unidades Astronômicas - UA).
-   - Modelar Sol, Mercúrio, Vênus, Marte, Júpiter, Saturno, Urano e Netuno em escala visual balanceada.
-2. **Efemérides Cósmicas**:
-   - Conectar com **NASA JPL Horizons API** para posicionamento orbital de alta precisão.
+### Horizonte 4 — Expansão Cósmica (Concluído)
+- **Astrofísica & Efemérides Keplerianas (RN20)**:
+  - Motor analítico Standish (1992)/NASA JPL (`apps/web/src/lib/astronomy-planets.ts`) com convergência de Newton-Raphson $<10^{-10}$ a 60 FPS ininterruptos na Timeline para Mercúrio, Vênus, Terra, Marte, Júpiter, Saturno, Urano, Netuno e Plutão.
+  - Escala didática não-linear balanceada $R_{\text{scene}} = A \cdot r^{\gamma}$ ($A=28$, $\gamma=0.55$) com supressão matemática de *z-fighting* no frustum Three.js ($[0.5, 2000]$).
+  - Trajetória dinâmica hiperbólica/elíptica e cauda iônica orientada oposta ao Sol para o Cometa 1P/Halley nos periélios históricos (1910, 1986).
+  - Proxy server-side `/api/observatory/cosmos` com cache in-memory SWR (TTL 1h) para calibração NASA JPL Horizons.
+- **Abóbada Celeste HYG & 88 Constelações IAU (RN19)**:
+  - Catálogo de 3.500+ estrelas reais até magnitude $V \le 5.5$ (`apps/web/src/lib/hyg-star-data.ts`) com índice espectral de cor $B-V$, magnitude aparente calibrada e projeção equatorial J2000.
+  - 88 asterismos oficiais da IAU renderizados em `SkyStars.tsx` com alternância individual de linhas, nomes e rótulos estelares.
+- **Cena 3D & Gerenciador Cósmico**:
+  - `SunCore.tsx`: Sol emissivo com shader dinâmico de corona pulsante e `pointLight` central radial.
+  - `PlanetarySystem.tsx`: Malhas planetárias PBR com texturas fotorrealistas, anéis translúcidos de Saturno e Urano, órbitas keplerianas memoizadas e marcadores interativos com raycast picking.
+  - `AsteroidBeltLayer.tsx`: 3.000+ asteroides instanciados via `THREE.InstancedMesh` na faixa de 2.2 a 3.2 UA.
+  - `MeteorShowersLayer.tsx`: Chuvas sazonais (Perseidas em agosto, Geminídeas em dezembro).
+  - `CosmicCameraController.tsx`: Reancoramento cinemático do `controls.target` entre a Terra, a Lua, o Sol e o planeta focado sem injeção de `NaN` no OrbitControls, com suporte bidirecional de foco e zoom.
+- **Seleção Interativa da Terra e da Lua**:
+  - `OrbitingMoon.tsx`: Eventos de ponteiro com cálculo dinâmico de `currentMoonWorldPos` no `useFrame`, anel luminoso de destaque quando selecionada e botão contextual "Voltar à Terra" / "Focar na Terra".
+  - `EarthSphere.tsx`: No modo cosmos, suprime o picking de países e foca a Terra com ficha técnica planetária no `CosmicInspectorHUD` e botão "Explorar Superfície / Países". No modo normal, clicar na Terra desfaz o foco da Lua.
+- **Interface & Persistência de Estudos (RN02, RN16)**:
+  - `CosmicInspectorHUD.tsx`: Painel lateral em glassmorphism cumprindo o *HTML5 Phrasing Content Invariant* (sem `<div>` em `<p>`), exibindo ficha astrofísica completa, distâncias Terra/Sol em tempo real, fases lunares via `getLunarPhase`, missões espaciais históricas e citações acadêmicas da NASA.
+  - Controles de reprodução contínua na `TimelineBar.tsx` (Play/Pause e multiplicadores de velocidade $1\times, 30\times, 365\times$ dias/s).
+  - Botão "Sistema Solar" com atalho rápido e indicador na `TopNavBar.tsx`.
+  - Serialização imutável no Prisma [`Study`](file:///c:/Users/ayrto/Documents/antigravity/telluspedia/apps/web/prisma/schema.prisma) (`isCosmicMode`, `focusedCelestialBody`, `activeCosmicLayers`), `studyStore.ts`, `studies-store.ts`, `StudyShareModal.tsx` e endpoints `/api/studies` e `/study/[slug]`.
+- **Suíte de Testes**: 180 testes automatizados em 24 suítes com 100% de aprovação e zero erros de lint ou tipagem TypeScript.

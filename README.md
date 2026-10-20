@@ -13,7 +13,7 @@ Toda a documentação técnica, científica e de negócios do projeto está cent
 - 📜 [**Discovery de Negócio (`docs/DISCOVERY.md`)**](./docs/DISCOVERY.md): Contexto, dores resolvidas, 23 Regras de Negócio (**RN01 a RN23**), fluxos macro e critérios de aceite (**CA01 a CA07**).
 - 🏗️ [**Arquitetura Técnica (`docs/ARCHITECTURE.md`)**](./docs/ARCHITECTURE.md): Diagramas de fluxo, arquitetura do Frontend (Next.js 15, R3F, shaders GLSL, picking <0.2ms), Clean Architecture do Backend Python (FastAPI), política de cache no Redis por volatilidade (**RN23**) e modelo relacional Prisma/PostGIS.
 - 🔬 [**Mapeamento de Fontes Oficiais (`docs/DATA_SOURCES.md`)**](./docs/DATA_SOURCES.md): Catálogo detalhado das APIs públicas, repositórios científicos e agências governamentais (NASA, OMS, Banco Mundial, IBGE, Wikidata, PeriodO, NOAA, Open-Meteo).
-- 🚀 [**Roadmap de Engenharia (`docs/ROADMAP.md`)**](./docs/ROADMAP.md): Evolução do sistema dividida em **4 Horizontes** (do Core Enciclopédico até a Cartografia Histórica, Observatório NASA e Expansão Cósmica).
+- 🚀 [**Roadmap de Engenharia (`docs/ROADMAP.md`)**](./docs/ROADMAP.md): Evolução do sistema dividida em **4 Horizontes** (do Core Enciclopédico até a Cartografia Histórica, Observatório NASA e Expansão Cósmica do Sistema Solar — todos concluídos).
 
 ---
 
@@ -71,10 +71,10 @@ Abra [http://localhost:3000](http://localhost:3000) no seu navegador para intera
 
 ## 🧪 Testes Automatizados e Qualidade de Código
 
-O projeto conta com **166 testes unitários automatizados distribuídos em 23 suítes**, cobrindo 100% das regras matemáticas, geoespaciais, cartografia histórica, paleogeografia, telemetria orbital da NASA, tráfego aéreo/marítimo e formatação acadêmica:
+O projeto conta com **180 testes unitários automatizados distribuídos em 24 suítes**, cobrindo 100% das regras matemáticas, geoespaciais, cartografia histórica, paleogeografia, telemetria orbital da NASA, tráfego aéreo/marítimo, expansão cósmica do Sistema Solar e formatação acadêmica:
 
 ```bash
-# Executar a suíte de testes unitários (166 testes / 23 suítes passando)
+# Executar a suíte de testes unitários (180 testes / 24 suítes passando)
 pnpm test
 
 # Executar linting do código (0 erros / 0 warnings)
@@ -86,6 +86,27 @@ pnpm --filter web exec tsc --noEmit
 # Compilação de produção do Next.js
 pnpm build
 ```
+
+---
+
+## 🪐 Expansão Cósmica & Sistema Solar 3D (Horizonte 4 Concluído)
+
+O TellusPedia expande a fronteira do conhecimento da Terra para a imensidão do Sistema Solar e da abóbada celeste:
+- **Efemérides Keplerianas Analíticas Standish (1992)/NASA JPL**: Resolução contínua da Equação de Kepler por Newton-Raphson com convergência $< 10^{-10}$ a 60 FPS na Linha do Tempo, cobrindo todos os 8 planetas do Sistema Solar + Plutão (`apps/web/src/lib/astronomy-planets.ts`).
+- **Mapeamento Didático de Escala Balanceada**: Transformação power-law $R_{\text{scene}} = 28 \cdot r^{0.55}$ preservando a ordem radial dos corpos celestes sem colisões visuais ou z-fighting no frustum da câmera.
+- **Sol Central Emissivo (`SunCore`)**: Shader GLSL customizado de corona pulsante acoplada ao tempo (`uTime`) com `pointLight` central gerando iluminação física realista sobre os planetas.
+- **Planetas e Anéis PBR (`PlanetarySystem`)**: Malhas tridimensionais texturizadas, anéis translúcidos de Saturno e Urano e curvas orbitais fechadas (`generateOrbitalPathPoints`).
+- **Desduplicação da Terra no Modo Cósmico**: A Terra utiliza a malha texturizada com shader dia/noite e Fresnel do globo fotorrealista (`EarthSphere`), sem esferas genéricas duplicadas.
+- **Cinturão de Asteroides Instanciado (`AsteroidBeltLayer`)**: Mais de 3.000 asteroides individuais entre Marte e Júpiter renderizados via `THREE.InstancedMesh` com matrizes de rotação e tamanhos heterogêneos.
+- **Cometa 1P/Halley & Chuvas de Meteoros (`CometHalleyTrajectory`, `MeteorShowersLayer`)**: Órbita excêntrica ($e = 0.967$) com cauda iônica/poeira orientada antipodalmente ao Sol e intensidade $1/r^2$; chuvas sazonais de meteoros (Perseidas e Geminídeas) com feixes luminosos convergentes.
+- **Abóbada Celeste HYG & 88 Constelações IAU (`SkyStars`, `hyg-star-data`)**: Catálogo com 3.500+ estrelas reais ($V \le 5.5$) em coordenadas equatoriais J2000 no raio $R = 900$, temperatura de cor pelo índice $B-V$ e traçado vetorial das 88 constelações oficiais da União Astronômica Internacional (IAU).
+- **HUD de Inspeção Cósmica (`CosmicInspectorHUD`)**: Painel lateral flutuante em glassmorphism com dados astrofísicos (raio, massa, gravidade, período orbital, atmosfera), cálculo dinâmico de distâncias Terra/Sol em UA e km, fases lunares via `getLunarPhase`, missões espaciais históricas e referências acadêmicas com links diretos.
+- **Seleção Interativa da Terra e da Lua**:
+  - *Terra no Modo Cosmos*: Clique ou seleção foca a Terra com ficha planetária e botão contextual "Explorar Superfície / Países".
+  - *Lua em Ambos os Modos*: Seleção interativa na órbita terrestre e no modo cósmico com cálculo de posição mundial `currentMoonWorldPos`, anel luminoso e botões contextuais "Voltar à Terra" / "Focar na Terra".
+  - *Transição Suave de Câmera*: Reancoramento do vetor `controls.target` em `CosmicCameraController` sem causar divisão por zero ou injeção de `NaN` no `OrbitControls`.
+- **Controles de Reprodução Orbital**: Seletor de velocidade ($1\times, 30\times, 365\times$) integrado à `TimelineBar` para simulação contínua do movimento planetário.
+- **Persistência de Estudos Cósmicos (RN16)**: Suporte completo a compartilhamento e fork imutável de recortes espaciais com `isCosmicMode`, `focusedCelestialBody` e `activeCosmicLayers` serializados no Prisma e na store do estudo.
 
 ---
 
@@ -126,11 +147,11 @@ telluspedia/
 │   └── web/                               # Aplicação Web Next.js 15 + Three.js/R3F
 │       ├── prisma/                        # Schema Prisma e seed de dados
 │       ├── src/
-│       │   ├── app/                       # Rotas da aplicação (/, /pais/[iso], /study/[slug], /api/observatory)
-│       │   ├── components/                # Globe 3D, Observatory Panel/HUD, Inspector HUD, Reader Mode, Timeline
-│       │   ├── stores/                    # Stores Zustand (globeStore, timelineStore, observatoryStore, studyStore)
-│       │   └── lib/                       # Efemérides solares, órbita ISS, índice espacial e citações
-│       └── test/                          # Testes unitários com Node TAP runner
+│       │   ├── app/                       # Rotas da aplicação (/, /pais/[iso], /study/[slug], /api/observatory/cosmos)
+│       │   ├── components/                # Globe 3D, Sistema Solar, HUDs, Reader Mode, Timeline
+│       │   ├── stores/                    # Stores Zustand (globeStore, cosmicStore, timelineStore, observatoryStore, studyStore)
+│       │   └── lib/                       # Efemérides Standish/JPL, catálogo HYG, órbita ISS, índice espacial e citações
+│       └── test/                          # Testes unitários com Node TAP runner (180 testes / 24 suítes)
 ├── services/
 │   └── data-pipeline/                     # Microsserviço Python FastAPI
 │       ├── app/                           # Endpoints de efemérides NOAA e clima

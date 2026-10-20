@@ -74,8 +74,8 @@ Mapear, classificar e documentar todas as APIs públicas, repositórios científ
   - **OpenSky Network API**: Dados abertos ADS-B para visualização de aeronaves em tempo quase real.
   - **Global Fishing Watch, NOAA MarineCadastre & OpenSeaMap**: Dados agregados AIS para rotas marítimas comerciais.
 - **RN-FONTE-12 — Abóbada Celeste, Constelações por Data e Cosmos (RN19, RN20)**:
-  - **HYG Star Database + Limites Oficiais da IAU (União Astronômica Internacional)**: Coordenadas e vetores de movimento próprio para renderizar constelações exatas na data selecionada ou dia atual.
-  - **NASA JPL Horizons API & Minor Planet Center (MPC)**: Efemérides de alta precisão para a órbita lunar, planetas do Sistema Solar, asteroides, cometas e meteoros.
+  - **HYG Star Database (v3) + Limites Oficiais da IAU (União Astronômica Internacional)**: Catálogo com 3.500+ estrelas ($V \le 5.5$) em coordenadas equatoriais J2000 (Ascensão Reta $\alpha$, Declinação $\delta$), índice de cor $B-V$ e magnitude visual aparente, integrado com as 88 constelações oficiais e asterismos padronizados (`hyg-star-data.ts`).
+  - **Efemérides Keplerianas Standish (1992) & NASA JPL Horizons API**: Formulação analítica de elementos orbitais osculadores e taxas seculares com resolução contínua da Equação de Kepler a 60 FPS (`astronomy-planets.ts`), calibrada com o endpoint proxy `/api/observatory/cosmos` com cache em memória (SWR TTL 1h) para validação astronômica dos 8 planetas, Plutão, Cometa 1P/Halley e chuvas sazonais de meteoros.
 
 ---
 
