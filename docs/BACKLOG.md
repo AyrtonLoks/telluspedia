@@ -36,12 +36,12 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12 |
-| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26 |
+| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26, D14 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10, T26 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T07, T11, T18, T19, T25, T27 |
 
@@ -192,7 +192,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
-| D14 | Design system (tokens + primitivos) | Design | P0 | G | IN_PROGRESS | claude | T01 | G-SHELL |
+| D14 | Design system (tokens + primitivos) | Design | P0 | G | IN_PROGRESS | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | TODO | — | D14 | G-SHELL |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
@@ -1319,7 +1319,7 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 ### D14 · Design system (tokens + primitivos)
 
 - **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d14-design-system · **Worktree:** ../telluspedia-wt/claude-d14
-- **Prioridade:** P0 · **Área:** Design · **Tamanho:** G · **Depende de:** T01 · **Grupos:** G-SHELL
+- **Prioridade:** P0 · **Área:** Design · **Tamanho:** G · **Depende de:** T01 · **Grupos:** G-SHELL, G-OBS, G-TIMELINE, G-PAIS
 
 **Contexto / problema**
 Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]`…), bordas, glows e espaçamentos arbitrários. Mistura de mono/caixa alta em excesso. Não há consistência visual — base da percepção de "design péssimo".
@@ -1341,6 +1341,8 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. Passo 1: proposta de direção visual para aprovação do Ayrton antes de codificar. G-SHELL bloqueado enquanto isso (T22, T25, T27, D15–D19 aguardam).
 - 2026-11-20 · claude · IN_PROGRESS · Proposta de direção visual “Instrumento sereno” publicada para aprovação: https://claude.ai/artifact/7Mc8S56HuFpXUL6j9Rx9wL (artefato privado do Ayrton; 3 pranchas: Fundamentos/tokens, Componentes, Composição com navbar + Observatório + timeline). Resumo: superfícies neutras quase pretas (`#05070B`/`#0C1018`/`#131925`), bordas brancas 8%/14% em vez de ciano, um acento `#4CC3E0` só para interativo/selecionado, sem glow; cores saturadas só para dados (5 categorias + 5 camadas); Geist em 5 tamanhos de UI (12/13/15/18/24, mínimo 12 px — some 9/10/11 px), Geist Mono só para números com tabular-nums, Merriweather só no texto corrido do Reader; raios 6/10/14; 2 níveis de elevação; movimento 120/200/320 ms. Aguardando aprovação do Ayrton antes de codificar.
+- 2026-11-20 · ayrton · IN_PROGRESS · Direção visual aprovada pelo Ayrton (registrado pelo claude a pedido).
+- 2026-11-20 · claude · IN_PROGRESS · Grupos G-OBS, G-TIMELINE e G-PAIS adicionados: o passo 5 migra `ObservatoryPanel`/`ObservatoryTelemetryHUD`, a timeline e o `InspectorHUD` (HUD do país). Nenhuma tarefa desses grupos estava em andamento.
 
 ---
 
