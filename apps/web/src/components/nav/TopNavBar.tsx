@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState } from "react";
 import { Globe, Search, BarChart2, Share2, RotateCcw, Radio, Orbit } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -68,6 +69,10 @@ export const TopNavBar: React.FC = () => {
           </span>
         </div>
       </div>
+
+      <Link href="/telluslab" className="glass-panel rounded-xl px-3 py-2 text-xs font-semibold text-cyan-300 hover:text-white">
+        Estudo
+      </Link>
 
       {/* Country Quick Search / Selector */}
       <div className="relative">

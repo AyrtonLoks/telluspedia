@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React, { useMemo } from "react";
 import {
   BookOpen,
@@ -238,6 +240,14 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         milestones={currentCountry.milestones}
         countryName={currentCountry.nameCommon}
       />
+
+      <StudyContext entityId={`country:${currentCountry.isoCode}`} />
+      {currentCountry.isoCode === "BRA" && selectedMilestoneId === "bra-1889" && (
+        <div>
+          <Link className="text-sm text-cyan-300 hover:underline" href="/dossies/dom-pedro-ii">Dom Pedro II</Link>
+          <StudyContext entityId="figure:dom-pedro-ii" />
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="mt-4 pt-3 border-t border-slate-700/60 flex items-center gap-2">

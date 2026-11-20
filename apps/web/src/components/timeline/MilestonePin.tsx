@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React, { useEffect, useRef } from "react";
 import { X, Globe, BookOpen, ExternalLink, Quote } from "lucide-react";
 import { MilestoneCategoryType } from "@/stores/timelineStore";
@@ -227,6 +229,10 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
               <span>Citar</span>
             </button>
           </div>
+        )}
+        {isSelected && <StudyContext entityId={`event:${id}`} />}
+        {isSelected && id === "bra-1889" && (
+          <Link className="text-xs text-cyan-300 hover:underline" href="/dossies/dom-pedro-ii">Dom Pedro II</Link>
         )}
         <div className="mt-2 pt-1.5 border-t border-slate-800 flex items-center gap-1.5 flex-wrap">
           {effectiveCountryIso && (

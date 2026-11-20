@@ -12,7 +12,8 @@
     "db:generate": "pnpm --filter web prisma generate",
     "db:migrate": "pnpm --filter web prisma migrate dev",
     "db:seed": "pnpm --filter web prisma db seed",
-    "db:studio": "pnpm --filter web prisma studio"
+    "db:studio": "pnpm --filter web prisma studio",
+    "typecheck": "pnpm --filter web typecheck"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

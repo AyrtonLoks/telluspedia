@@ -1,5 +1,6 @@
 {
   "extends": ["next/core-web-vitals"],
+  "ignorePatterns": ["src/lib/tellus-bridge/contract/*.d.mts"],
   "rules": {
     "@next/next/no-img-element": "off"
   }

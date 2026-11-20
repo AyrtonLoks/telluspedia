@@ -1,5 +1,6 @@
 "use client";
 
+import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React from "react";
 import {
   X,
@@ -224,6 +225,8 @@ export const ObservatoryPanel: React.FC = () => {
               <p className="text-[11px] text-slate-400 mt-2 leading-tight">
                 {layer.description}
               </p>
+
+              <StudyContext entityId={`observatory:${layer.id}`} />
 
               {isActive && (
                 <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px]">

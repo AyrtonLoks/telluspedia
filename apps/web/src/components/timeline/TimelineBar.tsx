@@ -1,5 +1,6 @@
 "use client";
 
+import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React, { useEffect } from "react";
 import { ChevronUp, ChevronDown, Clock, Play, Pause, FastForward } from "lucide-react";
 import { useTimelineStore } from "@/stores/timelineStore";
@@ -186,6 +187,9 @@ export const TimelineBar: React.FC = () => {
 
       {/* Axis and Milestone Markers (collapsible) */}
       {isExpanded && <TimelineAxis />}
+      {isExpanded && !isGeological && startYear === 1947 && endYear === 1991 && (
+        <div className="max-w-xs"><StudyContext entityId="era:COLD_WAR" /></div>
+      )}
     </footer>
   );
 };

@@ -612,6 +612,20 @@ export const GLOBAL_COUNTRY_INFO: Record<string, Partial<PilotCountryData>> = {
     currencyCode: "EUR", currencyName: "Euro (€)", governmentType: "Monarquia Constitucional Parlamentar",
     headOfState: "Rei da Espanha", summary: "Ponto de ligação cultural entre a Europa, América Latina e Norte da África, com rica herança arquitetônica e dinamismo econômico.",
   },
+  MOZ: {
+    nameCommon: "Moçambique",
+    nameOfficial: "República de Moçambique",
+    capital: "Maputo",
+    numericCode: "508",
+    iso2: "MZ",
+    continent: "Africa",
+    region: "África Austral",
+    // Centroide de countries-110m do World Atlas.
+    latitude: -17.15,
+    longitude: 35.54,
+    currencyCode: "MZN",
+    currencyName: "Metical",
+  },
   PRT: {
     isoCode: "PRT", iso2: "PT", numericCode: "620", nameCommon: "Portugal", nameOfficial: "República Portuguesa",
     capital: "Lisboa", continent: "Europe", region: "Península Ibérica",

@@ -1,5 +1,6 @@
 "use client";
 
+import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React, { useState } from "react";
 import {
   X,
@@ -402,6 +403,7 @@ export const CosmicInspectorHUD: React.FC = () => {
           <ExternalLink className="w-4 h-4" />
         </a>
       </div>
+      {isCosmicMode && <StudyContext entityId="observatory:COSMOS" />}
     </aside>
   );
 };
