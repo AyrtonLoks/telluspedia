@@ -2,6 +2,18 @@
 
 Esta regra contextual aplica-se a todas as interações e edições no projeto TellusPedia.
 
+## 0. Coordenação entre agentes (Claude Code, Codex, Antigravity) — OBRIGATÓRIO
+
+Todo trabalho neste repositório é coordenado pelo [docs/BACKLOG.md](docs/BACKLOG.md). Antes de qualquer alteração de código:
+
+1. `git fetch origin` e leia a versão de `origin/master` do backlog (`git show origin/master:docs/BACKLOG.md`) para saber o que os outros agentes estão fazendo.
+2. Pegue apenas uma tarefa `TODO` cujas dependências estejam `REVIEW`/`DONE` e cujos **grupos de conflito** não tenham nenhuma tarefa `IN_PROGRESS`/`BLOCKED` (seção 1.2 do backlog). Nunca pegue tarefa de outro agente nem tarefa correlata a uma em execução.
+3. Trabalhe **sempre num worktree próprio** (`../telluspedia-wt/<agente>-<id>`), nunca no checkout principal; use a porta de dev server do seu agente.
+4. Reivindique a tarefa no backlog e faça push para `origin/master` **antes** de codar.
+5. Ao final de toda validação (`pnpm typecheck && pnpm lint && pnpm test && pnpm build`), atualize o backlog, faça commit e push para `origin/master` (rebase antes; nunca `--force`).
+
+O passo a passo completo está na seção 1 do [docs/BACKLOG.md](docs/BACKLOG.md).
+
 ## 1. Gráficos 3D & Shaders (Three.js / React Three Fiber)
 - **GLSL World-Space Normal Invariant**: Todo shader que calcule incidência solar (terminador dia/noite ou Fresnel) DEVE calcular o vetor normal no espaço mundial:
   ```glsl
