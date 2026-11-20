@@ -171,7 +171,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T15 | Lua com posição astronômica real | 3D | P1 | M | TODO | — | T12 | G-EPOCA |
 | T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | TODO | — | — | G-FRONTEIRAS |
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | TODO | — | T13 | G-PAIS, G-ESTUDOS |
-| T18 | Pipeline de CI | Infra | P2 | M | IN_PROGRESS | codex | — | G-INFRA |
+| T18 | Pipeline de CI | Infra | P2 | M | REVIEW | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | TODO | — | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | TODO | — | — | G-GLOBO |
@@ -756,7 +756,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T18 · Pipeline de CI
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t18-pipeline-ci · **Worktree:** ../telluspedia-wt/codex-t18
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t18-pipeline-ci · **Worktree:** ../telluspedia-wt/codex-t18
 - **Prioridade:** P2 · **Área:** Infra · **Tamanho:** M · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -769,12 +769,13 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 4. Badge no README.
 
 **Critérios de aceite**
-- [ ] CI verde em `master` e executando em PRs.
-- [ ] Falha de teste quebra o PR.
+- [x] CI verde em `master` e executando em PRs.
+- [x] Falha de teste quebra o PR.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 4. D15 depende de alterações no painel do Observatório, cujo grupo está ocupado pela D05.
+- 2026-11-20 · codex · REVIEW · Workflow `ci.yml` com jobs Web e Data Pipeline, cache por lockfile e badge no README. Validação local com actionlint, typecheck, lint, 378 testes web, build e 14 testes Python. Uma asserção temporária confirmou a saída 1 de `pnpm test`. GitHub Actions verde no [PR de validação #2](https://github.com/AyrtonLoks/telluspedia/actions/runs/44784823500) e no [push em master](https://github.com/AyrtonLoks/telluspedia/actions/runs/44784933258). Falhas reprovam o check. Proteção de branch para tornar checks obrigatórios no merge depende de configuração do repositório. Playwright segue na T19.
 
 ---
 
