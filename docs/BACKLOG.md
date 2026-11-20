@@ -155,11 +155,11 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T24 | Commitar trabalho pendente (TellusBridge) | Infra | P0 | P | DONE | ayrton | — | — |
 | T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | DONE | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | DONE | antigravity | — | G-TIMELINE |
-| D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | REJECTED | codex | — | G-GLOBO |
+| D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | IN_PROGRESS | codex | — | G-GLOBO |
 | T03 | Remover dados e citações inventados | Dados | P0 | G | IN_PROGRESS | — | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | TODO | — | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | REVIEW | claude | — | G-OBS |
-| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | IN_PROGRESS | codex | — | G-PIPELINE |
+| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | TODO | — | — | G-PIPELINE |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | TODO | — | — | G-ESTUDOS |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | TODO | — | — | G-OBS |
@@ -393,7 +393,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 ### T06 · Validar lat/lng em /api/weather
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t06-validar-coordenadas-weather · **Worktree:** ../telluspedia-wt/codex-t06
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-PIPELINE
 
 **Contexto / problema**
@@ -414,6 +414,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível por fase. Reivindicada em worktree próprio a partir de origin/master.
+- 2026-11-20 · codex · TODO · Devolvida à fila antes da implementação para priorizar a correção da D01.
 
 ---
 
@@ -880,7 +881,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### D01 · Globo escuro: color space + tone mapping
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d01-cor-shader · **Worktree:** ../telluspedia-wt/codex-d01
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d01-correcao-ciclo-noturno · **Worktree:** ../telluspedia-wt/codex-d01
 - **Prioridade:** P0 · **Área:** 3D · **Tamanho:** P · **Depende de:** — · **Grupos:** G-GLOBO
 
 **Contexto / problema**
@@ -909,6 +910,7 @@ O globo inteiro parece escuro e lavado. Causa principal (técnica): o `ShaderMat
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Tarefa reivindicada em worktree próprio a partir de origin/master.
 - 2026-11-20 · codex · REVIEW · O shader converte a cor de saída para sRGB após ACES Filmic (exposição 1,1), com luz difusa, emissão das cidades e Fresnel recalibrados. Por decisão do Ayrton, o globo abre em iluminação de estudo e o botão alterna para o terminador astronômico. A comparação com a [Blue Marble](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/) guiou a leitura do azul do oceano e das regiões áridas. Verificado no Chromium com WebGL o controle por teclado e a renderização da Terra e da Lua. O modo Cosmos abriu e o painel de Marte respondeu, mas a captura dos planetas não terminou com a GPU por software. Typecheck, lint, 207 testes e build passaram. O build usou cópias temporárias dos arquivos originais das fontes do Google, após timeouts no download automático.
+- 2026-11-20 · codex · IN_PROGRESS · Reaberta após rejeição do padrão anterior. Ayrton pediu que o globo abra com o ciclo real de dia e noite, inclusive no Brasil.
 
 ---
 
