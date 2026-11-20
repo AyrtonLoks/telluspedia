@@ -41,7 +41,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10, T26 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T07, T11, T18, T19, T25, T27 |
 
@@ -165,7 +165,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | REVIEW | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | TODO | — | — | G-INFRA |
-| T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | TODO | — | — | G-EPOCA, G-FRONTEIRAS |
+| T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | IN_PROGRESS | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | TODO | — | T12 | G-EPOCA, G-ESTUDOS |
 | T14 | Fonte única de direção solar | 3D | P1 | M | TODO | — | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | TODO | — | T12 | G-EPOCA |
@@ -192,7 +192,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
-| D14 | Design system (tokens + primitivos) | Design | P0 | G | REVIEW | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
+| D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | TODO | — | D14 | G-SHELL |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
@@ -579,8 +579,8 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T12 · Seletor único de época (`useEpochState`)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** G · **Depende de:** — · **Grupos:** G-EPOCA, G-FRONTEIRAS
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t12-epoch-state · **Worktree:** ../telluspedia-wt/claude-t12
+- **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** G · **Depende de:** — · **Grupos:** G-EPOCA, G-FRONTEIRAS, G-TIMELINE
 
 **Contexto / problema**
 A regra "qual modo está ativo" (geológico, Magalhães, Apollo, ano efetivo, era histórica) é reimplementada, com divergências, em:
@@ -611,6 +611,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. G-TIMELINE adicionado (o passo 4 altera `TimelineAxis`). Nenhuma tarefa de G-EPOCA/G-FRONTEIRAS/G-TIMELINE em andamento.
 
 ---
 
@@ -1328,7 +1329,7 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 
 ### D14 · Design system (tokens + primitivos)
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d14-design-system · **Worktree:** ../telluspedia-wt/claude-d14
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d14-design-system · **Worktree:** ../telluspedia-wt/claude-d14
 - **Prioridade:** P0 · **Área:** Design · **Tamanho:** G · **Depende de:** T01 · **Grupos:** G-SHELL, G-OBS, G-TIMELINE, G-PAIS
 
 **Contexto / problema**
@@ -1354,6 +1355,7 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 - 2026-11-20 · ayrton · IN_PROGRESS · Direção visual aprovada pelo Ayrton (registrado pelo claude a pedido).
 - 2026-11-20 · claude · IN_PROGRESS · Grupos G-OBS, G-TIMELINE e G-PAIS adicionados: o passo 5 migra `ObservatoryPanel`/`ObservatoryTelemetryHUD`, a timeline e o `InspectorHUD` (HUD do país). Nenhuma tarefa desses grupos estava em andamento.
 - 2026-11-20 · claude · REVIEW · Commit `af1c877`. **Tokens** (`src/styles/globals.css`, CSS variables em canais RGB → Tailwind com opacidade): superfícies `bg`/`surface`/`surface-raised`/`surface-sunken`/`surface-hover`/`control`; linhas `line` (branco 8%) e `line-strong` (14%); texto `fg`/`fg-secondary`/`fg-muted`; `accent` (+hover/on); `success`/`warning`/`danger`; `cat-*` (5 categorias) e `layer-*` (5 camadas); fontes `text-caption|label|body|title|display` (12/13/15/18/24); `rounded-control|card|panel`; `shadow-e1|e2`; `duration-fast|base|slow`, `ease-out`; opacidade `86` para painéis sobre o globo. `.glass-panel`/`.glass-button` legados passaram a usar os tokens (os componentes ainda não migrados já ficam neutros, sem borda ciano nem glow). Foco visível global e `prefers-reduced-motion`. **Primitivos** em `src/components/ui`: `Panel` (+Header/Body/Footer), `Card`, `Button` (4 variantes, 2 tamanhos), `IconButton` (`label` obrigatório, alvo de toque 44 px), `Switch` (role=switch), `Chip`, `Badge` (ponto vazado para “Simulado”), `Stat` (fonte obrigatória por convenção RN02), `Tooltip`/`Dialog`/`Tabs` (Radix), `TONES`/`CATEGORY_TONE`, `cn()` com tailwind-merge ciente dos tokens. **Vitrine** `/dev/ui` (404 em produção). **Migrados** (0 paleta crua, 0 hex, 0 `text-[…]`, 0 `text-xs|sm|lg…`): `TopNavBar` (barra única agrupada), `ObservatoryPanel` (linhas compactas; descrição, métrica, badge e “Aprofundar” só na camada ligada), `DataSourceBadge`, `ObservatoryTelemetryHUD`, `InspectorHUD` + `CountryHeader`/`CountryMetricsGrid`/`CountryMiniTimeline`/`LiveWeatherWidget`/`LocalClockWidget`, timeline inteira (`TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector`, `CategoryFilterPills` → `Chip`) e `CurriculumLinks` (tellus-bridge). Textos, test ids e comportamento preservados. **AGENTS.md** seção 5 (regras do design system). **Testes:** `test/design-system.test.tsx` (41 casos: tokens definidos, escala de 5 tamanhos, `cn`, primitivos com a11y, e lint de cor/tamanho nos 15 arquivos migrados + primitivos). **Validação após rebase sobre T07:** typecheck ok, lint ok, 298/298 testes, build ok. **Bundle:** home 430 kB de First Load (base no build da T04: 420 kB; +10 kB principalmente do tailwind-merge). Os componentes do app importam os primitivos pelo arquivo (`@/components/ui/Button`), não pelo barrel — pelo barrel a home ia a 461 kB porque puxava Radix Dialog/Tooltip/Tabs. **Não verificado visualmente pelo agente:** o Chromium headless não roda nesta máquina (falta `libnspr4`); conferido o CSS compilado servido pelo dev server (classes de token presentes e corretas) e `/` e `/dev/ui` respondendo 200 sem erros no log. **Para conferir:** `pnpm dev` → `/` (navbar, Observatório, Inspector ao clicar num país, timeline) e `/dev/ui`. **Follow-up:** D20 (demais componentes).
+- 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo claude a pedido).
 
 ---
 
