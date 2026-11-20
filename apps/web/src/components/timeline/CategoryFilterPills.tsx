@@ -43,7 +43,7 @@ export const CategoryFilterPills: React.FC = () => {
   const toggleCategory = useTimelineStore((s) => s.toggleCategory);
 
   return (
-    <div className="flex items-center gap-1.5 flex-wrap">
+    <div className="flex items-center gap-1 flex-wrap min-w-0">
       {ALL_CATEGORIES.map((cat) => {
         const config = CATEGORY_CONFIG[cat];
         const isActive = activeCategories.includes(cat);
@@ -51,15 +51,17 @@ export const CategoryFilterPills: React.FC = () => {
         return (
           <button
             key={cat}
+            type="button"
             onClick={() => toggleCategory(cat)}
-            className={`px-2 py-0.5 rounded-full text-[11px] font-medium border transition-all flex items-center gap-1.5 ${
+            aria-pressed={isActive}
+            className={`px-2 py-0.5 rounded-full text-[11px] font-medium border whitespace-nowrap shrink-0 transition-all flex items-center gap-1.5 ${
               isActive
                 ? config.activeClass
                 : "bg-slate-900/40 text-slate-500 border-slate-800 hover:text-slate-300"
             }`}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full ${
+              className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                 isActive ? config.dotColor : "bg-slate-600"
               }`}
             />
