@@ -185,7 +185,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | claude | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | DONE | codex | T05 | G-OBS, G-INFRA |
-| D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | IN_PROGRESS | codex | T05 | G-OBS |
+| D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | REVIEW | codex | T05 | G-OBS |
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
@@ -1184,7 +1184,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D07 · Aviões: modelos glTF, interpolação, cobertura global
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d07-trafego-aereo · **Worktree:** ../telluspedia-wt/codex-d07
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d07-trafego-aereo · **Worktree:** ../telluspedia-wt/codex-d07
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** T05 · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -1200,14 +1200,15 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 7. Fallback rotulado "Simulado" (T05).
 
 **Critérios de aceite**
-- [ ] Aviões reconhecíveis como aviões, orientados corretamente.
-- [ ] Movimento contínuo e suave entre atualizações.
+- [x] Aviões reconhecíveis como aviões, orientados corretamente.
+- [x] Movimento contínuo e suave entre atualizações.
 - [ ] ≥ 1.000 aeronaves a ≥ 55 FPS.
-- [ ] Cobertura além da caixa fixa atual.
+- [x] Cobertura além da caixa fixa atual.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 5. D04 segue atribuída ao claude. T05 está concluída e G-OBS está livre.
+- 2026-11-20 · codex · REVIEW · Modelo original GLB CC0 com 15 triângulos na silhueta e 220 no detalhe, render instanciado com LOD e limite visual de tamanho. Previsão pelo rumo e pela velocidade, correção gradual após novo vetor, rastro curto com fade e ficha com fonte, posição estimada e procedência. OpenSky global via OAuth com cache de 120 s e amostragem geográfica, padrão 2.000 aeronaves. OAuth, renovação após 401 e cobertura global testados com respostas simuladas para Brasil e Austrália. A rota de produção local retornou Simulado sem credencial. Documentação da licença operacional do provedor em DATA_SOURCES.md. As capturas do mesmo cenário sintético mostram os cones anteriores e as novas silhuetas com asas e cauda. Chromium validou movimento, clique e LOD. Typecheck, lint, 426 testes e build passaram. Critério de 55 FPS pendente em GPU. Em Chromium com SwiftShader, build de produção, viewport 640 × 400 e 1.000 instâncias visíveis, a cena registrou 1,5 FPS em 5 s, ante 3,2 FPS com os modelos ocultos. A conexão ao OpenSky ao vivo depende de credenciais licenciadas.
 
 ---
 
