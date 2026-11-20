@@ -192,12 +192,13 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
-| D14 | Design system (tokens + primitivos) | Design | P0 | G | IN_PROGRESS | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
+| D14 | Design system (tokens + primitivos) | Design | P0 | G | REVIEW | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | TODO | — | D14 | G-SHELL |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
+| D20 | Migrar demais componentes para o design system | Design | P1 | G | TODO | — | D14 | G-SHELL, G-PAIS, G-COSMOS |
 
 ---
 
@@ -1325,7 +1326,7 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 
 ### D14 · Design system (tokens + primitivos)
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d14-design-system · **Worktree:** ../telluspedia-wt/claude-d14
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d14-design-system · **Worktree:** ../telluspedia-wt/claude-d14
 - **Prioridade:** P0 · **Área:** Design · **Tamanho:** G · **Depende de:** T01 · **Grupos:** G-SHELL, G-OBS, G-TIMELINE, G-PAIS
 
 **Contexto / problema**
@@ -1340,9 +1341,9 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 6. Regra no `AGENTS.md`: novos componentes usam os primitivos e tokens.
 
 **Critérios de aceite**
-- [ ] Direção visual aprovada pelo Ayrton (registrado no Log).
-- [ ] Tokens e primitivos implementados e visíveis em `/dev/ui`.
-- [ ] Navbar, Observatório, Inspector e timeline sem valores arbitrários de cor/tamanho (`grep "text-\[" ` nesses arquivos → 0).
+- [x] Direção visual aprovada pelo Ayrton (registrado no Log).
+- [x] Tokens e primitivos implementados e visíveis em `/dev/ui`.
+- [x] Navbar, Observatório, Inspector e timeline sem valores arbitrários de cor/tamanho (`grep "text-\[" ` nesses arquivos → 0).
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
@@ -1350,6 +1351,7 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 - 2026-11-20 · claude · IN_PROGRESS · Proposta de direção visual “Instrumento sereno” publicada para aprovação: https://claude.ai/artifact/7Mc8S56HuFpXUL6j9Rx9wL (artefato privado do Ayrton; 3 pranchas: Fundamentos/tokens, Componentes, Composição com navbar + Observatório + timeline). Resumo: superfícies neutras quase pretas (`#05070B`/`#0C1018`/`#131925`), bordas brancas 8%/14% em vez de ciano, um acento `#4CC3E0` só para interativo/selecionado, sem glow; cores saturadas só para dados (5 categorias + 5 camadas); Geist em 5 tamanhos de UI (12/13/15/18/24, mínimo 12 px — some 9/10/11 px), Geist Mono só para números com tabular-nums, Merriweather só no texto corrido do Reader; raios 6/10/14; 2 níveis de elevação; movimento 120/200/320 ms. Aguardando aprovação do Ayrton antes de codificar.
 - 2026-11-20 · ayrton · IN_PROGRESS · Direção visual aprovada pelo Ayrton (registrado pelo claude a pedido).
 - 2026-11-20 · claude · IN_PROGRESS · Grupos G-OBS, G-TIMELINE e G-PAIS adicionados: o passo 5 migra `ObservatoryPanel`/`ObservatoryTelemetryHUD`, a timeline e o `InspectorHUD` (HUD do país). Nenhuma tarefa desses grupos estava em andamento.
+- 2026-11-20 · claude · REVIEW · Commit `af1c877`. **Tokens** (`src/styles/globals.css`, CSS variables em canais RGB → Tailwind com opacidade): superfícies `bg`/`surface`/`surface-raised`/`surface-sunken`/`surface-hover`/`control`; linhas `line` (branco 8%) e `line-strong` (14%); texto `fg`/`fg-secondary`/`fg-muted`; `accent` (+hover/on); `success`/`warning`/`danger`; `cat-*` (5 categorias) e `layer-*` (5 camadas); fontes `text-caption|label|body|title|display` (12/13/15/18/24); `rounded-control|card|panel`; `shadow-e1|e2`; `duration-fast|base|slow`, `ease-out`; opacidade `86` para painéis sobre o globo. `.glass-panel`/`.glass-button` legados passaram a usar os tokens (os componentes ainda não migrados já ficam neutros, sem borda ciano nem glow). Foco visível global e `prefers-reduced-motion`. **Primitivos** em `src/components/ui`: `Panel` (+Header/Body/Footer), `Card`, `Button` (4 variantes, 2 tamanhos), `IconButton` (`label` obrigatório, alvo de toque 44 px), `Switch` (role=switch), `Chip`, `Badge` (ponto vazado para “Simulado”), `Stat` (fonte obrigatória por convenção RN02), `Tooltip`/`Dialog`/`Tabs` (Radix), `TONES`/`CATEGORY_TONE`, `cn()` com tailwind-merge ciente dos tokens. **Vitrine** `/dev/ui` (404 em produção). **Migrados** (0 paleta crua, 0 hex, 0 `text-[…]`, 0 `text-xs|sm|lg…`): `TopNavBar` (barra única agrupada), `ObservatoryPanel` (linhas compactas; descrição, métrica, badge e “Aprofundar” só na camada ligada), `DataSourceBadge`, `ObservatoryTelemetryHUD`, `InspectorHUD` + `CountryHeader`/`CountryMetricsGrid`/`CountryMiniTimeline`/`LiveWeatherWidget`/`LocalClockWidget`, timeline inteira (`TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector`, `CategoryFilterPills` → `Chip`) e `CurriculumLinks` (tellus-bridge). Textos, test ids e comportamento preservados. **AGENTS.md** seção 5 (regras do design system). **Testes:** `test/design-system.test.tsx` (41 casos: tokens definidos, escala de 5 tamanhos, `cn`, primitivos com a11y, e lint de cor/tamanho nos 15 arquivos migrados + primitivos). **Validação após rebase sobre T07:** typecheck ok, lint ok, 298/298 testes, build ok. **Bundle:** home 430 kB de First Load (base no build da T04: 420 kB; +10 kB principalmente do tailwind-merge). Os componentes do app importam os primitivos pelo arquivo (`@/components/ui/Button`), não pelo barrel — pelo barrel a home ia a 461 kB porque puxava Radix Dialog/Tooltip/Tabs. **Não verificado visualmente pelo agente:** o Chromium headless não roda nesta máquina (falta `libnspr4`); conferido o CSS compilado servido pelo dev server (classes de token presentes e corretas) e `/` e `/dev/ui` respondendo 200 sem erros no log. **Para conferir:** `pnpm dev` → `/` (navbar, Observatório, Inspector ao clicar num país, timeline) e `/dev/ui`. **Follow-up:** D20 (demais componentes).
 
 ---
 
@@ -1471,6 +1473,30 @@ Layout quebra em larguras comuns (ver T02); textos ciano/cinza pequenos sobre az
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+
+---
+
+### D20 · Migrar demais componentes para o design system
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Design · **Tamanho:** G · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS
+
+**Contexto / problema**
+A D14 criou tokens e primitivos e migrou navbar, Observatório, Inspector do país e timeline. O restante da interface ainda usa paleta crua (`slate-*`, `cyan-*`…), tamanhos `text-[9px]`/`[10px]`/`[11px]` e glows — agora destoando das partes migradas (o `.glass-panel` já foi neutralizado, mas o conteúdo não).
+
+**O que fazer**
+1. Migrar para os primitivos de `@/components/ui` (import direto pelo arquivo) e tokens, seguindo a seção 5 do `AGENTS.md`: `hud/CosmicInspectorHUD`, `reader/*` (ReaderMode, ReaderContent, ReaderTableOfContents, CitationModal → `Dialog`, HoverCard*), `comparator/*`, `study/*` (StudyShareModal → `Dialog`, ForkStudyBanner), `tellus-bridge/EntityLaunch` e `StudyHub`, overlays DOM do globo (`HistoricalEraBadge`, `PaleoEraBadge`, `Apollo11TelemetryOverlay`), botão “Iluminação de estudo” e páginas `/pais`, `/compare`, `/study`, `/telluslab`, `/dossies`.
+2. Acrescentar cada arquivo migrado à lista `MIGRATED` de `apps/web/test/design-system.test.tsx`.
+3. Remover `cosmic.*` do `tailwind.config.ts` e as classes `.glass-*` do `globals.css` quando não houver mais uso.
+4. Pode ser fatiada em subtarefas por grupo (Reader/País = G-PAIS; Cosmos = G-COSMOS) se dois agentes quiserem trabalhar em paralelo.
+
+**Critérios de aceite**
+- [ ] `grep -rE "text-\[[0-9]|(text|bg|border)-(slate|cyan|sky|amber|emerald|rose|purple|indigo)-" apps/web/src` → 0 (exceto Three.js/cores de shader, que não são classes).
+- [ ] Todos os arquivos migrados na lista `MIGRATED` e o teste verde.
+- [ ] Modais usam o `Dialog` (foco preso, Esc, título acessível).
+
+**Log**
+- 2026-11-20 · claude · TODO · Tarefa criada como follow-up da D14.
 
 ---
 
