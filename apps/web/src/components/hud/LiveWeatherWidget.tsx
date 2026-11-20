@@ -5,8 +5,8 @@ import { Cloud, CloudRain, Sun, Wind, Droplets } from "lucide-react";
 import { fetchWeather, WeatherData } from "@/lib/api-client";
 
 interface LiveWeatherWidgetProps {
-  lat: number;
-  lng: number;
+  lat: number | null;
+  lng: number | null;
 }
 
 function formatMeasurement(value: number | null | undefined, unit: string) {
@@ -17,7 +17,20 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng }
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const hasCoords =
+    lat !== null &&
+    lng !== null &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    (lat !== 0 || lng !== 0);
+
   useEffect(() => {
+    if (!hasCoords || lat === null || lng === null) {
+      setWeather(null);
+      setLoading(false);
+      return;
+    }
+
     let isMounted = true;
     setLoading(true);
 
@@ -38,7 +51,7 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng }
     return () => {
       isMounted = false;
     };
-  }, [lat, lng]);
+  }, [lat, lng, hasCoords]);
 
   const current = loading ? null : weather;
 
@@ -48,6 +61,20 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng }
     if (code >= 1 && code <= 3) return <Cloud className="w-4 h-4 text-slate-300" />;
     return <Sun className="w-4 h-4 text-amber-400" />;
   };
+
+  if (!hasCoords) {
+    return (
+      <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-700/40 text-xs">
+        <div className="flex items-center gap-2">
+          <Cloud className="w-4 h-4 text-slate-500" />
+          <div>
+            <div className="font-semibold text-slate-400 text-xs">Dado indisponível</div>
+            <div className="text-[10px] text-slate-500">Clima local</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-700/40 text-xs">

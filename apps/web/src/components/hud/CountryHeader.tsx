@@ -3,15 +3,17 @@
 import React from "react";
 import { X, MapPin, Globe } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
+import { DataCompleteness } from "@/lib/country-data";
 
 interface CountryHeaderProps {
   nameCommon: string;
-  nameOfficial: string;
-  capital: string;
-  continent: string;
-  region: string;
+  nameOfficial: string | null;
+  capital: string | null;
+  continent: string | null;
+  region: string | null;
   flagSvgUrl?: string;
   isoCode: string;
+  completeness?: DataCompleteness;
 }
 
 export const CountryHeader: React.FC<CountryHeaderProps> = ({
@@ -22,6 +24,7 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
   region,
   flagSvgUrl,
   isoCode,
+  completeness,
 }) => {
   const resetView = useGlobeStore((s) => s.resetView);
   const [flagError, setFlagError] = React.useState(false);
@@ -30,54 +33,75 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
     setFlagError(false);
   }, [isoCode, flagSvgUrl]);
 
+  const locationLabel = region || continent;
+
   return (
     <div className="relative pb-4 border-b border-slate-700/60">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           {flagSvgUrl && !flagError ? (
             <img
               src={flagSvgUrl}
               alt={`Bandeira de ${nameCommon}`}
               onError={() => setFlagError(true)}
-              className="w-10 h-7 object-cover rounded shadow-md border border-slate-700/50"
+              className="w-10 h-7 object-cover rounded shadow-md border border-slate-700/50 shrink-0"
             />
           ) : (
             <div
-              className="w-10 h-7 rounded bg-gradient-to-br from-cyan-950 via-slate-900 to-cyan-950 border border-cyan-800/60 flex items-center justify-center font-mono font-bold text-xs text-cyan-300 shadow-md"
+              className="w-10 h-7 rounded bg-gradient-to-br from-cyan-950 via-slate-900 to-cyan-950 border border-cyan-800/60 flex items-center justify-center font-mono font-bold text-xs text-cyan-300 shadow-md shrink-0"
               title={`Código ISO: ${isoCode}`}
             >
               {isoCode}
             </div>
           )}
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold tracking-tight text-slate-100">{nameCommon}</h2>
-              <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/50">
+              <h2 className="text-xl font-bold tracking-tight text-slate-100 truncate">{nameCommon}</h2>
+              <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/50 shrink-0">
                 {isoCode}
               </span>
             </div>
-            <p className="text-xs text-slate-400 line-clamp-1">{nameOfficial}</p>
+            {nameOfficial ? (
+              <p className="text-xs text-slate-400 line-clamp-1">{nameOfficial}</p>
+            ) : (
+              completeness === "none" && (
+                <p className="text-[11px] text-amber-300/80">
+                  Dados socioeconômicos indisponíveis
+                </p>
+              )
+            )}
           </div>
         </div>
 
         <button
+          type="button"
           onClick={resetView}
-          className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/70 transition-colors"
+          className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/70 transition-colors shrink-0"
           title="Fechar painel"
+          aria-label="Fechar painel"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
-      <div className="mt-3 flex items-center gap-4 text-xs text-slate-300">
+      <div className="mt-3 flex items-center gap-4 text-xs text-slate-300 flex-wrap">
         <div className="flex items-center gap-1">
-          <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Capital: <strong className="text-slate-100">{capital}</strong></span>
+          <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <span>
+            Capital:{" "}
+            {capital ? (
+              <strong className="text-slate-100">{capital}</strong>
+            ) : (
+              <span className="text-slate-500">Dado indisponível</span>
+            )}
+          </span>
         </div>
-        <div className="flex items-center gap-1">
-          <Globe className="w-3.5 h-3.5 text-amber-400" />
-          <span>{region || continent}</span>
-        </div>
+        {locationLabel && (
+          <div className="flex items-center gap-1">
+            <Globe className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span>{locationLabel}</span>
+          </div>
+        )}
       </div>
     </div>
   );

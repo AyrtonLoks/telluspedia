@@ -3,28 +3,50 @@ import {
   resolveHistoricalEntity,
   HistoricalEraId,
 } from "./historical-entities";
+import worldCountriesDataset from "../../public/data/countries-ne-110m.json";
 
-export interface PilotCountryData {
+export type DataCompleteness = "full" | "partial" | "none";
+
+export interface WorldCountryCatalogEntry {
   isoCode: string;
   iso2: string;
-  numericCode: string;
+  numericCode: string | null;
   nameCommon: string;
-  nameOfficial: string;
-  capital: string;
-  continent: string;
-  region: string;
-  population: number;
-  areaKm2: number;
-  latitude: number;
-  longitude: number;
-  timezone: string;
+  nameNaturalEarth: string;
+  latitude: number | null;
+  longitude: number | null;
   flagSvgUrl: string;
-  currencyCode: string;
-  currencyName: string;
-  governmentType: string;
-  headOfState: string;
-  headOfGov?: string;
-  summary: string;
+}
+
+export const WORLD_COUNTRIES_METADATA = worldCountriesDataset.metadata;
+export const WORLD_COUNTRIES_CATALOG: Record<string, WorldCountryCatalogEntry> =
+  worldCountriesDataset.countries;
+
+export interface CountryData {
+  isoCode: string;
+  iso2: string;
+  numericCode: string | null;
+  nameCommon: string;
+  nameOfficial: string | null;
+  capital: string | null;
+  continent: string | null;
+  region: string | null;
+  population: number | null;
+  areaKm2: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  timezone: string | null;
+  flagSvgUrl: string;
+  currencyCode: string | null;
+  currencyName: string | null;
+  governmentType: string | null;
+  headOfState: string | null;
+  headOfGov?: string | null;
+  summary: string | null;
+  completeness: DataCompleteness;
+  dataSource?: string;
+  referenceDate?: string;
+  sourceUrl?: string;
   wikidataQid?: string;
   historicalLeader?: string;
   leaderTitle?: string;
@@ -72,6 +94,25 @@ export interface PilotCountryData {
     blocIsos?: string[];
     preferredAltitude?: number;
   }[];
+}
+
+export interface PilotCountryData extends Omit<CountryData, "completeness"> {
+  completeness?: DataCompleteness;
+  numericCode: string;
+  nameOfficial: string;
+  capital: string;
+  continent: string;
+  region: string;
+  population: number;
+  areaKm2: number;
+  latitude: number;
+  longitude: number;
+  timezone: string;
+  currencyCode: string;
+  currencyName: string;
+  governmentType: string;
+  headOfState: string;
+  summary: string;
 }
 
 export const PILOT_COUNTRIES: Record<string, PilotCountryData> = {
@@ -793,6 +834,8 @@ export const ISO3_TO_ISO2: Record<string, string> = {
   TJK: "TJ", TZA: "TZ", THA: "TH", TLS: "TL", TGO: "TG", TON: "TO", TTO: "TT", TUN: "TN", TUR: "TR", TKM: "TM",
   TUV: "TV", UGA: "UG", UKR: "UA", ARE: "AE", GBR: "GB", USA: "US", URY: "UY", UZB: "UZ", VUT: "VU", VEN: "VE",
   VNM: "VN", YEM: "YE", ZMB: "ZM", ZWE: "ZW",
+  // Territories & Non-Sovereign ISO 3166-1 Codes
+  ATA: "AQ", ATF: "TF", ESH: "EH", FLK: "FK", GRL: "GL", GUF: "GF", NCL: "NC", PRI: "PR", PSE: "PS",
   // Historical Entities & Territories
   PRU: "PR", SUN: "SU", AHU: "AH", GDR: "DD", FRG: "DE", TUR_HIST: "TR",
   YUG: "YU", CSK: "CS", CYN: "CY", XKX: "XK",
@@ -925,11 +968,14 @@ export function getIso2FromIso3(iso3: string): string | undefined {
   const upper = (iso3 || "").toUpperCase();
   if (PILOT_COUNTRIES[upper]?.iso2) return PILOT_COUNTRIES[upper].iso2;
   if (GLOBAL_COUNTRY_INFO[upper]?.iso2) return GLOBAL_COUNTRY_INFO[upper].iso2;
+  if (WORLD_COUNTRIES_CATALOG[upper]?.iso2) return WORLD_COUNTRIES_CATALOG[upper].iso2;
   return ISO3_TO_ISO2[upper];
 }
 
-export function getCountryData(iso: string, year?: number | null): PilotCountryData {
+export function getCountryData(iso: string, year?: number | null): CountryData | null {
   const upper = (iso || "").trim().toUpperCase();
+  if (!upper) return null;
+
   const normalized = NUMERIC_TO_ISO[upper] || upper;
   const resolvedIso =
     year !== undefined && year !== null
@@ -938,32 +984,33 @@ export function getCountryData(iso: string, year?: number | null): PilotCountryD
 
   if (HISTORICAL_ENTITIES[resolvedIso]) {
     const h = HISTORICAL_ENTITIES[resolvedIso];
-    const histIso2 = ISO3_TO_ISO2[resolvedIso] || "XX";
-
+    const histIso2 = ISO3_TO_ISO2[resolvedIso] || "";
     const popIndicator = h.indicators.find((i) => i.category === "DEMOGRAPHY")?.value;
-    const pop = popIndicator !== undefined ? popIndicator : 30000000;
 
     return {
       isoCode: h.id,
       iso2: histIso2,
-      numericCode: h.numericCode || "900",
+      numericCode: h.numericCode ?? null,
       nameCommon: h.nameCommon,
       nameOfficial: h.nameOfficial,
-      capital: h.capital,
-      continent: h.continent || "Europe",
+      capital: h.capital ?? null,
+      continent: h.continent ?? null,
       region: "História Geopolítica",
-      population: pop,
-      areaKm2: h.areaKm2 !== undefined ? h.areaKm2 : 350000,
-      latitude: h.latitude,
-      longitude: h.longitude,
-      timezone: ISO3_TO_TIMEZONE[resolvedIso] || "Europe/Berlin",
+      population: popIndicator !== undefined ? popIndicator : null,
+      areaKm2: h.areaKm2 !== undefined ? h.areaKm2 : null,
+      latitude: h.latitude ?? null,
+      longitude: h.longitude ?? null,
+      timezone: ISO3_TO_TIMEZONE[resolvedIso] ?? null,
       flagSvgUrl: h.flagSvgUrl,
-      currencyCode: "HIST",
-      currencyName: "Moeda Histórica",
-      governmentType: h.governmentType,
-      headOfState: h.leaderTitle,
-      headOfGov: h.historicalLeader,
-      summary: h.summary,
+      currencyCode: null,
+      currencyName: null,
+      governmentType: h.governmentType ?? null,
+      headOfState: h.leaderTitle ?? null,
+      headOfGov: h.historicalLeader ?? null,
+      summary: h.summary ?? null,
+      completeness: "full",
+      dataSource: "Maddison Project Database / Correlates of War / Natural Earth",
+      referenceDate: "2026-11-20",
       indicators: h.indicators,
       dossierSections: h.dossierSections,
       milestones: GLOBAL_MILESTONES.filter(
@@ -985,68 +1032,87 @@ export function getCountryData(iso: string, year?: number | null): PilotCountryD
     const pilot = PILOT_COUNTRIES[resolvedIso];
     return {
       ...pilot,
+      completeness: "full",
+      dataSource: "Banco Mundial / ONU / IBGE / Natural Earth",
+      referenceDate: "2024",
       milestones: pilot.milestones.map((m) => ({
         ...m,
         countryIso: m.countryIso || pilot.isoCode,
       })),
     };
   }
-  const mappedIso2 = getIso2FromIso3(upper);
-  const global = GLOBAL_COUNTRY_INFO[upper];
+
+  const catalog = WORLD_COUNTRIES_CATALOG[normalized];
+  const global = GLOBAL_COUNTRY_INFO[normalized];
+
   if (global) {
-    const iso2 = global.iso2 || mappedIso2 || "";
+    const iso2 = global.iso2 || catalog?.iso2 || getIso2FromIso3(normalized) || "";
     return {
-      isoCode: upper,
+      isoCode: normalized,
       iso2,
-      numericCode: global.numericCode || "000",
-      nameCommon: global.nameCommon || upper,
-      nameOfficial: global.nameOfficial || `Estado de ${upper}`,
-      capital: global.capital || "Capital Nacional",
-      continent: global.continent || "Mundo",
-      region: global.region || "Geopolítica Global",
-      population: global.population || 15000000,
-      areaKm2: global.areaKm2 || 350000,
-      latitude: global.latitude || 0,
-      longitude: global.longitude || 0,
-      timezone: global.timezone || ISO3_TO_TIMEZONE[upper] || "UTC",
-      flagSvgUrl: global.flagSvgUrl || (iso2 ? `https://flagcdn.com/${iso2.toLowerCase()}.svg` : ""),
-      currencyCode: global.currencyCode || "USD",
-      currencyName: global.currencyName || "Moeda Local",
-      governmentType: global.governmentType || "Estado Soberano",
-      headOfState: global.headOfState || "Chefe de Estado",
-      summary: global.summary || "Nação soberana integrante do sistema internacional.",
+      numericCode: global.numericCode ?? catalog?.numericCode ?? null,
+      nameCommon: global.nameCommon || catalog?.nameCommon || normalized,
+      nameOfficial: global.nameOfficial ?? null,
+      capital: global.capital ?? null,
+      continent: global.continent ?? null,
+      region: global.region ?? null,
+      population: global.population ?? null,
+      areaKm2: global.areaKm2 ?? null,
+      latitude: global.latitude ?? catalog?.latitude ?? null,
+      longitude: global.longitude ?? catalog?.longitude ?? null,
+      timezone: global.timezone ?? ISO3_TO_TIMEZONE[normalized] ?? null,
+      flagSvgUrl:
+        global.flagSvgUrl ||
+        catalog?.flagSvgUrl ||
+        (iso2 ? `https://flagcdn.com/${iso2.toLowerCase()}.svg` : ""),
+      currencyCode: global.currencyCode ?? null,
+      currencyName: global.currencyName ?? null,
+      governmentType: global.governmentType ?? null,
+      headOfState: global.headOfState ?? null,
+      summary: global.summary ?? null,
+      completeness: "partial",
+      dataSource: WORLD_COUNTRIES_METADATA.source,
+      referenceDate: WORLD_COUNTRIES_METADATA.referenceDate,
+      sourceUrl: WORLD_COUNTRIES_METADATA.sourceUrl,
+      wikidataQid: global.wikidataQid,
       indicators: [],
       dossierSections: [],
       milestones: [],
     };
   }
 
-  // Generic fallback for any unindexed ISO
-  const iso2 = mappedIso2 || "";
-  return {
-    isoCode: upper,
-    iso2,
-    numericCode: "000",
-    nameCommon: upper,
-    nameOfficial: `Nação Soberana (${upper})`,
-    capital: "Capital Central",
-    continent: "Terra",
-    region: "Geopolítica Global",
-    population: 10000000,
-    areaKm2: 250000,
-    latitude: 0,
-    longitude: 0,
-    timezone: ISO3_TO_TIMEZONE[upper] || "UTC",
-    flagSvgUrl: iso2 ? `https://flagcdn.com/${iso2.toLowerCase()}.svg` : "",
-    currencyCode: "USD",
-    currencyName: "Moeda Oficial",
-    governmentType: "Estado Soberano",
-    headOfState: "Chefe de Estado",
-    summary: "Dados em processo de sincronização com as bases mundiais.",
-    indicators: [],
-    dossierSections: [],
-    milestones: [],
-  };
+  if (catalog) {
+    return {
+      isoCode: catalog.isoCode,
+      iso2: catalog.iso2,
+      numericCode: catalog.numericCode,
+      nameCommon: catalog.nameCommon,
+      nameOfficial: null,
+      capital: null,
+      continent: null,
+      region: null,
+      population: null,
+      areaKm2: null,
+      latitude: catalog.latitude,
+      longitude: catalog.longitude,
+      timezone: ISO3_TO_TIMEZONE[catalog.isoCode] ?? null,
+      flagSvgUrl: catalog.flagSvgUrl,
+      currencyCode: null,
+      currencyName: null,
+      governmentType: null,
+      headOfState: null,
+      summary: null,
+      completeness: "none",
+      dataSource: WORLD_COUNTRIES_METADATA.source,
+      referenceDate: WORLD_COUNTRIES_METADATA.referenceDate,
+      sourceUrl: WORLD_COUNTRIES_METADATA.sourceUrl,
+      indicators: [],
+      dossierSections: [],
+      milestones: [],
+    };
+  }
+
+  return null;
 }
 
 export { getSourceUrl } from "./citations";

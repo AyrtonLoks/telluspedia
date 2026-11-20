@@ -26,10 +26,10 @@ export const ReaderMode: React.FC = () => {
   React.useEffect(() => {
     if (selectedIso && prevIsoRef.current && prevIsoRef.current !== selectedIso) {
       const c = getCountryData(selectedIso);
-      const hasGeography = c.dossierSections?.some((s) => s.dimension === "GEOGRAPHY");
+      const hasGeography = c?.dossierSections?.some((s) => s.dimension === "GEOGRAPHY");
       if (hasGeography) {
         resetActiveDimension();
-      } else if (c.dossierSections && c.dossierSections.length > 0) {
+      } else if (c?.dossierSections && c.dossierSections.length > 0) {
         setActiveDimension(c.dossierSections[0].dimension);
       } else {
         resetActiveDimension();
@@ -43,6 +43,7 @@ export const ReaderMode: React.FC = () => {
   if (!isReaderOpen || !selectedIso) return null;
 
   const country = getCountryData(selectedIso);
+  if (!country) return null;
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-xl animate-in fade-in zoom-in-95">

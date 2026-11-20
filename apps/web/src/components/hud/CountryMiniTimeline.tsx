@@ -73,20 +73,22 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
               <p className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                 {m.summary}
               </p>
-              <div className="mt-2 pt-1.5 border-t border-slate-800/70 flex items-center justify-between text-[10px] gap-2">
-                <span className="text-slate-500 shrink-0">Fonte Primária:</span>
-                <a
-                  href={getSourceUrl(m.sourcePrimary)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="font-mono text-[9px] text-cyan-400/90 hover:text-cyan-200 hover:underline bg-cyan-950/50 hover:bg-cyan-900/60 px-1.5 py-0.5 rounded border border-cyan-800/40 truncate max-w-[150px] inline-flex items-center gap-1 transition-colors"
-                  title={`Abrir repositório da fonte primária: ${m.sourcePrimary || "Arquivo Histórico / Registro Oficial"}`}
-                >
-                  <span className="truncate">{m.sourcePrimary || "Arquivo Histórico"}</span>
-                  <ExternalLink className="w-2.5 h-2.5 shrink-0 opacity-70" />
-                </a>
-              </div>
+              {m.sourcePrimary && (
+                <div className="mt-2 pt-1.5 border-t border-slate-800/70 flex items-center justify-between text-[10px] gap-2">
+                  <span className="text-slate-500 shrink-0">Fonte Primária:</span>
+                  <a
+                    href={getSourceUrl(m.sourcePrimary)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="font-mono text-[9px] text-cyan-400/90 hover:text-cyan-200 hover:underline bg-cyan-950/50 hover:bg-cyan-900/60 px-1.5 py-0.5 rounded border border-cyan-800/40 truncate max-w-[150px] inline-flex items-center gap-1 transition-colors"
+                    title={`Abrir repositório da fonte primária: ${m.sourcePrimary}`}
+                  >
+                    <span className="truncate">{m.sourcePrimary}</span>
+                    <ExternalLink className="w-2.5 h-2.5 shrink-0 opacity-70" />
+                  </a>
+                </div>
+              )}
 
               {/* Action buttons & links accessible directly */}
               <div className="mt-2 pt-1.5 border-t border-slate-800/60 flex items-center gap-1.5">

@@ -321,16 +321,19 @@ describe("Comprehensive Country Mapping (100% Coverage & Zero-padded IDs)", () =
 
   test("getCountryData returns rich metadata for global non-pilot countries", () => {
     const france = getCountryData("FRA");
+    assert.ok(france);
     assert.equal(france.nameCommon, "França");
     assert.equal(france.capital, "Paris");
     assert.equal(france.continent, "Europe");
-    assert.ok(france.latitude > 45 && france.latitude < 50);
+    assert.ok(france.latitude !== null && france.latitude > 45 && france.latitude < 50);
 
     const canada = getCountryData("CAN");
+    assert.ok(canada);
     assert.equal(canada.nameCommon, "Canadá");
     assert.equal(canada.capital, "Ottawa");
 
     const chile = getCountryData("CHL");
+    assert.ok(chile);
     assert.equal(chile.nameCommon, "Chile");
     assert.equal(chile.capital, "Santiago");
   });
@@ -681,19 +684,21 @@ describe("ETAPA 4: Responsive Layout, ISO Flag Resolution & Universal Citations"
 
   test("getCountryData for Poland (POL) resolves to pl.svg and never po.svg", () => {
     const poland = getCountryData("POL");
+    assert.ok(poland);
     assert.equal(poland.isoCode, "POL");
     assert.equal(poland.iso2, "PL");
     assert.equal(poland.flagSvgUrl, "https://flagcdn.com/pl.svg");
     assert.ok(!poland.flagSvgUrl.includes("po.svg"), "Must NOT generate po.svg for Poland");
   });
 
-  test("getCountryData for unindexed ISO does not blindly slice(0, 2) when unknown", () => {
+  test("getCountryData for unindexed ISO returns null instead of invented placeholder data", () => {
     const unknown = getCountryData("XYZ_UNKNOWN");
-    assert.equal(unknown.flagSvgUrl, "", "Unknown country must have empty flagSvgUrl to trigger styled ISO badge");
+    assert.equal(unknown, null, "Unknown country ISO must return null (RN02)");
   });
 
   test("Pilot countries indicators display valid primary sources (World Bank, PNUD, WHO, SIPRI)", () => {
     const brazil = getCountryData("BRA");
+    assert.ok(brazil);
     const gdp = brazil.indicators.find((i) => i.indicatorCode === "NY.GDP.MKTP.CD");
     const hdi = brazil.indicators.find((i) => i.indicatorCode === "UNDP.HDI");
     const life = brazil.indicators.find((i) => i.indicatorCode === "SP.DYN.LE00.IN");
@@ -718,6 +723,7 @@ describe("ETAPA 4: Responsive Layout, ISO Flag Resolution & Universal Citations"
 
   test("Country mini timeline milestones contain primary sources", () => {
     const brazil = getCountryData("BRA");
+    assert.ok(brazil);
     assert.ok(brazil.milestones.length > 0);
     for (const m of brazil.milestones) {
       assert.ok(m.sourcePrimary && m.sourcePrimary.length > 0, `Milestone ${m.id} missing sourcePrimary`);
@@ -801,15 +807,16 @@ describe("ETAPA 4: Responsive Layout, ISO Flag Resolution & Universal Citations"
     assert.equal(dynamicMap[4].source, "Arquivo Histórico Oficial");
   });
 
-  test("ComparisonGrid resolves global countries through getCountryData without crashing", () => {
-    const countries = ["BRA", "DEU", "POL", "CAN", "XYZ_UNINDEXED"].map((iso) => getCountryData(iso));
-    assert.equal(countries.length, 5);
+  test("ComparisonGrid resolves global countries through getCountryData and omits unknown ISOs", () => {
+    const countries = ["BRA", "DEU", "POL", "CAN", "XYZ_UNINDEXED"]
+      .map((iso) => getCountryData(iso))
+      .filter((c) => c !== null);
+    assert.equal(countries.length, 4);
     assert.equal(countries[0].nameCommon, "Brasil");
     assert.equal(countries[1].nameCommon, "Alemanha");
     assert.equal(countries[2].nameCommon, "Polônia");
     assert.equal(countries[3].nameCommon, "Canadá");
-    assert.equal(countries[4].nameCommon, "XYZ_UNINDEXED");
-    assert.equal(countries[4].flagSvgUrl, "", "Unindexed country yields empty flagSvgUrl for styled badge fallback");
+    assert.equal(getCountryData("XYZ_UNINDEXED"), null);
   });
 });
 
@@ -1009,6 +1016,7 @@ describe("Refinements: Solar Lighting, Border Highlighting, HUD Expansion, Timez
 
     for (const [iso, expectedTz] of Object.entries(testCases)) {
       const data = getCountryData(iso);
+      assert.ok(data, `Country ${iso} must resolve in catalog`);
       assert.equal(
         data.timezone,
         expectedTz,
@@ -1023,7 +1031,7 @@ describe("Refinements: Solar Lighting, Border Highlighting, HUD Expansion, Timez
       // Verify Intl.DateTimeFormat can format the timezone without throwing
       const now = new Date("2026-10-19T14:10:49Z");
       const formatted = now.toLocaleTimeString("pt-BR", {
-        timeZone: data.timezone,
+        timeZone: data.timezone!,
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -1073,8 +1081,9 @@ describe("Refinements: Solar Lighting, Border Highlighting, HUD Expansion, Timez
   });
 
   test("6. All pilot country milestones possess countryIso and findMilestoneById resolves them", () => {
-    for (const [iso, country] of Object.entries(PILOT_COUNTRIES)) {
+    for (const [iso] of Object.entries(PILOT_COUNTRIES)) {
       const data = getCountryData(iso);
+      assert.ok(data);
       for (const m of data.milestones) {
         assert.equal(
           m.countryIso,
@@ -1131,8 +1140,8 @@ describe("Refinements: Solar Lighting, Border Highlighting, HUD Expansion, Timez
   test("8. Full South American timezone coverage includes French Guiana and Falklands", () => {
     assert.equal(ISO3_TO_TIMEZONE["GUF"], "America/Cayenne");
     assert.equal(ISO3_TO_TIMEZONE["FLK"], "Atlantic/Stanley");
-    assert.equal(getCountryData("GUF").timezone, "America/Cayenne");
-    assert.equal(getCountryData("FLK").timezone, "Atlantic/Stanley");
+    assert.equal(getCountryData("GUF")?.timezone, "America/Cayenne");
+    assert.equal(getCountryData("FLK")?.timezone, "Atlantic/Stanley");
   });
 
   test("9. resetView clears both selectedMilestoneId and selectedYear", () => {
@@ -1411,6 +1420,7 @@ describe("Reader DOM Nesting & Hydration Safety (validateDOMNesting Invariants)"
   test("ReaderContent renders prose paragraphs without nested <div> in <p> and lists as semantic <ul> with <li>", () => {
     // 1. Test GEOGRAPHY dimension (pure prose)
     const brazil = getCountryData("BRA");
+    assert.ok(brazil);
     const geoMarkup = renderToStaticMarkup(
       React.createElement(ReaderContent, { country: brazil, dimension: "GEOGRAPHY" })
     );
@@ -1447,6 +1457,7 @@ describe("Reader DOM Nesting & Hydration Safety (validateDOMNesting Invariants)"
 
     // 3. Test USA GOVERNMENT_POLITICS (contains checks and balances in italics)
     const usa = getCountryData("USA");
+    assert.ok(usa);
     const usaMarkup = renderToStaticMarkup(
       React.createElement(ReaderContent, { country: usa, dimension: "GOVERNMENT_POLITICS" })
     );
@@ -1994,8 +2005,8 @@ describe("Componente 1: Datasets Históricos & Base de Conhecimento de Entidades
     const pru = getCountryData("PRU");
     assert.ok(pru);
     assert.equal(pru.isoCode, "PRU");
-    assert.ok(pru.nameOfficial.includes("Reino da Prússia"));
-    assert.ok(pru.capital.includes("Berlim"));
+    assert.ok(pru.nameOfficial?.includes("Reino da Prússia"));
+    assert.ok(pru.capital?.includes("Berlim"));
     assert.equal(pru.historicalLeader, "Otto von Bismarck");
     assert.equal(pru.isHistoricalEntity, true);
     assert.ok(pru.dossierSections.length >= 3);
@@ -2004,11 +2015,13 @@ describe("Componente 1: Datasets Históricos & Base de Conhecimento de Entidades
 
     // Year-based resolution: getCountryData("DEU", 1870) -> Prussia
     const deu1870 = getCountryData("DEU", 1870);
+    assert.ok(deu1870);
     assert.equal(deu1870.isoCode, "PRU");
     assert.equal(deu1870.nameCommon, "Reino da Prússia");
 
     // Year-based resolution: getCountryData("RUS", 1969) -> USSR
     const rus1969 = getCountryData("RUS", 1969);
+    assert.ok(rus1969);
     assert.equal(rus1969.isoCode, "SUN");
     assert.equal(rus1969.nameCommon, "União Soviética");
 
@@ -2121,6 +2134,7 @@ describe("Componente 1: Datasets Históricos & Base de Conhecimento de Entidades
       const iso = NUMERIC_TO_ISO[numericId] || (feature.name && NAME_TO_ISO[feature.name]) || feature.name || null;
       assert.ok(iso, `Failed to resolve ISO for feature ${JSON.stringify(feature)}`);
       const data = getCountryData(iso!);
+      assert.ok(data, `Failed to resolve CountryData for ISO ${iso}`);
       return { iso, data };
     };
 
@@ -2200,21 +2214,25 @@ describe("Componente 1: Datasets Históricos & Base de Conhecimento de Entidades
 
   test("9. Historical entities report accurate geographical area, continent and academic citations", () => {
     const sun = getCountryData("SUN");
+    assert.ok(sun);
     assert.equal(sun.areaKm2, 22402200, "USSR area must reflect true scale (22.4M km²)");
     assert.equal(sun.continent, "Europe/Asia");
     assert.equal(sun.numericCode, "810");
 
     const tur = getCountryData("TUR_HIST");
+    assert.ok(tur);
     assert.equal(tur.areaKm2, 1800000);
     assert.equal(tur.continent, "Europe/Asia/Africa");
     assert.equal(tur.numericCode, "903");
 
     const yug = getCountryData("YUG");
+    assert.ok(yug);
     assert.equal(yug.areaKm2, 255804);
     assert.equal(yug.numericCode, "891");
     assert.ok(yug.dossierSections.length >= 2);
 
     const csk = getCountryData("CSK");
+    assert.ok(csk);
     assert.equal(csk.areaKm2, 127900);
     assert.equal(csk.numericCode, "200");
     assert.ok(csk.dossierSections.length >= 2);

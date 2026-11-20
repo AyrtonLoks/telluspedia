@@ -40,8 +40,18 @@ export function EntityLaunch() {
 
     if (entity.kind === "country") {
       const country = getCountryData(key);
-      globe.setSelectedIso(key);
-      globe.flyTo(country.latitude, country.longitude, 2);
+      if (!country) {
+        globe.setSelectedIso(null);
+        return;
+      }
+      globe.setSelectedIso(country.isoCode);
+      if (
+        country.latitude !== null &&
+        country.longitude !== null &&
+        (country.latitude !== 0 || country.longitude !== 0)
+      ) {
+        globe.flyTo(country.latitude, country.longitude, 2);
+      }
     } else if (entity.kind === "event") {
       const event = findMilestoneById(key);
       if (!event) return;

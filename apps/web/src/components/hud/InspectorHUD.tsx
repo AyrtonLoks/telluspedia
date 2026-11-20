@@ -138,11 +138,16 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
 
   const primarySourceName =
     currentCountry.indicators?.[0]?.sourcePrimary ||
-    (currentCountry.isHistoricalEntity ? "Maddison Project Database" : "ONU");
+    (currentCountry.isHistoricalEntity
+      ? "Maddison Project Database"
+      : currentCountry.completeness === "none"
+      ? "Natural Earth"
+      : "ONU");
 
   return (
     <aside
       data-inspector-hud="true"
+      data-completeness={currentCountry.completeness}
       className={`fixed top-5 right-5 z-20 w-96 max-w-[calc(100vw-2.5rem)] ${maxHeightClass} overflow-y-auto glass-panel rounded-2xl p-4 shadow-2xl transition-all duration-300 animate-in fade-in slide-in-from-right-4`}
     >
       {/* Country Identification Header */}
@@ -154,6 +159,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         region={currentCountry.region}
         flagSvgUrl={currentCountry.flagSvgUrl}
         isoCode={currentCountry.isoCode}
+        completeness={currentCountry.completeness}
       />
 
       {/* Real-time Environment: Local Clock + Open-Meteo Weather (Contemporary) OR Historical Vigência/Leadership Context (Extinct Entities) */}
@@ -173,13 +179,13 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
             </div>
             <div
               className="text-[10px] text-amber-300/90 line-clamp-1"
-              title={`${currentCountry.leaderTitle || "Líder"}: ${currentCountry.historicalLeader || currentCountry.headOfState}`}
+              title={`${currentCountry.leaderTitle || "Líder"}: ${currentCountry.historicalLeader || currentCountry.headOfState || "Indisponível"}`}
             >
               <span className="text-slate-400">
                 {currentCountry.leaderTitle ? `${currentCountry.leaderTitle}: ` : "Líder: "}
               </span>
               <strong className="text-slate-200 font-semibold">
-                {currentCountry.historicalLeader || currentCountry.headOfState}
+                {currentCountry.historicalLeader || currentCountry.headOfState || "Indisponível"}
               </strong>
             </div>
           </div>
@@ -194,35 +200,56 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         </div>
       )}
 
-      {/* Summary Narrative with Primary Source citation */}
+      {/* Summary Narrative with Primary Source citation (only when real summary exists) */}
       <div className="mb-3">
-        <p className="text-xs text-slate-300 leading-relaxed">
-          {currentCountry.summary}{" "}
-          <a
-            href={getSourceUrl(primarySourceName)}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-1 text-[10px] font-mono text-cyan-400/90 hover:text-cyan-200 hover:underline bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-800/50 rounded px-1.5 py-0.5 transition-colors cursor-pointer"
-            title={`Fonte Primária: ${primarySourceName} / Base TellusPedia (${currentCountry.isoCode}) - Acessar Repositório`}
+        {currentCountry.summary ? (
+          <p className="text-xs text-slate-300 leading-relaxed">
+            {currentCountry.summary}{" "}
+            <a
+              href={getSourceUrl(primarySourceName)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-[10px] font-mono text-cyan-400/90 hover:text-cyan-200 hover:underline bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-800/50 rounded px-1.5 py-0.5 transition-colors cursor-pointer"
+              title={`Fonte Primária: ${primarySourceName} / Base TellusPedia (${currentCountry.isoCode}) - Acessar Repositório`}
+            >
+              <span>
+                [Fonte:{" "}
+                {currentCountry.isHistoricalEntity
+                  ? (primarySourceName.length > 18
+                      ? primarySourceName.slice(0, 16) + "…"
+                      : primarySourceName)
+                  : "ONU"}
+                ]
+              </span>
+              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+            </a>
+          </p>
+        ) : (
+          <p
+            data-testid="inspector-summary-unavailable"
+            className="text-xs text-slate-400 leading-relaxed"
           >
-            <span>
-              [Fonte:{" "}
-              {currentCountry.isHistoricalEntity
-                ? (primarySourceName.length > 18
-                    ? primarySourceName.slice(0, 16) + "…"
-                    : primarySourceName)
-                : "ONU"}
-              ]
-            </span>
-            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-          </a>
-        </p>
+            Resumo descritivo indisponível para {currentCountry.nameCommon}. Identificação
+            geográfica e coordenadas fornecidas por{" "}
+            <a
+              href={currentCountry.sourceUrl || getSourceUrl("Natural Earth")}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-cyan-400 hover:text-cyan-200 hover:underline"
+            >
+              Natural Earth (1:110m)
+            </a>
+            {currentCountry.referenceDate ? ` (ref. ${currentCountry.referenceDate})` : ""}.
+          </p>
+        )}
       </div>
 
       {/* Metrics & Indicator Grid */}
       <CountryMetricsGrid
         countryName={currentCountry.nameCommon}
+        isoCode={currentCountry.isoCode}
         population={currentCountry.population}
         areaKm2={currentCountry.areaKm2}
         currencyCode={currentCountry.currencyCode}
@@ -232,6 +259,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         historicalLeader={currentCountry.historicalLeader}
         leaderTitle={currentCountry.leaderTitle}
         isHistoricalEntity={currentCountry.isHistoricalEntity}
+        completeness={currentCountry.completeness}
         indicators={currentCountry.indicators}
       />
 
@@ -337,6 +365,19 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 Cartografia Natural Earth
               </a>
               .
+            </>
+          ) : currentCountry.completeness === "none" ? (
+            <>
+              <a
+                href={currentCountry.sourceUrl || getSourceUrl("Natural Earth")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-cyan-300 hover:underline"
+              >
+                Cartografia Natural Earth (1:110m)
+              </a>
+              {" "}e padrão ISO 3166-1 / Unicode CLDR
+              {currentCountry.referenceDate ? ` (ref. ${currentCountry.referenceDate})` : ""}.
             </>
           ) : (
             <>

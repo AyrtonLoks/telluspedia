@@ -18,10 +18,18 @@ function CountryContent({
 
   useEffect(() => {
     if (iso) {
-      setSelectedIso(iso);
       const country = getCountryData(iso);
-      if (country && (country.latitude !== 0 || country.longitude !== 0)) {
-        flyTo(country.latitude, country.longitude, 2.0);
+      if (country) {
+        setSelectedIso(country.isoCode);
+        if (
+          country.latitude !== null &&
+          country.longitude !== null &&
+          (country.latitude !== 0 || country.longitude !== 0)
+        ) {
+          flyTo(country.latitude, country.longitude, 2.0);
+        }
+      } else {
+        setSelectedIso(null);
       }
     }
   }, [iso, setSelectedIso, flyTo]);

@@ -65,7 +65,12 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({ isoCode, chi
     e.stopPropagation();
     setSelectedIso(isoCode);
     useTimelineStore.getState().selectMilestone(null);
-    if (country && country.latitude && country.longitude) {
+    if (
+      country &&
+      country.latitude !== null &&
+      country.longitude !== null &&
+      (country.latitude !== 0 || country.longitude !== 0)
+    ) {
       flyTo(country.latitude, country.longitude, 2.0);
     }
   };
@@ -119,7 +124,7 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({ isoCode, chi
             </span>
 
             <span className="text-[11px] text-slate-300 line-clamp-3 leading-relaxed mb-3 block">
-              {country.summary}
+              {country.summary || "Dados descritivos ainda indisponíveis na base local."}
             </span>
 
             <span className="flex items-center gap-1.5 pt-2 border-t border-slate-800">

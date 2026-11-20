@@ -2,13 +2,13 @@
 
 import React from "react";
 import { X, Globe, Users, Maximize2, DollarSign, Award, Landmark, ExternalLink, Quote } from "lucide-react";
-import { getCountryData } from "@/lib/country-data";
+import { getCountryData, CountryData } from "@/lib/country-data";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { getSourceUrl } from "@/lib/citations";
 
 interface ComparisonCardProps {
-  country: ReturnType<typeof getCountryData>;
+  country: CountryData;
   onRemove: (iso: string) => void;
 }
 
@@ -18,14 +18,15 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
   const hdi = c.indicators.find((i) => i.indicatorCode === "UNDP.HDI")?.value;
   const lifeExp = c.indicators.find((i) => i.indicatorCode === "SP.DYN.LE00.IN")?.value;
 
-  const formatPop = (num: number) => {
+  const formatPop = (num: number | null) => {
+    if (num === null) return "Dado indisponível";
     if (num >= 1e9) return `${(num / 1e9).toFixed(2)} bi`;
     if (num >= 1e6) return `${(num / 1e6).toFixed(1)} mi`;
     return num.toLocaleString("pt-BR");
   };
 
   const formatGdp = (val?: number) => {
-    if (!val) return "Consulte o dossiê";
+    if (val === undefined || val === null) return "Dado indisponível";
     if (val >= 1e12) return `$ ${(val / 1e12).toFixed(2)} tri`;
     if (val >= 1e9) return `$ ${(val / 1e9).toFixed(1)} bi`;
     return `$ ${val.toLocaleString("pt-BR")}`;
@@ -67,37 +68,51 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
       <div className="space-y-2 text-xs">
         <div>
           <span className="text-[10px] text-slate-400 block">Capital</span>
-          <span className="font-medium text-slate-200">{c.capital}</span>
+          <span className={c.capital ? "font-medium text-slate-200" : "text-slate-500"}>
+            {c.capital ?? "Dado indisponível"}
+          </span>
         </div>
 
         <div>
           <span className="text-[10px] text-slate-400 block">População</span>
-          <span className="font-semibold text-cyan-300">{formatPop(c.population)}</span>
+          <span className={c.population !== null ? "font-semibold text-cyan-300" : "text-slate-500"}>
+            {formatPop(c.population)}
+          </span>
         </div>
 
         <div>
           <span className="text-[10px] text-slate-400 block">Área Territorial</span>
-          <span className="font-medium text-slate-200">{c.areaKm2.toLocaleString("pt-BR")} km²</span>
+          <span className={c.areaKm2 !== null ? "font-medium text-slate-200" : "text-slate-500"}>
+            {c.areaKm2 !== null ? `${c.areaKm2.toLocaleString("pt-BR")} km²` : "Dado indisponível"}
+          </span>
         </div>
 
         <div>
           <span className="text-[10px] text-slate-400 block">PIB Nominal</span>
-          <span className="font-semibold text-amber-300">{formatGdp(gdp)}</span>
+          <span className={gdp !== undefined ? "font-semibold text-amber-300" : "text-slate-500"}>
+            {formatGdp(gdp)}
+          </span>
         </div>
 
         <div>
           <span className="text-[10px] text-slate-400 block">IDH</span>
-          <span className="font-semibold text-purple-300">{hdi ? hdi.toFixed(3) : "N/D"}</span>
+          <span className={hdi !== undefined ? "font-semibold text-purple-300" : "text-slate-500"}>
+            {hdi !== undefined ? hdi.toFixed(3) : "Dado indisponível"}
+          </span>
         </div>
 
         <div>
           <span className="text-[10px] text-slate-400 block">Expectativa de Vida</span>
-          <span className="font-medium text-slate-200">{lifeExp ? `${lifeExp} anos` : "N/D"}</span>
+          <span className={lifeExp !== undefined ? "font-medium text-slate-200" : "text-slate-500"}>
+            {lifeExp !== undefined ? `${lifeExp} anos` : "Dado indisponível"}
+          </span>
         </div>
 
         <div>
           <span className="text-[10px] text-slate-400 block">Sistema de Governo</span>
-          <span className="text-[11px] text-slate-300 line-clamp-2">{c.governmentType}</span>
+          <span className={c.governmentType ? "text-[11px] text-slate-300 line-clamp-2" : "text-slate-500"}>
+            {c.governmentType ?? "Dado indisponível"}
+          </span>
         </div>
       </div>
     </div>
@@ -105,11 +120,17 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
 };
 
 export const ComparisonGrid: React.FC = () => {
-  const selectedIsos = useComparatorStore((s) => s.selectedIsos);
+  const storeSelectedIsos = useComparatorStore((s) => s.selectedIsos);
+  const selectedIsos =
+    typeof window === "undefined"
+      ? useComparatorStore.getState().selectedIsos
+      : storeSelectedIsos;
   const removeCountry = useComparatorStore((s) => s.removeCountry);
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
 
-  const countries = selectedIsos.map((iso) => getCountryData(iso)).filter(Boolean);
+  const countries = selectedIsos
+    .map((iso) => getCountryData(iso))
+    .filter((c): c is CountryData => c !== null);
 
   if (countries.length === 0) {
     return (

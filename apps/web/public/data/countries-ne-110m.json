@@ -1,0 +1,1782 @@
+{
+  "metadata": {
+    "source": "Natural Earth 1:110m Cultural Vectors (world-atlas@2.0.2) + ISO 3166-1 / Unicode CLDR (pt-BR)",
+    "sourceUrl": "https://www.naturalearthdata.com/downloads/110m-cultural-vectors/",
+    "referenceDate": "2026-11-20",
+    "license": "Public Domain (Natural Earth) / Unicode License (CLDR)",
+    "countryCount": 177,
+    "notes": "Centroides geográficos calculados sobre polígonos Natural Earth 1:110m via d3-geo (geoCentroid). Nomes em português derivados do padrão Unicode CLDR (Intl.DisplayNames pt-BR) e bandeiras via FlagCDN (ISO 3166-1 alpha-2). Não inclui indicadores socioeconômicos."
+  },
+  "countries": {
+    "AFG": {
+      "isoCode": "AFG",
+      "iso2": "AF",
+      "numericCode": "004",
+      "nameCommon": "Afeganistão",
+      "nameNaturalEarth": "Afghanistan",
+      "latitude": 33.8403,
+      "longitude": 66.0038,
+      "flagSvgUrl": "https://flagcdn.com/af.svg"
+    },
+    "AGO": {
+      "isoCode": "AGO",
+      "iso2": "AO",
+      "numericCode": "024",
+      "nameCommon": "Angola",
+      "nameNaturalEarth": "Angola",
+      "latitude": -12.2256,
+      "longitude": 17.465,
+      "flagSvgUrl": "https://flagcdn.com/ao.svg"
+    },
+    "ALB": {
+      "isoCode": "ALB",
+      "iso2": "AL",
+      "numericCode": "008",
+      "nameCommon": "Albânia",
+      "nameNaturalEarth": "Albania",
+      "latitude": 41.1344,
+      "longitude": 20.0338,
+      "flagSvgUrl": "https://flagcdn.com/al.svg"
+    },
+    "ARE": {
+      "isoCode": "ARE",
+      "iso2": "AE",
+      "numericCode": "784",
+      "nameCommon": "Emirados Árabes Unidos",
+      "nameNaturalEarth": "United Arab Emirates",
+      "latitude": 23.871,
+      "longitude": 54.2004,
+      "flagSvgUrl": "https://flagcdn.com/ae.svg"
+    },
+    "ARG": {
+      "isoCode": "ARG",
+      "iso2": "AR",
+      "numericCode": "032",
+      "nameCommon": "Argentina",
+      "nameNaturalEarth": "Argentina",
+      "latitude": -34.7366,
+      "longitude": -64.7543,
+      "flagSvgUrl": "https://flagcdn.com/ar.svg"
+    },
+    "ARM": {
+      "isoCode": "ARM",
+      "iso2": "AM",
+      "numericCode": "051",
+      "nameCommon": "Armênia",
+      "nameNaturalEarth": "Armenia",
+      "latitude": 40.2144,
+      "longitude": 45.0096,
+      "flagSvgUrl": "https://flagcdn.com/am.svg"
+    },
+    "ATA": {
+      "isoCode": "ATA",
+      "iso2": "AQ",
+      "numericCode": "010",
+      "nameCommon": "Antártida",
+      "nameNaturalEarth": "Antarctica",
+      "latitude": -84.9686,
+      "longitude": 82.507,
+      "flagSvgUrl": "https://flagcdn.com/aq.svg"
+    },
+    "ATF": {
+      "isoCode": "ATF",
+      "iso2": "TF",
+      "numericCode": "260",
+      "nameCommon": "Territórios Franceses do Sul",
+      "nameNaturalEarth": "Fr. S. Antarctic Lands",
+      "latitude": -49.307,
+      "longitude": 69.5309,
+      "flagSvgUrl": "https://flagcdn.com/tf.svg"
+    },
+    "AUS": {
+      "isoCode": "AUS",
+      "iso2": "AU",
+      "numericCode": "036",
+      "nameCommon": "Austrália",
+      "nameNaturalEarth": "Australia",
+      "latitude": -25.7631,
+      "longitude": 134.3141,
+      "flagSvgUrl": "https://flagcdn.com/au.svg"
+    },
+    "AUT": {
+      "isoCode": "AUT",
+      "iso2": "AT",
+      "numericCode": "040",
+      "nameCommon": "Áustria",
+      "nameNaturalEarth": "Austria",
+      "latitude": 47.621,
+      "longitude": 14.0602,
+      "flagSvgUrl": "https://flagcdn.com/at.svg"
+    },
+    "AZE": {
+      "isoCode": "AZE",
+      "iso2": "AZ",
+      "numericCode": "031",
+      "nameCommon": "Azerbaijão",
+      "nameNaturalEarth": "Azerbaijan",
+      "latitude": 40.2195,
+      "longitude": 47.555,
+      "flagSvgUrl": "https://flagcdn.com/az.svg"
+    },
+    "BDI": {
+      "isoCode": "BDI",
+      "iso2": "BI",
+      "numericCode": "108",
+      "nameCommon": "Burundi",
+      "nameNaturalEarth": "Burundi",
+      "latitude": -3.3777,
+      "longitude": 29.914,
+      "flagSvgUrl": "https://flagcdn.com/bi.svg"
+    },
+    "BEL": {
+      "isoCode": "BEL",
+      "iso2": "BE",
+      "numericCode": "056",
+      "nameCommon": "Bélgica",
+      "nameNaturalEarth": "Belgium",
+      "latitude": 50.6526,
+      "longitude": 4.5877,
+      "flagSvgUrl": "https://flagcdn.com/be.svg"
+    },
+    "BEN": {
+      "isoCode": "BEN",
+      "iso2": "BJ",
+      "numericCode": "204",
+      "nameCommon": "Benin",
+      "nameNaturalEarth": "Benin",
+      "latitude": 9.6423,
+      "longitude": 2.3364,
+      "flagSvgUrl": "https://flagcdn.com/bj.svg"
+    },
+    "BFA": {
+      "isoCode": "BFA",
+      "iso2": "BF",
+      "numericCode": "854",
+      "nameCommon": "Burquina Faso",
+      "nameNaturalEarth": "Burkina Faso",
+      "latitude": 12.313,
+      "longitude": -1.7828,
+      "flagSvgUrl": "https://flagcdn.com/bf.svg"
+    },
+    "BGD": {
+      "isoCode": "BGD",
+      "iso2": "BD",
+      "numericCode": "050",
+      "nameCommon": "Bangladesh",
+      "nameNaturalEarth": "Bangladesh",
+      "latitude": 23.8339,
+      "longitude": 90.2763,
+      "flagSvgUrl": "https://flagcdn.com/bd.svg"
+    },
+    "BGR": {
+      "isoCode": "BGR",
+      "iso2": "BG",
+      "numericCode": "100",
+      "nameCommon": "Bulgária",
+      "nameNaturalEarth": "Bulgaria",
+      "latitude": 42.7559,
+      "longitude": 25.1875,
+      "flagSvgUrl": "https://flagcdn.com/bg.svg"
+    },
+    "BHS": {
+      "isoCode": "BHS",
+      "iso2": "BS",
+      "numericCode": "044",
+      "nameCommon": "Bahamas",
+      "nameNaturalEarth": "Bahamas",
+      "latitude": 25.5066,
+      "longitude": -77.928,
+      "flagSvgUrl": "https://flagcdn.com/bs.svg"
+    },
+    "BIH": {
+      "isoCode": "BIH",
+      "iso2": "BA",
+      "numericCode": "070",
+      "nameCommon": "Bósnia e Herzegovina",
+      "nameNaturalEarth": "Bosnia and Herz.",
+      "latitude": 44.1788,
+      "longitude": 17.8229,
+      "flagSvgUrl": "https://flagcdn.com/ba.svg"
+    },
+    "BLR": {
+      "isoCode": "BLR",
+      "iso2": "BY",
+      "numericCode": "112",
+      "nameCommon": "Bielorrússia",
+      "nameNaturalEarth": "Belarus",
+      "latitude": 53.4952,
+      "longitude": 27.9649,
+      "flagSvgUrl": "https://flagcdn.com/by.svg"
+    },
+    "BLZ": {
+      "isoCode": "BLZ",
+      "iso2": "BZ",
+      "numericCode": "084",
+      "nameCommon": "Belize",
+      "nameNaturalEarth": "Belize",
+      "latitude": 17.1947,
+      "longitude": -88.7038,
+      "flagSvgUrl": "https://flagcdn.com/bz.svg"
+    },
+    "BOL": {
+      "isoCode": "BOL",
+      "iso2": "BO",
+      "numericCode": "068",
+      "nameCommon": "Bolívia",
+      "nameNaturalEarth": "Bolivia",
+      "latitude": -16.7039,
+      "longitude": -64.6547,
+      "flagSvgUrl": "https://flagcdn.com/bo.svg"
+    },
+    "BRA": {
+      "isoCode": "BRA",
+      "iso2": "BR",
+      "numericCode": "076",
+      "nameCommon": "Brasil",
+      "nameNaturalEarth": "Brazil",
+      "latitude": -10.6555,
+      "longitude": -53.1725,
+      "flagSvgUrl": "https://flagcdn.com/br.svg"
+    },
+    "BRN": {
+      "isoCode": "BRN",
+      "iso2": "BN",
+      "numericCode": "096",
+      "nameCommon": "Brunei",
+      "nameNaturalEarth": "Brunei",
+      "latitude": 4.6901,
+      "longitude": 114.9151,
+      "flagSvgUrl": "https://flagcdn.com/bn.svg"
+    },
+    "BTN": {
+      "isoCode": "BTN",
+      "iso2": "BT",
+      "numericCode": "064",
+      "nameCommon": "Butão",
+      "nameNaturalEarth": "Bhutan",
+      "latitude": 27.4296,
+      "longitude": 90.4733,
+      "flagSvgUrl": "https://flagcdn.com/bt.svg"
+    },
+    "BWA": {
+      "isoCode": "BWA",
+      "iso2": "BW",
+      "numericCode": "072",
+      "nameCommon": "Botsuana",
+      "nameNaturalEarth": "Botswana",
+      "latitude": -22.0823,
+      "longitude": 23.783,
+      "flagSvgUrl": "https://flagcdn.com/bw.svg"
+    },
+    "CAF": {
+      "isoCode": "CAF",
+      "iso2": "CF",
+      "numericCode": "140",
+      "nameCommon": "República Centro-Africana",
+      "nameNaturalEarth": "Central African Rep.",
+      "latitude": 6.5468,
+      "longitude": 20.3677,
+      "flagSvgUrl": "https://flagcdn.com/cf.svg"
+    },
+    "CAN": {
+      "isoCode": "CAN",
+      "iso2": "CA",
+      "numericCode": "124",
+      "nameCommon": "Canadá",
+      "nameNaturalEarth": "Canada",
+      "latitude": 60.4769,
+      "longitude": -96.396,
+      "flagSvgUrl": "https://flagcdn.com/ca.svg"
+    },
+    "CHE": {
+      "isoCode": "CHE",
+      "iso2": "CH",
+      "numericCode": "756",
+      "nameCommon": "Suíça",
+      "nameNaturalEarth": "Switzerland",
+      "latitude": 46.7928,
+      "longitude": 8.1158,
+      "flagSvgUrl": "https://flagcdn.com/ch.svg"
+    },
+    "CHL": {
+      "isoCode": "CHL",
+      "iso2": "CL",
+      "numericCode": "152",
+      "nameCommon": "Chile",
+      "nameNaturalEarth": "Chile",
+      "latitude": -37.3109,
+      "longitude": -71.1779,
+      "flagSvgUrl": "https://flagcdn.com/cl.svg"
+    },
+    "CHN": {
+      "isoCode": "CHN",
+      "iso2": "CN",
+      "numericCode": "156",
+      "nameCommon": "China",
+      "nameNaturalEarth": "China",
+      "latitude": 36.6834,
+      "longitude": 103.4525,
+      "flagSvgUrl": "https://flagcdn.com/cn.svg"
+    },
+    "CIV": {
+      "isoCode": "CIV",
+      "iso2": "CI",
+      "numericCode": "384",
+      "nameCommon": "Costa do Marfim",
+      "nameNaturalEarth": "Côte d'Ivoire",
+      "latitude": 7.5515,
+      "longitude": -5.6119,
+      "flagSvgUrl": "https://flagcdn.com/ci.svg"
+    },
+    "CMR": {
+      "isoCode": "CMR",
+      "iso2": "CM",
+      "numericCode": "120",
+      "nameCommon": "Camarões",
+      "nameNaturalEarth": "Cameroon",
+      "latitude": 5.6543,
+      "longitude": 12.606,
+      "flagSvgUrl": "https://flagcdn.com/cm.svg"
+    },
+    "COD": {
+      "isoCode": "COD",
+      "iso2": "CD",
+      "numericCode": "180",
+      "nameCommon": "República Democrática do Congo",
+      "nameNaturalEarth": "Dem. Rep. Congo",
+      "latitude": -2.8387,
+      "longitude": 23.5768,
+      "flagSvgUrl": "https://flagcdn.com/cd.svg"
+    },
+    "COG": {
+      "isoCode": "COG",
+      "iso2": "CG",
+      "numericCode": "178",
+      "nameCommon": "República do Congo",
+      "nameNaturalEarth": "Congo",
+      "latitude": -0.8367,
+      "longitude": 15.136,
+      "flagSvgUrl": "https://flagcdn.com/cg.svg"
+    },
+    "COL": {
+      "isoCode": "COL",
+      "iso2": "CO",
+      "numericCode": "170",
+      "nameCommon": "Colômbia",
+      "nameNaturalEarth": "Colombia",
+      "latitude": 3.9163,
+      "longitude": -73.0735,
+      "flagSvgUrl": "https://flagcdn.com/co.svg"
+    },
+    "CRI": {
+      "isoCode": "CRI",
+      "iso2": "CR",
+      "numericCode": "188",
+      "nameCommon": "Costa Rica",
+      "nameNaturalEarth": "Costa Rica",
+      "latitude": 9.9658,
+      "longitude": -84.1735,
+      "flagSvgUrl": "https://flagcdn.com/cr.svg"
+    },
+    "CUB": {
+      "isoCode": "CUB",
+      "iso2": "CU",
+      "numericCode": "192",
+      "nameCommon": "Cuba",
+      "nameNaturalEarth": "Cuba",
+      "latitude": 21.6473,
+      "longitude": -78.9318,
+      "flagSvgUrl": "https://flagcdn.com/cu.svg"
+    },
+    "CYN": {
+      "isoCode": "CYN",
+      "iso2": "",
+      "numericCode": null,
+      "nameCommon": "Chipre do Norte",
+      "nameNaturalEarth": "N. Cyprus",
+      "latitude": 35.2748,
+      "longitude": 33.557,
+      "flagSvgUrl": ""
+    },
+    "CYP": {
+      "isoCode": "CYP",
+      "iso2": "CY",
+      "numericCode": "196",
+      "nameCommon": "Chipre",
+      "nameNaturalEarth": "Cyprus",
+      "latitude": 34.9075,
+      "longitude": 33.0391,
+      "flagSvgUrl": "https://flagcdn.com/cy.svg"
+    },
+    "CZE": {
+      "isoCode": "CZE",
+      "iso2": "CZ",
+      "numericCode": "203",
+      "nameCommon": "Tchéquia",
+      "nameNaturalEarth": "Czechia",
+      "latitude": 49.7798,
+      "longitude": 15.3429,
+      "flagSvgUrl": "https://flagcdn.com/cz.svg"
+    },
+    "DEU": {
+      "isoCode": "DEU",
+      "iso2": "DE",
+      "numericCode": "276",
+      "nameCommon": "Alemanha",
+      "nameNaturalEarth": "Germany",
+      "latitude": 51.0774,
+      "longitude": 10.2704,
+      "flagSvgUrl": "https://flagcdn.com/de.svg"
+    },
+    "DJI": {
+      "isoCode": "DJI",
+      "iso2": "DJ",
+      "numericCode": "262",
+      "nameCommon": "Djibuti",
+      "nameNaturalEarth": "Djibouti",
+      "latitude": 11.7728,
+      "longitude": 42.4972,
+      "flagSvgUrl": "https://flagcdn.com/dj.svg"
+    },
+    "DNK": {
+      "isoCode": "DNK",
+      "iso2": "DK",
+      "numericCode": "208",
+      "nameCommon": "Dinamarca",
+      "nameNaturalEarth": "Denmark",
+      "latitude": 56.0591,
+      "longitude": 9.8855,
+      "flagSvgUrl": "https://flagcdn.com/dk.svg"
+    },
+    "DOM": {
+      "isoCode": "DOM",
+      "iso2": "DO",
+      "numericCode": "214",
+      "nameCommon": "República Dominicana",
+      "nameNaturalEarth": "Dominican Rep.",
+      "latitude": 18.8854,
+      "longitude": -70.4619,
+      "flagSvgUrl": "https://flagcdn.com/do.svg"
+    },
+    "DZA": {
+      "isoCode": "DZA",
+      "iso2": "DZ",
+      "numericCode": "012",
+      "nameCommon": "Argélia",
+      "nameNaturalEarth": "Algeria",
+      "latitude": 28.0855,
+      "longitude": 2.612,
+      "flagSvgUrl": "https://flagcdn.com/dz.svg"
+    },
+    "ECU": {
+      "isoCode": "ECU",
+      "iso2": "EC",
+      "numericCode": "218",
+      "nameCommon": "Equador",
+      "nameNaturalEarth": "Ecuador",
+      "latitude": -1.4544,
+      "longitude": -78.3837,
+      "flagSvgUrl": "https://flagcdn.com/ec.svg"
+    },
+    "EGY": {
+      "isoCode": "EGY",
+      "iso2": "EG",
+      "numericCode": "818",
+      "nameCommon": "Egito",
+      "nameNaturalEarth": "Egypt",
+      "latitude": 26.4749,
+      "longitude": 29.861,
+      "flagSvgUrl": "https://flagcdn.com/eg.svg"
+    },
+    "ERI": {
+      "isoCode": "ERI",
+      "iso2": "ER",
+      "numericCode": "232",
+      "nameCommon": "Eritreia",
+      "nameNaturalEarth": "Eritrea",
+      "latitude": 15.4273,
+      "longitude": 38.6885,
+      "flagSvgUrl": "https://flagcdn.com/er.svg"
+    },
+    "ESH": {
+      "isoCode": "ESH",
+      "iso2": "EH",
+      "numericCode": "732",
+      "nameCommon": "Saara Ocidental",
+      "nameNaturalEarth": "W. Sahara",
+      "latitude": 24.2782,
+      "longitude": -12.1861,
+      "flagSvgUrl": "https://flagcdn.com/eh.svg"
+    },
+    "ESP": {
+      "isoCode": "ESP",
+      "iso2": "ES",
+      "numericCode": "724",
+      "nameCommon": "Espanha",
+      "nameNaturalEarth": "Spain",
+      "latitude": 40.3207,
+      "longitude": -3.6242,
+      "flagSvgUrl": "https://flagcdn.com/es.svg"
+    },
+    "EST": {
+      "isoCode": "EST",
+      "iso2": "EE",
+      "numericCode": "233",
+      "nameCommon": "Estônia",
+      "nameNaturalEarth": "Estonia",
+      "latitude": 58.6414,
+      "longitude": 25.8306,
+      "flagSvgUrl": "https://flagcdn.com/ee.svg"
+    },
+    "ETH": {
+      "isoCode": "ETH",
+      "iso2": "ET",
+      "numericCode": "231",
+      "nameCommon": "Etiópia",
+      "nameNaturalEarth": "Ethiopia",
+      "latitude": 8.6459,
+      "longitude": 39.5598,
+      "flagSvgUrl": "https://flagcdn.com/et.svg"
+    },
+    "FIN": {
+      "isoCode": "FIN",
+      "iso2": "FI",
+      "numericCode": "246",
+      "nameCommon": "Finlândia",
+      "nameNaturalEarth": "Finland",
+      "latitude": 64.261,
+      "longitude": 26.1416,
+      "flagSvgUrl": "https://flagcdn.com/fi.svg"
+    },
+    "FJI": {
+      "isoCode": "FJI",
+      "iso2": "FJ",
+      "numericCode": "242",
+      "nameCommon": "Fiji",
+      "nameNaturalEarth": "Fiji",
+      "latitude": -17.315,
+      "longitude": 178.5689,
+      "flagSvgUrl": "https://flagcdn.com/fj.svg"
+    },
+    "FLK": {
+      "isoCode": "FLK",
+      "iso2": "FK",
+      "numericCode": "238",
+      "nameCommon": "Ilhas Malvinas",
+      "nameNaturalEarth": "Falkland Is.",
+      "latitude": -51.7163,
+      "longitude": -59.4159,
+      "flagSvgUrl": "https://flagcdn.com/fk.svg"
+    },
+    "FRA": {
+      "isoCode": "FRA",
+      "iso2": "FR",
+      "numericCode": "250",
+      "nameCommon": "França",
+      "nameNaturalEarth": "France",
+      "latitude": 43.1403,
+      "longitude": -6.8016,
+      "flagSvgUrl": "https://flagcdn.com/fr.svg"
+    },
+    "GAB": {
+      "isoCode": "GAB",
+      "iso2": "GA",
+      "numericCode": "266",
+      "nameCommon": "Gabão",
+      "nameNaturalEarth": "Gabon",
+      "latitude": -0.6469,
+      "longitude": 11.6874,
+      "flagSvgUrl": "https://flagcdn.com/ga.svg"
+    },
+    "GBR": {
+      "isoCode": "GBR",
+      "iso2": "GB",
+      "numericCode": "826",
+      "nameCommon": "Reino Unido",
+      "nameNaturalEarth": "United Kingdom",
+      "latitude": 53.8085,
+      "longitude": -2.7597,
+      "flagSvgUrl": "https://flagcdn.com/gb.svg"
+    },
+    "GEO": {
+      "isoCode": "GEO",
+      "iso2": "GE",
+      "numericCode": "268",
+      "nameCommon": "Geórgia",
+      "nameNaturalEarth": "Georgia",
+      "latitude": 42.1679,
+      "longitude": 43.4991,
+      "flagSvgUrl": "https://flagcdn.com/ge.svg"
+    },
+    "GHA": {
+      "isoCode": "GHA",
+      "iso2": "GH",
+      "numericCode": "288",
+      "nameCommon": "Gana",
+      "nameNaturalEarth": "Ghana",
+      "latitude": 7.9235,
+      "longitude": -1.2371,
+      "flagSvgUrl": "https://flagcdn.com/gh.svg"
+    },
+    "GIN": {
+      "isoCode": "GIN",
+      "iso2": "GN",
+      "numericCode": "324",
+      "nameCommon": "Guiné",
+      "nameNaturalEarth": "Guinea",
+      "latitude": 10.45,
+      "longitude": -11.0552,
+      "flagSvgUrl": "https://flagcdn.com/gn.svg"
+    },
+    "GMB": {
+      "isoCode": "GMB",
+      "iso2": "GM",
+      "numericCode": "270",
+      "nameCommon": "Gâmbia",
+      "nameNaturalEarth": "Gambia",
+      "latitude": 13.4767,
+      "longitude": -15.4327,
+      "flagSvgUrl": "https://flagcdn.com/gm.svg"
+    },
+    "GNB": {
+      "isoCode": "GNB",
+      "iso2": "GW",
+      "numericCode": "624",
+      "nameCommon": "Guiné-Bissau",
+      "nameNaturalEarth": "Guinea-Bissau",
+      "latitude": 12.024,
+      "longitude": -15.1104,
+      "flagSvgUrl": "https://flagcdn.com/gw.svg"
+    },
+    "GNQ": {
+      "isoCode": "GNQ",
+      "iso2": "GQ",
+      "numericCode": "226",
+      "nameCommon": "Guiné Equatorial",
+      "nameNaturalEarth": "Eq. Guinea",
+      "latitude": 1.6464,
+      "longitude": 10.3657,
+      "flagSvgUrl": "https://flagcdn.com/gq.svg"
+    },
+    "GRC": {
+      "isoCode": "GRC",
+      "iso2": "GR",
+      "numericCode": "300",
+      "nameCommon": "Grécia",
+      "nameNaturalEarth": "Greece",
+      "latitude": 39.0367,
+      "longitude": 22.7201,
+      "flagSvgUrl": "https://flagcdn.com/gr.svg"
+    },
+    "GRL": {
+      "isoCode": "GRL",
+      "iso2": "GL",
+      "numericCode": "304",
+      "nameCommon": "Groenlândia",
+      "nameNaturalEarth": "Greenland",
+      "latitude": 73.1507,
+      "longitude": -41.9649,
+      "flagSvgUrl": "https://flagcdn.com/gl.svg"
+    },
+    "GTM": {
+      "isoCode": "GTM",
+      "iso2": "GT",
+      "numericCode": "320",
+      "nameCommon": "Guatemala",
+      "nameNaturalEarth": "Guatemala",
+      "latitude": 15.6961,
+      "longitude": -90.3717,
+      "flagSvgUrl": "https://flagcdn.com/gt.svg"
+    },
+    "GUF": {
+      "isoCode": "GUF",
+      "iso2": "GF",
+      "numericCode": "254",
+      "nameCommon": "Guiana Francesa",
+      "nameNaturalEarth": "French Guiana",
+      "latitude": 3.9339,
+      "longitude": -53.1258,
+      "flagSvgUrl": "https://flagcdn.com/gf.svg"
+    },
+    "GUY": {
+      "isoCode": "GUY",
+      "iso2": "GY",
+      "numericCode": "328",
+      "nameCommon": "Guiana",
+      "nameNaturalEarth": "Guyana",
+      "latitude": 4.7861,
+      "longitude": -58.9694,
+      "flagSvgUrl": "https://flagcdn.com/gy.svg"
+    },
+    "HND": {
+      "isoCode": "HND",
+      "iso2": "HN",
+      "numericCode": "340",
+      "nameCommon": "Honduras",
+      "nameNaturalEarth": "Honduras",
+      "latitude": 14.8251,
+      "longitude": -86.5928,
+      "flagSvgUrl": "https://flagcdn.com/hn.svg"
+    },
+    "HRV": {
+      "isoCode": "HRV",
+      "iso2": "HR",
+      "numericCode": "191",
+      "nameCommon": "Croácia",
+      "nameNaturalEarth": "Croatia",
+      "latitude": 45.0098,
+      "longitude": 16.5673,
+      "flagSvgUrl": "https://flagcdn.com/hr.svg"
+    },
+    "HTI": {
+      "isoCode": "HTI",
+      "iso2": "HT",
+      "numericCode": "332",
+      "nameCommon": "Haiti",
+      "nameNaturalEarth": "Haiti",
+      "latitude": 18.9003,
+      "longitude": -72.6591,
+      "flagSvgUrl": "https://flagcdn.com/ht.svg"
+    },
+    "HUN": {
+      "isoCode": "HUN",
+      "iso2": "HU",
+      "numericCode": "348",
+      "nameCommon": "Hungria",
+      "nameNaturalEarth": "Hungary",
+      "latitude": 47.2035,
+      "longitude": 19.343,
+      "flagSvgUrl": "https://flagcdn.com/hu.svg"
+    },
+    "IDN": {
+      "isoCode": "IDN",
+      "iso2": "ID",
+      "numericCode": "360",
+      "nameCommon": "Indonésia",
+      "nameNaturalEarth": "Indonesia",
+      "latitude": -2.2719,
+      "longitude": 117.3646,
+      "flagSvgUrl": "https://flagcdn.com/id.svg"
+    },
+    "IND": {
+      "isoCode": "IND",
+      "iso2": "IN",
+      "numericCode": "356",
+      "nameCommon": "Índia",
+      "nameNaturalEarth": "India",
+      "latitude": 22.8192,
+      "longitude": 79.5399,
+      "flagSvgUrl": "https://flagcdn.com/in.svg"
+    },
+    "IRL": {
+      "isoCode": "IRL",
+      "iso2": "IE",
+      "numericCode": "372",
+      "nameCommon": "Irlanda",
+      "nameNaturalEarth": "Ireland",
+      "latitude": 53.1718,
+      "longitude": -8.017,
+      "flagSvgUrl": "https://flagcdn.com/ie.svg"
+    },
+    "IRN": {
+      "isoCode": "IRN",
+      "iso2": "IR",
+      "numericCode": "364",
+      "nameCommon": "Irã",
+      "nameNaturalEarth": "Iran",
+      "latitude": 32.4741,
+      "longitude": 54.453,
+      "flagSvgUrl": "https://flagcdn.com/ir.svg"
+    },
+    "IRQ": {
+      "isoCode": "IRQ",
+      "iso2": "IQ",
+      "numericCode": "368",
+      "nameCommon": "Iraque",
+      "nameNaturalEarth": "Iraq",
+      "latitude": 33.0097,
+      "longitude": 43.7869,
+      "flagSvgUrl": "https://flagcdn.com/iq.svg"
+    },
+    "ISL": {
+      "isoCode": "ISL",
+      "iso2": "IS",
+      "numericCode": "352",
+      "nameCommon": "Islândia",
+      "nameNaturalEarth": "Iceland",
+      "latitude": 65.0798,
+      "longitude": -18.7651,
+      "flagSvgUrl": "https://flagcdn.com/is.svg"
+    },
+    "ISR": {
+      "isoCode": "ISR",
+      "iso2": "IL",
+      "numericCode": "376",
+      "nameCommon": "Israel",
+      "nameNaturalEarth": "Israel",
+      "latitude": 31.4791,
+      "longitude": 35.001,
+      "flagSvgUrl": "https://flagcdn.com/il.svg"
+    },
+    "ITA": {
+      "isoCode": "ITA",
+      "iso2": "IT",
+      "numericCode": "380",
+      "nameCommon": "Itália",
+      "nameNaturalEarth": "Italy",
+      "latitude": 42.6708,
+      "longitude": 12.269,
+      "flagSvgUrl": "https://flagcdn.com/it.svg"
+    },
+    "JAM": {
+      "isoCode": "JAM",
+      "iso2": "JM",
+      "numericCode": "388",
+      "nameCommon": "Jamaica",
+      "nameNaturalEarth": "Jamaica",
+      "latitude": 18.1383,
+      "longitude": -77.3243,
+      "flagSvgUrl": "https://flagcdn.com/jm.svg"
+    },
+    "JOR": {
+      "isoCode": "JOR",
+      "iso2": "JO",
+      "numericCode": "400",
+      "nameCommon": "Jordânia",
+      "nameNaturalEarth": "Jordan",
+      "latitude": 31.2402,
+      "longitude": 36.7663,
+      "flagSvgUrl": "https://flagcdn.com/jo.svg"
+    },
+    "JPN": {
+      "isoCode": "JPN",
+      "iso2": "JP",
+      "numericCode": "392",
+      "nameCommon": "Japão",
+      "nameNaturalEarth": "Japan",
+      "latitude": 37.5367,
+      "longitude": 137.7123,
+      "flagSvgUrl": "https://flagcdn.com/jp.svg"
+    },
+    "KAZ": {
+      "isoCode": "KAZ",
+      "iso2": "KZ",
+      "numericCode": "398",
+      "nameCommon": "Cazaquistão",
+      "nameNaturalEarth": "Kazakhstan",
+      "latitude": 48.4059,
+      "longitude": 67.2357,
+      "flagSvgUrl": "https://flagcdn.com/kz.svg"
+    },
+    "KEN": {
+      "isoCode": "KEN",
+      "iso2": "KE",
+      "numericCode": "404",
+      "nameCommon": "Quênia",
+      "nameNaturalEarth": "Kenya",
+      "latitude": 0.5955,
+      "longitude": 37.7914,
+      "flagSvgUrl": "https://flagcdn.com/ke.svg"
+    },
+    "KGZ": {
+      "isoCode": "KGZ",
+      "iso2": "KG",
+      "numericCode": "417",
+      "nameCommon": "Quirguistão",
+      "nameNaturalEarth": "Kyrgyzstan",
+      "latitude": 41.5187,
+      "longitude": 74.5871,
+      "flagSvgUrl": "https://flagcdn.com/kg.svg"
+    },
+    "KHM": {
+      "isoCode": "KHM",
+      "iso2": "KH",
+      "numericCode": "116",
+      "nameCommon": "Camboja",
+      "nameNaturalEarth": "Cambodia",
+      "latitude": 12.6849,
+      "longitude": 104.8741,
+      "flagSvgUrl": "https://flagcdn.com/kh.svg"
+    },
+    "KOR": {
+      "isoCode": "KOR",
+      "iso2": "KR",
+      "numericCode": "410",
+      "nameCommon": "Coreia do Sul",
+      "nameNaturalEarth": "South Korea",
+      "latitude": 36.4187,
+      "longitude": 127.8199,
+      "flagSvgUrl": "https://flagcdn.com/kr.svg"
+    },
+    "KWT": {
+      "isoCode": "KWT",
+      "iso2": "KW",
+      "numericCode": "414",
+      "nameCommon": "Kuwait",
+      "nameNaturalEarth": "Kuwait",
+      "latitude": 29.3072,
+      "longitude": 47.6008,
+      "flagSvgUrl": "https://flagcdn.com/kw.svg"
+    },
+    "LAO": {
+      "isoCode": "LAO",
+      "iso2": "LA",
+      "numericCode": "418",
+      "nameCommon": "Laos",
+      "nameNaturalEarth": "Laos",
+      "latitude": 18.4309,
+      "longitude": 103.7872,
+      "flagSvgUrl": "https://flagcdn.com/la.svg"
+    },
+    "LBN": {
+      "isoCode": "LBN",
+      "iso2": "LB",
+      "numericCode": "422",
+      "nameCommon": "Líbano",
+      "nameNaturalEarth": "Lebanon",
+      "latitude": 33.9102,
+      "longitude": 35.8684,
+      "flagSvgUrl": "https://flagcdn.com/lb.svg"
+    },
+    "LBR": {
+      "isoCode": "LBR",
+      "iso2": "LR",
+      "numericCode": "430",
+      "nameCommon": "Libéria",
+      "nameNaturalEarth": "Liberia",
+      "latitude": 6.4303,
+      "longitude": -9.4086,
+      "flagSvgUrl": "https://flagcdn.com/lr.svg"
+    },
+    "LBY": {
+      "isoCode": "LBY",
+      "iso2": "LY",
+      "numericCode": "434",
+      "nameCommon": "Líbia",
+      "nameNaturalEarth": "Libya",
+      "latitude": 26.9882,
+      "longitude": 18.0304,
+      "flagSvgUrl": "https://flagcdn.com/ly.svg"
+    },
+    "LKA": {
+      "isoCode": "LKA",
+      "iso2": "LK",
+      "numericCode": "144",
+      "nameCommon": "Sri Lanka",
+      "nameNaturalEarth": "Sri Lanka",
+      "latitude": 7.6995,
+      "longitude": 80.6679,
+      "flagSvgUrl": "https://flagcdn.com/lk.svg"
+    },
+    "LSO": {
+      "isoCode": "LSO",
+      "iso2": "LS",
+      "numericCode": "426",
+      "nameCommon": "Lesoto",
+      "nameNaturalEarth": "Lesotho",
+      "latitude": -29.6246,
+      "longitude": 28.1716,
+      "flagSvgUrl": "https://flagcdn.com/ls.svg"
+    },
+    "LTU": {
+      "isoCode": "LTU",
+      "iso2": "LT",
+      "numericCode": "440",
+      "nameCommon": "Lituânia",
+      "nameNaturalEarth": "Lithuania",
+      "latitude": 55.2828,
+      "longitude": 23.8881,
+      "flagSvgUrl": "https://flagcdn.com/lt.svg"
+    },
+    "LUX": {
+      "isoCode": "LUX",
+      "iso2": "LU",
+      "numericCode": "442",
+      "nameCommon": "Luxemburgo",
+      "nameNaturalEarth": "Luxembourg",
+      "latitude": 49.7649,
+      "longitude": 5.9661,
+      "flagSvgUrl": "https://flagcdn.com/lu.svg"
+    },
+    "LVA": {
+      "isoCode": "LVA",
+      "iso2": "LV",
+      "numericCode": "428",
+      "nameCommon": "Letônia",
+      "nameNaturalEarth": "Latvia",
+      "latitude": 56.8173,
+      "longitude": 24.8394,
+      "flagSvgUrl": "https://flagcdn.com/lv.svg"
+    },
+    "MAR": {
+      "isoCode": "MAR",
+      "iso2": "MA",
+      "numericCode": "504",
+      "nameCommon": "Marrocos",
+      "nameNaturalEarth": "Morocco",
+      "latitude": 29.8154,
+      "longitude": -8.6937,
+      "flagSvgUrl": "https://flagcdn.com/ma.svg"
+    },
+    "MDA": {
+      "isoCode": "MDA",
+      "iso2": "MD",
+      "numericCode": "498",
+      "nameCommon": "Moldávia",
+      "nameNaturalEarth": "Moldova",
+      "latitude": 47.1964,
+      "longitude": 28.4197,
+      "flagSvgUrl": "https://flagcdn.com/md.svg"
+    },
+    "MDG": {
+      "isoCode": "MDG",
+      "iso2": "MG",
+      "numericCode": "450",
+      "nameCommon": "Madagascar",
+      "nameNaturalEarth": "Madagascar",
+      "latitude": -19.3012,
+      "longitude": 46.7294,
+      "flagSvgUrl": "https://flagcdn.com/mg.svg"
+    },
+    "MEX": {
+      "isoCode": "MEX",
+      "iso2": "MX",
+      "numericCode": "484",
+      "nameCommon": "México",
+      "nameNaturalEarth": "Mexico",
+      "latitude": 23.9134,
+      "longitude": -102.2231,
+      "flagSvgUrl": "https://flagcdn.com/mx.svg"
+    },
+    "MKD": {
+      "isoCode": "MKD",
+      "iso2": "MK",
+      "numericCode": "807",
+      "nameCommon": "Macedônia do Norte",
+      "nameNaturalEarth": "Macedonia",
+      "latitude": 41.6058,
+      "longitude": 21.6961,
+      "flagSvgUrl": "https://flagcdn.com/mk.svg"
+    },
+    "MLI": {
+      "isoCode": "MLI",
+      "iso2": "ML",
+      "numericCode": "466",
+      "nameCommon": "Mali",
+      "nameNaturalEarth": "Mali",
+      "latitude": 17.2404,
+      "longitude": -3.5929,
+      "flagSvgUrl": "https://flagcdn.com/ml.svg"
+    },
+    "MMR": {
+      "isoCode": "MMR",
+      "iso2": "MM",
+      "numericCode": "104",
+      "nameCommon": "Mianmar (Birmânia)",
+      "nameNaturalEarth": "Myanmar",
+      "latitude": 20.9448,
+      "longitude": 96.5132,
+      "flagSvgUrl": "https://flagcdn.com/mm.svg"
+    },
+    "MNE": {
+      "isoCode": "MNE",
+      "iso2": "ME",
+      "numericCode": "499",
+      "nameCommon": "Montenegro",
+      "nameNaturalEarth": "Montenegro",
+      "latitude": 42.7878,
+      "longitude": 19.2854,
+      "flagSvgUrl": "https://flagcdn.com/me.svg"
+    },
+    "MNG": {
+      "isoCode": "MNG",
+      "iso2": "MN",
+      "numericCode": "496",
+      "nameCommon": "Mongólia",
+      "nameNaturalEarth": "Mongolia",
+      "latitude": 46.9542,
+      "longitude": 103.0157,
+      "flagSvgUrl": "https://flagcdn.com/mn.svg"
+    },
+    "MOZ": {
+      "isoCode": "MOZ",
+      "iso2": "MZ",
+      "numericCode": "508",
+      "nameCommon": "Moçambique",
+      "nameNaturalEarth": "Mozambique",
+      "latitude": -17.1541,
+      "longitude": 35.5422,
+      "flagSvgUrl": "https://flagcdn.com/mz.svg"
+    },
+    "MRT": {
+      "isoCode": "MRT",
+      "iso2": "MR",
+      "numericCode": "478",
+      "nameCommon": "Mauritânia",
+      "nameNaturalEarth": "Mauritania",
+      "latitude": 20.1803,
+      "longitude": -10.3487,
+      "flagSvgUrl": "https://flagcdn.com/mr.svg"
+    },
+    "MWI": {
+      "isoCode": "MWI",
+      "iso2": "MW",
+      "numericCode": "454",
+      "nameCommon": "Malaui",
+      "nameNaturalEarth": "Malawi",
+      "latitude": -13.1592,
+      "longitude": 34.186,
+      "flagSvgUrl": "https://flagcdn.com/mw.svg"
+    },
+    "MYS": {
+      "isoCode": "MYS",
+      "iso2": "MY",
+      "numericCode": "458",
+      "nameCommon": "Malásia",
+      "nameNaturalEarth": "Malaysia",
+      "latitude": 3.7464,
+      "longitude": 109.6996,
+      "flagSvgUrl": "https://flagcdn.com/my.svg"
+    },
+    "NAM": {
+      "isoCode": "NAM",
+      "iso2": "NA",
+      "numericCode": "516",
+      "nameCommon": "Namíbia",
+      "nameNaturalEarth": "Namibia",
+      "latitude": -22.0401,
+      "longitude": 17.1422,
+      "flagSvgUrl": "https://flagcdn.com/na.svg"
+    },
+    "NCL": {
+      "isoCode": "NCL",
+      "iso2": "NC",
+      "numericCode": "540",
+      "nameCommon": "Nova Caledônia",
+      "nameNaturalEarth": "New Caledonia",
+      "latitude": -21.261,
+      "longitude": 165.5284,
+      "flagSvgUrl": "https://flagcdn.com/nc.svg"
+    },
+    "NER": {
+      "isoCode": "NER",
+      "iso2": "NE",
+      "numericCode": "562",
+      "nameCommon": "Níger",
+      "nameNaturalEarth": "Niger",
+      "latitude": 17.3404,
+      "longitude": 9.2747,
+      "flagSvgUrl": "https://flagcdn.com/ne.svg"
+    },
+    "NGA": {
+      "isoCode": "NGA",
+      "iso2": "NG",
+      "numericCode": "566",
+      "nameCommon": "Nigéria",
+      "nameNaturalEarth": "Nigeria",
+      "latitude": 9.5446,
+      "longitude": 7.9858,
+      "flagSvgUrl": "https://flagcdn.com/ng.svg"
+    },
+    "NIC": {
+      "isoCode": "NIC",
+      "iso2": "NI",
+      "numericCode": "558",
+      "nameCommon": "Nicarágua",
+      "nameNaturalEarth": "Nicaragua",
+      "latitude": 12.8466,
+      "longitude": -85.0215,
+      "flagSvgUrl": "https://flagcdn.com/ni.svg"
+    },
+    "NLD": {
+      "isoCode": "NLD",
+      "iso2": "NL",
+      "numericCode": "528",
+      "nameCommon": "Países Baixos",
+      "nameNaturalEarth": "Netherlands",
+      "latitude": 52.2929,
+      "longitude": 5.4999,
+      "flagSvgUrl": "https://flagcdn.com/nl.svg"
+    },
+    "NOR": {
+      "isoCode": "NOR",
+      "iso2": "NO",
+      "numericCode": "578",
+      "nameCommon": "Noruega",
+      "nameNaturalEarth": "Norway",
+      "latitude": 66.6482,
+      "longitude": 12.8293,
+      "flagSvgUrl": "https://flagcdn.com/no.svg"
+    },
+    "NPL": {
+      "isoCode": "NPL",
+      "iso2": "NP",
+      "numericCode": "524",
+      "nameCommon": "Nepal",
+      "nameNaturalEarth": "Nepal",
+      "latitude": 28.249,
+      "longitude": 84.0435,
+      "flagSvgUrl": "https://flagcdn.com/np.svg"
+    },
+    "NZL": {
+      "isoCode": "NZL",
+      "iso2": "NZ",
+      "numericCode": "554",
+      "nameCommon": "Nova Zelândia",
+      "nameNaturalEarth": "New Zealand",
+      "latitude": -41.5511,
+      "longitude": 172.9514,
+      "flagSvgUrl": "https://flagcdn.com/nz.svg"
+    },
+    "OMN": {
+      "isoCode": "OMN",
+      "iso2": "OM",
+      "numericCode": "512",
+      "nameCommon": "Omã",
+      "nameNaturalEarth": "Oman",
+      "latitude": 20.5915,
+      "longitude": 56.0677,
+      "flagSvgUrl": "https://flagcdn.com/om.svg"
+    },
+    "PAK": {
+      "isoCode": "PAK",
+      "iso2": "PK",
+      "numericCode": "586",
+      "nameCommon": "Paquistão",
+      "nameNaturalEarth": "Pakistan",
+      "latitude": 29.9082,
+      "longitude": 69.235,
+      "flagSvgUrl": "https://flagcdn.com/pk.svg"
+    },
+    "PAN": {
+      "isoCode": "PAN",
+      "iso2": "PA",
+      "numericCode": "591",
+      "nameCommon": "Panamá",
+      "nameNaturalEarth": "Panama",
+      "latitude": 8.5326,
+      "longitude": -80.1093,
+      "flagSvgUrl": "https://flagcdn.com/pa.svg"
+    },
+    "PER": {
+      "isoCode": "PER",
+      "iso2": "PE",
+      "numericCode": "604",
+      "nameCommon": "Peru",
+      "nameNaturalEarth": "Peru",
+      "latitude": -9.1471,
+      "longitude": -74.4306,
+      "flagSvgUrl": "https://flagcdn.com/pe.svg"
+    },
+    "PHL": {
+      "isoCode": "PHL",
+      "iso2": "PH",
+      "numericCode": "608",
+      "nameCommon": "Filipinas",
+      "nameNaturalEarth": "Philippines",
+      "latitude": 11.7197,
+      "longitude": 122.9376,
+      "flagSvgUrl": "https://flagcdn.com/ph.svg"
+    },
+    "PNG": {
+      "isoCode": "PNG",
+      "iso2": "PG",
+      "numericCode": "598",
+      "nameCommon": "Papua-Nova Guiné",
+      "nameNaturalEarth": "Papua New Guinea",
+      "latitude": -6.4573,
+      "longitude": 145.3135,
+      "flagSvgUrl": "https://flagcdn.com/pg.svg"
+    },
+    "POL": {
+      "isoCode": "POL",
+      "iso2": "PL",
+      "numericCode": "616",
+      "nameCommon": "Polônia",
+      "nameNaturalEarth": "Poland",
+      "latitude": 52.1341,
+      "longitude": 19.3438,
+      "flagSvgUrl": "https://flagcdn.com/pl.svg"
+    },
+    "PRI": {
+      "isoCode": "PRI",
+      "iso2": "PR",
+      "numericCode": "630",
+      "nameCommon": "Porto Rico",
+      "nameNaturalEarth": "Puerto Rico",
+      "latitude": 18.238,
+      "longitude": -66.4791,
+      "flagSvgUrl": "https://flagcdn.com/pr.svg"
+    },
+    "PRK": {
+      "isoCode": "PRK",
+      "iso2": "KP",
+      "numericCode": "408",
+      "nameCommon": "Coreia do Norte",
+      "nameNaturalEarth": "North Korea",
+      "latitude": 40.1297,
+      "longitude": 127.1308,
+      "flagSvgUrl": "https://flagcdn.com/kp.svg"
+    },
+    "PRT": {
+      "isoCode": "PRT",
+      "iso2": "PT",
+      "numericCode": "620",
+      "nameCommon": "Portugal",
+      "nameNaturalEarth": "Portugal",
+      "latitude": 39.6072,
+      "longitude": -8.0611,
+      "flagSvgUrl": "https://flagcdn.com/pt.svg"
+    },
+    "PRY": {
+      "isoCode": "PRY",
+      "iso2": "PY",
+      "numericCode": "600",
+      "nameCommon": "Paraguai",
+      "nameNaturalEarth": "Paraguay",
+      "latitude": -23.2297,
+      "longitude": -58.4318,
+      "flagSvgUrl": "https://flagcdn.com/py.svg"
+    },
+    "PSE": {
+      "isoCode": "PSE",
+      "iso2": "PS",
+      "numericCode": "275",
+      "nameCommon": "Territórios palestinos",
+      "nameNaturalEarth": "Palestine",
+      "latitude": 31.9398,
+      "longitude": 35.2728,
+      "flagSvgUrl": "https://flagcdn.com/ps.svg"
+    },
+    "QAT": {
+      "isoCode": "QAT",
+      "iso2": "QA",
+      "numericCode": "634",
+      "nameCommon": "Catar",
+      "nameNaturalEarth": "Qatar",
+      "latitude": 25.321,
+      "longitude": 51.1838,
+      "flagSvgUrl": "https://flagcdn.com/qa.svg"
+    },
+    "ROU": {
+      "isoCode": "ROU",
+      "iso2": "RO",
+      "numericCode": "642",
+      "nameCommon": "Romênia",
+      "nameNaturalEarth": "Romania",
+      "latitude": 45.8534,
+      "longitude": 24.9541,
+      "flagSvgUrl": "https://flagcdn.com/ro.svg"
+    },
+    "RUS": {
+      "isoCode": "RUS",
+      "iso2": "RU",
+      "numericCode": "643",
+      "nameCommon": "Rússia",
+      "nameNaturalEarth": "Russia",
+      "latitude": 66.0678,
+      "longitude": 95.7853,
+      "flagSvgUrl": "https://flagcdn.com/ru.svg"
+    },
+    "RWA": {
+      "isoCode": "RWA",
+      "iso2": "RW",
+      "numericCode": "646",
+      "nameCommon": "Ruanda",
+      "nameNaturalEarth": "Rwanda",
+      "latitude": -2.0137,
+      "longitude": 29.9187,
+      "flagSvgUrl": "https://flagcdn.com/rw.svg"
+    },
+    "SAU": {
+      "isoCode": "SAU",
+      "iso2": "SA",
+      "numericCode": "682",
+      "nameCommon": "Arábia Saudita",
+      "nameNaturalEarth": "Saudi Arabia",
+      "latitude": 24.0893,
+      "longitude": 44.6413,
+      "flagSvgUrl": "https://flagcdn.com/sa.svg"
+    },
+    "SDN": {
+      "isoCode": "SDN",
+      "iso2": "SD",
+      "numericCode": "729",
+      "nameCommon": "Sudão",
+      "nameNaturalEarth": "Sudan",
+      "latitude": 15.9716,
+      "longitude": 29.8306,
+      "flagSvgUrl": "https://flagcdn.com/sd.svg"
+    },
+    "SEN": {
+      "isoCode": "SEN",
+      "iso2": "SN",
+      "numericCode": "686",
+      "nameCommon": "Senegal",
+      "nameNaturalEarth": "Senegal",
+      "latitude": 14.3536,
+      "longitude": -14.506,
+      "flagSvgUrl": "https://flagcdn.com/sn.svg"
+    },
+    "SLB": {
+      "isoCode": "SLB",
+      "iso2": "SB",
+      "numericCode": "090",
+      "nameCommon": "Ilhas Salomão",
+      "nameNaturalEarth": "Solomon Is.",
+      "latitude": -8.8523,
+      "longitude": 159.9595,
+      "flagSvgUrl": "https://flagcdn.com/sb.svg"
+    },
+    "SLE": {
+      "isoCode": "SLE",
+      "iso2": "SL",
+      "numericCode": "694",
+      "nameCommon": "Serra Leoa",
+      "nameNaturalEarth": "Sierra Leone",
+      "latitude": 8.5299,
+      "longitude": -11.7954,
+      "flagSvgUrl": "https://flagcdn.com/sl.svg"
+    },
+    "SLV": {
+      "isoCode": "SLV",
+      "iso2": "SV",
+      "numericCode": "222",
+      "nameCommon": "El Salvador",
+      "nameNaturalEarth": "El Salvador",
+      "latitude": 13.7262,
+      "longitude": -88.8719,
+      "flagSvgUrl": "https://flagcdn.com/sv.svg"
+    },
+    "SOM": {
+      "isoCode": "SOM",
+      "iso2": "SO",
+      "numericCode": "706",
+      "nameCommon": "Somália",
+      "nameNaturalEarth": "Somalia",
+      "latitude": 4.7415,
+      "longitude": 45.6995,
+      "flagSvgUrl": "https://flagcdn.com/so.svg"
+    },
+    "SRB": {
+      "isoCode": "SRB",
+      "iso2": "RS",
+      "numericCode": "688",
+      "nameCommon": "Sérvia",
+      "nameNaturalEarth": "Serbia",
+      "latitude": 44.2232,
+      "longitude": 20.8369,
+      "flagSvgUrl": "https://flagcdn.com/rs.svg"
+    },
+    "SSD": {
+      "isoCode": "SSD",
+      "iso2": "SS",
+      "numericCode": "728",
+      "nameCommon": "Sudão do Sul",
+      "nameNaturalEarth": "S. Sudan",
+      "latitude": 7.2931,
+      "longitude": 30.202,
+      "flagSvgUrl": "https://flagcdn.com/ss.svg"
+    },
+    "SUR": {
+      "isoCode": "SUR",
+      "iso2": "SR",
+      "numericCode": "740",
+      "nameCommon": "Suriname",
+      "nameNaturalEarth": "Suriname",
+      "latitude": 4.1197,
+      "longitude": -55.9115,
+      "flagSvgUrl": "https://flagcdn.com/sr.svg"
+    },
+    "SVK": {
+      "isoCode": "SVK",
+      "iso2": "SK",
+      "numericCode": "703",
+      "nameCommon": "Eslováquia",
+      "nameNaturalEarth": "Slovakia",
+      "latitude": 48.7333,
+      "longitude": 19.4975,
+      "flagSvgUrl": "https://flagcdn.com/sk.svg"
+    },
+    "SVN": {
+      "isoCode": "SVN",
+      "iso2": "SI",
+      "numericCode": "705",
+      "nameCommon": "Eslovênia",
+      "nameNaturalEarth": "Slovenia",
+      "latitude": 46.1259,
+      "longitude": 14.9342,
+      "flagSvgUrl": "https://flagcdn.com/si.svg"
+    },
+    "SWE": {
+      "isoCode": "SWE",
+      "iso2": "SE",
+      "numericCode": "752",
+      "nameCommon": "Suécia",
+      "nameNaturalEarth": "Sweden",
+      "latitude": 62.4185,
+      "longitude": 16.1091,
+      "flagSvgUrl": "https://flagcdn.com/se.svg"
+    },
+    "SWZ": {
+      "isoCode": "SWZ",
+      "iso2": "SZ",
+      "numericCode": "748",
+      "nameCommon": "Essuatíni",
+      "nameNaturalEarth": "eSwatini",
+      "latitude": -26.4896,
+      "longitude": 31.3951,
+      "flagSvgUrl": "https://flagcdn.com/sz.svg"
+    },
+    "SYR": {
+      "isoCode": "SYR",
+      "iso2": "SY",
+      "numericCode": "760",
+      "nameCommon": "Síria",
+      "nameNaturalEarth": "Syria",
+      "latitude": 35.0085,
+      "longitude": 38.5234,
+      "flagSvgUrl": "https://flagcdn.com/sy.svg"
+    },
+    "TCD": {
+      "isoCode": "TCD",
+      "iso2": "TD",
+      "numericCode": "148",
+      "nameCommon": "Chade",
+      "nameNaturalEarth": "Chad",
+      "latitude": 15.2761,
+      "longitude": 18.5738,
+      "flagSvgUrl": "https://flagcdn.com/td.svg"
+    },
+    "TGO": {
+      "isoCode": "TGO",
+      "iso2": "TG",
+      "numericCode": "768",
+      "nameCommon": "Togo",
+      "nameNaturalEarth": "Togo",
+      "latitude": 8.4346,
+      "longitude": 0.9981,
+      "flagSvgUrl": "https://flagcdn.com/tg.svg"
+    },
+    "THA": {
+      "isoCode": "THA",
+      "iso2": "TH",
+      "numericCode": "764",
+      "nameCommon": "Tailândia",
+      "nameNaturalEarth": "Thailand",
+      "latitude": 14.9807,
+      "longitude": 101.0025,
+      "flagSvgUrl": "https://flagcdn.com/th.svg"
+    },
+    "TJK": {
+      "isoCode": "TJK",
+      "iso2": "TJ",
+      "numericCode": "762",
+      "nameCommon": "Tadjiquistão",
+      "nameNaturalEarth": "Tajikistan",
+      "latitude": 38.5892,
+      "longitude": 71.0477,
+      "flagSvgUrl": "https://flagcdn.com/tj.svg"
+    },
+    "TKM": {
+      "isoCode": "TKM",
+      "iso2": "TM",
+      "numericCode": "795",
+      "nameCommon": "Turcomenistão",
+      "nameNaturalEarth": "Turkmenistan",
+      "latitude": 39.1022,
+      "longitude": 59.3484,
+      "flagSvgUrl": "https://flagcdn.com/tm.svg"
+    },
+    "TLS": {
+      "isoCode": "TLS",
+      "iso2": "TL",
+      "numericCode": "626",
+      "nameCommon": "Timor-Leste",
+      "nameNaturalEarth": "Timor-Leste",
+      "latitude": -8.7679,
+      "longitude": 125.9673,
+      "flagSvgUrl": "https://flagcdn.com/tl.svg"
+    },
+    "TTO": {
+      "isoCode": "TTO",
+      "iso2": "TT",
+      "numericCode": "780",
+      "nameCommon": "Trinidad e Tobago",
+      "nameNaturalEarth": "Trinidad and Tobago",
+      "latitude": 10.4285,
+      "longitude": -61.3314,
+      "flagSvgUrl": "https://flagcdn.com/tt.svg"
+    },
+    "TUN": {
+      "isoCode": "TUN",
+      "iso2": "TN",
+      "numericCode": "788",
+      "nameCommon": "Tunísia",
+      "nameNaturalEarth": "Tunisia",
+      "latitude": 34.1438,
+      "longitude": 9.5387,
+      "flagSvgUrl": "https://flagcdn.com/tn.svg"
+    },
+    "TUR": {
+      "isoCode": "TUR",
+      "iso2": "TR",
+      "numericCode": "792",
+      "nameCommon": "Turquia",
+      "nameNaturalEarth": "Turkey",
+      "latitude": 39.1451,
+      "longitude": 35.1172,
+      "flagSvgUrl": "https://flagcdn.com/tr.svg"
+    },
+    "TWN": {
+      "isoCode": "TWN",
+      "iso2": "TW",
+      "numericCode": "158",
+      "nameCommon": "Taiwan",
+      "nameNaturalEarth": "Taiwan",
+      "latitude": 23.739,
+      "longitude": 120.9716,
+      "flagSvgUrl": "https://flagcdn.com/tw.svg"
+    },
+    "TZA": {
+      "isoCode": "TZA",
+      "iso2": "TZ",
+      "numericCode": "834",
+      "nameCommon": "Tanzânia",
+      "nameNaturalEarth": "Tanzania",
+      "latitude": -6.2507,
+      "longitude": 34.7417,
+      "flagSvgUrl": "https://flagcdn.com/tz.svg"
+    },
+    "UGA": {
+      "isoCode": "UGA",
+      "iso2": "UG",
+      "numericCode": "800",
+      "nameCommon": "Uganda",
+      "nameNaturalEarth": "Uganda",
+      "latitude": 1.2951,
+      "longitude": 32.3574,
+      "flagSvgUrl": "https://flagcdn.com/ug.svg"
+    },
+    "UKR": {
+      "isoCode": "UKR",
+      "iso2": "UA",
+      "numericCode": "804",
+      "nameCommon": "Ucrânia",
+      "nameNaturalEarth": "Ukraine",
+      "latitude": 49.1866,
+      "longitude": 31.2924,
+      "flagSvgUrl": "https://flagcdn.com/ua.svg"
+    },
+    "URY": {
+      "isoCode": "URY",
+      "iso2": "UY",
+      "numericCode": "858",
+      "nameCommon": "Uruguai",
+      "nameNaturalEarth": "Uruguay",
+      "latitude": -32.7738,
+      "longitude": -56.0099,
+      "flagSvgUrl": "https://flagcdn.com/uy.svg"
+    },
+    "USA": {
+      "isoCode": "USA",
+      "iso2": "US",
+      "numericCode": "840",
+      "nameCommon": "Estados Unidos",
+      "nameNaturalEarth": "United States of America",
+      "latitude": 44.7557,
+      "longitude": -103.5725,
+      "flagSvgUrl": "https://flagcdn.com/us.svg"
+    },
+    "UZB": {
+      "isoCode": "UZB",
+      "iso2": "UZ",
+      "numericCode": "860",
+      "nameCommon": "Uzbequistão",
+      "nameNaturalEarth": "Uzbekistan",
+      "latitude": 41.7711,
+      "longitude": 63.365,
+      "flagSvgUrl": "https://flagcdn.com/uz.svg"
+    },
+    "VEN": {
+      "isoCode": "VEN",
+      "iso2": "VE",
+      "numericCode": "862",
+      "nameCommon": "Venezuela",
+      "nameNaturalEarth": "Venezuela",
+      "latitude": 7.1608,
+      "longitude": -66.1532,
+      "flagSvgUrl": "https://flagcdn.com/ve.svg"
+    },
+    "VNM": {
+      "isoCode": "VNM",
+      "iso2": "VN",
+      "numericCode": "704",
+      "nameCommon": "Vietnã",
+      "nameNaturalEarth": "Vietnam",
+      "latitude": 16.5556,
+      "longitude": 106.3329,
+      "flagSvgUrl": "https://flagcdn.com/vn.svg"
+    },
+    "VUT": {
+      "isoCode": "VUT",
+      "iso2": "VU",
+      "numericCode": "548",
+      "nameCommon": "Vanuatu",
+      "nameNaturalEarth": "Vanuatu",
+      "latitude": -15.5423,
+      "longitude": 167.0729,
+      "flagSvgUrl": "https://flagcdn.com/vu.svg"
+    },
+    "XKX": {
+      "isoCode": "XKX",
+      "iso2": "XK",
+      "numericCode": null,
+      "nameCommon": "Kosovo",
+      "nameNaturalEarth": "Kosovo",
+      "latitude": 42.579,
+      "longitude": 20.896,
+      "flagSvgUrl": "https://flagcdn.com/xk.svg"
+    },
+    "YEM": {
+      "isoCode": "YEM",
+      "iso2": "YE",
+      "numericCode": "887",
+      "nameCommon": "Iêmen",
+      "nameNaturalEarth": "Yemen",
+      "latitude": 15.9221,
+      "longitude": 47.5151,
+      "flagSvgUrl": "https://flagcdn.com/ye.svg"
+    },
+    "ZAF": {
+      "isoCode": "ZAF",
+      "iso2": "ZA",
+      "numericCode": "710",
+      "nameCommon": "África do Sul",
+      "nameNaturalEarth": "South Africa",
+      "latitude": -28.9233,
+      "longitude": 25.1581,
+      "flagSvgUrl": "https://flagcdn.com/za.svg"
+    },
+    "ZMB": {
+      "isoCode": "ZMB",
+      "iso2": "ZM",
+      "numericCode": "894",
+      "nameCommon": "Zâmbia",
+      "nameNaturalEarth": "Zambia",
+      "latitude": -13.393,
+      "longitude": 27.7613,
+      "flagSvgUrl": "https://flagcdn.com/zm.svg"
+    },
+    "ZWE": {
+      "isoCode": "ZWE",
+      "iso2": "ZW",
+      "numericCode": "716",
+      "nameCommon": "Zimbábue",
+      "nameNaturalEarth": "Zimbabwe",
+      "latitude": -18.9003,
+      "longitude": 29.7886,
+      "flagSvgUrl": "https://flagcdn.com/zw.svg"
+    }
+  }
+}

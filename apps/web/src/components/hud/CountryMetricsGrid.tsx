@@ -1,21 +1,24 @@
 "use client";
 
 import React from "react";
-import { Users, Maximize2, DollarSign, Award, Landmark, HeartPulse, Shield, ExternalLink, Quote } from "lucide-react";
+import { Users, Maximize2, DollarSign, Award, Landmark, HeartPulse, Shield, ExternalLink, Quote, Info } from "lucide-react";
 import { getSourceUrl } from "@/lib/citations";
+import { DataCompleteness } from "@/lib/country-data";
 import { useReaderStore } from "@/stores/readerStore";
 
 interface CountryMetricsGridProps {
   countryName?: string;
-  population: number;
-  areaKm2: number;
-  currencyCode: string;
-  currencyName: string;
-  governmentType: string;
-  headOfState: string;
+  isoCode?: string;
+  population: number | null;
+  areaKm2: number | null;
+  currencyCode: string | null;
+  currencyName: string | null;
+  governmentType: string | null;
+  headOfState: string | null;
   historicalLeader?: string;
   leaderTitle?: string;
   isHistoricalEntity?: boolean;
+  completeness?: DataCompleteness;
   indicators?: {
     indicatorCode: string;
     indicatorName: string;
@@ -48,6 +51,7 @@ export function formatSourceBadge(source: string): string {
 
 export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   countryName = "TellusPedia",
+  isoCode,
   population,
   areaKm2,
   currencyCode,
@@ -56,6 +60,8 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   headOfState,
   historicalLeader,
   leaderTitle,
+  isHistoricalEntity,
+  completeness,
   indicators,
 }) => {
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
@@ -80,11 +86,71 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   };
 
   const formatGdp = (val?: number) => {
-    if (!val) return "Consulte o dossiê";
+    if (val === undefined || val === null) return "Dado indisponível";
     if (val >= 1e12) return `$ ${(val / 1e12).toFixed(2)} trilhões`;
     if (val >= 1e9) return `$ ${(val / 1e9).toFixed(1)} bilhões`;
     return `$ ${val.toLocaleString("pt-BR")}`;
   };
+
+  const hasAnyMetric =
+    population !== null ||
+    areaKm2 !== null ||
+    gdpIndicator !== undefined ||
+    hdiIndicator !== undefined ||
+    lifeExpectancy !== undefined ||
+    militaryExp !== undefined ||
+    governmentType !== null ||
+    headOfState !== null ||
+    currencyCode !== null ||
+    currencyName !== null ||
+    Boolean(historicalLeader);
+
+  if (completeness === "none" && !hasAnyMetric) {
+    return (
+      <div
+        data-testid="country-data-unavailable"
+        className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2 text-xs"
+      >
+        <div className="flex items-center gap-2 text-amber-300 font-semibold">
+          <Info className="w-4 h-4 shrink-0" />
+          <span>Indicadores ainda indisponíveis</span>
+        </div>
+        <p className="text-[11px] text-slate-400 leading-relaxed">
+          Os dados demográficos, econômicos e institucionais de {countryName} ainda não foram
+          ingeridos na base local do TellusPedia. Consulte diretamente as fontes externas oficiais:
+        </p>
+        <div className="flex items-center gap-2 flex-wrap pt-1">
+          {isoCode && !isHistoricalEntity && (
+            <a
+              href={`https://data.worldbank.org/country/${encodeURIComponent(isoCode)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-950 text-cyan-300 border border-slate-700 text-[10px] font-medium transition-colors"
+            >
+              <span>Banco Mundial ({isoCode})</span>
+              <ExternalLink className="w-2.5 h-2.5" />
+            </a>
+          )}
+          <a
+            href={`https://pt.wikipedia.org/wiki/${encodeURIComponent(countryName)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-950 text-slate-200 border border-slate-700 text-[10px] font-medium transition-colors"
+          >
+            <span>Wikipédia</span>
+            <ExternalLink className="w-2.5 h-2.5" />
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const hasGovernmentBlock =
+    Boolean(governmentType) ||
+    Boolean(headOfState) ||
+    Boolean(historicalLeader) ||
+    Boolean(currencyName) ||
+    Boolean(currencyCode);
 
   return (
     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -95,38 +161,48 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             <Users className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
             <span className="truncate">População</span>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <a
-              href={getSourceUrl(popSource, "SP.POP.TOTL")}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-cyan-400/90 hover:text-cyan-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
-              title={`Fonte Primária: ${popSource} (Abrir Repositório)`}
-            >
-              <span>{formatSourceBadge(popSource)}</span>
-              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-            </a>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setCitationModalOpen(true, {
-                  title: `População Total (${formatPop(population)})`,
-                  countryName,
-                  url: getSourceUrl(popSource, "SP.POP.TOTL"),
-                  accessDate: new Date(),
-                  publicationYear: 2026,
-                });
-              }}
-              className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
-              title="Gerar citação deste indicador"
-            >
-              <Quote className="w-2.5 h-2.5" />
-            </button>
-          </div>
+          {population !== null && (
+            <div className="flex items-center gap-1 shrink-0">
+              <a
+                href={getSourceUrl(popSource, "SP.POP.TOTL")}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-cyan-400/90 hover:text-cyan-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                title={`Fonte Primária: ${popSource} (Abrir Repositório)`}
+              >
+                <span>{formatSourceBadge(popSource)}</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+              </a>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCitationModalOpen(true, {
+                    title: `População Total (${formatPop(population)})`,
+                    countryName,
+                    url: getSourceUrl(popSource, "SP.POP.TOTL"),
+                    accessDate: new Date(),
+                    publicationYear: 2026,
+                  });
+                }}
+                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                title="Gerar citação deste indicador"
+              >
+                <Quote className="w-2.5 h-2.5" />
+              </button>
+            </div>
+          )}
         </div>
-        <div className="font-semibold text-slate-100 text-sm">{formatPop(population)}</div>
+        <div
+          className={
+            population !== null
+              ? "font-semibold text-slate-100 text-sm"
+              : "font-medium text-slate-500 text-xs"
+          }
+        >
+          {population !== null ? formatPop(population) : "Dado indisponível"}
+        </div>
       </div>
 
       {/* Área */}
@@ -136,39 +212,47 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             <Maximize2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span className="truncate">Área Territorial</span>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <a
-              href={getSourceUrl(areaSource)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-emerald-400/90 hover:text-emerald-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
-              title={`Fonte Primária: ${areaSource} (1:110m) (Abrir Repositório)`}
-            >
-              <span>{formatSourceBadge(areaSource)}</span>
-              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-            </a>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setCitationModalOpen(true, {
-                  title: `Área Territorial (${areaKm2.toLocaleString("pt-BR")} km²)`,
-                  countryName,
-                  url: getSourceUrl(areaSource),
-                  accessDate: new Date(),
-                  publicationYear: 2026,
-                });
-              }}
-              className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
-              title="Gerar citação deste indicador"
-            >
-              <Quote className="w-2.5 h-2.5" />
-            </button>
-          </div>
+          {areaKm2 !== null && (
+            <div className="flex items-center gap-1 shrink-0">
+              <a
+                href={getSourceUrl(areaSource)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-emerald-400/90 hover:text-emerald-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                title={`Fonte Primária: ${areaSource} (1:110m) (Abrir Repositório)`}
+              >
+                <span>{formatSourceBadge(areaSource)}</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+              </a>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCitationModalOpen(true, {
+                    title: `Área Territorial (${areaKm2.toLocaleString("pt-BR")} km²)`,
+                    countryName,
+                    url: getSourceUrl(areaSource),
+                    accessDate: new Date(),
+                    publicationYear: 2026,
+                  });
+                }}
+                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                title="Gerar citação deste indicador"
+              >
+                <Quote className="w-2.5 h-2.5" />
+              </button>
+            </div>
+          )}
         </div>
-        <div className="font-semibold text-slate-100 text-sm">
-          {areaKm2.toLocaleString("pt-BR")} km²
+        <div
+          className={
+            areaKm2 !== null
+              ? "font-semibold text-slate-100 text-sm"
+              : "font-medium text-slate-500 text-xs"
+          }
+        >
+          {areaKm2 !== null ? `${areaKm2.toLocaleString("pt-BR")} km²` : "Dado indisponível"}
         </div>
       </div>
 
@@ -179,38 +263,48 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             <DollarSign className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <span className="truncate">PIB Nominal</span>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <a
-              href={getSourceUrl(gdpSource, "NY.GDP.MKTP.CD")}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-amber-400/90 hover:text-amber-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
-              title={`Fonte Primária: ${gdpSource} (Abrir Repositório)`}
-            >
-              <span>{formatSourceBadge(gdpSource)}</span>
-              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-            </a>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setCitationModalOpen(true, {
-                  title: `PIB Nominal (${formatGdp(gdpIndicator?.value)})`,
-                  countryName,
-                  url: getSourceUrl(gdpSource, "NY.GDP.MKTP.CD"),
-                  accessDate: new Date(),
-                  publicationYear: 2026,
-                });
-              }}
-              className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
-              title="Gerar citação deste indicador"
-            >
-              <Quote className="w-2.5 h-2.5" />
-            </button>
-          </div>
+          {gdpIndicator !== undefined && (
+            <div className="flex items-center gap-1 shrink-0">
+              <a
+                href={getSourceUrl(gdpSource, "NY.GDP.MKTP.CD")}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-amber-400/90 hover:text-amber-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                title={`Fonte Primária: ${gdpSource} (Abrir Repositório)`}
+              >
+                <span>{formatSourceBadge(gdpSource)}</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+              </a>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCitationModalOpen(true, {
+                    title: `PIB Nominal (${formatGdp(gdpIndicator.value)})`,
+                    countryName,
+                    url: getSourceUrl(gdpSource, "NY.GDP.MKTP.CD"),
+                    accessDate: new Date(),
+                    publicationYear: 2026,
+                  });
+                }}
+                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                title="Gerar citação deste indicador"
+              >
+                <Quote className="w-2.5 h-2.5" />
+              </button>
+            </div>
+          )}
         </div>
-        <div className="font-semibold text-slate-100 text-sm">{formatGdp(gdpIndicator?.value)}</div>
+        <div
+          className={
+            gdpIndicator !== undefined
+              ? "font-semibold text-slate-100 text-sm"
+              : "font-medium text-slate-500 text-xs"
+          }
+        >
+          {formatGdp(gdpIndicator?.value)}
+        </div>
       </div>
 
       {/* IDH */}
@@ -220,39 +314,47 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             <Award className="w-3.5 h-3.5 text-purple-400 shrink-0" />
             <span className="truncate">IDH Geral</span>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <a
-              href={getSourceUrl(hdiSource, "UNDP.HDI")}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-purple-400/90 hover:text-purple-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
-              title={`Fonte Primária: ${hdiSource} (Abrir Repositório)`}
-            >
-              <span>{formatSourceBadge(hdiSource)}</span>
-              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-            </a>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setCitationModalOpen(true, {
-                  title: `Índice de Desenvolvimento Humano (IDH: ${hdiIndicator?.value !== undefined ? hdiIndicator.value.toFixed(3) : "N/D"})`,
-                  countryName,
-                  url: getSourceUrl(hdiSource, "UNDP.HDI"),
-                  accessDate: new Date(),
-                  publicationYear: 2026,
-                });
-              }}
-              className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
-              title="Gerar citação deste indicador"
-            >
-              <Quote className="w-2.5 h-2.5" />
-            </button>
-          </div>
+          {hdiIndicator !== undefined && (
+            <div className="flex items-center gap-1 shrink-0">
+              <a
+                href={getSourceUrl(hdiSource, "UNDP.HDI")}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-purple-400/90 hover:text-purple-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                title={`Fonte Primária: ${hdiSource} (Abrir Repositório)`}
+              >
+                <span>{formatSourceBadge(hdiSource)}</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+              </a>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCitationModalOpen(true, {
+                    title: `Índice de Desenvolvimento Humano (IDH: ${hdiIndicator.value.toFixed(3)})`,
+                    countryName,
+                    url: getSourceUrl(hdiSource, "UNDP.HDI"),
+                    accessDate: new Date(),
+                    publicationYear: 2026,
+                  });
+                }}
+                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                title="Gerar citação deste indicador"
+              >
+                <Quote className="w-2.5 h-2.5" />
+              </button>
+            </div>
+          )}
         </div>
-        <div className="font-semibold text-slate-100 text-sm">
-          {hdiIndicator?.value !== undefined ? hdiIndicator.value.toFixed(3) : "N/D"}
+        <div
+          className={
+            hdiIndicator !== undefined
+              ? "font-semibold text-slate-100 text-sm"
+              : "font-medium text-slate-500 text-xs"
+          }
+        >
+          {hdiIndicator?.value !== undefined ? hdiIndicator.value.toFixed(3) : "Dado indisponível"}
         </div>
       </div>
 
@@ -345,57 +447,73 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         </div>
       )}
 
-      {/* Governo */}
-      <div className="col-span-2 p-2.5 rounded-lg bg-slate-900/50 border border-slate-800">
-        <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
-          <div className="flex items-center gap-1.5">
-            <Landmark className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Regime Político & Chefia</span>
+      {/* Governo & Moeda */}
+      {hasGovernmentBlock && (
+        <div className="col-span-2 p-2.5 rounded-lg bg-slate-900/50 border border-slate-800">
+          <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
+            <div className="flex items-center gap-1.5">
+              <Landmark className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Regime Político & Chefia</span>
+            </div>
+            {(governmentType || headOfState) && (
+              <div className="flex items-center gap-1 shrink-0">
+                <a
+                  href={getSourceUrl("ONU")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 hover:text-cyan-300 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                  title="Fonte Primária: Constituições Nacionais e Divisão de Assuntos Políticos da ONU (Abrir Repositório)"
+                >
+                  <span>Constituições / ONU</span>
+                  <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                </a>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCitationModalOpen(true, {
+                      title: `Regime Político: ${governmentType || "Indisponível"}${headOfState ? ` (${headOfState})` : ""}`,
+                      countryName,
+                      url: getSourceUrl("ONU"),
+                      accessDate: new Date(),
+                      publicationYear: 2026,
+                    });
+                  }}
+                  className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                  title="Gerar citação institucional"
+                >
+                  <Quote className="w-2.5 h-2.5" />
+                </button>
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <a
-              href={getSourceUrl("ONU")}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 hover:text-cyan-300 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
-              title="Fonte Primária: Constituições Nacionais e Divisão de Assuntos Políticos da ONU (Abrir Repositório)"
-            >
-              <span>Constituições / ONU</span>
-              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-            </a>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setCitationModalOpen(true, {
-                  title: `Regime Político: ${governmentType} (${headOfState})`,
-                  countryName,
-                  url: getSourceUrl("ONU"),
-                  accessDate: new Date(),
-                  publicationYear: 2026,
-                });
-              }}
-              className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
-              title="Gerar citação institucional"
-            >
-              <Quote className="w-2.5 h-2.5" />
-            </button>
-          </div>
+          {governmentType || headOfState ? (
+            <div className="font-medium text-slate-200">
+              {governmentType || "Dado indisponível"}
+              {headOfState && (
+                <>
+                  {" "}• <span className="text-slate-400">{headOfState}</span>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="font-medium text-slate-500 text-xs">Dado indisponível</div>
+          )}
+          {historicalLeader && (
+            <div className="text-[11px] text-amber-300/90 mt-1 flex items-center gap-1 font-mono">
+              <span className="text-slate-400">{leaderTitle || "Líder da Época"}:</span>
+              <strong className="text-slate-200 font-semibold">{historicalLeader}</strong>
+            </div>
+          )}
+          {(currencyName || currencyCode) && (
+            <div className="text-[11px] text-slate-400 mt-0.5">
+              Moeda: {currencyName || currencyCode}
+              {currencyName && currencyCode ? ` (${currencyCode})` : ""}
+            </div>
+          )}
         </div>
-        <div className="font-medium text-slate-200">
-          {governmentType} • <span className="text-slate-400">{headOfState}</span>
-        </div>
-        {historicalLeader && (
-          <div className="text-[11px] text-amber-300/90 mt-1 flex items-center gap-1 font-mono">
-            <span className="text-slate-400">{leaderTitle || "Líder da Época"}:</span>
-            <strong className="text-slate-200 font-semibold">{historicalLeader}</strong>
-          </div>
-        )}
-        <div className="text-[11px] text-slate-400 mt-0.5">
-          Moeda: {currencyName} ({currencyCode})
-        </div>
-      </div>
+      )}
     </div>
   );
 };
