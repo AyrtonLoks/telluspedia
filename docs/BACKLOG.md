@@ -159,7 +159,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T03 | Remover dados e citações inventados | Dados | P0 | G | IN_PROGRESS | antigravity | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | TODO | — | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | IN_PROGRESS | claude | — | G-OBS |
-| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | TODO | — | — | G-PIPELINE |
+| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | IN_PROGRESS | codex | — | G-PIPELINE |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | TODO | — | — | G-ESTUDOS |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | TODO | — | — | G-OBS |
@@ -392,7 +392,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 ### T06 · Validar lat/lng em /api/weather
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t06-validar-coordenadas-weather · **Worktree:** ../telluspedia-wt/codex-t06
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-PIPELINE
 
 **Contexto / problema**
@@ -412,6 +412,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível por fase. Reivindicada em worktree próprio a partir de origin/master.
 
 ---
 
