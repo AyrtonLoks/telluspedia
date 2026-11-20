@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -13,8 +13,9 @@ import { IconButton } from "@/components/ui/IconButton";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { TONES, type Tone } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
-import { VESSEL_LABEL } from "@/lib/ais-data";
+import { AIS_MOVING_MIN_KNOTS, VESSEL_LABEL, vesselIsMoving, vesselSpeedLabel, type VesselGroup } from "@/lib/ais-data";
 import { DataSourceBadge } from "./DataSourceBadge";
+import type { ObservatoryMeta } from "@/lib/observatory-source";
 
 const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone; icon: React.ReactNode }> = {
   FIRMS: { title: "Foco de Calor (FIRMS)", tone: "layer-fires", icon: <Flame /> },
@@ -23,6 +24,7 @@ const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone
   EONET: { title: "Evento Severo NASA", tone: "layer-events", icon: <Activity /> },
   EONET_CLUSTER: { title: "Eventos próximos", tone: "layer-events", icon: <Activity /> },
   AIRCRAFT: { title: "Aeronave rastreada", tone: "layer-aircraft", icon: <Plane /> },
+  VESSEL_GROUP: { title: "Embarcações da área", tone: "layer-maritime", icon: <Anchor /> },
   VESSEL: { title: "Embarcação", tone: "layer-maritime", icon: <Anchor /> },
   MARITIME: { title: "Corredor Mercante", tone: "layer-maritime", icon: <Anchor /> },
 };
@@ -268,10 +270,25 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
           </>
         )}
 
+        {selectedEntity.type === "VESSEL_GROUP" && (
+          <VesselGroupDetails
+            key={selectedEntity.data.vessels.map(({ id }) => id).join(",")}
+            group={selectedEntity.data}
+            meta={selectedEntity.meta}
+            onSelect={setSelectedEntity}
+            onFocus={handleFocus}
+          />
+        )}
+
         {selectedEntity.type === "VESSEL" && (() => {
-          const { data, meta } = selectedEntity;
+          const { data, meta, group } = selectedEntity;
           return (
             <>
+              {group && (
+                <Button variant="ghost" size="sm" onClick={() => setSelectedEntity({ type: "VESSEL_GROUP", data: group, meta })}>
+                  Voltar à lista da área
+                </Button>
+              )}
               <div data-testid="vessel-telemetry" className="space-y-1">
                 <div className="text-label font-medium text-fg">{data.name ?? "Nome não informado"}</div>
                 <DataSourceBadge meta={meta} />
@@ -288,14 +305,19 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
                 <Field label="Tipo" mono={false}>{VESSEL_LABEL[data.kind]}</Field>
                 <Field label="Bandeira (MID)" mono={false}>{data.flag ?? "Indisponível"}</Field>
                 <Field label="Destino informado" mono={false}>{data.destination ?? "Indisponível"}</Field>
-                <Field label="Velocidade">{data.speedKnots == null ? "Indisponível" : `${data.speedKnots.toLocaleString("pt-BR")} nós`}</Field>
+                <Field label="Velocidade medida">{vesselSpeedLabel(data.speedKnots)}</Field>
               </div>
+              {data.speedKnots != null && (
+                <p className="text-caption text-fg-muted">
+                  {vesselIsMoving(data) ? "Em movimento" : `Abaixo de ${AIS_MOVING_MIN_KNOTS} nó`}
+                </p>
+              )}
               {data.observedAt > 0 && (
                 <p className="text-caption text-fg-muted">
                   Posição recebida · {new Date(data.observedAt).toLocaleString("pt-BR", { timeZone: "UTC" })} UTC
                 </p>
               )}
-              <Button variant="primary" size="sm" className="w-full" onClick={() => handleFocus(data.lat, data.lng, 1.6)}>
+              <Button variant="primary" size="sm" className="w-full" onClick={() => handleFocus(data.lat, data.lng, 1.5)}>
                 <Crosshair aria-hidden="true" className="h-4 w-4" />
                 Focar última posição
               </Button>
@@ -341,6 +363,63 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
     </Panel>
   );
 };
+
+function VesselGroupDetails({ group, meta, onSelect, onFocus }: {
+  group: VesselGroup;
+  meta: ObservatoryMeta;
+  onSelect: (entity: ObservatoryEntity) => void;
+  onFocus: (lat: number, lng: number, altitude: number) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const term = query.trim().toLocaleLowerCase("pt-BR");
+  const ordered = [...group.vessels].sort((a, b) =>
+    Number(vesselIsMoving(b)) - Number(vesselIsMoving(a)) || (a.name ?? a.id).localeCompare(b.name ?? b.id, "pt-BR")
+  );
+  const vessels = ordered.filter(({ name, mmsi }) =>
+    !term || name?.toLocaleLowerCase("pt-BR").includes(term) || mmsi?.includes(term)
+  );
+  return (
+    <div data-testid="vessel-group-telemetry" className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-label font-medium text-fg">
+          {group.title && <span className="block">{group.title}</span>}
+          <span className="text-caption text-fg-secondary">{group.vessels.length} na amostra</span>
+        </div>
+        <DataSourceBadge meta={meta} />
+      </div>
+      {group.vessels.length > 5 && (
+        <input
+          aria-label="Buscar embarcação por nome ou MMSI"
+          placeholder="Nome ou MMSI"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          className="w-full rounded-control border border-line bg-surface-raised px-2 py-1.5 text-label text-fg"
+        />
+      )}
+      <ul className="max-h-[min(32vh,14rem)] space-y-1 overflow-y-auto">
+        {vessels.map((vessel) => (
+          <li key={vessel.id}>
+            <button
+              type="button"
+              className="w-full rounded-control border border-line px-2 py-1.5 text-left text-label text-fg hover:bg-surface-raised"
+              onClick={() => onSelect({ type: "VESSEL", data: vessel, group, meta })}
+            >
+              <span className="block truncate">{vessel.name ?? (vessel.mmsi ? `MMSI ${vessel.mmsi}` : "Nome não informado")}</span>
+              <span className="block truncate text-caption text-fg-muted">
+                {VESSEL_LABEL[vessel.kind]} · {vesselSpeedLabel(vessel.speedKnots)}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      {vessels.length === 0 && <p className="text-caption text-fg-muted">Nenhuma embarcação encontrada.</p>}
+      <Button variant="secondary" size="sm" className="w-full" onClick={() => onFocus(group.lat, group.lng, 1.5)}>
+        <Crosshair aria-hidden="true" className="h-4 w-4" />
+        Aproximar área
+      </Button>
+    </div>
+  );
+}
 
 function EonetDetails({ entity, onFocus, onSelect }: {
   entity: Extract<ObservatoryEntity, { type: "EONET" }>;

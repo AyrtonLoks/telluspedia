@@ -103,6 +103,8 @@ interface ObservatoryState {
   aircraftFleet: AircraftState[];
   maritimeRoutes: MaritimeRoute[];
   ais: AisSnapshot;
+  vesselsMovingOnly: boolean;
+  setVesselsMovingOnly: (enabled: boolean) => void;
 
   isLoading: Record<ObservatoryLayerId, boolean>;
   hasLoaded: Record<ObservatoryLayerId, boolean>;
@@ -154,6 +156,12 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   aircraftFleet: FALLBACK_AIRCRAFT_FLEET,
   maritimeRoutes: FALLBACK_MARITIME_ROUTES,
   ais: simulatedAisSnapshot(),
+  vesselsMovingOnly: false,
+  setVesselsMovingOnly: (enabled) => set((state) => ({
+    vesselsMovingOnly: enabled,
+    selectedEntity: state.selectedEntity?.type === "VESSEL" || state.selectedEntity?.type === "VESSEL_GROUP"
+      ? null : state.selectedEntity,
+  })),
 
   isLoading: {
     NASA_FIRMS: false,
@@ -339,5 +347,6 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       selectedEntity: null,
       isPanelOpen: false,
       eonetCategory: "all",
+      vesselsMovingOnly: false,
     }),
 }));

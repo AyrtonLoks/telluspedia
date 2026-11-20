@@ -1,4 +1,4 @@
-import type { AisVessel } from "./ais-data";
+import type { AisVessel, VesselGroup } from "./ais-data";
 import { geoCentroid } from "d3-geo";
 import { latLngToVector3 } from "./geo-spatial";
 import type { ObservatoryMeta } from "./observatory-source";
@@ -146,7 +146,8 @@ export type ObservatoryEntity =
   | { type: "EONET_CLUSTER"; data: { lat: number; lng: number; events: EonetEvent[] } }
   | { type: "AIRCRAFT"; data: AircraftState; estimatedPosition?: { lat: number; lng: number }; meta?: ObservatoryMeta }
   | { type: "MARITIME"; data: MaritimeRoute }
-  | { type: "VESSEL"; data: AisVessel; meta: ObservatoryMeta };
+  | { type: "VESSEL"; data: AisVessel; meta: ObservatoryMeta; group?: VesselGroup }
+  | { type: "VESSEL_GROUP"; data: VesselGroup; meta: ObservatoryMeta };
 
 /**
  * Posição da ISS por SGP4 a partir do TLE de referência (lib/satellites.ts). Usada só como fallback
@@ -400,6 +401,12 @@ export const FALLBACK_MARITIME_ROUTES: MaritimeRoute[] = [
     category: "STRAIT",
     chokePoint: "Estreito de Dover",
     coordinates: [[49.03, -5.6], [49.73, -3.22], [50.16, -1.38], [50.68, 0.94], [51.15, 1.68]],
+  },
+  {
+    id: "route-santos",
+    name: "Acesso marítimo ao Porto de Santos",
+    category: "OCEAN_CORRIDOR",
+    coordinates: [[-24.04, -46.28], [-24.19, -46.17], [-24.44, -46.02], [-24.78, -45.85]],
   },
   {
     id: "route-panama",

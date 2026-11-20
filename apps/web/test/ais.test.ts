@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createAisAccumulator } from "../src/lib/ais-accumulator";
-import { AIS_MAX_VESSELS, AIS_POSITION_TTL_MS, AIS_REGIONS, simulatedAisSnapshot } from "../src/lib/ais-data";
+import { AIS_MAX_VESSELS, AIS_POSITION_TTL_MS, AIS_REGIONS, simulatedAisSnapshot, vesselIsMoving } from "../src/lib/ais-data";
 import { createAisFeed } from "../src/lib/ais-source";
+import { groupProjectedVessels } from "../src/lib/maritime-markers";
 
 const NOW = Date.parse("2026-11-20T15:00:00Z");
 
@@ -54,17 +55,21 @@ test("AIS supports Class B metadata and interleaves busy and sparse monitored re
     Message: { StaticDataReport: { ReportA: { Name: "CLASS B" }, ReportB: { ShipType: 30 } } },
   }, NOW);
 
+  for (const [index, region] of AIS_REGIONS.slice(3).entries()) {
+    fleet.ingest(position(710123450 + index, (region.south + region.north) / 2, (region.west + region.east) / 2), NOW);
+  }
   const sample = fleet.snapshot(NOW);
   assert.equal(sample.vessels.length, AIS_MAX_VESSELS);
   assert.deepEqual(sample.corridorCounts, {
     "route-malacca": AIS_MAX_VESSELS + 20, "route-suez": 1, "route-english-channel": 1,
+    "route-santos": 1, "route-panama": 1, "route-cape-good-hope": 1,
   });
-  assert.deepEqual(sample.vessels.slice(0, 3).map(({ region }) => region), AIS_REGIONS.map(({ id }) => id));
+  assert.deepEqual(sample.vessels.slice(0, AIS_REGIONS.length).map(({ region }) => region), AIS_REGIONS.map(({ id }) => id));
   assert.equal(sample.vessels[2].kind, "fishing");
   assert.equal(sample.vessels[2].name, "CLASS B");
 });
 
-test("simulation covers all three corridors and never assigns a vessel MMSI", () => {
+test("simulation covers all monitored regions and never assigns a vessel MMSI", () => {
   const data = simulatedAisSnapshot();
   assert.ok(AIS_REGIONS.every(({ id }) => data.corridorCounts[id] > 0));
   assert.ok(data.vessels.every(({ mmsi, observedAt }) => mmsi === null && observedAt === 0));
@@ -88,8 +93,25 @@ test("server sends the key only in the provider subscription and shares a binary
   assert.equal(connections, 1);
   const request = JSON.parse(subscription!);
   assert.equal(request.APIKey, "TEST_KEY_SERVER_ONLY");
-  assert.equal(request.BoundingBoxes.length, 3);
+  assert.equal(request.BoundingBoxes.length, AIS_REGIONS.length);
   assert.ok(snapshots.every(({ vessels }) => vessels.length === 1));
   assert.doesNotMatch(JSON.stringify(snapshots), /TEST_KEY_SERVER_ONLY|APIKey/);
   socket.close();
+});
+
+test("AIS groups overlapping markers with every vessel still individually selectable", () => {
+  const positions = [
+    ...Array.from({ length: 375 }, (_, i) => ({ x: 100 + i / 400, y: 110, vessel: i })),
+    { x: 140, y: 110, vessel: 375 },
+    { x: 180, y: 111, vessel: 376 },
+  ];
+  const groups = groupProjectedVessels(positions, 34);
+  assert.deepEqual(groups.map(({ members }) => members.length), [375, 1, 1]);
+  assert.deepEqual(groups.flatMap(({ members }) => members), positions.map(({ vessel }) => vessel));
+});
+
+test("AIS movement filter uses measured speed and excludes unknown readings", () => {
+  assert.equal(vesselIsMoving({ speedKnots: null }), false);
+  assert.equal(vesselIsMoving({ speedKnots: 0.9 }), false);
+  assert.equal(vesselIsMoving({ speedKnots: 1 }), true);
 });

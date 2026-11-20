@@ -6,6 +6,9 @@ export const AIS_REGIONS = [
   { id: "route-malacca", name: "Estreito de Malaca", south: 0.8, west: 97.5, north: 6.5, east: 105.0 },
   { id: "route-suez", name: "Canal de Suez", south: 28.7, west: 31.5, north: 31.8, east: 33.8 },
   { id: "route-english-channel", name: "Canal da Mancha", south: 48.1, west: -6.4, north: 51.4, east: 2.8 },
+  { id: "route-santos", name: "Santos", south: -25.0, west: -47.0, north: -23.6, east: -45.2 },
+  { id: "route-panama", name: "Canal do Panamá", south: 7.8, west: -80.4, north: 9.8, east: -78.8 },
+  { id: "route-cape-good-hope", name: "Cabo da Boa Esperança", south: -35.8, west: 16.8, north: -33.2, east: 21.0 },
 ] as const;
 
 export type AisRegionId = (typeof AIS_REGIONS)[number]["id"];
@@ -52,13 +55,33 @@ export function aisRegion(lat: number, lng: number) {
 }
 
 export function emptyAisCounts(): AisSnapshot["corridorCounts"] {
-  return { "route-malacca": 0, "route-suez": 0, "route-english-channel": 0 };
+  return Object.fromEntries(AIS_REGIONS.map(({ id }) => [id, 0])) as AisSnapshot["corridorCounts"];
+}
+
+export const AIS_MOVING_MIN_KNOTS = 1;
+
+export function vesselIsMoving(vessel: Pick<VesselPosition, "speedKnots">) {
+  return vessel.speedKnots != null && vessel.speedKnots >= AIS_MOVING_MIN_KNOTS;
+}
+
+export function vesselSpeedLabel(speed: number | null) {
+  return speed == null ? "Sem leitura de velocidade" : `${speed.toLocaleString("pt-BR")} ${speed === 1 ? "nó" : "nós"}`;
+}
+
+export interface VesselGroup {
+  vessels: AisVessel[];
+  lat: number;
+  lng: number;
+  title?: string;
 }
 
 const DEMO_POSITIONS: Record<AisRegionId, [number, number, number][]> = {
   "route-malacca": [[5.66, 98.22, 120], [4.3, 99.64, 125], [3.43, 100.31, 306], [2.59, 101.28, 115], [1.18, 103.63, 68]],
   "route-suez": [[31.49, 32.32, 15], [31.06, 32.34, 170], [30.31, 32.41, 340], [29.82, 32.55, 165], [29.42, 32.68, 160]],
   "route-english-channel": [[49.09, -4.97, 49], [49.72, -3.23, 67], [50.05, -1.65, 79], [50.36, -0.68, 248], [50.81, 0.92, 65]],
+  "route-santos": [[-24.08, -46.25, 146], [-24.32, -46.07, 151], [-24.5, -45.87, 329], [-24.7, -45.74, 152], [-23.99, -46.3, 60]],
+  "route-panama": [[9.44, -79.94, 156], [9.25, -79.91, 198], [8.87, -79.56, 168], [8.5, -79.33, 145], [8.27, -79.33, 136]],
+  "route-cape-good-hope": [[-34.43, 18.23, 170], [-34.61, 18.24, 262], [-34.88, 18.59, 161], [-35.13, 19.38, 87], [-35.18, 20.61, 84]],
 };
 
 const DEMO_KINDS = ["cargo", "tanker", "container", "passenger", "fishing"] as const;
@@ -78,7 +101,7 @@ export function simulatedAisSnapshot(): AisSnapshot {
       lng,
       courseDeg,
       headingDeg: courseDeg,
-      speedKnots: [12, 10, 17, 20, 6][index],
+      speedKnots: [12, 0.4, 17, 20, null][index],
       observedAt: 0,
     }));
   });

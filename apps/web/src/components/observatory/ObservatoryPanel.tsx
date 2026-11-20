@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
+import { MaritimeLayerControls } from "./MaritimeLayerControls";
 import { FirmsLayerControls } from "./FirmsLayerControls";
 import { FirmsCountrySummary } from "./FirmsCountrySummary";
 import { SatelliteLayerControls } from "./SatelliteLayerControls";
@@ -85,7 +86,7 @@ const LAYER_OPTIONS: LayerOption[] = [
     id: "MARITIME_ROUTES",
     name: "Tráfego Marítimo",
     source: "AIS Stream",
-    description: "Embarcações em Malaca, Suez e no Canal da Mancha. Selecione uma no globo para ver sua última leitura.",
+    description: "Amostra AIS em seis regiões monitoradas. Os números variam conforme as posições recebidas.",
     icon: Anchor,
     tone: "layer-maritime",
     badgeText: (s) => `${s.ais.vessels.length} embarcações na amostra`,
@@ -195,6 +196,7 @@ export const ObservatoryPanel: React.FC = () => {
                   </div>
                   {layer.id === "NASA_EONET" && <EonetLayerControls />}
                   {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
+                  {layer.id === "MARITIME_ROUTES" && isContemporary && <MaritimeLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>
                       {selectedIso && <FirmsCountrySummary iso={selectedIso} />}
