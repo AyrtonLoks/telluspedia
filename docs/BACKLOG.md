@@ -156,13 +156,13 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | DONE | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | DONE | antigravity | — | G-TIMELINE |
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | DONE | codex | — | G-GLOBO |
-| T03 | Remover dados e citações inventados | Dados | P0 | G | REVIEW | antigravity | — | G-PAIS |
+| T03 | Remover dados e citações inventados | Dados | P0 | G | DONE | antigravity | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | DONE | claude | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | DONE | codex | — | G-PIPELINE, G-PAIS |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | DONE | codex | — | G-ESTUDOS, G-INFRA |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | IN_PROGRESS | codex | T07 | G-ESTUDOS |
-| T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | REVIEW | antigravity | — | G-OBS |
+| T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | IN_PROGRESS | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | TODO | — | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | TODO | — | — | G-EPOCA, G-FRONTEIRAS |
@@ -233,7 +233,7 @@ Na data da auditoria havia 15 arquivos modificados e diretórios inteiros não r
 
 ### T01 · Carregar fontes Geist/Merriweather (UI renderizando em serifa)
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/t01-fontes · **Worktree:** ../telluspedia-wt/claude-t01
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/t01-fontes · **Worktree:** ../telluspedia-wt/claude-t01
 - **Prioridade:** P0 · **Área:** Design · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL
 
 **Contexto / problema**
@@ -266,7 +266,7 @@ Toda a interface (navbar, painéis, timeline) aparece em Times/serifa. Causa con
 
 ### T02 · Timeline vazando do painel em telas largas
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t02-timeline-overflow · **Worktree:** ../telluspedia-wt/antigravity-t02
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t02-timeline-overflow · **Worktree:** ../telluspedia-wt/antigravity-t02
 - **Prioridade:** P0 · **Área:** Design · **Tamanho:** P · **Depende de:** — · **Grupos:** G-TIMELINE
 
 **Contexto / problema**
@@ -296,7 +296,7 @@ Também: rótulos dos anos do eixo ficam sob os pins (ex.: "1990").
 
 ### T03 · Remover dados e citações inventados (RN02)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t03-remover-dados-inventados · **Worktree:** ../telluspedia-wt/antigravity-t03
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t03-remover-dados-inventados · **Worktree:** ../telluspedia-wt/antigravity-t03
 - **Prioridade:** P0 · **Área:** Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-PAIS
 
 **Contexto / problema**
@@ -493,7 +493,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T09 · Cache sem limite em /api/observatory/cosmos
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t09-cosmos-lru-cache · **Worktree:** ../telluspedia-wt/antigravity-t09
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t09-cosmos-lru-cache · **Worktree:** ../telluspedia-wt/antigravity-t09
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-OBS
 
 **Contexto / problema**
