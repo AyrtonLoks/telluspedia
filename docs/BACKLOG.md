@@ -167,7 +167,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | DONE | codex | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | DONE | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | DONE | codex | T12 | G-EPOCA, G-ESTUDOS, G-TIMELINE, G-GLOBO, G-FRONTEIRAS, G-PAIS, G-SHELL |
-| T14 | Fonte única de direção solar | 3D | P1 | M | IN_PROGRESS | antigravity | T12 | G-EPOCA, G-GLOBO |
+| T14 | Fonte única de direção solar | 3D | P1 | M | REVIEW | antigravity | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | DONE | antigravity | T12 | G-EPOCA |
 | T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | TODO | — | — | G-FRONTEIRAS |
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | TODO | — | T13 | G-PAIS, G-ESTUDOS |
@@ -657,7 +657,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T14 · Fonte única de direção solar
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t14-direcao-solar · **Worktree:** ../telluspedia-wt/antigravity-t14
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t14-direcao-solar · **Worktree:** ../telluspedia-wt/antigravity-t14
 - **Prioridade:** P1 · **Área:** 3D · **Tamanho:** M · **Depende de:** T12 · **Grupos:** G-EPOCA, G-GLOBO
 
 **Contexto / problema**
@@ -673,13 +673,14 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 4. Respeitar o invariante do `AGENTS.md` (normais em espaço mundial).
 
 **Critérios de aceite**
-- [ ] Luz e terminador coincidem após 10+ minutos com a aba aberta.
-- [ ] Com leitor aberto, o terminador atualiza ao fechar/ao invalidar.
-- [ ] Teste unitário: mesma data → mesmo vetor nos dois consumidores.
+- [x] Luz e terminador coincidem após 10+ minutos com a aba aberta.
+- [x] Com leitor aberto, o terminador atualiza ao fechar/ao invalidar.
+- [x] Teste unitário: mesma data → mesmo vetor nos dois consumidores.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (782b459). Grupos G-EPOCA e G-GLOBO livres.
+- 2026-11-20 · antigravity · REVIEW · Criado `lib/epoch/useSunDirection.ts` como fonte única de direção solar combinando `useEpochState()` (T12) + relógio compartilhado único de 60 s (`useSyncExternalStore`, sem timers duplicados por componente). Migrados os 3 consumidores 3D para a mesma fonte: `<SolarDirectionalLight />` em `GlobeCanvas.tsx` (antes congelado no `new Date()` do carregamento), `EarthSphere.tsx` (`uSunDirection`, removido `setInterval` local) e `OrbitingMoon.tsx` (fase solar e data lunar sincronizadas). Todos invocam `invalidate()` no R3F em cada tick solar e ao sair do Modo Leitura (`isThrottled`), mantendo o terminador atualizado sob `frameloop="demand"`. Convenção de data para anos sem data exata (**21 de junho, 12:00 UTC** — constantes `YEAR_ONLY_REFERENCE_*_UTC`) documentada em `lib/astronomy.ts`, `lib/epoch/useSunDirection.ts` e `docs/ARCHITECTURE.md` (§2.2); invariante de normais em espaço mundial (`AGENTS.md` §1) preservado. Validação pós-rebase em `origin/master`: `pnpm typecheck`, `pnpm lint`, `pnpm test` (420/420, incluindo 4 novos testes em `test/sun-direction.test.tsx` validando paridade luz/shader em t0, +15 min e +2 h, convenção 21/jun 12:00 UTC e guardrails de `invalidate()`) e `pnpm build` verdes. Commit: da9bc59.
 
 ---
 
