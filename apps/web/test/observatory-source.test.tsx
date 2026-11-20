@@ -10,7 +10,7 @@ import {
   isObservatoryEnvelope,
 } from "../src/lib/observatory-source";
 import { resetObservatorySources } from "../src/lib/observatory-sources";
-import { FALLBACK_EONET_EVENTS, FALLBACK_FIRMS_HOTSPOTS } from "../src/lib/observatory-data";
+import { FALLBACK_EONET_EVENTS, FALLBACK_FIRMS_HOTSPOTS, type EonetEvent } from "../src/lib/observatory-data";
 import { GET as eonetGET } from "../src/app/api/observatory/eonet/route";
 import { GET as firmsGET } from "../src/app/api/observatory/firms/route";
 import { encodeFirmsColumns } from "../src/lib/firms-aggregate";
@@ -122,8 +122,9 @@ describe("T05: rotas do Observatório", () => {
     const body = await res.json();
     assert.ok(isObservatoryEnvelope(body));
     assert.equal(body.meta.source, "live");
-    assert.equal((body.data as { id: string }[])[0].id, "EONET_1");
-    assert.deepEqual(body.data[0].geometry.map((point: { coordinates: number[] }) => point.coordinates), [[-61, -10], [-60, -10]]);
+    const [event] = body.data as EonetEvent[];
+    assert.equal(event.id, "EONET_1");
+    assert.deepEqual(event.geometry?.map((point) => point.coordinates), [[-61, -10], [-60, -10]]);
     assert.equal(res.headers.get("X-Cache"), "MISS");
   });
 
