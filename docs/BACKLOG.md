@@ -155,7 +155,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T24 | Commitar trabalho pendente (TellusBridge) | Infra | P0 | P | DONE | ayrton | — | — |
 | T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | IN_PROGRESS | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | TODO | — | — | G-TIMELINE |
-| D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | TODO | — | — | G-GLOBO |
+| D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | IN_PROGRESS | codex | — | G-GLOBO |
 | T03 | Remover dados e citações inventados | Dados | P0 | G | TODO | — | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | TODO | — | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | TODO | — | — | G-OBS |
@@ -873,7 +873,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### D01 · Globo escuro: color space + tone mapping
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d01-cor-shader · **Worktree:** ../telluspedia-wt/codex-d01
 - **Prioridade:** P0 · **Área:** 3D · **Tamanho:** P · **Depende de:** — · **Grupos:** G-GLOBO
 
 **Contexto / problema**
@@ -896,6 +896,7 @@ O globo inteiro parece escuro e lavado. Causa principal (técnica): o `ShaderMat
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Tarefa reivindicada em worktree próprio a partir de origin/master.
 
 ---
 
