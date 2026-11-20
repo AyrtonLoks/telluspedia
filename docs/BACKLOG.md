@@ -167,8 +167,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | DONE | codex | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | DONE | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | DONE | codex | T12 | G-EPOCA, G-ESTUDOS, G-TIMELINE, G-GLOBO, G-FRONTEIRAS, G-PAIS, G-SHELL |
-| T14 | Fonte única de direção solar | 3D | P1 | M | TODO | — | T12 | G-EPOCA, G-GLOBO |
-| T15 | Lua com posição astronômica real | 3D | P1 | M | REVIEW | antigravity | T12 | G-EPOCA |
+| T14 | Fonte única de direção solar | 3D | P1 | M | IN_PROGRESS | antigravity | T12 | G-EPOCA, G-GLOBO |
+| T15 | Lua com posição astronômica real | 3D | P1 | M | DONE | antigravity | T12 | G-EPOCA |
 | T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | TODO | — | — | G-FRONTEIRAS |
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | TODO | — | T13 | G-PAIS, G-ESTUDOS |
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
@@ -657,7 +657,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T14 · Fonte única de direção solar
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t14-direcao-solar · **Worktree:** ../telluspedia-wt/antigravity-t14
 - **Prioridade:** P1 · **Área:** 3D · **Tamanho:** M · **Depende de:** T12 · **Grupos:** G-EPOCA, G-GLOBO
 
 **Contexto / problema**
@@ -679,12 +679,13 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (782b459). Grupos G-EPOCA e G-GLOBO livres.
 
 ---
 
 ### T15 · Lua com posição astronômica real
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t15-lua-astronomica · **Worktree:** ../telluspedia-wt/antigravity-t15
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t15-lua-astronomica · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D · **Tamanho:** M · **Depende de:** T12 · **Grupos:** G-EPOCA
 
 **Contexto / problema**
@@ -708,6 +709,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 - 2026-11-20 · antigravity · REVIEW · Implementada efeméride lunar geocêntrica por data (Meeus Cap. 47: 30 termos periódicos de longitude/distância + 20 de latitude + argumentos aditivos A1–A3, conversão eclíptica→equatorial→sublunar via GMST e fase/elongação real) em `lib/astronomy.ts` (`calculateLunarPosition`, `getMoonScenePosition`, `resolveAstronomicalDate`, `getLunarPhase`), com escala didática comprimida documentada (`MOON_SCENE_ORBIT_RADIUS = 3.622 R⊕` modulada pela excentricidade real perigeu/apogeu ~3,36–3,83 R⊕, preservando direção 3D exata tanto no modo Terra quanto no modo Cósmico). Apollo 11 (`lib/apollo11.ts` e `Apollo11Trajectory.tsx`) agora deriva `MOON_DEFAULT_POSITION` diretamente de `1969-07-20T20:17:40Z` com base selenográfica generalizada (face visível sempre voltada à Terra). Visual antes/depois em `OrbitingMoon.tsx`: antes girava a 0,04 rad/s constante, estacionava em `(3.6, 0.4, 0)` no Apollo 11 e sofria decaimento da luz solar no modo Cósmico; agora posiciona-se na direção real da época ativa com acoplamento de maré (`computeTidalLockQuaternion`), shader GLSL em espaço mundial (`AGENTS.md` §1) iluminado pela mesma direção solar da Terra (terminador lunar realista + luz cinérea suave + `#include <tonemapping_fragment>` / `<colorspace_fragment>`), atualização síncrona e por frame de `currentMoonWorldPos` (handover seguro de câmera) e descarte explícito (`.dispose()`). Validação pós-rebase em `origin/master`: `pnpm typecheck`, `pnpm lint`, `pnpm test` (382/382, com 6 novos testes em `test/moon-astronomy.test.ts` validando 4 datas de referência Meeus/JPL com erro < 0,05° e Lua Cheia 2024-01-25 / Lua Nova 2024-04-08) e `pnpm build` verdes; inspeção visual no navegador pendente para revisão do ayrton. Commit: 27ee50c.
 - 2026-11-20 · antigravity · IN_PROGRESS · Reaberta após reprovação do ayrton (com vídeo e screenshot): (1) durante o playback da timeline, a Lua teletransportava bruscamente a cada ano em vez de mover-se de forma suave ao longo da órbita esférica; (2) na cena Apollo 11, a trajetória translunar desconectou-se totalmente da Lua porque `resolveAstronomicalDate` aplicava `selectedMilestoneExactDate` ("1969-07-20" -> 12:00 UTC) antes de `APOLLO11` (20:17:40 UTC, diferença de 124° de rotação terrestre), além de câmera/alinhamento do pouso na Lua. Worktree recriado a partir de origin/master (3d923a7).
 - 2026-11-20 · antigravity · REVIEW · Corrigidas as duas regressões reportadas: (1) `OrbitingMoon.tsx` passou a animar imperativamente com `stepOrbitalPosition` (removido `position={targetLocalPos}` do JSX que causava snap a cada re-render): durante playback da timeline (`isPlaying && !isApolloScene`) a Lua revoluciona suavemente em órbita prógrada sem teletransportar pelos saltos anuais de ~132°, e ao pausar/selecionar época ou entrar na Apollo 11 desliza suavemente por SLERP sobre a casca esférica até travar na posição exata de Meeus Cap. 47 (sem cortar a Terra), preservando `focusCelestialBody("MOON")` do D15; (2) `resolveAstronomicalDate` em `lib/astronomy.ts` agora prioriza `activeScene === "APOLLO11"` (`1969-07-20T20:17:40Z`) sobre `exactDate` sem hora (`"1969-07-20"`), eliminando o desvio de 124° e acoplando exatamente `OrbitingMoon`, `Apollo11Trajectory` e a luz solar de `GlobeCanvas` no mesmo ponto do Mar da Tranquilidade; presets `APOLLO11_WIDE_CAMERA` (`lat 12, lng -148, alt 6.0`) e `APOLLO11_MOON_CAMERA` derivados da Lua real de 1969-07-20 aplicados em `Apollo11Trajectory.tsx` e `Apollo11TelemetryOverlay.tsx`. Validação: `pnpm typecheck`, `pnpm lint`, `pnpm test` (401/401, com 7 testes em `test/moon-astronomy.test.ts` validando SLERP contínuo, ausência de teletransporte, acoplamento exato Apollo 11 e projeção 3D das câmeras) e `pnpm build` verdes. Commit: 5854973.
+- 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
