@@ -1,6 +1,8 @@
-/** @type {import('next').NextConfig} */
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
+
+/** @type {import("next").NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   async rewrites() {
     if (!process.env.TELLUSLAB_PROXY_URL) return [];
     const origin = new URL(process.env.TELLUSLAB_PROXY_URL).origin;
@@ -9,14 +11,9 @@ const nextConfig = {
       { source: "/lab-assets/:path*", destination: origin + "/lab-assets/:path*" },
     ];
   },
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
-  },
 };
 
-export default nextConfig;
+export default (phase) => ({
+  ...nextConfig,
+  distDir: phase === PHASE_DEVELOPMENT_SERVER ? ".next-dev" : ".next",
+});
