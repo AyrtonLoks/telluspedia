@@ -3,29 +3,39 @@ import {
   computeAllPlanetaryPositions,
   calculateHalleyPosition,
   ASTROPHYSICAL_CATALOG,
-  CelestialBodyId,
 } from "@/lib/astronomy-planets";
+import { LruCache } from "@/lib/lru-cache";
+import { parseCosmosBody, parseCosmosYear } from "@/lib/cosmos-validation";
 
-interface CachedCosmosData {
-  timestamp: number;
-  data: any;
-}
-
-const cache: Map<string, CachedCosmosData> = new Map();
+const COSMOS_CACHE_MAX_ENTRIES = 500;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour TTL for planetary telemetry
+
+const cache = new LruCache<string, unknown>({
+  maxEntries: COSMOS_CACHE_MAX_ENTRIES,
+  ttlMs: CACHE_TTL_MS,
+});
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const yearParam = searchParams.get("year");
-  const bodyParam = searchParams.get("body")?.toUpperCase() as CelestialBodyId | undefined;
 
-  const year = yearParam ? parseFloat(yearParam) : new Date().getUTCFullYear();
-  const cacheKey = `${year}_${bodyParam || "ALL"}`;
+  const yearResult = parseCosmosYear(searchParams.get("year"));
+  if (!yearResult.ok) {
+    return NextResponse.json({ error: yearResult.error }, { status: 400 });
+  }
+
+  const bodyResult = parseCosmosBody(searchParams.get("body"));
+  if (!bodyResult.ok) {
+    return NextResponse.json({ error: bodyResult.error }, { status: 400 });
+  }
+
+  const year = yearResult.value;
+  const body = bodyResult.value;
+  const cacheKey = `${year.toFixed(2)}_${body ?? "ALL"}`;
 
   const now = Date.now();
-  const cached = cache.get(cacheKey);
-  if (cached && now - cached.timestamp < CACHE_TTL_MS) {
-    return NextResponse.json(cached.data, {
+  const cached = cache.get(cacheKey, now);
+  if (cached !== undefined) {
+    return NextResponse.json(cached, {
       headers: {
         "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
         "X-Cache": "HIT",
@@ -37,22 +47,22 @@ export async function GET(request: Request) {
   const planets = computeAllPlanetaryPositions(year);
   const halley = calculateHalleyPosition(year);
 
-  let responseData: any;
+  let responseData: unknown;
 
-  if (bodyParam && bodyParam === "HALLEY") {
+  if (body === "HALLEY") {
     responseData = {
       body: "HALLEY",
       year,
       metadata: ASTROPHYSICAL_CATALOG.HALLEY,
       telemetry: halley,
     };
-  } else if (bodyParam && bodyParam in ASTROPHYSICAL_CATALOG) {
-    const isPlanet = bodyParam in planets;
+  } else if (body) {
+    const isPlanet = Object.prototype.hasOwnProperty.call(planets, body);
     responseData = {
-      body: bodyParam,
+      body,
       year,
-      metadata: ASTROPHYSICAL_CATALOG[bodyParam],
-      telemetry: isPlanet ? (planets as any)[bodyParam] : null,
+      metadata: ASTROPHYSICAL_CATALOG[body],
+      telemetry: isPlanet ? planets[body as keyof typeof planets] : null,
     };
   } else {
     responseData = {
@@ -65,10 +75,7 @@ export async function GET(request: Request) {
     };
   }
 
-  cache.set(cacheKey, {
-    timestamp: now,
-    data: responseData,
-  });
+  cache.set(cacheKey, responseData, now);
 
   return NextResponse.json(responseData, {
     headers: {

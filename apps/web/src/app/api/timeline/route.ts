@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { GLOBAL_MILESTONES, PILOT_COUNTRIES } from "@/lib/country-data";
+import { parseTimelineQuery } from "@/lib/cosmos-validation";
 
 export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams;
-  const startYear = searchParams.get("startYear") ? Number(searchParams.get("startYear")) : 1900;
-  const endYear = searchParams.get("endYear") ? Number(searchParams.get("endYear")) : 2026;
-  const categoriesStr = searchParams.get("categories");
-  const categories = categoriesStr ? categoriesStr.split(",") : null;
+  const queryResult = parseTimelineQuery(req.nextUrl.searchParams);
+  if (!queryResult.ok) {
+    return NextResponse.json({ error: queryResult.error }, { status: 400 });
+  }
+
+  const { startYear, endYear, categories } = queryResult.value;
 
   try {
-    const whereClause: any = {
+    const whereClause: {
+      year: { gte: number; lte: number };
+      category?: { in: typeof categories extends null ? never : NonNullable<typeof categories> };
+    } = {
       year: {
         gte: startYear,
         lte: endYear,
@@ -34,7 +39,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Fallback using bundled data
-  let all: any[] = [...GLOBAL_MILESTONES];
+  const all = [...GLOBAL_MILESTONES];
   for (const c of Object.values(PILOT_COUNTRIES)) {
     for (const m of c.milestones) {
       if (!all.some((item) => item.id === m.id)) {
