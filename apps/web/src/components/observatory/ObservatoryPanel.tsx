@@ -14,6 +14,7 @@ import {
   Layers,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { DataSourceBadge } from "./DataSourceBadge";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { ObservatoryLayerId, isContemporaryEpoch } from "@/lib/observatory-data";
@@ -51,7 +52,7 @@ const LAYER_OPTIONS: LayerOption[] = [
     id: "ISS_SATELLITES",
     name: "ISS & Satélites Artificiais",
     source: "CelesTrak / Telemetria Orbital",
-    description: "Estação Espacial Internacional com propagação em tempo real e rastro.",
+    description: "Estação Espacial Internacional: posição atual e rastro orbital.",
     icon: Radio,
     accentColor: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
     badgeText: (s) => `Altitude: ${s.issTelemetry?.altitudeKm || 408} km`,
@@ -233,10 +234,12 @@ export const ObservatoryPanel: React.FC = () => {
                   <span className="text-cyan-400 font-mono font-medium">
                     {badge}
                   </span>
-                  <span className="text-emerald-400 font-medium flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Ao Vivo (SWR)
-                  </span>
+                  <DataSourceBadge
+                    testId={`layer-source-${layer.id}`}
+                    meta={storeState.layerMeta[layer.id]}
+                    isLoading={storeState.isLoading[layer.id]}
+                    isOffline={storeState.layerError[layer.id]}
+                  />
                 </div>
               )}
             </div>

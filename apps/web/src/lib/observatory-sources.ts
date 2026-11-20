@@ -1,0 +1,239 @@
+/**
+ * Fontes de dados do Observatório (servidor). Cada fonte tenta o provedor externo e,
+ * se falhar, devolve o último dado válido (stale) ou o dataset local rotulado como fallback.
+ * As rotas em app/api/observatory/* apenas serializam o resultado.
+ */
+import {
+  FALLBACK_AIRCRAFT_FLEET,
+  FALLBACK_EONET_EVENTS,
+  FALLBACK_FIRMS_HOTSPOTS,
+  FALLBACK_MARITIME_ROUTES,
+  calculateIssPosition,
+  type AircraftState,
+  type EonetEvent,
+  type FirmsHotspot,
+  type IssTelemetryData,
+  type MaritimeRoute,
+} from "./observatory-data";
+import {
+  LOCAL_DATASET_PROVIDER,
+  SourceUnavailableError,
+  createObservatorySource,
+  type ObservatoryEnvelope,
+} from "./observatory-source";
+
+async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+  const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+  if (!res.ok) throw new SourceUnavailableError(`Provedor respondeu HTTP ${res.status}`);
+  return res;
+}
+
+// ---------------------------------------------------------------------------
+// NASA EONET — eventos naturais severos
+// ---------------------------------------------------------------------------
+export const eonetSource = createObservatorySource<EonetEvent[]>({
+  name: "eonet",
+  liveProvider: "NASA EONET v3",
+  liveTtlMs: 15 * 60 * 1000,
+  fallback: () => FALLBACK_EONET_EVENTS,
+  fetchLive: async () => {
+    const res = await fetchWithTimeout("https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=30", 3500);
+    const json = await res.json();
+    if (!Array.isArray(json?.events) || json.events.length === 0) {
+      throw new SourceUnavailableError("Provedor não retornou eventos");
+    }
+
+    const events: EonetEvent[] = [];
+    for (const item of json.events) {
+      const geometry = item.geometry?.[item.geometry.length - 1];
+      if (geometry?.coordinates && geometry.coordinates.length >= 2) {
+        const lng = geometry.coordinates[0];
+        const lat = geometry.coordinates[1];
+        const catId = item.categories?.[0]?.id || "wildfires";
+
+        let normalizedCategory: EonetEvent["category"] = "wildfires";
+        if (catId.toLowerCase().includes("storm")) normalizedCategory = "severeStorms";
+        else if (catId.toLowerCase().includes("volcano")) normalizedCategory = "volcanoes";
+        else if (catId.toLowerCase().includes("flood")) normalizedCategory = "floods";
+        else if (catId.toLowerCase().includes("ice")) normalizedCategory = "seaLakeIce";
+
+        events.push({
+          id: item.id || `eonet-${Math.random().toString(36).substring(2, 7)}`,
+          title: item.title,
+          category: normalizedCategory,
+          lat,
+          lng,
+          date: geometry.date || item.geometry?.[0]?.date || new Date().toISOString(),
+          magnitudeValue: geometry.magnitudeValue,
+          magnitudeUnit: geometry.magnitudeUnit,
+          sources: (item.sources || []).map((s: { id: string; url: string }) => ({
+            id: s.id,
+            url: s.url,
+          })),
+        });
+      }
+    }
+
+    if (events.length === 0) throw new SourceUnavailableError("Provedor não retornou eventos com coordenadas");
+    return events;
+  },
+});
+
+// ---------------------------------------------------------------------------
+// NASA FIRMS — focos de calor (o parse do CSV é corrigido na tarefa T04)
+// ---------------------------------------------------------------------------
+export const firmsSource = createObservatorySource<FirmsHotspot[]>({
+  name: "firms",
+  liveProvider: "NASA FIRMS (VIIRS SNPP NRT)",
+  liveTtlMs: 15 * 60 * 1000,
+  fallback: () => FALLBACK_FIRMS_HOTSPOTS,
+  fetchLive: async () => {
+    const apiKey = process.env.NASA_FIRMS_MAP_KEY;
+    if (!apiKey) throw new SourceUnavailableError("Chave NASA_FIRMS_MAP_KEY não configurada no servidor");
+
+    const res = await fetchWithTimeout(
+      `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/VIIRS_SNPP_NRT/world/1`,
+      3500
+    );
+    const csvText = await res.text();
+    const lines = csvText.trim().split("\n");
+
+    const parsed: FirmsHotspot[] = [];
+    for (let i = 1; i < Math.min(lines.length, 250); i++) {
+      const cols = lines[i].split(",");
+      if (cols.length >= 9) {
+        const lat = parseFloat(cols[0]);
+        const lng = parseFloat(cols[1]);
+        const brightness = parseFloat(cols[2]);
+        const frp = parseFloat(cols[10] || cols[4] || "50");
+        if (!isNaN(lat) && !isNaN(lng)) {
+          parsed.push({
+            id: `firms-live-${i}`,
+            lat,
+            lng,
+            brightness: isNaN(brightness) ? 350 : brightness,
+            frp: isNaN(frp) ? 80 : frp,
+            confidence: "high",
+            satellite: "VIIRS",
+            acqDate: cols[5] || new Date().toISOString().split("T")[0],
+          });
+        }
+      }
+    }
+
+    if (parsed.length === 0) throw new SourceUnavailableError("Provedor não retornou focos válidos");
+    return parsed;
+  },
+});
+
+// ---------------------------------------------------------------------------
+// ISS — telemetria (wheretheiss.at); sem provedor, usa o modelo orbital aproximado local
+// ---------------------------------------------------------------------------
+export const issSource = createObservatorySource<IssTelemetryData>({
+  name: "iss",
+  liveProvider: "wheretheiss.at",
+  liveTtlMs: 15 * 1000,
+  fallbackTtlMs: 15 * 1000,
+  fallbackProvider: "TellusPedia (modelo orbital aproximado)",
+  fallback: () => calculateIssPosition(Date.now()),
+  fetchLive: async () => {
+    const now = Date.now();
+    const res = await fetchWithTimeout("https://api.wheretheiss.at/v1/satellites/25544", 2000);
+    const live = await res.json();
+    if (
+      typeof live?.latitude !== "number" ||
+      typeof live?.longitude !== "number" ||
+      typeof live?.altitude !== "number" ||
+      typeof live?.velocity !== "number"
+    ) {
+      throw new SourceUnavailableError("Resposta do provedor sem posição válida");
+    }
+    return {
+      ...calculateIssPosition(now),
+      latitude: Number(live.latitude.toFixed(4)),
+      longitude: Number(live.longitude.toFixed(4)),
+      altitudeKm: Number(live.altitude.toFixed(1)),
+      velocityKmh: Number(live.velocity.toFixed(0)),
+      visibility: live.visibility === "daylight" ? "daylight" : "eclipsed",
+      timestamp: live.timestamp ? live.timestamp * 1000 : now,
+    };
+  },
+});
+
+// ---------------------------------------------------------------------------
+// Tráfego aéreo — OpenSky (consulta anônima, Atlântico Norte e Europa Central)
+// ---------------------------------------------------------------------------
+export const aircraftSource = createObservatorySource<AircraftState[]>({
+  name: "traffic/aircraft",
+  liveProvider: "OpenSky Network",
+  liveTtlMs: 120 * 1000,
+  fallback: () => FALLBACK_AIRCRAFT_FLEET,
+  fetchLive: async () => {
+    const res = await fetchWithTimeout(
+      "https://opensky-network.org/api/states/all?lamin=10&lomin=-80&lamax=60&lomax=20",
+      2500
+    );
+    const json = await res.json();
+    if (!Array.isArray(json?.states) || json.states.length === 0) {
+      throw new SourceUnavailableError("Provedor não retornou aeronaves");
+    }
+
+    const liveAircraft: AircraftState[] = [];
+    for (const s of json.states.slice(0, 80)) {
+      const icao24 = s[0];
+      const callsign = (s[1] || "").trim();
+      const originCountry = s[2] || "Internacional";
+      const lng = s[5];
+      const lat = s[6];
+      const altitudeMeters = s[7] || s[13] || 10000;
+      const velocityMs = s[9] || 240;
+      const headingDeg = s[10] || 0;
+
+      if (typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng)) {
+        liveAircraft.push({
+          icao24,
+          callsign: callsign || `FLIGHT-${icao24}`,
+          originCountry,
+          lat,
+          lng,
+          altitudeMeters: Math.round(altitudeMeters),
+          velocityMs: Math.round(velocityMs),
+          headingDeg: Math.round(headingDeg),
+        });
+      }
+    }
+
+    if (liveAircraft.length < 10) {
+      throw new SourceUnavailableError(`Provedor retornou poucas aeronaves válidas (${liveAircraft.length})`);
+    }
+    return liveAircraft;
+  },
+});
+
+// ---------------------------------------------------------------------------
+// Rotas marítimas — referência estática (não há feed AIS; ver tarefa D08)
+// ---------------------------------------------------------------------------
+export function maritimeRoutesEnvelope(now: number = Date.now()): ObservatoryEnvelope<MaritimeRoute[]> {
+  return {
+    data: FALLBACK_MARITIME_ROUTES,
+    meta: {
+      source: "fallback",
+      provider: LOCAL_DATASET_PROVIDER,
+      fetchedAt: new Date(now).toISOString(),
+      stale: false,
+      reason: "Rotas de referência estáticas: ainda não há feed AIS de embarcações",
+    },
+  };
+}
+
+export interface TrafficPayload {
+  aircraft: ObservatoryEnvelope<AircraftState[]>;
+  maritimeRoutes: ObservatoryEnvelope<MaritimeRoute[]>;
+}
+
+export function resetObservatorySources() {
+  eonetSource.reset();
+  firmsSource.reset();
+  issSource.reset();
+  aircraftSource.reset();
+}
