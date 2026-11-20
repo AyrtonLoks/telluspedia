@@ -141,9 +141,8 @@ export const CosmicInspectorHUD: React.FC = () => {
     const h = calculateHalleyPosition(selectedYear);
     distanceSunAu = h.distanceSunAu;
     distanceSunMkm = h.distanceSunMkm;
-    // Approximated distance to Earth
-    distanceEarthAu = Number(Math.abs(h.distanceSunAu - 1.0).toFixed(4));
-    distanceEarthMkm = Number((distanceEarthAu * 149.6).toFixed(2));
+    distanceEarthAu = h.distanceEarthAu;
+    distanceEarthMkm = h.distanceEarthMkm;
   } else if (focusedBodyId === "MOON") {
     distanceSunAu = 1.0;
     distanceSunMkm = 149.6;

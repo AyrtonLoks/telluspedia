@@ -555,16 +555,23 @@ export function mapDistanceToSceneRadius(rAu: number): number {
 /**
  * Solves Kepler's Equation for Eccentric Anomaly E:
  * M = E - e * sin(E)
- * Uses high-precision Newton-Raphson iteration with rapid convergence.
+ * Uses Newton-Raphson iteration with a globally convergent initial guess
+ * for high-eccentricity orbits (e.g., 1P/Halley with e = 0.967).
  */
 export function solveKeplerEquation(Mrad: number, e: number): number {
-  // Normalize M into [-PI, PI]
-  let M = Mrad % (2 * Math.PI);
-  if (M < -Math.PI) M += 2 * Math.PI;
-  if (M > Math.PI) M -= 2 * Math.PI;
+  const TWO_PI = 2 * Math.PI;
+  // Normalize M into (-PI, PI]
+  let M = ((Mrad % TWO_PI) + TWO_PI) % TWO_PI;
+  if (M > Math.PI) M -= TWO_PI;
 
-  let E = M + e * Math.sin(M) * (1.0 + e * Math.cos(M));
-  for (let iter = 0; iter < 12; iter++) {
+  if (M === 0) return 0;
+
+  let E =
+    e > 0.8
+      ? Math.sign(M) * Math.PI
+      : M + e * Math.sin(M) * (1.0 + e * Math.cos(M));
+
+  for (let iter = 0; iter < 30; iter++) {
     const deltaM = E - e * Math.sin(E) - M;
     const fPrime = 1.0 - e * Math.cos(E);
     const step = deltaM / fPrime;
@@ -781,9 +788,83 @@ export function generateOrbitalPathPoints(
 }
 
 /**
- * Computes 1P/Halley orbital position, distance and ion tail direction.
+ * 1P/Halley osculating orbital elements (JPL Small-Body Database, J2000 ecliptic, 1986 perihelion epoch).
+ * Note: `argPerihelionDeg` (ω = 111.33249°) is already the argument of perihelion, NOT longitude of perihelion ϖ.
  */
-export function calculateHalleyPosition(dateOrYear: Date | number) {
+export const HALLEY_ORBITAL_ELEMENTS = {
+  semiMajorAxisAu: 17.834144,
+  eccentricity: 0.9671429,
+  inclinationDeg: 162.26269,
+  ascendingNodeDeg: 58.42008,
+  argPerihelionDeg: 111.33249,
+  perihelionYear: 1986.1081, // 1986-02-09 ~11:00 UTC (JD 2446470.96)
+  periodYears: 75.316,
+} as const;
+
+/** Heliocentric distance (AU) below which water-ice sublimation activates Halley's visible tails. */
+export const HALLEY_TAIL_ACTIVATION_AU = 4.5;
+
+export interface HalleyPosition {
+  heliocentricAu: { x: number; y: number; z: number };
+  distanceSunAu: number;
+  distanceSunMkm: number;
+  distanceEarthAu: number;
+  distanceEarthMkm: number;
+  meanAnomalyRad: number;
+  scenePosition: THREE.Vector3;
+  /** Unit vector in Three.js scene space pointing strictly anti-solar (ion tail axis). */
+  tailDirection: THREE.Vector3;
+  /** Unit vector in Three.js scene space along Halley's orbital velocity (dust tail curves toward -velocity). */
+  orbitalVelocityDirection: THREE.Vector3;
+  /** True only when heliocentric distance is below sublimation threshold (< HALLEY_TAIL_ACTIVATION_AU). */
+  hasTail: boolean;
+  /** Normalized outgassing activity in [0, 1], 0 beyond HALLEY_TAIL_ACTIVATION_AU and ~1 at perihelion. */
+  activityFactor: number;
+  /** Ion tail length in scene units (0 when inactive). */
+  tailLength: number;
+  /** Ion tail opacity in [0, 0.85] (0 when inactive). */
+  tailOpacity: number;
+  /** Dust tail length in scene units (0 when inactive). */
+  dustTailLength: number;
+  /** Dust tail opacity in [0, 0.65] (0 when inactive). */
+  dustTailOpacity: number;
+  /** Diffuse coma sprite radius in scene units. */
+  comaRadius: number;
+  /** Diffuse coma sprite opacity in [0, 1]. */
+  comaOpacity: number;
+  isPerihelionPassage: boolean;
+}
+
+const DEG_TO_RAD = Math.PI / 180.0;
+const KM_PER_AU = 149597870.7;
+
+function getHalleyBasisVectors() {
+  const I = HALLEY_ORBITAL_ELEMENTS.inclinationDeg * DEG_TO_RAD;
+  const Omega = HALLEY_ORBITAL_ELEMENTS.ascendingNodeDeg * DEG_TO_RAD;
+  const omega = HALLEY_ORBITAL_ELEMENTS.argPerihelionDeg * DEG_TO_RAD;
+
+  const cosO = Math.cos(Omega);
+  const sinO = Math.sin(Omega);
+  const cosw = Math.cos(omega);
+  const sinw = Math.sin(omega);
+  const cosI = Math.cos(I);
+  const sinI = Math.sin(I);
+
+  return {
+    Px: cosw * cosO - sinw * sinO * cosI,
+    Py: cosw * sinO + sinw * cosO * cosI,
+    Pz: sinw * sinI,
+    Qx: -sinw * cosO - cosw * sinO * cosI,
+    Qy: -sinw * sinO + cosw * cosO * cosI,
+    Qz: cosw * sinI,
+  };
+}
+
+/**
+ * Computes 1P/Halley orbital position, heliocentric and Earth distances,
+ * orbital velocity direction, coma intensity, and dual-tail parameters.
+ */
+export function calculateHalleyPosition(dateOrYear: Date | number): HalleyPosition {
   let decimalYear: number;
   if (typeof dateOrYear === "number") {
     decimalYear = dateOrYear;
@@ -794,64 +875,84 @@ export function calculateHalleyPosition(dateOrYear: Date | number) {
     decimalYear = year + (dateOrYear.getTime() - start) / (end - start);
   }
 
-  const a = 17.834144;
-  const e = 0.96714;
-  const I = 162.2627 * (Math.PI / 180.0);
-  const Omega = 58.42 * (Math.PI / 180.0);
-  const varpi = 111.332 * (Math.PI / 180.0);
-  const omega = varpi - Omega;
+  const a = HALLEY_ORBITAL_ELEMENTS.semiMajorAxisAu;
+  const e = HALLEY_ORBITAL_ELEMENTS.eccentricity;
+  const { Px, Py, Pz, Qx, Qy, Qz } = getHalleyBasisVectors();
 
-  // Reference perihelion 1986.11 (February 9, 1986)
-  const periodYears = 75.32;
-  const elapsed = decimalYear - 1986.11;
-  const meanAnomaly = ((elapsed / periodYears) * 2 * Math.PI) % (2 * Math.PI);
+  // Normalize mean anomaly strictly into [0, 2*PI) for any epoch (including years < 1986)
+  const TWO_PI = 2 * Math.PI;
+  const elapsed = decimalYear - HALLEY_ORBITAL_ELEMENTS.perihelionYear;
+  const rawM = (((elapsed / HALLEY_ORBITAL_ELEMENTS.periodYears) * TWO_PI) % TWO_PI + TWO_PI) % TWO_PI;
+  const meanAnomalyRad = rawM === 0 || rawM >= TWO_PI ? 0 : rawM;
 
-  const E = solveKeplerEquation(meanAnomaly, e);
+  const E = solveKeplerEquation(meanAnomalyRad, e);
+  const bFactor = Math.sqrt(Math.max(0, 1.0 - e * e));
   const xPrime = a * (Math.cos(E) - e);
-  const yPrime = a * Math.sqrt(1.0 - e * e) * Math.sin(E);
+  const yPrime = a * bFactor * Math.sin(E);
   const rAu = Math.sqrt(xPrime * xPrime + yPrime * yPrime);
 
-  const cosO = Math.cos(Omega);
-  const sinO = Math.sin(Omega);
-  const cosw = Math.cos(omega);
-  const sinw = Math.sin(omega);
-  const cosI = Math.cos(I);
-  const sinI = Math.sin(I);
-
-  const Px = cosw * cosO - sinw * sinO * cosI;
-  const Py = cosw * sinO + sinw * cosO * cosI;
-  const Pz = sinw * sinI;
-
-  const Qx = -sinw * cosO - cosw * sinO * cosI;
-  const Qy = -sinw * sinO + cosw * cosO * cosI;
-  const Qz = cosw * sinI;
-
+  // Heliocentric ecliptic coordinates (AU)
   const xEcl = Px * xPrime + Qx * yPrime;
   const yEcl = Py * xPrime + Qy * yPrime;
   const zEcl = Pz * xPrime + Qz * yPrime;
+
+  // Orbital velocity tangent (proportional to dr/dE since dE/dt > 0)
+  const vxPrime = -Math.sin(E);
+  const vyPrime = bFactor * Math.cos(E);
+  const vxEcl = Px * vxPrime + Qx * vyPrime;
+  const vyEcl = Py * vxPrime + Qy * vyPrime;
+  const vzEcl = Pz * vxPrime + Qz * vyPrime;
 
   const sceneRadius = mapDistanceToSceneRadius(rAu);
   const scale = sceneRadius / rAu;
   const scenePos = new THREE.Vector3(xEcl * scale, zEcl * scale, -yEcl * scale);
 
-  // Tail direction points strictly away from the Sun (origin)
+  // Ion tail direction points strictly anti-solar (away from origin)
   const tailDirection = scenePos.clone().normalize();
+  const orbitalVelocityDirection = new THREE.Vector3(vxEcl, vzEcl, -vyEcl).normalize();
 
-  // Tail length and glow intensity are strongest near perihelion (rAu < 2.0 AU)
-  const proximityFactor = Math.max(0, 1.0 - rAu / 4.0);
-  const tailLength = 2.0 + proximityFactor * 12.0;
-  const tailOpacity = Math.min(0.9, 0.15 + proximityFactor * 0.75);
+  // True 3D Euclidean distance to Earth: |r_comet - r_Earth|
+  const earth = calculatePlanetaryPosition("EARTH", dateOrYear);
+  const dx = xEcl - earth.heliocentricAu.x;
+  const dy = yEcl - earth.heliocentricAu.y;
+  const dz = zEcl - earth.heliocentricAu.z;
+  const distEarthAu = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+  // Physical outgassing activity: visible tails only below ~4.5 AU, peaking at perihelion (~0.586 AU)
+  const perihelionAu = a * (1.0 - e);
+  const hasTail = rAu < HALLEY_TAIL_ACTIVATION_AU;
+  const rawActivity = hasTail
+    ? Math.min(1, Math.max(0, (HALLEY_TAIL_ACTIVATION_AU - rAu) / (HALLEY_TAIL_ACTIVATION_AU - perihelionAu)))
+    : 0;
+  const activityFactor = hasTail ? Math.pow(rawActivity, 1.35) : 0;
+
+  const tailLength = hasTail ? Number((activityFactor * 14.0).toFixed(3)) : 0;
+  const tailOpacity = hasTail ? Number((activityFactor * 0.85).toFixed(3)) : 0;
+  const dustTailLength = hasTail ? Number((activityFactor * 10.5).toFixed(3)) : 0;
+  const dustTailOpacity = hasTail ? Number((activityFactor * 0.65).toFixed(3)) : 0;
+  const comaRadius = Number((0.22 + activityFactor * 1.18).toFixed(3));
+  const comaOpacity = Number((0.22 + activityFactor * 0.68).toFixed(3));
 
   const isPerihelionPassage = rAu <= 1.5;
 
   return {
     heliocentricAu: { x: xEcl, y: yEcl, z: zEcl },
     distanceSunAu: Number(rAu.toFixed(4)),
-    distanceSunMkm: Number(((rAu * 149597870.7) / 1e6).toFixed(2)),
+    distanceSunMkm: Number(((rAu * KM_PER_AU) / 1e6).toFixed(2)),
+    distanceEarthAu: Number(distEarthAu.toFixed(4)),
+    distanceEarthMkm: Number(((distEarthAu * KM_PER_AU) / 1e6).toFixed(2)),
+    meanAnomalyRad,
     scenePosition: scenePos,
     tailDirection,
+    orbitalVelocityDirection,
+    hasTail,
+    activityFactor: Number(activityFactor.toFixed(4)),
     tailLength,
     tailOpacity,
+    dustTailLength,
+    dustTailOpacity,
+    comaRadius,
+    comaOpacity,
     isPerihelionPassage,
   };
 }
@@ -860,27 +961,9 @@ export function calculateHalleyPosition(dateOrYear: Date | number) {
  * Generates smooth 3D orbital trajectory loop for 1P/Halley.
  */
 export function generateHalleyOrbitalPath(segments = 240): THREE.Vector3[] {
-  const a = 17.834144;
-  const e = 0.96714;
-  const I = 162.2627 * (Math.PI / 180.0);
-  const Omega = 58.42 * (Math.PI / 180.0);
-  const varpi = 111.332 * (Math.PI / 180.0);
-  const omega = varpi - Omega;
-
-  const cosO = Math.cos(Omega);
-  const sinO = Math.sin(Omega);
-  const cosw = Math.cos(omega);
-  const sinw = Math.sin(omega);
-  const cosI = Math.cos(I);
-  const sinI = Math.sin(I);
-
-  const Px = cosw * cosO - sinw * sinO * cosI;
-  const Py = cosw * sinO + sinw * cosO * cosI;
-  const Pz = sinw * sinI;
-
-  const Qx = -sinw * cosO - cosw * sinO * cosI;
-  const Qy = -sinw * sinO + cosw * cosO * cosI;
-  const Qz = cosw * sinI;
+  const a = HALLEY_ORBITAL_ELEMENTS.semiMajorAxisAu;
+  const e = HALLEY_ORBITAL_ELEMENTS.eccentricity;
+  const { Px, Py, Pz, Qx, Qy, Qz } = getHalleyBasisVectors();
 
   const b = a * Math.sqrt(Math.max(0, 1.0 - e * e));
   const points: THREE.Vector3[] = [];
