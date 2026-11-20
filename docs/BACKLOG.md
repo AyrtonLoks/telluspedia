@@ -163,7 +163,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | REVIEW | codex | — | G-ESTUDOS, G-INFRA |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | REVIEW | antigravity | — | G-OBS |
-| T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | TODO | — | — | G-PIPELINE |
+| T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | IN_PROGRESS | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | TODO | — | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | TODO | — | — | G-EPOCA, G-FRONTEIRAS |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | TODO | — | T12 | G-EPOCA, G-ESTUDOS |
@@ -515,7 +515,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T10 · Endurecer serviço Python (CORS, Docker, Redis)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t10-endurecer-python · **Worktree:** ../telluspedia-wt/antigravity-t10
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PIPELINE
 
 **Contexto / problema**
@@ -542,6 +542,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (140e213).
 
 ---
 
