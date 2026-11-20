@@ -180,7 +180,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | TODO | — | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | TODO | — | — | G-SHELL, G-INFRA |
-| D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | IN_PROGRESS | claude | D01 | G-GLOBO, G-EPOCA |
+| D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | REVIEW | claude | D01 | G-GLOBO, G-EPOCA |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | claude | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
@@ -1025,7 +1025,7 @@ O globo inteiro parece escuro e lavado. Causa principal (técnica): o `ShaderMat
 
 ### D02 · Oceanos, relevo, nuvens e atmosfera
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d02-oceanos-atmosfera · **Worktree:** ../telluspedia-wt/claude-d02
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d02-oceanos-atmosfera · **Worktree:** ../telluspedia-wt/claude-d02
 - **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** D01 · **Grupos:** G-GLOBO, G-EPOCA
 
 **Contexto / problema**
@@ -1041,15 +1041,16 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 7. Orçamento: manter ≥ 55 FPS num notebook com GPU integrada; medir.
 
 **Critérios de aceite**
-- [ ] Reflexo do sol visível nos oceanos, ausente nos continentes.
-- [ ] Relevo perceptível em cordilheiras sob luz rasante.
+- [x] Reflexo do sol visível nos oceanos, ausente nos continentes.
+- [x] Relevo perceptível em cordilheiras sob luz rasante.
 - [ ] Nuvens e atmosfera ativáveis/desativáveis.
 - [ ] FPS medido e registrado no Log (antes/depois).
-- [ ] Fontes e licenças documentadas.
+- [x] Fontes e licenças documentadas.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. G-EPOCA adicionado (nuvens/atmosfera montadas no `GlobeCanvas`). Nenhuma tarefa de G-GLOBO/G-EPOCA em andamento (T14 em REVIEW). D04 segue em TODO aguardando G-OBS (D07 do codex em andamento).
+- 2026-11-20 · claude · REVIEW · Commit `4fb9c21`. **Assets (NASA, domínio público — `docs/DATA_SOURCES.md`):** o servidor `eoimages.gsfc.nasa.gov` estava inacessível (timeout) e o NEO foi desativado; as imagens vieram das cópias no Wikimedia Commons (licença conferida pela API): diurna Blue Marble NG “Whole world - land and oceans” e noturna “The earth at night”, ambas em 3840×1920 (`*_4k.jpg`) com versão 2048×1024 (`*_2k.jpg`), escolhidas por `maxTextureSize ≥ 8192` (`pickEarthTextureSet`); anisotropia até 8×. `earth_surface_2k.png`: **R** = elevação SRTM em tons de cinza (NASA), **G** = máscara de água derivada da cor do oceano da diurna (RGB 11,10,50 + azul dominante; inclui lagos como o Cáspio). Texturas antigas (`earth_day.jpg`, `earth_night.png`, 2048 px de 2010) removidas — só o `EarthSphere` as usava. **Shader (`EarthShaderMaterial`):** reflexo do Sol Blinn-Phong (brilho concentrado + halo largo) multiplicado pela máscara de água; relevo pela diferença central da elevação nas direções leste/norte (normal no espaço mundial — AGENTS.md §1), só em terra, aplicado ao sombreamento difuso (o terminador segue na normal geométrica); oceano com tom levemente mais rico; reflexo e relevo suprimidos com `uPaleoFactor` (litoral/elevação atuais) e o reflexo também na iluminação de estudo. **Atmosfera (`Atmosphere.tsx`):** casca `BackSide` de raio 1,025 com espalhamento aproximado (azul no limbo diurno, laranja no terminador, quase nada à noite), direção do Sol do `useSunDirection` (T14); com ela ligada, o Fresnel do shader da Terra cai para um toque de borda. Botão **“Atmosfera”** ao lado de “Iluminação de estudo” (ambos migrados para os tokens do design system). **Testes:** `test/globe-surface.test.ts` (7, com decodificador PNG mínimo): escolha de resolução e arquivos presentes, máscara de água nos pixels (oceanos × Amazônia/Saara/Sibéria/Austrália; Cáspio = água), elevação (Tibete e Altiplano ≫ Amazônia ≥ oceano), documentação, reflexo condicionado a água/era atual/estudo, relevo só em terra e normal em espaço mundial, atmosfera ativável. **Validação após rebase:** typecheck ok, lint ok, 430/430 testes, build ok (home 450 kB; texturas ficam em `public/`, fora do bundle). **Pendências (critérios não atendidos):** (1) **nuvens** — nenhuma textura de nuvens em domínio público acessível (a “Blue Marble 2002” do Commons é a superfície sem nuvens; o servidor da NASA com `cloud_combined` estava fora); não foram inventadas nuvens procedurais; (2) **KTX2/Basis** — sem `toktx`/`basisu` no ambiente; (3) **FPS antes/depois** — não medido (Chromium headless indisponível); o custo extra é 4 leituras de textura e um passe aditivo da atmosfera por pixel do globo; conferir num notebook com GPU integrada; (4) aparência não verificada visualmente pelo agente.
 
 ---
 
