@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useMemo, useEffect } from "react";
+import { focusCelestialBody } from "@/stores/actions";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -261,9 +262,8 @@ export const OrbitingMoon: React.FC = () => {
         quaternion={tidalLockQuat}
         onClick={(e) => {
           e.stopPropagation();
-          useGlobeStore.getState().setSelectedIso(null);
-          useGlobeStore.getState().setHoveredIso(null);
-          focusBody("MOON");
+          // D15: focar a Lua não descarta o país selecionado (ele continua numa aba do dock).
+          focusCelestialBody("MOON");
         }}
         onPointerOver={(e) => {
           e.stopPropagation();

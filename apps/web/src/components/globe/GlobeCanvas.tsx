@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
 import { Sun } from "lucide-react";
 import { Canvas } from "@react-three/fiber";
@@ -86,14 +87,7 @@ export const GlobeCanvas: React.FC = () => {
   // Click-outside handler on celestial vault to deselect active selection
   const handlePointerMissed = (event: MouseEvent) => {
     if (event.button !== undefined && event.button !== 0) return;
-    useGlobeStore.getState().setSelectedIso(null);
-    useGlobeStore.getState().setHoveredIso(null);
-    useTimelineStore.getState().selectMilestone(null);
-    useObservatoryStore.getState().setSelectedEntity(null);
-    useCosmicStore.getState().setHoveredBody(null);
-    if (!useCosmicStore.getState().isCosmicMode && useCosmicStore.getState().focusedBodyId === "MOON") {
-      useCosmicStore.getState().focusBody(null);
-    }
+    handleCanvasPointerMissed();
   };
 
   return (

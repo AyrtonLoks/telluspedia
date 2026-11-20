@@ -115,7 +115,9 @@ describe("D15: RightDock, timeline e navbar", () => {
   test("Inspector cósmico com corpo focado aparece no dock e não flutua", () => {
     useCosmicStore.setState({ isCosmicMode: true, focusedBodyId: "MARS", isInspectorOpen: true });
     assert.match(renderToStaticMarkup(<RightDock />), /data-testid="cosmic-inspector-hud"/);
-    assert.equal(renderToStaticMarkup(<CosmicInspectorHUD placement="floating" />), "");
+    const floating = renderToStaticMarkup(<CosmicInspectorHUD placement="floating" />);
+    assert.match(floating, /data-testid="cosmic-layers-toggle"/, "o botão de camadas segue disponível");
+    assert.doesNotMatch(floating, /data-testid="cosmic-inspector-hud"/, "o painel do corpo fica só no dock");
   });
 });
 

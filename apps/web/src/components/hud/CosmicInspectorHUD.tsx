@@ -28,6 +28,7 @@ import {
 } from "@/lib/astronomy-planets";
 import { cn } from "@/components/ui/cn";
 import { useRightDock } from "@/components/layout/useRightDock";
+import { clearCelestialFocus } from "@/stores/actions";
 
 const HALLEY_EPOCH_PRESETS = [
   { id: "perihelion-1986", label: "Periélio 1986", sublabel: "0,59 UA · cauda máx.", year: 1986.1081 },
@@ -98,10 +99,9 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
   const lunarPhase = focusedBodyId === "MOON" ? getLunarPhase(new Date()) : null;
 
   if (!isCosmicMode && !isNormalModeMoon) return null;
-  if (!isInspectorOpen || !focusedBodyId) {
-    if (placement === "dock") return null;
-    // Floating mini button to toggle layer drawer or inspect when no body is focused
-    return (
+  // Botão flutuante de camadas cósmicas: disponível em todo o modo Cosmos, inclusive com um corpo
+  // focado (o painel do corpo fica no dock, então não disputa mais o mesmo lugar).
+  const layersToggle = (
       <aside className={`fixed top-20 z-20 flex flex-col gap-2 ${isDockVisible ? "right-6 lg:right-[26.5rem]" : "right-6"}`}>
         <button
           onClick={() => setShowLayerPanel(!showLayerPanel)}
@@ -153,8 +153,10 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           </div>
         )}
       </aside>
-    );
-  }
+  );
+
+  if (placement === "floating") return layersToggle;
+  if (!isInspectorOpen || !focusedBodyId) return placement === "dock" ? null : layersToggle;
 
   const meta = ASTROPHYSICAL_CATALOG[focusedBodyId];
 
@@ -193,8 +195,6 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
     }
   }
 
-  if (placement === "floating") return null;
-
   const handleCopyCitation = () => {
     const citation = `NASA / JPL (2026). ${meta.name} Fact Sheet. Consultado em TellusPedia em ${new Date().toLocaleDateString("pt-BR")}. Disponível em: <${meta.citationUrl}>.`;
     navigator.clipboard?.writeText(citation);
@@ -232,13 +232,8 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           </div>
         </div>
         <button
-          onClick={() => {
-            if (isNormalModeMoon) {
-              focusBody(null);
-            } else {
-              setInspectorOpen(false);
-            }
-          }}
+          onClick={clearCelestialFocus}
+          aria-label="Fechar painel e deselecionar"
           className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
           title="Fechar painel de inspeção"
         >

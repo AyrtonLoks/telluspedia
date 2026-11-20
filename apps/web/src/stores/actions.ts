@@ -173,3 +173,37 @@ export function restoreStudySnapshot(study: StudySnapshot) {
     useGlobeStore.getState().flyTo(study.cameraLat, study.cameraLng, study.cameraAltitude ?? 2.2);
   }
 }
+
+// ---------------------------------------------------------------------------
+// Corpos celestes (D15): focar/desfocar não mexe no país selecionado — o painel do país continua
+// numa aba do dock enquanto o usuário explora o Cosmos.
+// ---------------------------------------------------------------------------
+
+/** Foca um corpo celeste (abre o painel no dock) sem limpar o país selecionado. */
+export function focusCelestialBody(id: CelestialBodyId) {
+  useGlobeStore.getState().setHoveredIso(null);
+  useCosmicStore.getState().focusBody(id);
+}
+
+/** Deseleciona o corpo focado: fecha o painel cósmico e solta a câmera. */
+export function clearCelestialFocus() {
+  useCosmicStore.getState().focusBody(null);
+}
+
+/**
+ * Clique no vazio do canvas. No modo cósmico, desfaz só o foco do corpo celeste (o país selecionado
+ * continua na aba dele). No modo Terra, deseleciona país, marco e entidade do Observatório.
+ */
+export function handleCanvasPointerMissed() {
+  const cosmic = useCosmicStore.getState();
+  cosmic.setHoveredBody(null);
+  if (cosmic.isCosmicMode) {
+    if (cosmic.focusedBodyId) clearCelestialFocus();
+    return;
+  }
+  useGlobeStore.getState().setSelectedIso(null);
+  useGlobeStore.getState().setHoveredIso(null);
+  useTimelineStore.getState().selectMilestone(null);
+  useObservatoryStore.getState().setSelectedEntity(null);
+  if (cosmic.focusedBodyId === "MOON") clearCelestialFocus();
+}
