@@ -170,7 +170,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T14 | Fonte única de direção solar | 3D | P1 | M | DONE | antigravity | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | DONE | antigravity | T12 | G-EPOCA |
 | T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | TODO | — | — | G-FRONTEIRAS |
-| T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | IN_PROGRESS | antigravity | T13 | G-PAIS, G-ESTUDOS, G-SHELL |
+| T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | REVIEW | antigravity | T13 | G-PAIS, G-ESTUDOS, G-SHELL |
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | TODO | — | — | G-ESTUDOS |
@@ -739,7 +739,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T17 · Páginas com SSR e metadata (Open Graph)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t17-ssr-metadata · **Worktree:** ../telluspedia-wt/antigravity-t17
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t17-ssr-metadata · **Worktree:** ../telluspedia-wt/antigravity-t17
 - **Prioridade:** P1 · **Área:** Frontend · **Tamanho:** G · **Depende de:** T13 · **Grupos:** G-PAIS, G-ESTUDOS, G-SHELL
 
 **Contexto / problema**
@@ -753,13 +753,14 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 5. Mover `overflow-hidden` para o layout da experiência do globo, não para o `<body>` global.
 
 **Critérios de aceite**
-- [ ] `curl -s localhost:3000/study/guerra-fria-br-de-k9x2 | grep og:title` retorna o título do estudo.
-- [ ] Sem flash do estado padrão ao abrir `/study/...` e `/pais/BRA`.
-- [ ] Slug inexistente → página 404.
+- [x] `curl -s localhost:3000/study/guerra-fria-br-de-k9x2 | grep og:title` retorna o título do estudo.
+- [x] Sem flash do estado padrão ao abrir `/study/...` e `/pais/BRA`.
+- [x] Slug inexistente → página 404.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (dd64655). Grupo G-SHELL adicionado pelo passo 5 (`app/layout.tsx`); grupos G-PAIS, G-ESTUDOS e G-SHELL livres.
+- 2026-11-20 · antigravity · REVIEW · Convertidas `app/page.tsx`, `app/study/[slug]/page.tsx`, `app/pais/[iso]/page.tsx` e `app/compare/page.tsx` em Server Components com carregamento server-side (`lib/server-loaders.ts`: Prisma com fallback dev conforme T08, `getCountryData`, `parseCompareIsos`), `generateMetadata` completo (`title`, `description`, `openGraph`, `twitter`) e `notFound()` + página 404 com tokens D14 (`app/not-found.tsx`). Criado `components/shell/GlobeExperienceShell.tsx` realizando hidratação síncrona única (`applyInitialGlobeState`) antes da montagem dos filhos (eliminando flash do estado padrão em SSR e cliente) e isolando `overflow-hidden` da experiência 3D fora do `<body>` global (`app/layout.tsx` + remoção do workaround `h-dvh overflow-y-auto` em `app/dossies/[slug]/page.tsx`). Criadas imagens OG dinâmicas (`next/og` `ImageResponse` 1200×630 PNG) em `app/study/[slug]/opengraph-image.tsx` e `app/pais/[iso]/opengraph-image.tsx` (com leitura segura de SVGs locais em `public/flags/` protegida contra path traversal + emblema ISO). Verificação HTTP ao vivo na porta 3003 (`curl`): `/study/guerra-fria-br-de-k9x2` → HTTP 200 com `og:title="Análise Comparada da Guerra Fria: Brasil &amp; Alemanha"` e PNG 107 KB; `/pais/BRA` → HTTP 200 com `og:title="Brasil (BRA) — TellusPedia"` e PNG 85 KB; `/compare?c=BRA,DEU` → HTTP 200 com `og:title="Comparador: Brasil vs Alemanha — TellusPedia"`; `/study/nao-existe-xyz` e `/pais/ZZZ` → HTTP 404. Validação pós-rebase em `origin/master`: `pnpm typecheck`, `pnpm lint`, `pnpm test` (443/443, com 6 novos testes em `test/ssr-metadata.test.tsx` + cobertura D14 em `test/design-system.test.tsx`) e `pnpm build` verdes. Commit: 208e349.
 
 ---
 
