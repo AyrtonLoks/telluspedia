@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
-import { prisma } from "@/lib/prisma";
-import { saveMemoryStudy, type StudyRecord } from "@/lib/studies-store";
+import type { StudyRecord } from "@/lib/studies-store";
+import { persistStudy } from "@/lib/study-persistence";
 import { sanitizeStudy, studyInput } from "@/lib/study-schema";
 import { studyCreationRetryAfter } from "@/lib/study-rate-limit";
 
@@ -67,16 +67,9 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString(),
     };
 
-    try {
-      const created = await prisma.study.create({ data: studyData });
-      saveMemoryStudy(studyData);
-      return NextResponse.json(created);
-    } catch {
-      // The existing in-memory fallback is covered by T08.
-      saveMemoryStudy(studyData);
-      return NextResponse.json(studyData);
-    }
-  } catch {
+    return await persistStudy(studyData, "create");
+  } catch (error) {
+    console.error("[studies] Unable to create snapshot", { error });
     return NextResponse.json({ error: "Failed to create study" }, { status: 500 });
   }
 }

@@ -41,6 +41,7 @@ function post(body: string, ip: string) {
 }
 
 test("creates a validated snapshot and normalizes observatory layers for historical eras", async (t) => {
+  setNodeEnv(t, "production");
   trustTestProxy(t);
   const create = mockStudyMethod(t, "create", async ({ data }: { data: StudyRecord }) => data);
 
@@ -66,6 +67,7 @@ test("creates a validated snapshot and normalizes observatory layers for histori
   assert.equal(data.cameraLat, -90);
   assert.equal(data.timelineEndYear, 1918);
   assert.equal(create.mock.callCount(), 1);
+  assert.equal(getMemoryStudy(data.id), undefined);
 });
 
 test("invalid JSON, fields and body sizes fail before persistence", async (t) => {
@@ -107,6 +109,7 @@ test("invalid JSON, fields and body sizes fail before persistence", async (t) =>
 });
 
 test("restores and forks legacy studies without editing the original", async (t) => {
+  setNodeEnv(t, "development");
   trustTestProxy(t);
   mockStudyMethod(t, "findUnique", async () => null);
   mockStudyMethod(t, "create", async ({ data }: { data: StudyRecord }) => data);
@@ -181,4 +184,96 @@ test("the shared quota ignores forwarded addresses without proxy trust", (t) => 
     assert.equal(studyCreationRetryAfter(headers, 240_001), 0);
   }
   assert.equal(studyCreationRetryAfter(new Headers({ "x-real-ip": "192.0.2.50" }), 240_001), 60);
+});
+
+function setNodeEnv(t: TestContext, env: "production" | "development") {
+  const previous = process.env.NODE_ENV;
+  Reflect.set(process.env, "NODE_ENV", env);
+  t.after(() => {
+    if (previous === undefined) Reflect.deleteProperty(process.env, "NODE_ENV");
+    else Reflect.set(process.env, "NODE_ENV", previous);
+  });
+}
+
+test("production reports database failures across creation, reading and fork", async (t) => {
+  setNodeEnv(t, "production");
+  trustTestProxy(t);
+  const log = t.mock.method(console, "error", () => undefined);
+  const warn = t.mock.method(console, "warn", () => undefined);
+  const dbError = new Error("Private database diagnostic");
+  const create = mockStudyMethod(t, "create", async (_input: { data: StudyRecord }) => { throw dbError; });
+  const read = mockStudyMethod(t, "findUnique", async () => { throw dbError; });
+  const memoryId = "guerra-fria-br-de-k9x2";
+  const context = { params: Promise.resolve({ slug: memoryId }) };
+
+  const responses = [
+    await createStudy(post("{}", "192.0.2.6")),
+    await getStudy(new NextRequest(url), context),
+    await forkStudy(post("{}", "192.0.2.6"), context),
+  ];
+  for (const response of responses) {
+    assert.equal(response.status, 503);
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    assert.equal(response.headers.get("X-Study-Persistence"), null);
+    assert.deepEqual(await response.json(), {
+      error: "O banco de dados de estudos está indisponível. Tente novamente em instantes.",
+    });
+  }
+
+  assert.equal(create.mock.callCount(), 1, "Fork cannot use a memory source in production");
+  assert.equal(read.mock.callCount(), 2);
+  assert.equal(warn.mock.callCount(), 0);
+  assert.deepEqual(
+    log.mock.calls.map(({ arguments: [, context] }) => context.operation),
+    ["create", "read", "fork.read"],
+  );
+  const createInput = create.mock.calls[0].arguments[0];
+  assert.equal(getMemoryStudy(createInput.data.id), undefined);
+});
+
+test("production distinguishes missing studies from a failed fork write", async (t) => {
+  setNodeEnv(t, "production");
+  trustTestProxy(t);
+  const log = t.mock.method(console, "error", () => undefined);
+  const find = mockStudyMethod(t, "findUnique", async (): Promise<StudyRecord | null> => null);
+  const id = "guerra-fria-br-de-k9x2";
+  const context = { params: Promise.resolve({ slug: id }) };
+
+  assert.equal((await getStudy(new NextRequest(url), context)).status, 404);
+  assert.equal((await forkStudy(post("{}", "192.0.2.7"), context)).status, 404);
+
+  find.mock.mockImplementation(async () => getMemoryStudy(id) ?? null);
+  const create = mockStudyMethod(t, "create", async () => { throw new Error("Fork write failed"); });
+  assert.equal((await forkStudy(post("{}", "192.0.2.7"), context)).status, 503);
+  assert.equal(create.mock.callCount(), 1);
+  assert.equal(log.mock.calls[0].arguments[1].operation, "fork.create");
+});
+
+test("development marks temporary studies and reports when memory storage is used", async (t) => {
+  setNodeEnv(t, "development");
+  trustTestProxy(t);
+  const log = t.mock.method(console, "error", () => undefined);
+  const warn = t.mock.method(console, "warn", () => undefined);
+  mockStudyMethod(t, "create", async () => { throw new Error("Database offline"); });
+  mockStudyMethod(t, "findUnique", async () => { throw new Error("Database offline"); });
+
+  const created = await createStudy(post('{"title":"Estudo temporário"}', "192.0.2.8"));
+  assert.equal(created.status, 200);
+  assert.equal(created.headers.get("X-Study-Persistence"), "memory");
+  const original = await created.json();
+
+  const context = { params: Promise.resolve({ slug: original.id }) };
+  const restored = await getStudy(new NextRequest(url), context);
+  assert.equal(restored.headers.get("X-Study-Persistence"), "memory");
+  assert.equal((await restored.json()).title, original.title);
+
+  const response = await forkStudy(post("{}", "192.0.2.8"), context);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("X-Study-Persistence"), "memory");
+  assert.equal((await response.json()).parentId, original.id);
+  assert.deepEqual(
+    warn.mock.calls.map(({ arguments: [, context] }) => context.operation),
+    ["create", "read", "fork.read", "fork.create"],
+  );
+  assert.equal(log.mock.callCount(), 4);
 });

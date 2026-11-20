@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { getMemoryStudy, restoreStudyRecord } from "@/lib/studies-store";
+import { restoreStudyRecord } from "@/lib/studies-store";
+import { readDevelopmentStudy, studyDatabaseFailure, temporaryStudyResponse } from "@/lib/study-persistence";
+
+type StudyWithRelations = Prisma.StudyGetPayload<{ include: { parent: true; forks: true } }>;
 
 export async function GET(
   req: NextRequest,
@@ -8,21 +12,21 @@ export async function GET(
 ) {
   const { slug } = await params;
 
+  let study: StudyWithRelations | null = null;
   try {
-    const study = await prisma.study.findUnique({
+    study = await prisma.study.findUnique({
       where: { id: slug },
-      include: {
-        parent: true,
-        forks: true,
-      },
+      include: { parent: true, forks: true },
     });
-    if (study) return NextResponse.json({ ...study, ...restoreStudyRecord(study) });
-  } catch {
-    // Database fallback
+  } catch (error) {
+    const unavailable = studyDatabaseFailure("read", slug, error);
+    if (unavailable) return unavailable;
   }
 
-  const memory = getMemoryStudy(slug);
-  if (memory) return NextResponse.json(restoreStudyRecord(memory));
+  if (study) return NextResponse.json({ ...study, ...restoreStudyRecord(study) });
+
+  const memory = readDevelopmentStudy(slug, "read");
+  if (memory) return temporaryStudyResponse(restoreStudyRecord(memory));
 
   return NextResponse.json({ error: "Study not found" }, { status: 404 });
 }

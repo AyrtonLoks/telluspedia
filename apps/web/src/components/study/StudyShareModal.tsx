@@ -98,6 +98,7 @@ export const StudyShareModal: React.FC = () => {
       : (storeCosmicLayers || []);
 
   const [shareUrl, setShareUrl] = useState<string>("");
+  const [temporaryShare, setTemporaryShare] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -176,6 +177,7 @@ export const StudyShareModal: React.FC = () => {
       if (res.ok) {
         const data = await res.json();
         const origin = window.location.origin;
+        setTemporaryShare(res.headers.get("x-study-persistence") === "memory");
         setShareUrl(`${origin}/study/${data.id}`);
 
         // Update local study store with the created study snapshot
@@ -194,6 +196,8 @@ export const StudyShareModal: React.FC = () => {
           focusedCelestialBody: focusedBodyId,
           activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
         });
+      } else if (res.status === 503) {
+        setErrorMsg("O banco de dados de estudos está indisponível. Tente gerar o link novamente em instantes.");
       } else {
         setErrorMsg("Não foi possível registrar o snapshot do estudo no servidor.");
       }
@@ -395,7 +399,7 @@ export const StudyShareModal: React.FC = () => {
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs">
+            <div role="alert" className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs">
               {errorMsg}
             </div>
           )}
@@ -403,8 +407,11 @@ export const StudyShareModal: React.FC = () => {
           {shareUrl && (
             <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-800/60 space-y-2">
               <span className="text-[11px] text-cyan-300 font-medium block">
-                Link Permanente & Imutável Gerado:
+                {temporaryShare ? "Link temporário deste servidor" : "Link Permanente & Imutável Gerado:"}
               </span>
+              {temporaryShare && (
+                <p className="text-[11px] text-slate-300">O link pode deixar de funcionar ao reiniciar o servidor.</p>
+              )}
               <div className="flex items-center gap-2">
                 <input
                   type="text"

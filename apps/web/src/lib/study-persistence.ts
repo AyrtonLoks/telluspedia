@@ -1,0 +1,53 @@
+import { NextResponse } from "next/server";
+import { prisma } from "./prisma";
+import { getMemoryStudy, saveMemoryStudy, type StudyRecord } from "./studies-store";
+
+type DatabaseOperation = "create" | "read" | "fork.read" | "fork.create";
+const TEMPORARY_HEADERS = { "Cache-Control": "no-store", "X-Study-Persistence": "memory" };
+
+function memoryAllowed() {
+  return process.env.NODE_ENV !== "production";
+}
+
+export function studyDatabaseFailure(operation: DatabaseOperation, id: string, error: unknown) {
+  console.error("[studies] Database operation failed", { operation, id, error });
+
+  if (memoryAllowed()) return undefined;
+
+  return NextResponse.json(
+    { error: "O banco de dados de estudos está indisponível. Tente novamente em instantes." },
+    { status: 503, headers: { "Cache-Control": "no-store" } },
+  );
+}
+
+function warnTemporary(operation: DatabaseOperation, id: string) {
+  console.warn("[studies] Using temporary in-memory storage", { operation, id });
+}
+
+export function readDevelopmentStudy(id: string, operation: "read" | "fork.read") {
+  if (!memoryAllowed()) return undefined;
+  const study = getMemoryStudy(id);
+  if (study) warnTemporary(operation, id);
+  return study;
+}
+
+export function temporaryStudyResponse(study: StudyRecord) {
+  return NextResponse.json(study, { headers: TEMPORARY_HEADERS });
+}
+
+export async function persistStudy(study: StudyRecord, operation: "create" | "fork.create") {
+  let created;
+  try {
+    created = await prisma.study.create({ data: study });
+  } catch (error) {
+    const unavailable = studyDatabaseFailure(operation, study.id, error);
+    if (unavailable) return unavailable;
+
+    warnTemporary(operation, study.id);
+    saveMemoryStudy(study);
+    return temporaryStudyResponse(study);
+  }
+
+  if (memoryAllowed()) saveMemoryStudy(study);
+  return NextResponse.json(created);
+}

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import type { Study } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { getMemoryStudy, saveMemoryStudy, forkStudyRecord, type StudyRecord } from "@/lib/studies-store";
+import { forkStudyRecord, type StudyRecord } from "@/lib/studies-store";
+import { persistStudy, readDevelopmentStudy, studyDatabaseFailure } from "@/lib/study-persistence";
 import { studyCreationRetryAfter } from "@/lib/study-rate-limit";
 
 export async function POST(
@@ -23,25 +24,20 @@ export async function POST(
     let original: Study | StudyRecord | null | undefined;
     try {
       original = await prisma.study.findUnique({ where: { id: slug } });
-    } catch {
-      // Database fallback.
+    } catch (error) {
+      const unavailable = studyDatabaseFailure("fork.read", slug, error);
+      if (unavailable) return unavailable;
     }
-    original ??= getMemoryStudy(slug);
+    original ??= readDevelopmentStudy(slug, "fork.read");
 
     if (!original) {
       return NextResponse.json({ error: "Original study not found" }, { status: 404 });
     }
 
     const forkedData = forkStudyRecord(original, `fork-${nanoid(8)}`);
-    try {
-      const created = await prisma.study.create({ data: forkedData });
-      saveMemoryStudy(forkedData);
-      return NextResponse.json(created);
-    } catch {
-      saveMemoryStudy(forkedData);
-      return NextResponse.json(forkedData);
-    }
-  } catch {
+    return await persistStudy(forkedData, "fork.create");
+  } catch (error) {
+    console.error("[studies] Unable to fork snapshot", { error });
     return NextResponse.json({ error: "Failed to fork study" }, { status: 500 });
   }
 }
