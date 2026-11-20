@@ -7,6 +7,9 @@ import { useGlobeStore } from "@/stores/globeStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { MilestoneItem } from "@/lib/country-data";
 import { getSourceUrl } from "@/lib/citations";
+import { cn } from "@/components/ui/cn";
+
+const ACTION = "flex items-center justify-center gap-1 rounded-control border border-line bg-surface px-2 py-1 text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg";
 
 interface CountryMiniTimelineProps {
   milestones: MilestoneItem[];
@@ -38,9 +41,9 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
   };
 
   return (
-    <div className="mt-3 pt-3 border-t border-slate-700/60">
-      <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-2">
-        <History className="w-3.5 h-3.5 text-cyan-400" />
+    <div className="mt-3 border-t border-line pt-3">
+      <div className="mb-2 flex items-center gap-1.5 text-label font-semibold text-fg">
+        <History aria-hidden="true" className="h-4 w-4 text-fg-muted" />
         <span>Marcos Históricos Decisivos</span>
       </div>
 
@@ -51,47 +54,42 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
             <div
               key={m.id}
               onClick={(e) => handleMilestoneClick(e, m)}
-              className={`p-2.5 rounded-xl border cursor-pointer transition-all group ${
-                isSelected
-                  ? "bg-cyan-950/50 border-cyan-400 ring-1 ring-cyan-400/80 shadow-lg shadow-cyan-950/60"
-                  : "bg-slate-900/50 hover:bg-slate-800/80 border-slate-800/80 hover:border-cyan-500/40"
-              }`}
+              className={cn(
+                "group cursor-pointer rounded-card border p-2.5 transition-colors duration-base ease-out",
+                isSelected ? "border-accent/40 bg-accent/10" : "border-line bg-surface-raised hover:bg-surface-hover"
+              )}
             >
-              <div className="flex items-center justify-between text-xs gap-1">
-                <span
-                  className={`font-semibold transition-colors ${
-                    isSelected ? "text-cyan-300" : "text-slate-200 group-hover:text-cyan-300"
-                  }`}
-                >
+              <div className="flex items-center justify-between gap-1 text-label">
+                <span className="font-medium text-fg">
                   {m.title}
                 </span>
-                <span className="flex items-center gap-1 font-mono text-[11px] text-cyan-400 bg-cyan-950/60 px-1.5 py-0.5 rounded shrink-0 border border-cyan-800/50">
-                  <Calendar className="w-3 h-3" />
+                <span className="flex shrink-0 items-center gap-1 font-mono text-caption tabular-nums text-fg-secondary">
+                  <Calendar aria-hidden="true" className="h-3 w-3" />
                   {m.year}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+              <p className="mt-1 line-clamp-2 text-caption text-fg-secondary">
                 {m.summary}
               </p>
               {m.sourcePrimary && (
-                <div className="mt-2 pt-1.5 border-t border-slate-800/70 flex items-center justify-between text-[10px] gap-2">
-                  <span className="text-slate-500 shrink-0">Fonte Primária:</span>
+                <div className="mt-2 flex items-center justify-between gap-2 border-t border-line pt-1.5 text-caption">
+                  <span className="shrink-0 text-fg-muted">Fonte Primária:</span>
                   <a
                     href={getSourceUrl(m.sourcePrimary)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="font-mono text-[9px] text-cyan-400/90 hover:text-cyan-200 hover:underline bg-cyan-950/50 hover:bg-cyan-900/60 px-1.5 py-0.5 rounded border border-cyan-800/40 truncate max-w-[150px] inline-flex items-center gap-1 transition-colors"
+                    className="inline-flex max-w-[150px] items-center gap-1 truncate text-accent hover:text-accent-hover hover:underline"
                     title={`Abrir repositório da fonte primária: ${m.sourcePrimary}`}
                   >
                     <span className="truncate">{m.sourcePrimary}</span>
-                    <ExternalLink className="w-2.5 h-2.5 shrink-0 opacity-70" />
+                    <ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0" />
                   </a>
                 </div>
               )}
 
               {/* Action buttons & links accessible directly */}
-              <div className="mt-2 pt-1.5 border-t border-slate-800/60 flex items-center gap-1.5">
+              <div className="mt-2 flex items-center gap-1.5 border-t border-line pt-1.5">
                 <button
                   type="button"
                   onClick={(e) => {
@@ -102,10 +100,10 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                       flyTo(m.latitude, m.longitude, m.preferredAltitude ?? 1.8);
                     }
                   }}
-                  className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-800/60 text-cyan-300 text-[10px] font-medium transition-colors"
+                  className={cn(ACTION, "flex-1")}
                   title="Focar este evento no globo 3D"
                 >
-                  <Globe className="w-3 h-3" />
+                  <Globe aria-hidden="true" className="h-3 w-3" />
                   <span>Focar</span>
                 </button>
 
@@ -116,10 +114,10 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                     setActiveDimension("HISTORY");
                     setReaderOpen(true);
                   }}
-                  className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-200 text-[10px] font-medium transition-colors"
+                  className={cn(ACTION, "flex-1")}
                   title="Abrir seção de História no Dossiê do País"
                 >
-                  <BookOpen className="w-3 h-3 text-cyan-400" />
+                  <BookOpen aria-hidden="true" className="h-3 w-3" />
                   <span>Ler Dossiê</span>
                 </button>
 
@@ -135,10 +133,10 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                       publicationYear: 2026,
                     });
                   }}
-                  className="flex items-center justify-center gap-1 px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-cyan-300 text-[10px] font-medium transition-colors"
+                  className={ACTION}
                   title={`Gerar citação acadêmica para '${m.title}'`}
                 >
-                  <Quote className="w-3 h-3 text-cyan-400" />
+                  <Quote aria-hidden="true" className="h-3 w-3" />
                   <span>Citar</span>
                 </button>
 
@@ -147,10 +145,10 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center justify-center gap-1 px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-cyan-300 text-[10px] font-medium transition-colors"
+                  className={ACTION}
                   title={`Pesquisar '${m.title}' na Wikipédia`}
                 >
-                  <ExternalLink className="w-3 h-3 text-cyan-400" />
+                  <ExternalLink aria-hidden="true" className="h-3 w-3" />
                   <span>Info</span>
                 </a>
               </div>

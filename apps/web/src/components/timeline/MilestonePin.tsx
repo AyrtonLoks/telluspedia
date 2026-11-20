@@ -10,6 +10,10 @@ import { useGlobeStore } from "@/stores/globeStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { getSourceUrl } from "@/lib/citations";
 import { getCountryData } from "@/lib/country-data";
+import { CATEGORY_TONE, TONES } from "@/components/ui/tones";
+import { cn } from "@/components/ui/cn";
+
+const ACTION = "flex items-center justify-center gap-1 rounded-control border border-line bg-surface-raised px-2 py-1 text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg";
 
 interface MilestonePinProps {
   id: string;
@@ -28,13 +32,6 @@ interface MilestonePinProps {
   percent: number;
 }
 
-const CATEGORY_COLORS: Record<MilestoneCategoryType, { border: string; glow: string; text: string }> = {
-  POLITICS_REGIMES: { border: "border-cyan-400", glow: "shadow-cyan-500/50", text: "text-cyan-300" },
-  ECONOMY: { border: "border-amber-400", glow: "shadow-amber-500/50", text: "text-amber-300" },
-  WAR_MILITARY: { border: "border-rose-400", glow: "shadow-rose-500/50", text: "text-rose-300" },
-  SCIENCE_CULTURE: { border: "border-emerald-400", glow: "shadow-emerald-500/50", text: "text-emerald-300" },
-  HEALTH_PANDEMICS: { border: "border-purple-400", glow: "shadow-purple-500/50", text: "text-purple-300" },
-};
 
 export const MilestonePin: React.FC<MilestonePinProps> = ({
   id,
@@ -65,7 +62,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   const isSelected = selectedMilestoneId === id;
   // All cards pop upwards to prevent viewport overflow. Stagger heights (bottom-7 vs bottom-24) to avoid collisions
   const isHigh = index % 2 === 1;
-  const colors = CATEGORY_COLORS[category] || CATEGORY_COLORS.POLITICS_REGIMES;
+  const tone = TONES[CATEGORY_TONE[category] ?? "cat-politics"];
   const effectiveCountryIso = countryIso || (blocIsos && blocIsos.length > 0 ? blocIsos[0] : undefined);
   const country = effectiveCountryIso ? getCountryData(effectiveCountryIso) : null;
 
@@ -143,40 +140,37 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
         }`}
       >
         <div
-          className={`w-[1px] h-full mx-auto transition-colors ${
-            isSelected
-              ? "bg-cyan-400"
-              : "bg-slate-600/60 group-hover:bg-cyan-400"
-          }`}
+          className={cn(
+            "mx-auto h-full w-px transition-colors duration-fast ease-out",
+            isSelected ? "bg-fg-secondary" : "bg-line-strong group-hover:bg-fg-muted"
+          )}
         />
       </div>
 
       {/* Pin node on axis */}
       <div
-        className={`w-3.5 h-3.5 rounded-full border-2 transition-all transform group-hover:scale-125 ${
-          colors.border
-        } ${
-          isSelected
-            ? `bg-cyan-400 scale-125 shadow-lg ${colors.glow}`
-            : "bg-slate-900 group-hover:bg-cyan-500/20"
-        }`}
+        className={cn(
+          "h-3.5 w-3.5 rounded-full border-2 transition-transform duration-fast ease-out group-hover:scale-125",
+          tone.ring,
+          isSelected ? cn("scale-125", tone.dot) : "bg-surface"
+        )}
       />
 
       {/* Floating Card: Staggers Upwards (bottom-7 or bottom-24) */}
       <div
-        className={`absolute ${horizontalAlignmentClass} w-52 p-2.5 rounded-xl bg-slate-950/95 backdrop-blur-md border border-slate-700/80 shadow-2xl transition-all duration-200 ${
+        className={`absolute ${horizontalAlignmentClass} w-56 rounded-card border border-line bg-surface p-3 shadow-e2 transition-opacity duration-base ease-out ${
           isHigh ? "bottom-24" : "bottom-7"
         } ${
           isSelected
-            ? "opacity-100 ring-1 ring-cyan-400 pointer-events-auto z-50"
+            ? "pointer-events-auto z-50 border-line-strong opacity-100"
             : "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto z-30 group-hover:z-50"
         }`}
         onClick={handleCardClick}
       >
-        <div className="flex items-center justify-between text-[10px] mb-1 gap-1">
+        <div className="mb-1 flex items-center justify-between gap-1 text-caption">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className={`font-mono font-bold ${colors.text}`}>{year}</span>
-            {exactDate && <span className="text-slate-400 text-[9px] truncate">{exactDate}</span>}
+            <span className={cn("font-mono font-medium tabular-nums", tone.text)}>{year}</span>
+            {exactDate && <span className="truncate text-fg-muted">{exactDate}</span>}
           </div>
           {isSelected && (
             <button
@@ -185,30 +179,30 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
                 e.stopPropagation();
                 selectMilestone(null);
               }}
-              className="p-0.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ml-auto"
+              className="ml-auto rounded-sm p-0.5 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
               title="Fechar (Esc)"
               aria-label="Fechar milestone"
             >
-              <X className="w-3 h-3" />
+              <X aria-hidden="true" className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
-        <div className="text-xs font-semibold text-slate-100 line-clamp-1 leading-snug">{title}</div>
-        <div className="text-[10px] text-slate-300 mt-1 line-clamp-2 leading-relaxed">
+        <div className="line-clamp-1 text-label font-semibold text-fg">{title}</div>
+        <div className="mt-1 line-clamp-2 text-caption text-fg-secondary">
           {summary}
         </div>
         {sourcePrimary && (
-          <div className="mt-2 pt-1.5 border-t border-slate-800 flex items-center justify-between gap-1">
+          <div className="mt-2 flex items-center justify-between gap-1 border-t border-line pt-1.5">
             <a
               href={getSourceUrl(sourcePrimary)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-[9px] text-cyan-300 hover:text-cyan-100 hover:underline font-mono border border-slate-800 truncate max-w-[130px] transition-colors"
+              className="inline-flex max-w-[140px] items-center gap-1 truncate text-caption text-accent hover:text-accent-hover hover:underline"
               title={`Repositório da fonte primária: ${sourcePrimary}`}
             >
               <span className="truncate">Fonte: {sourcePrimary}</span>
-              <ExternalLink className="w-2.5 h-2.5 shrink-0 opacity-70" />
+              <ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0" />
             </a>
             <button
               type="button"
@@ -222,19 +216,19 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
                   publicationYear: 2026,
                 });
               }}
-              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-800/50 text-[9px] text-cyan-300 hover:text-white transition-colors"
+              className={ACTION}
               title={`Gerar citação acadêmica para '${title}'`}
             >
-              <Quote className="w-2.5 h-2.5" />
+              <Quote aria-hidden="true" className="h-3 w-3" />
               <span>Citar</span>
             </button>
           </div>
         )}
         {isSelected && <StudyContext entityId={`event:${id}`} />}
         {isSelected && id === "bra-1889" && (
-          <Link className="text-xs text-cyan-300 hover:underline" href="/dossies/dom-pedro-ii">Dom Pedro II</Link>
+          <Link className="text-caption text-accent hover:text-accent-hover hover:underline" href="/dossies/dom-pedro-ii">Dom Pedro II</Link>
         )}
-        <div className="mt-2 pt-1.5 border-t border-slate-800 flex items-center gap-1.5 flex-wrap">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-line pt-1.5">
           {effectiveCountryIso && (
             <button
               type="button"
@@ -245,10 +239,10 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
                   flyTo(latitude, longitude, preferredAltitude ?? 1.8);
                 }
               }}
-              className="flex-1 flex items-center justify-center gap-1 px-1.5 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-700/60 text-cyan-300 text-[10px] font-medium transition-colors"
+              className={cn(ACTION, "flex-1")}
               title={`Explorar ${effectiveCountryIso} no globo`}
             >
-              <Globe className="w-3 h-3" />
+              <Globe aria-hidden="true" className="h-3 w-3" />
               <span>Ver {effectiveCountryIso}</span>
             </button>
           )}
@@ -261,10 +255,10 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
                 setActiveDimension("HISTORY");
                 setReaderOpen(true);
               }}
-              className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-[10px] font-medium transition-colors flex items-center gap-1"
+              className={ACTION}
               title="Aprofundar Dossiê do País (História)"
             >
-              <BookOpen className="w-3 h-3 text-cyan-400" />
+              <BookOpen aria-hidden="true" className="h-3 w-3" />
               <span>Dossiê</span>
             </button>
           )}
@@ -273,10 +267,10 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="px-1.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-cyan-300 text-[10px] font-medium transition-colors flex items-center gap-1"
+            className={ACTION}
             title={`Abrir '${title}' em fonte enciclopédica externa`}
           >
-            <ExternalLink className="w-3 h-3 text-cyan-400" />
+            <ExternalLink aria-hidden="true" className="h-3 w-3" />
             <span>Info</span>
           </a>
         </div>

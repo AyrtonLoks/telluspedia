@@ -24,6 +24,9 @@ import { LocalClockWidget } from "./LocalClockWidget";
 import { LiveWeatherWidget } from "./LiveWeatherWidget";
 import { CountryMetricsGrid } from "./CountryMetricsGrid";
 import { CountryMiniTimeline } from "./CountryMiniTimeline";
+import { Button, buttonClasses } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { cn } from "@/components/ui/cn";
 
 export interface InspectorHUDProps {
   selectedIso?: string | null;
@@ -148,7 +151,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
     <aside
       data-inspector-hud="true"
       data-completeness={currentCountry.completeness}
-      className={`fixed top-5 right-5 z-20 w-96 max-w-[calc(100vw-2.5rem)] ${maxHeightClass} overflow-y-auto glass-panel rounded-2xl p-4 shadow-2xl transition-all duration-300 animate-in fade-in slide-in-from-right-4`}
+      className={cn("fixed right-5 top-5 z-20 w-96 max-w-[calc(100vw-2.5rem)] overflow-y-auto rounded-panel border border-line bg-surface/86 p-4 shadow-e2 backdrop-blur-md transition-[max-height] duration-slow ease-out", maxHeightClass)}
     >
       {/* Country Identification Header */}
       <CountryHeader
@@ -168,23 +171,23 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
           <LocalClockWidget timezone={currentCountry.timezone} />
           <div
             data-historical-context="true"
-            className="p-2.5 rounded-xl bg-slate-900/60 border border-amber-500/30 flex flex-col justify-between shadow-inner shadow-amber-950/20"
+            className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5"
           >
-            <div className="flex items-center gap-1.5 text-amber-400 text-xs font-semibold">
-              <History className="w-3.5 h-3.5 shrink-0" />
+            <div className="flex items-center gap-1.5 text-caption font-medium text-fg-secondary">
+              <History aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
               <span className="truncate">Entidade Histórica</span>
             </div>
-            <div className="text-xs text-slate-100 font-semibold my-0.5">
+            <div className="my-0.5 font-mono text-label font-medium tabular-nums text-fg">
               Vigência: {currentCountry.startYear} – {currentCountry.endYear}
             </div>
             <div
-              className="text-[10px] text-amber-300/90 line-clamp-1"
+              className="line-clamp-1 text-caption text-fg-secondary"
               title={`${currentCountry.leaderTitle || "Líder"}: ${currentCountry.historicalLeader || currentCountry.headOfState || "Indisponível"}`}
             >
-              <span className="text-slate-400">
+              <span className="text-fg-muted">
                 {currentCountry.leaderTitle ? `${currentCountry.leaderTitle}: ` : "Líder: "}
               </span>
-              <strong className="text-slate-200 font-semibold">
+              <strong className="font-medium text-fg">
                 {currentCountry.historicalLeader || currentCountry.headOfState || "Indisponível"}
               </strong>
             </div>
@@ -205,14 +208,14 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
       {/* Summary Narrative with Primary Source citation (only when real summary exists) */}
       <div className="mb-3">
         {currentCountry.summary ? (
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-label text-fg-secondary">
             {currentCountry.summary}{" "}
             <a
               href={getSourceUrl(primarySourceName)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 text-[10px] font-mono text-cyan-400/90 hover:text-cyan-200 hover:underline bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-800/50 rounded px-1.5 py-0.5 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 rounded-sm text-caption text-accent hover:text-accent-hover hover:underline"
               title={`Fonte Primária: ${primarySourceName} / Base TellusPedia (${currentCountry.isoCode}) - Acessar Repositório`}
             >
               <span>
@@ -224,13 +227,13 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                   : "ONU"}
                 ]
               </span>
-              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+              <ExternalLink aria-hidden="true" className="h-3 w-3" />
             </a>
           </p>
         ) : (
           <p
             data-testid="inspector-summary-unavailable"
-            className="text-xs text-slate-400 leading-relaxed"
+            className="text-label text-fg-secondary"
           >
             Resumo descritivo indisponível para {currentCountry.nameCommon}. Identificação
             geográfica e coordenadas fornecidas por{" "}
@@ -239,7 +242,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-cyan-400 hover:text-cyan-200 hover:underline"
+              className="text-accent hover:text-accent-hover hover:underline"
             >
               Natural Earth (1:110m)
             </a>
@@ -274,47 +277,36 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
       <StudyContext entityId={`country:${currentCountry.isoCode}`} />
       {currentCountry.isoCode === "BRA" && selectedMilestoneId === "bra-1889" && (
         <div>
-          <Link className="text-sm text-cyan-300 hover:underline" href="/dossies/dom-pedro-ii">Dom Pedro II</Link>
+          <Link className="text-label text-accent hover:text-accent-hover hover:underline" href="/dossies/dom-pedro-ii">Dom Pedro II</Link>
           <StudyContext entityId="figure:dom-pedro-ii" />
         </div>
       )}
 
       {/* Action Buttons */}
-      <div className="mt-4 pt-3 border-t border-slate-700/60 flex items-center gap-2">
-        <button
-          onClick={handleDeepReading}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 text-white font-medium text-xs shadow-lg shadow-cyan-950/50 transition-all active:scale-[0.98]"
-        >
-          <BookOpen className="w-4 h-4" />
+      <div className="mt-4 flex items-center gap-2 border-t border-line pt-3">
+        <Button variant="primary" className="flex-1" onClick={handleDeepReading}>
+          <BookOpen aria-hidden="true" className="h-4 w-4" />
           <span>Aprofundar Estudo</span>
-        </button>
+        </Button>
 
         <button
+          type="button"
           onClick={handleCompare}
-          className={`px-3 py-2.5 rounded-xl border font-medium text-xs transition-all flex items-center gap-1.5 ${
-            isCompared
-              ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-              : "glass-button text-slate-200"
-          }`}
+          aria-pressed={isCompared}
+          className={buttonClasses("secondary", "md", cn("gap-1.5 px-3", isCompared && "border-accent/40 bg-accent/15"))}
           title="Comparar com outros países"
         >
-          <BarChart2 className="w-4 h-4 text-amber-400" />
+          <BarChart2 aria-hidden="true" className="h-4 w-4" />
           <span>{isCompared ? "Comparando" : "Comparar"}</span>
         </button>
 
-        <button
-          onClick={handleShare}
-          className="p-2.5 rounded-xl glass-button text-slate-300 hover:text-white"
-          title="Compartilhar estudo deste país"
-        >
-          <Share2 className="w-4 h-4" />
-        </button>
+        <IconButton label="Compartilhar estudo deste país" icon={<Share2 />} variant="secondary" onClick={handleShare} />
       </div>
 
       {/* Subtle Permanent Institutional Footer with Cited Sources */}
-      <footer className="mt-3 pt-2.5 border-t border-slate-700/60 text-[10px] text-slate-400 leading-relaxed">
+      <footer className="mt-3 border-t border-line pt-2.5 text-caption text-fg-muted">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-cyan-400 font-medium">Fontes Primárias Auditadas:</span>
+          <span className="font-medium text-fg-secondary">Fontes Primárias Auditadas:</span>
           <button
             type="button"
             onClick={() => {
@@ -330,10 +322,10 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 publicationYear: 2026,
               });
             }}
-            className="inline-flex items-center gap-1 text-cyan-400 hover:text-cyan-300 hover:underline font-mono text-[9px]"
+            className="inline-flex items-center gap-1 text-accent hover:text-accent-hover hover:underline"
             title="Gerar Citação Oficial deste País"
           >
-            <Quote className="w-3 h-3" />
+            <Quote aria-hidden="true" className="h-3 w-3" />
             <span>Gerar Citação</span>
           </button>
         </div>
@@ -344,7 +336,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 href={getSourceUrl("Maddison")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-cyan-300 hover:underline"
+                className="hover:text-fg hover:underline"
               >
                 Maddison Project Database
               </a>
@@ -353,7 +345,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 href={getSourceUrl("Correlates of War")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-cyan-300 hover:underline"
+                className="hover:text-fg hover:underline"
               >
                 Correlates of War
               </a>
@@ -362,7 +354,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 href={getSourceUrl("Natural Earth")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-cyan-300 hover:underline"
+                className="hover:text-fg hover:underline"
               >
                 Cartografia Natural Earth
               </a>
@@ -374,7 +366,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 href={currentCountry.sourceUrl || getSourceUrl("Natural Earth")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-cyan-300 hover:underline"
+                className="hover:text-fg hover:underline"
               >
                 Cartografia Natural Earth (1:110m)
               </a>
@@ -387,7 +379,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 href={getSourceUrl("Banco Mundial")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-cyan-300 hover:underline"
+                className="hover:text-fg hover:underline"
               >
                 Banco Mundial
               </a>
@@ -396,7 +388,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 href={getSourceUrl("ONU")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-cyan-300 hover:underline"
+                className="hover:text-fg hover:underline"
               >
                 Divisão de Estatística da ONU
               </a>
@@ -405,7 +397,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 href={getSourceUrl("IBGE")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-cyan-300 hover:underline"
+                className="hover:text-fg hover:underline"
               >
                 IBGE
               </a>
@@ -414,7 +406,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 href={getSourceUrl("Natural Earth")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-cyan-300 hover:underline"
+                className="hover:text-fg hover:underline"
               >
                 Cartografia Natural Earth (1:110m)
               </a>

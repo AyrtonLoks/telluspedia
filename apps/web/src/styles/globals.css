@@ -2,17 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens — direção visual "Instrumento sereno" (D14, aprovada pelo Ayrton em 2026-11-20).
+ * Cores em canais RGB para permitir opacidade no Tailwind (ex.: bg-accent/15).
+ * Use sempre as classes semânticas do Tailwind (bg-surface, text-fg-secondary, text-caption…);
+ * não use paleta crua (slate-*, cyan-*…) nem valores arbitrários de cor/tamanho em componentes novos.
+ */
 :root {
-  --background: #030712;
-  --foreground: #f8fafc;
-  --card: #0b1120;
-  --card-foreground: #f8fafc;
-  --primary: #06b6d4;
-  --primary-foreground: #030712;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --border: rgba(56, 189, 248, 0.15);
-  --ring: #06b6d4;
+  /* Superfícies */
+  --color-bg: 5 7 11;
+  --color-surface: 12 16 24;
+  --color-surface-raised: 19 25 37;
+  --color-surface-sunken: 8 11 17;
+  --color-surface-hover: 26 33 48;
+  --color-control: 42 50 66;
+
+  /* Linhas (branco translúcido; não use ciano como borda neutra) */
+  --color-line: 255 255 255;
+  --line-alpha: 0.08;
+  --line-strong-alpha: 0.14;
+
+  /* Texto */
+  --color-fg: 232 236 242;
+  --color-fg-secondary: 169 179 193;
+  --color-fg-muted: 134 145 162;
+
+  /* Acento: só para interativo / selecionado */
+  --color-accent: 76 195 224;
+  --color-accent-hover: 122 212 234;
+  --color-on-accent: 5 7 11;
+
+  /* Estados */
+  --color-success: 61 214 140;
+  --color-warning: 242 181 68;
+  --color-danger: 242 112 107;
+
+  /* Dados: categorias da linha do tempo */
+  --color-cat-politics: 111 168 255;
+  --color-cat-economy: 242 181 68;
+  --color-cat-war: 242 112 107;
+  --color-cat-science: 61 214 180;
+  --color-cat-health: 192 140 255;
+
+  /* Dados: camadas do Observatório */
+  --color-layer-fires: 255 138 61;
+  --color-layer-events: 242 95 142;
+  --color-layer-satellites: 232 236 242;
+  --color-layer-aircraft: 242 208 107;
+  --color-layer-maritime: 91 155 242;
+
+  /* Movimento */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Aliases legados */
+  --background: rgb(var(--color-bg));
+  --foreground: rgb(var(--color-fg));
 }
 
 body {
@@ -23,47 +71,61 @@ body {
   user-select: none;
 }
 
-/* Glassmorphism custom utilities */
+:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Superfícies translúcidas legadas: mesmos tokens do primitivo <Panel> */
 .glass-panel {
-  background: rgba(11, 17, 32, 0.78);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+  background: rgb(var(--color-surface) / 0.86);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgb(var(--color-line) / var(--line-alpha));
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.45);
 }
 
 .glass-panel-subtle {
-  background: rgba(15, 23, 42, 0.55);
+  background: rgb(var(--color-surface) / 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgb(var(--color-line) / var(--line-alpha));
 }
 
 .glass-button {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgb(var(--color-surface-raised));
+  border: 1px solid rgb(var(--color-line) / var(--line-strong-alpha));
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
 }
 
 .glass-button:hover {
-  background: rgba(6, 182, 212, 0.2);
-  border-color: rgba(6, 182, 212, 0.6);
-  box-shadow: 0 0 16px rgba(6, 182, 212, 0.35);
+  background: rgb(var(--color-surface-hover));
 }
 
-/* Custom Scrollbar */
+/* Barra de rolagem */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(56, 189, 248, 0.3);
+  background: rgb(var(--color-line) / var(--line-strong-alpha));
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.6);
+  background: rgb(var(--color-fg-muted) / 0.6);
 }

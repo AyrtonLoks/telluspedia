@@ -4,6 +4,7 @@ import React from "react";
 import { X, MapPin, Globe } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
 import { DataCompleteness } from "@/lib/country-data";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface CountryHeaderProps {
   nameCommon: string;
@@ -36,7 +37,7 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
   const locationLabel = region || continent;
 
   return (
-    <div className="relative pb-4 border-b border-slate-700/60">
+    <div className="relative border-b border-line pb-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           {flagSvgUrl && !flagError ? (
@@ -44,11 +45,11 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
               src={flagSvgUrl}
               alt={`Bandeira de ${nameCommon}`}
               onError={() => setFlagError(true)}
-              className="w-10 h-7 object-cover rounded shadow-md border border-slate-700/50 shrink-0"
+              className="h-7 w-10 shrink-0 rounded-sm border border-line object-cover"
             />
           ) : (
             <div
-              className="w-10 h-7 rounded bg-gradient-to-br from-cyan-950 via-slate-900 to-cyan-950 border border-cyan-800/60 flex items-center justify-center font-mono font-bold text-xs text-cyan-300 shadow-md shrink-0"
+              className="flex h-7 w-10 shrink-0 items-center justify-center rounded-sm border border-line-strong bg-surface-raised font-mono text-caption font-medium text-fg-secondary"
               title={`Código ISO: ${isoCode}`}
             >
               {isoCode}
@@ -56,16 +57,16 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold tracking-tight text-slate-100 truncate">{nameCommon}</h2>
-              <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/50 shrink-0">
+              <h2 className="truncate text-display font-semibold text-fg">{nameCommon}</h2>
+              <span className="shrink-0 rounded-sm border border-line-strong px-1.5 py-0.5 font-mono text-caption text-fg-secondary">
                 {isoCode}
               </span>
             </div>
             {nameOfficial ? (
-              <p className="text-xs text-slate-400 line-clamp-1">{nameOfficial}</p>
+              <p className="line-clamp-1 text-caption text-fg-secondary">{nameOfficial}</p>
             ) : (
               completeness === "none" && (
-                <p className="text-[11px] text-amber-300/80">
+                <p className="text-caption text-warning">
                   Dados socioeconômicos indisponíveis
                 </p>
               )
@@ -73,32 +74,24 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={resetView}
-          className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/70 transition-colors shrink-0"
-          title="Fechar painel"
-          aria-label="Fechar painel"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <IconButton label="Fechar painel" icon={<X />} size="sm" onClick={resetView} />
       </div>
 
-      <div className="mt-3 flex items-center gap-4 text-xs text-slate-300 flex-wrap">
+      <div className="mt-3 flex flex-wrap items-center gap-4 text-label text-fg-secondary">
         <div className="flex items-center gap-1">
-          <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <MapPin aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
           <span>
             Capital:{" "}
             {capital ? (
-              <strong className="text-slate-100">{capital}</strong>
+              <strong className="font-medium text-fg">{capital}</strong>
             ) : (
-              <span className="text-slate-500">Dado indisponível</span>
+              <span className="text-fg-muted">Dado indisponível</span>
             )}
           </span>
         </div>
         {locationLabel && (
           <div className="flex items-center gap-1">
-            <Globe className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <Globe aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span>{locationLabel}</span>
           </div>
         )}
