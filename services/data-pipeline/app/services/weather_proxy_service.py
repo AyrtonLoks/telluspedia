@@ -1,8 +1,12 @@
 import json
+import logging
 import httpx
 from app.core.config import settings
-from app.core.redis_client import get_redis
+from app.core.redis_client import get_redis, mark_redis_unavailable
 from app.domain.models.weather import WeatherResponse, CurrentWeather
+
+logger = logging.getLogger(__name__)
+
 
 class WeatherProxyService:
     @staticmethod
@@ -18,8 +22,10 @@ class WeatherProxyService:
                     data = json.loads(cached_data)
                     data["cached"] = True
                     return WeatherResponse(**data)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("Redis read failed; entering reconnect backoff: %s", exc)
+                mark_redis_unavailable()
+                redis = None
 
         params = {
             "latitude": lat,
@@ -59,7 +65,8 @@ class WeatherProxyService:
                     settings.WEATHER_CACHE_TTL_SECONDS,
                     weather_resp.model_dump_json(),
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("Redis write failed; entering reconnect backoff: %s", exc)
+                mark_redis_unavailable()
 
         return weather_resp

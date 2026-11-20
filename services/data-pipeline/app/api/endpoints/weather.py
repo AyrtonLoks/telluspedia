@@ -1,8 +1,11 @@
+import logging
 from fastapi import APIRouter, Query, HTTPException
 from app.services.weather_proxy_service import WeatherProxyService
 from app.domain.models.weather import WeatherResponse
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
+
 
 @router.get("", response_model=WeatherResponse)
 async def get_weather(
@@ -14,4 +17,10 @@ async def get_weather(
     try:
         return await WeatherProxyService.get_current_weather(lat, lng)
     except Exception as exc:
+        logger.error(
+            "Upstream weather fetch failed for lat=%s lng=%s",
+            lat,
+            lng,
+            exc_info=exc,
+        )
         raise HTTPException(status_code=502, detail="Weather fetch failed") from exc
