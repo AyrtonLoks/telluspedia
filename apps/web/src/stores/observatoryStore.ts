@@ -97,6 +97,8 @@ interface ObservatoryState {
   satellites: SatelliteTle[];
   /** Categorias de satélites visíveis no globo (a ISS aparece sempre que a camada está ligada). */
   satelliteCategories: SatelliteCategory[];
+  /** Rastro da ISS projetado na superfície (desligado por padrão — se lia como segunda trajetória). */
+  showIssGroundTrack: boolean;
   aircraftFleet: AircraftState[];
   maritimeRoutes: MaritimeRoute[];
 
@@ -121,6 +123,7 @@ interface ObservatoryState {
   /** Recalcula a telemetria da ISS por SGP4 no instante dado (HUD, painel e modelo usam este valor). */
   refreshIssTelemetry: (now?: number) => void;
   toggleSatelliteCategory: (category: SatelliteCategory) => void;
+  toggleIssGroundTrack: () => void;
   resetObservatory: () => void;
 }
 
@@ -145,6 +148,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   issTelemetry: calculateIssPosition(),
   satellites: [],
   satelliteCategories: ["station", "visual"],
+  showIssGroundTrack: false,
   aircraftFleet: FALLBACK_AIRCRAFT_FLEET,
   maritimeRoutes: FALLBACK_MARITIME_ROUTES,
 
@@ -224,6 +228,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     const telemetry = rec ? buildIssTelemetry(rec, now, iss!.epoch) : null;
     set({ issTelemetry: telemetry ?? calculateIssPosition(now) });
   },
+
+  toggleIssGroundTrack: () => set((s) => ({ showIssGroundTrack: !s.showIssGroundTrack })),
 
   toggleSatelliteCategory: (category) =>
     set((s) => ({

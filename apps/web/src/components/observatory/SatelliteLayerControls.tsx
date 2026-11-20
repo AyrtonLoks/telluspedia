@@ -18,6 +18,9 @@ export const SatelliteLayerControls: React.FC = () => {
   const satellites = isServer ? useObservatoryStore.getState().satellites : storeSatellites;
   const categories = isServer ? useObservatoryStore.getState().satelliteCategories : storeCategories;
   const toggle = useObservatoryStore((s) => s.toggleSatelliteCategory);
+  const storeGroundTrack = useObservatoryStore((s) => s.showIssGroundTrack);
+  const showGroundTrack = isServer ? useObservatoryStore.getState().showIssGroundTrack : storeGroundTrack;
+  const toggleGroundTrack = useObservatoryStore((s) => s.toggleIssGroundTrack);
 
   const count = (c: SatelliteCategory) => satellites.filter((s) => s.category === c && s.noradId !== ISS_NORAD_ID).length;
 
@@ -30,11 +33,14 @@ export const SatelliteLayerControls: React.FC = () => {
             <span className="font-mono tabular-nums text-fg-muted">{count(c)}</span>
           </Chip>
         ))}
+        <Chip tone="neutral" pressed={showGroundTrack} onClick={toggleGroundTrack}>
+          Rastro na superfície
+        </Chip>
       </div>
       <p className="text-caption text-fg-muted">
         Posições calculadas por SGP4 a partir dos TLEs do CelesTrak, com altitude em escala real. O anel é a
-        órbita da ISS (mais forte no trecho recém-percorrido); a linha na superfície é o rastro dos últimos e
-        próximos 45 minutos.
+        órbita da ISS, mais forte no trecho recém-percorrido. Passe o mouse sobre um ponto para ver o nome;
+        clique para ver os dados. O rastro na superfície mostra por onde a ISS passou e vai passar (±45 min).
       </p>
     </div>
   );

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import type { SatRec } from "satellite.js";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import {
@@ -32,7 +33,11 @@ const ORBIT_REFRESH_MS = 30_000;
 const RING_SAMPLES = 180;
 const TRACK_RADIUS = 1.002;
 const ISS_ICON_PX = 30;
-const SAT_DOT_PX = 5;
+/** Diâmetro dos pontos (px): estações maiores que os demais satélites. */
+const SAT_DOT_PX = { station: 9, visual: 7 } as const;
+const MARKER_RING_PX = 24;
+const SAT_PICK_PX = 12;
+const ISS_PICK_PX = 20;
 
 /** latLngToVector3 sem alocar (mesma parametrização da SphereGeometry — invariante do AGENTS.md). */
 export function setFromLatLng(out: THREE.Vector3, lat: number, lng: number, radius: number): THREE.Vector3 {
@@ -47,12 +52,13 @@ export function setFromLatLng(out: THREE.Vector3, lat: number, lng: number, radi
 
 const MARKER_VERTEX = /* glsl */ `
   attribute vec3 aColor;
+  attribute float aPx;
   uniform float uPx;
   varying vec3 vColor;
   void main() {
     vColor = aColor;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = uPx;
+    gl_PointSize = aPx > 0.0 ? aPx : uPx;
   }
 `;
 
@@ -73,13 +79,27 @@ const ISS_FRAGMENT = /* glsl */ `
   }
 `;
 
+/** Ponto de satélite: disco na cor da categoria com contorno escuro (legível sobre o globo e as estrelas). */
 const DOT_FRAGMENT = /* glsl */ `
   uniform float uOpacity;
   varying vec3 vColor;
   void main() {
     float r = length(gl_PointCoord - 0.5) * 2.0;
     if (r > 1.0) discard;
-    gl_FragColor = vec4(vColor, (1.0 - smoothstep(0.7, 1.0, r)) * uOpacity);
+    vec3 color = mix(vColor, vec3(0.03, 0.04, 0.07), smoothstep(0.6, 0.72, r));
+    gl_FragColor = vec4(color, (1.0 - smoothstep(0.9, 1.0, r)) * uOpacity);
+  }
+`;
+
+/** Anel de hover/seleção. */
+const RING_FRAGMENT = /* glsl */ `
+  uniform float uOpacity;
+  varying vec3 vColor;
+  void main() {
+    float r = length(gl_PointCoord - 0.5) * 2.0;
+    float ring = smoothstep(0.62, 0.72, r) * (1.0 - smoothstep(0.86, 0.96, r));
+    if (ring < 0.02) discard;
+    gl_FragColor = vec4(vColor, ring * uOpacity);
   }
 `;
 
@@ -123,7 +143,13 @@ export const IssOrbitLayer: React.FC = () => {
   const opacity = useObservatoryStore((s) => s.layerOpacity.ISS_SATELLITES ?? 1.0);
   const setSelectedEntity = useObservatoryStore((s) => s.setSelectedEntity);
   const refreshIssTelemetry = useObservatoryStore((s) => s.refreshIssTelemetry);
-  const { camera, size } = useThree();
+  const showGroundTrack = useObservatoryStore((s) => s.showIssGroundTrack);
+  const selectedEntity = useObservatoryStore((s) => s.selectedEntity);
+  const { camera, size, gl } = useThree();
+
+  // Hover: índice do satélite sob o cursor (-1 = ISS; null = nenhum) e posição da etiqueta.
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [labelPos, setLabelPos] = useState<[number, number, number] | null>(null);
 
   // TLE da ISS: o do CelesTrak quando carregado; senão o de referência (fallback rotulado pela T05).
   const issRec = useMemo<SatRec | null>(() => {
@@ -143,6 +169,7 @@ export const IssOrbitLayer: React.FC = () => {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(3), 3));
     g.setAttribute("aColor", new THREE.BufferAttribute(new Float32Array([1, 1, 1]), 3));
+    g.setAttribute("aPx", new THREE.BufferAttribute(new Float32Array([0]), 1));
     return g;
   }, []);
 
@@ -165,13 +192,31 @@ export const IssOrbitLayer: React.FC = () => {
     const n = others.length;
     g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
     const colors = new Float32Array(n * 3);
-    others.forEach((s, i) => CATEGORY_COLOR[s.tle.category].toArray(colors, i * 3));
+    const px = new Float32Array(n);
+    others.forEach((s, i) => {
+      CATEGORY_COLOR[s.tle.category].toArray(colors, i * 3);
+      px[i] = SAT_DOT_PX[s.tle.category];
+    });
     g.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
+    g.setAttribute("aPx", new THREE.BufferAttribute(px, 1));
     return g;
   }, [others]);
 
+  // Anéis de destaque: [0] = hover, [1] = selecionado (posições atualizadas com os satélites).
+  const ringMarkerGeometry = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
+    g.setAttribute("aColor", new THREE.BufferAttribute(new Float32Array([0.3, 0.76, 0.88, 1, 1, 1]), 3));
+    g.setAttribute("aPx", new THREE.BufferAttribute(new Float32Array([MARKER_RING_PX, MARKER_RING_PX]), 1));
+    g.setDrawRange(0, 0);
+    return g;
+  }, []);
+  const ringMarkerMaterial = useMemo(() => markerMaterial(RING_FRAGMENT, MARKER_RING_PX), []);
+  useEffect(() => () => ringMarkerGeometry.dispose(), [ringMarkerGeometry]);
+  useEffect(() => () => ringMarkerMaterial.dispose(), [ringMarkerMaterial]);
+
   const issMaterial = useMemo(() => markerMaterial(ISS_FRAGMENT, ISS_ICON_PX), []);
-  const satMaterial = useMemo(() => markerMaterial(DOT_FRAGMENT, SAT_DOT_PX), []);
+  const satMaterial = useMemo(() => markerMaterial(DOT_FRAGMENT, SAT_DOT_PX.visual), []);
   const lineMaterial = useMemo(
     () =>
       new THREE.LineBasicMaterial({
@@ -252,6 +297,36 @@ export const IssOrbitLayer: React.FC = () => {
     });
     pos.needsUpdate = true;
     satGeometry.computeBoundingSphere();
+    updateRingMarkers();
+  };
+
+  const selectedIndex =
+    selectedEntity?.type === "SATELLITE" ? others.findIndex((o) => o.tle.noradId === selectedEntity.data.noradId) : -1;
+  const hoveredRef = useRef<number | null>(null);
+  hoveredRef.current = hovered;
+  const selectedRef = useRef(selectedIndex);
+  selectedRef.current = selectedIndex;
+
+  /** Posiciona os anéis de hover/seleção e a etiqueta sobre os pontos atuais. */
+  const updateRingMarkers = () => {
+    const pos = satGeometry.getAttribute("position") as THREE.BufferAttribute;
+    const rp = ringMarkerGeometry.getAttribute("position") as THREE.BufferAttribute;
+    const h = hoveredRef.current;
+    const sel = selectedRef.current;
+    let count = 0;
+    const put = (slot: number, x: number, y: number, z: number) => {
+      rp.setXYZ(slot, x, y, z);
+      count = Math.max(count, slot + 1);
+    };
+    // slot 0 (hover) — ISS usa a posição interpolada atual
+    if (h === -1) put(0, curPos.x, curPos.y, curPos.z);
+    else if (h !== null && h >= 0 && h < pos.count) put(0, pos.getX(h), pos.getY(h), pos.getZ(h));
+    else rp.setXYZ(0, 0, 0, 0);
+    if (sel >= 0 && sel < pos.count && sel !== h) put(1, pos.getX(sel), pos.getY(sel), pos.getZ(sel));
+    ringMarkerGeometry.setDrawRange(0, count);
+    rp.needsUpdate = true;
+    ringMarkerGeometry.computeBoundingSphere();
+    if (h !== null && h >= 0 && h < pos.count) setLabelPos([pos.getX(h), pos.getY(h), pos.getZ(h)]);
   };
 
   // Ao trocar de TLE/filtros, recalcula tudo imediatamente.
@@ -301,8 +376,24 @@ export const IssOrbitLayer: React.FC = () => {
     lineMaterial.opacity = layerOpacity;
   });
 
-  const issRaycast = useMemo(() => pixelRaycast(ISS_ICON_PX / 2 + 4, projScaleRef), []);
-  const satRaycast = useMemo(() => pixelRaycast(8, projScaleRef), []);
+  const issRaycast = useMemo(() => pixelRaycast(ISS_PICK_PX, projScaleRef), []);
+  const satRaycast = useMemo(() => pixelRaycast(SAT_PICK_PX, projScaleRef), []);
+
+  // Cursor de "mão" sobre ISS/satélite; restaura ao sair/desmontar.
+  useEffect(() => {
+    gl.domElement.style.cursor = hovered !== null ? "pointer" : "";
+    return () => {
+      gl.domElement.style.cursor = "";
+    };
+  }, [hovered, gl]);
+
+  // Hover/seleção mudaram → reposiciona anéis já (sem esperar o próximo segundo).
+  useEffect(() => {
+    updateRingMarkers();
+    if (hovered === null) setLabelPos(null);
+    else if (hovered === -1) setLabelPos([curPos.x, curPos.y, curPos.z]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hovered, selectedIndex]);
 
   const onIssClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
@@ -336,12 +427,38 @@ export const IssOrbitLayer: React.FC = () => {
 
   return (
     <group>
-      <primitive object={trackLine} raycast={() => null} />
+      {showGroundTrack && <primitive object={trackLine} raycast={() => null} />}
       <primitive object={ringLine} raycast={() => null} />
       {others.length > 0 && (
-        <points geometry={satGeometry} material={satMaterial} raycast={satRaycast} onClick={onSatClick} renderOrder={3} />
+        <points
+          geometry={satGeometry}
+          material={satMaterial}
+          raycast={satRaycast}
+          onClick={onSatClick}
+          onPointerMove={(e) => {
+            if (e.index !== undefined && e.index !== hovered) setHovered(e.index);
+          }}
+          onPointerOut={() => setHovered((h) => (h === -1 ? h : null))}
+          renderOrder={3}
+        />
       )}
-      <points geometry={issGeometry} material={issMaterial} raycast={issRaycast} onClick={onIssClick} renderOrder={4} />
+      <points
+        geometry={issGeometry}
+        material={issMaterial}
+        raycast={issRaycast}
+        onClick={onIssClick}
+        onPointerOver={() => setHovered(-1)}
+        onPointerOut={() => setHovered((h) => (h === -1 ? null : h))}
+        renderOrder={4}
+      />
+      <points geometry={ringMarkerGeometry} material={ringMarkerMaterial} raycast={() => null} renderOrder={5} />
+      {hovered !== null && labelPos && (
+        <Html position={labelPos} center style={{ pointerEvents: "none", transform: "translateY(-26px)" }} zIndexRange={[20, 0]}>
+          <span className="whitespace-nowrap rounded-control border border-line-strong bg-surface/86 px-2 py-1 text-caption font-medium text-fg shadow-e1 backdrop-blur-md">
+            {hovered === -1 ? "ISS (ZARYA) · Estação Espacial Internacional" : `${others[hovered]?.tle.name ?? ""} · ${others[hovered]?.tle.category === "station" ? "estação" : "satélite"}`}
+          </span>
+        </Html>
+      )}
     </group>
   );
 };

@@ -174,6 +174,17 @@ describe("D04: store e UI", () => {
     assert.deepEqual(useObservatoryStore.getState().satelliteCategories, ["station", "visual"]);
   });
 
+  test("rastro na superfície desligado por padrão e alternável pelo painel", () => {
+    useObservatoryStore.setState({ showIssGroundTrack: false });
+    let html = renderToStaticMarkup(<SatelliteLayerControls />);
+    assert.match(html, /aria-pressed="false"[^>]*>.*Rastro na superfície/);
+    useObservatoryStore.getState().toggleIssGroundTrack();
+    assert.equal(useObservatoryStore.getState().showIssGroundTrack, true);
+    html = renderToStaticMarkup(<SatelliteLayerControls />);
+    assert.match(html, /aria-pressed="true"[^>]*>.*Rastro na superfície/);
+    useObservatoryStore.setState({ showIssGroundTrack: false });
+  });
+
   test("card de outro satélite: nome, NORAD, altitude e época do TLE", () => {
     useObservatoryStore.getState().setSelectedEntity({
       type: "SATELLITE",
@@ -188,6 +199,15 @@ describe("D04: store e UI", () => {
 
 describe("D04: invariantes no código", () => {
   const read = (f: string) => fs.readFileSync(path.join(root, f), "utf-8");
+  test("camada: rastro condicionado ao toggle; pontos maiores com contorno; hover com nome e anel", () => {
+    const layer = read("src/components/globe/IssOrbitLayer.tsx");
+    assert.match(layer, /\{showGroundTrack && <primitive object=\{trackLine\}/);
+    assert.match(layer, /SAT_DOT_PX = \{ station: 9, visual: 7 \}/);
+    assert.match(layer, /SAT_PICK_PX = 12/);
+    assert.match(layer, /<Html position=\{labelPos\}/);
+    assert.match(layer, /gl\.domElement\.style\.cursor = hovered !== null \? "pointer" : ""/);
+  });
+
   test("camada da ISS sem o raio inventado 1.18 e sem o modelo antigo", () => {
     const layer = read("src/components/globe/IssOrbitLayer.tsx");
     assert.doesNotMatch(layer, /1\.18/);
