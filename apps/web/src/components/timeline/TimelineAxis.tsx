@@ -6,6 +6,8 @@ import { MilestonePin } from "./MilestonePin";
 import { GLOBAL_MILESTONES, PILOT_COUNTRIES, findMilestoneById, MilestoneItem } from "@/lib/country-data";
 import { useGlobeStore } from "@/stores/globeStore";
 import { cn } from "@/components/ui/cn";
+import { useEpochState } from "@/lib/epoch/useEpochState";
+import { GEOLOGICAL_MILESTONE_IDS } from "@/lib/epoch/constants";
 
 export const TimelineAxis: React.FC = () => {
   const storeStartYear = useTimelineStore((s) => s.startYear);
@@ -13,8 +15,6 @@ export const TimelineAxis: React.FC = () => {
   const storeActiveCategories = useTimelineStore((s) => s.activeCategories);
   const selectMilestone = useTimelineStore((s) => s.selectMilestone);
   const storeSelectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const storeTimelineMode = useTimelineStore((s) => s.timelineMode);
-  const storeGeologicalMa = useTimelineStore((s) => s.geologicalMa);
   const selectGeologicalMa = useTimelineStore((s) => s.selectGeologicalMa);
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
 
@@ -27,13 +27,12 @@ export const TimelineAxis: React.FC = () => {
   const selectedMilestoneId = isServer
     ? useTimelineStore.getState().selectedMilestoneId
     : storeSelectedMilestoneId;
-  const timelineMode = isServer ? useTimelineStore.getState().timelineMode : storeTimelineMode;
-  const geologicalMa = isServer ? useTimelineStore.getState().geologicalMa : storeGeologicalMa;
+  // Época ativa: fonte única (T12)
+  const epoch = useEpochState();
+  const geologicalMa = epoch.geologicalMa;
   const selectedIso = isServer ? useGlobeStore.getState().selectedIso : storeSelectedIso;
 
-  const isGeological =
-    timelineMode === "GEOLOGICAL" ||
-    (geologicalMa !== null && geologicalMa !== undefined && geologicalMa > 0);
+  const isGeological = epoch.mode === "GEOLOGICAL";
 
   const span = Math.max(1, endYear - startYear);
 
@@ -50,7 +49,7 @@ export const TimelineAxis: React.FC = () => {
 
   const geologicalMilestones = useMemo(() => [
     {
-      id: "pangea-250ma",
+      id: GEOLOGICAL_MILESTONE_IDS.PANGEA,
       title: "Pangeia (~250 Ma)",
       subtitle: "Permo-Triássico",
       summary: "Supercontinente unificado cercado pelo oceano Panthalassa e Mar de Tétis.",
@@ -59,7 +58,7 @@ export const TimelineAxis: React.FC = () => {
       emoji: "🌋",
     },
     {
-      id: "breakup-200ma",
+      id: GEOLOGICAL_MILESTONE_IDS.BREAKUP,
       title: "Fragmentação Inicial (~200 Ma)",
       subtitle: "Triássico-Jurássico",
       summary: "Rifteamento continental e abertura primordial do Atlântico Central.",
@@ -68,7 +67,7 @@ export const TimelineAxis: React.FC = () => {
       emoji: "🌊",
     },
     {
-      id: "gondwana-150ma",
+      id: GEOLOGICAL_MILESTONE_IDS.GONDWANA,
       title: "Gondwana & Laurásia (~150 Ma)",
       subtitle: "Jurássico Tardio",
       summary: "Separação dos blocos norte e sul; apogeu dos grandes dinossauros.",
@@ -77,7 +76,7 @@ export const TimelineAxis: React.FC = () => {
       emoji: "🦖",
     },
     {
-      id: "kpg-66ma",
+      id: GEOLOGICAL_MILESTONE_IDS.KPG,
       title: "Extinção Cretáceo K-Pg (~66 Ma)",
       subtitle: "Cretáceo Tardio",
       summary: "Impacto de asteroide em Chicxulub e extinção em massa dos dinossauros.",
@@ -86,7 +85,7 @@ export const TimelineAxis: React.FC = () => {
       emoji: "☄️",
     },
     {
-      id: "contemporary-0ma",
+      id: GEOLOGICAL_MILESTONE_IDS.CONTEMPORARY,
       title: "Geografia Atual (0 Ma)",
       subtitle: "Quaternário / Holoceno",
       summary: "Conformação moderna dos 177 países e civilização humana contemporânea.",

@@ -32,10 +32,9 @@ import { calculateSubsolarPoint, getSunDirectionVector } from "@/lib/astronomy";
 import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
 
 import { useTimelineStore } from "@/stores/timelineStore";
-import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
-import { isContemporaryEpoch } from "@/lib/observatory-data";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import { findMilestoneById } from "@/lib/country-data";
 
 export const GlobeCanvas: React.FC = () => {
@@ -43,45 +42,13 @@ export const GlobeCanvas: React.FC = () => {
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const timelineMode = useTimelineStore((s: any) => s.timelineMode);
-  const selectedGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
-  const selectedRouteId = useTimelineStore((s: any) => s.selectedRouteId);
-
-  const isStudyApolloActive = useStudyStore((s: any) => s.isApollo11Active);
-  const isStudyRouteActive = useStudyStore((s: any) => s.activeRouteId);
-  const isStudyGeologicalActive = useStudyStore(
-    (s: any) => s.geologicalMa !== undefined && s.geologicalMa !== null
-  );
-
-  const isGeologicalActive =
-    timelineMode === "GEOLOGICAL" ||
-    isStudyGeologicalActive ||
-    (selectedGeologicalMa !== null && selectedGeologicalMa !== undefined && selectedGeologicalMa > 0) ||
-    selectedMilestoneId === "pangea-250ma" ||
-    selectedMilestoneId === "gondwana-150ma" ||
-    selectedMilestoneId === "kpg-66ma";
-
-  const isMagellanActive =
-    !isGeologicalActive &&
-    (selectedRouteId === "magellan-1519" ||
-      isStudyRouteActive === "magellan-1519" ||
-      selectedMilestoneId === "magellan-1519" ||
-      selectedMilestoneId === "esp-1519" ||
-      selectedYear === 1519);
-
-  const isApolloActive =
-    !isGeologicalActive &&
-    !isMagellanActive &&
-    (isStudyApolloActive ||
-      selectedYear === 1969 ||
-      selectedMilestoneId === "usa-1969" ||
-      selectedMilestoneId === "glo-1969");
+  // Época ativa: fonte única (T12). Cenas só por seleção explícita, nunca pelo ano.
+  const epoch = useEpochState();
+  const isGeological = epoch.mode === "GEOLOGICAL";
+  const activeScene = epoch.activeScene;
+  const isContemporary = epoch.isContemporary;
 
   const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
-  const isContemporary = isContemporaryEpoch(
-    selectedYear,
-    isGeologicalActive ? (selectedGeologicalMa || 250) : null
-  );
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
 
@@ -195,13 +162,13 @@ export const GlobeCanvas: React.FC = () => {
           <CountryBorders />
 
           {/* Paleogeographic Tectonic Plates & Suture Zones (Pangea) */}
-          {isGeologicalActive && <PaleoPlatesLayer />}
+          {isGeological && <PaleoPlatesLayer />}
 
           {/* 3D Circumnavigation Trajectory & Animated Nau Victoria */}
-          {isMagellanActive && <HistoricalRouteTrajectory />}
+          {activeScene === "MAGELLAN" && <HistoricalRouteTrajectory />}
 
           {/* 3D Translunar Trajectory & Animated Apollo 11 Spacecraft */}
-          {isApolloActive && <Apollo11Trajectory />}
+          {activeScene === "APOLLO11" && <Apollo11Trajectory />}
 
           {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
           {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
@@ -223,7 +190,7 @@ export const GlobeCanvas: React.FC = () => {
       </button>
 
       {/* Floating Apollo 11 Space Flight Telemetry HUD Overlay */}
-      {isApolloActive && <Apollo11TelemetryOverlay />}
+      {activeScene === "APOLLO11" && <Apollo11TelemetryOverlay />}
 
       {/* Floating Planetary Observatory Telemetry HUD Overlay */}
       {isContemporary && <ObservatoryTelemetryHUD />}

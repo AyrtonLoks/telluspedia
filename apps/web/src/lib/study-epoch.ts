@@ -1,7 +1,9 @@
 import { isContemporaryEpoch } from "./observatory-data";
+import { MAGELLAN_ROUTE_ID } from "./epoch/constants";
 
 const ANACHRONISTIC_ERAS = new Set(["PRUSSIA_1870", "WW1_1914", "WW2_1939"]);
-export const MAGELLAN_STUDY_ROUTE = "magellan-1519";
+/** @deprecated use MAGELLAN_ROUTE_ID de lib/epoch/constants. */
+export const MAGELLAN_STUDY_ROUTE = MAGELLAN_ROUTE_ID;
 export const MAX_STUDY_GEOLOGICAL_MA = 4600;
 
 interface StudyEpochInput {

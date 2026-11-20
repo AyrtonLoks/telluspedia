@@ -14,7 +14,7 @@ import {
   Gauge,
   Milestone,
 } from "lucide-react";
-import { useTimelineStore } from "@/stores/timelineStore";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useApollo11Store } from "@/stores/apollo11Store";
 import { getMissionTelemetry, APOLLO11_PHASES } from "@/lib/apollo11";
@@ -26,19 +26,8 @@ export interface Apollo11TelemetryOverlayProps {
 export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> = ({
   forceActive = false,
 }) => {
-  const storeYear = useTimelineStore((s) => s.selectedYear);
-  const storeMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-
-  // In Node.js SSR / unit tests, useSyncExternalStore calls getServerSnapshot which returns initial state.
-  // We fall back to getState() during SSR to ensure server render matches current store state.
-  const selectedYear =
-    typeof window === "undefined"
-      ? (useTimelineStore.getState().selectedYear ?? storeYear)
-      : storeYear;
-  const selectedMilestoneId =
-    typeof window === "undefined"
-      ? (useTimelineStore.getState().selectedMilestoneId ?? storeMilestoneId)
-      : storeMilestoneId;
+  // Cena Apollo 11 só por seleção explícita (marco/estudo), nunca pelo ano (T12).
+  const isApolloScene = useEpochState().activeScene === "APOLLO11";
 
   const storeIsPlaying = useApollo11Store((s) => s.isPlaying);
   const isPlaying =
@@ -73,17 +62,13 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
 
   const flyTo = useGlobeStore((s) => s.flyTo);
 
-  const isApolloActive =
-    forceActive ||
-    selectedYear === 1969 ||
-    selectedMilestoneId === "usa-1969" ||
-    selectedMilestoneId === "glo-1969";
+  const isVisible = forceActive || isApolloScene;
 
   const telemetry = useMemo(() => {
     return getMissionTelemetry(progress);
   }, [progress]);
 
-  if (!isApolloActive) return null;
+  if (!isVisible) return null;
 
   const handleWideView = () => {
     flyTo(15, -20, 5.2);

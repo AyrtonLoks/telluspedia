@@ -9,18 +9,17 @@ import { latLngToVector3 } from "@/lib/geo-spatial";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useTimelineStore } from "@/stores/timelineStore";
-import { useStudyStore } from "@/stores/studyStore";
 import {
   NUMERIC_TO_ISO,
   NAME_TO_ISO,
   findMilestoneById,
 } from "@/lib/country-data";
 import {
-  resolveHistoricalEra,
-  resolveEffectiveHistoricalYear,
   resolveHistoricalEntity,
   HISTORICAL_ENTITIES,
+  HISTORICAL_ERAS,
 } from "@/lib/historical-entities";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import {
   loadHistoricalTopology,
   getHistoricalTopologySync,
@@ -33,47 +32,16 @@ export const CountryBorders: React.FC = () => {
   const comparatorIsos = useComparatorStore((s) => s.selectedIsos);
 
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const selectedYear = useTimelineStore((s) => s.selectedYear);
-  const startYear = useTimelineStore((s) => s.startYear);
-  const endYear = useTimelineStore((s) => s.endYear);
 
-  // Geological mode detection
-  const timelineMode = useTimelineStore((s: any) => s.timelineMode);
-  const selectedGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
-  const isStudyGeologicalActive = useStudyStore(
-    (s: any) => s.geologicalMa !== undefined && s.geologicalMa !== null
-  );
-
-  const isGeologicalActive =
-    timelineMode === "GEOLOGICAL" ||
-    isStudyGeologicalActive ||
-    (selectedGeologicalMa !== null && selectedGeologicalMa !== undefined && selectedGeologicalMa > 0) ||
-    selectedMilestoneId === "pangea-250ma" ||
-    selectedMilestoneId === "gondwana-150ma" ||
-    selectedMilestoneId === "kpg-66ma";
+  // Época ativa: fonte única (T12)
+  const epoch = useEpochState();
+  const isGeological = epoch.mode === "GEOLOGICAL";
+  const effectiveYear = epoch.effectiveYear;
+  const era = HISTORICAL_ERAS[epoch.historicalEraId];
 
   // Material refs for smooth cross-fading via useFrame
   const baseMaterialRef = useRef<THREE.LineBasicMaterial>(null);
   const historicalMaterialRef = useRef<THREE.LineBasicMaterial>(null);
-
-  // Determine active era
-  const milestoneYear = useMemo(() => {
-    if (!selectedMilestoneId) return null;
-    return findMilestoneById(selectedMilestoneId)?.year ?? null;
-  }, [selectedMilestoneId]);
-
-  const effectiveYear = useMemo(() => {
-    return resolveEffectiveHistoricalYear({
-      selectedYear,
-      milestoneYear,
-      startYear,
-      endYear,
-    });
-  }, [selectedYear, milestoneYear, startYear, endYear]);
-
-  const era = useMemo(() => {
-    return resolveHistoricalEra(effectiveYear);
-  }, [effectiveYear]);
 
   // Asynchronous state for historical topology with instant sync cache initialization
   const [historicalTopology, setHistoricalTopology] = useState<any>(() => {
@@ -168,7 +136,7 @@ export const CountryBorders: React.FC = () => {
 
   // Highlighted borders for selected / hovered / comparator entities and active milestone bloc
   const highlightGeometry = useMemo(() => {
-    if (isGeologicalActive) return null;
+    if (isGeological) return null;
     const isHistorical = era.id !== "CONTEMPORARY" && !!historicalTopology;
     const topology = isHistorical ? historicalTopology : (worldAtlas as any);
     if (!topology || !topology.objects?.countries?.geometries) return null;
@@ -258,7 +226,7 @@ export const CountryBorders: React.FC = () => {
     era.id,
     effectiveYear,
     historicalTopology,
-    isGeologicalActive,
+    isGeological,
   ]);
 
   // Clean up WebGL buffer geometries on update/unmount to prevent GPU memory leaks
@@ -283,8 +251,8 @@ export const CountryBorders: React.FC = () => {
   // Smooth cross-fade of border opacities via useFrame with THREE.MathUtils.lerp
   useFrame((_, delta) => {
     const isHistoricalActive = era.id !== "CONTEMPORARY";
-    const targetBaseOpacity = isHistoricalActive || isGeologicalActive ? 0.0 : 0.35;
-    const targetHistOpacity = isHistoricalActive && !isGeologicalActive ? 0.45 : 0.0;
+    const targetBaseOpacity = isHistoricalActive || isGeological ? 0.0 : 0.35;
+    const targetHistOpacity = isHistoricalActive && !isGeological ? 0.45 : 0.0;
     const lerpSpeed = Math.min(delta * 4, 1.0);
 
     if (baseMaterialRef.current) {

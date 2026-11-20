@@ -5,13 +5,13 @@ import { RotateCcw, Mountain } from "lucide-react";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 
 export interface PaleoEraBadgeProps {
   geologicalMa?: number | null;
 }
 
 export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
-  const storeGeologicalMa = useTimelineStore((s) => s.geologicalMa);
   const storeCurrentStudyId = useStudyStore((s) => s.currentStudyId);
 
   const currentStudyId =
@@ -19,12 +19,9 @@ export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
       ? useStudyStore.getState().currentStudyId
       : storeCurrentStudyId;
 
-  const geologicalMa =
-    props.geologicalMa !== undefined
-      ? props.geologicalMa
-      : typeof window === "undefined"
-      ? useTimelineStore.getState().geologicalMa
-      : storeGeologicalMa;
+  // Época ativa: fonte única (T12); o prop permite renderizar uma idade específica.
+  const epochMa = useEpochState().geologicalMa;
+  const geologicalMa = props.geologicalMa !== undefined ? props.geologicalMa : epochMa;
 
   if (geologicalMa === null || geologicalMa === undefined) {
     return null;

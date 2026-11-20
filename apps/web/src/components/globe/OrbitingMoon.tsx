@@ -3,7 +3,7 @@
 import React, { useRef, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useTimelineStore } from "@/stores/timelineStore";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { currentMoonWorldPos } from "@/lib/astronomy-planets";
@@ -13,12 +13,8 @@ export const OrbitingMoon: React.FC = () => {
   const orbitGroupRef = useRef<THREE.Group>(null);
   const { invalidate } = useThree();
 
-  const selectedYear = useTimelineStore((s) => s.selectedYear);
-  const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const isApolloActive =
-    selectedYear === 1969 ||
-    selectedMilestoneId === "usa-1969" ||
-    selectedMilestoneId === "glo-1969";
+  // Cena Apollo 11 só por seleção explícita (marco/estudo), nunca pelo ano (T12).
+  const isApolloScene = useEpochState().activeScene === "APOLLO11";
 
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const hoveredBodyId = useCosmicStore((s) => s.hoveredBodyId);
@@ -38,7 +34,7 @@ export const OrbitingMoon: React.FC = () => {
 
   useFrame((_, delta) => {
     if (orbitGroupRef.current) {
-      if (isApolloActive) {
+      if (isApolloScene) {
         // In 1969 Apollo 11 mode, smoothly settle Moon to historical trajectory docking position
         orbitGroupRef.current.rotation.y = THREE.MathUtils.damp(
           orbitGroupRef.current.rotation.y,

@@ -15,11 +15,11 @@ import {
   findMilestoneById,
 } from "@/lib/country-data";
 import {
-  resolveHistoricalEra,
-  resolveEffectiveHistoricalYear,
   resolveHistoricalEntity,
   HISTORICAL_ENTITIES,
+  HISTORICAL_ERAS,
 } from "@/lib/historical-entities";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import {
   loadHistoricalTopology,
   getHistoricalTopologySync,
@@ -27,7 +27,6 @@ import {
   getContemporarySpatialIndex,
 } from "@/lib/historical-topology";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
-import { useStudyStore } from "@/stores/studyStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 
 /**
@@ -132,59 +131,13 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   const setHoveredIso = useGlobeStore((s) => s.setHoveredIso);
   const flyTo = useGlobeStore((s) => s.flyTo);
 
-  // Listen to timeline selection for era resolution & astronomical synchronization (RN10)
-  const selectedYear = useTimelineStore((s) => s.selectedYear);
+  // Época ativa: fonte única (T12)
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const startYear = useTimelineStore((s) => s.startYear);
-  const endYear = useTimelineStore((s) => s.endYear);
-
-  // Geological mode and era detection
-  const timelineMode = useTimelineStore((s: any) => s.timelineMode);
-  const geologicalMa = useTimelineStore((s: any) => s.geologicalMa);
-  const selectedGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
-  const isStudyGeologicalActive = useStudyStore(
-    (s: any) => s.geologicalMa !== undefined && s.geologicalMa !== null
-  );
-
-  const effectiveGeologicalMa = useMemo(() => {
-    if (selectedGeologicalMa && selectedGeologicalMa > 0) return selectedGeologicalMa;
-    if (geologicalMa && geologicalMa > 0) return geologicalMa;
-    if (selectedMilestoneId === "pangea-250ma") return 250;
-    if (selectedMilestoneId === "gondwana-150ma") return 150;
-    if (selectedMilestoneId === "kpg-66ma") return 66;
-    if (timelineMode === "GEOLOGICAL") return 250;
-    return null;
-  }, [selectedGeologicalMa, geologicalMa, selectedMilestoneId, timelineMode]);
-
-  const isGeologicalActive = useMemo(() => {
-    return (
-      timelineMode === "GEOLOGICAL" ||
-      isStudyGeologicalActive ||
-      effectiveGeologicalMa !== null ||
-      selectedMilestoneId === "pangea-250ma" ||
-      selectedMilestoneId === "gondwana-150ma" ||
-      selectedMilestoneId === "kpg-66ma"
-    );
-  }, [timelineMode, isStudyGeologicalActive, effectiveGeologicalMa, selectedMilestoneId]);
-
-  // Determine active reference year using canonical multi-parameter resolver
-  const milestoneYear = useMemo(() => {
-    if (!selectedMilestoneId) return null;
-    return findMilestoneById(selectedMilestoneId)?.year ?? null;
-  }, [selectedMilestoneId]);
-
-  const effectiveYear = useMemo(() => {
-    return resolveEffectiveHistoricalYear({
-      selectedYear,
-      milestoneYear,
-      startYear,
-      endYear,
-    });
-  }, [selectedYear, milestoneYear, startYear, endYear]);
-
-  const era = useMemo(() => {
-    return resolveHistoricalEra(effectiveYear);
-  }, [effectiveYear]);
+  const epoch = useEpochState();
+  const isGeological = epoch.mode === "GEOLOGICAL";
+  const effectiveGeologicalMa = epoch.geologicalMa;
+  const effectiveYear = epoch.effectiveYear;
+  const era = HISTORICAL_ERAS[epoch.historicalEraId];
 
   // Load NASA planetary textures with immediate render invalidation on load
   const [dayTexture, nightTexture] = useMemo(() => {
@@ -342,7 +295,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   useFrame((_, delta) => {
     earthMaterial.uniforms.uTime.value += delta;
 
-    const targetPaleoFactor = isGeologicalActive ? 1.0 : 0.0;
+    const targetPaleoFactor = isGeological ? 1.0 : 0.0;
     const currentPaleoFactor = earthMaterial.uniforms.uPaleoFactor.value;
 
     if (Math.abs(currentPaleoFactor - targetPaleoFactor) > 0.001) {
@@ -416,7 +369,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
       setHoveredIso(null);
       return;
     }
-    if (isGeologicalActive) {
+    if (isGeological) {
       setHoveredIso(null);
       return;
     }
@@ -450,7 +403,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
       useCosmicStore.getState().focusBody(null);
     }
 
-    if (isGeologicalActive) {
+    if (isGeological) {
       setSelectedIso(null);
       setHoveredIso(null);
       return;

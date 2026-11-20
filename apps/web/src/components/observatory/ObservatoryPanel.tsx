@@ -15,9 +15,8 @@ import {
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
-import { useTimelineStore } from "@/stores/timelineStore";
-import { useStudyStore } from "@/stores/studyStore";
-import { ObservatoryLayerId, isContemporaryEpoch } from "@/lib/observatory-data";
+import { ObservatoryLayerId } from "@/lib/observatory-data";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Panel, PanelFooter, PanelHeader } from "@/components/ui/Panel";
@@ -100,30 +99,10 @@ export const ObservatoryPanel: React.FC = () => {
   const clientStoreState = useObservatoryStore();
   const storeState = typeof window === "undefined" ? useObservatoryStore.getState() : clientStoreState;
 
-  const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
-  const selectedYear =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().selectedYear
-      : storeSelectedYear;
-  const storeTimelineMode = useTimelineStore((s: any) => s.timelineMode);
-  const timelineMode =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().timelineMode
-      : storeTimelineMode;
-  const storeGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
-  const storeStudyMa = useStudyStore((s: any) => s.geologicalMa);
-  const selectedGeologicalMa =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().selectedGeologicalMa
-      : storeGeologicalMa;
-  const studyGeologicalMa =
-    typeof window === "undefined"
-      ? useStudyStore.getState().geologicalMa
-      : storeStudyMa;
-
-  const effectiveMa =
-    timelineMode === "GEOLOGICAL" ? (selectedGeologicalMa ?? studyGeologicalMa) : null;
-  const isContemporary = isContemporaryEpoch(selectedYear, effectiveMa);
+  // Época ativa: fonte única (T12)
+  const epoch = useEpochState();
+  const isContemporary = epoch.isContemporary;
+  const effectiveMa = epoch.geologicalMa;
 
   if (!isPanelOpen) return null;
 
@@ -160,7 +139,9 @@ export const ObservatoryPanel: React.FC = () => {
             <div className="text-caption text-fg-secondary">
               {effectiveMa
                 ? `A era geológica ativa (${effectiveMa} Ma atrás) precede a formação da atmosfera moderna e da civilização.`
-                : `O ano selecionado (${selectedYear}) precede a Era Espacial (1957).`}
+                : epoch.activeScene === "MAGELLAN"
+                ? "A expedição de Magalhães (1519–1522) precede a Era Espacial (1957)."
+                : `O ano selecionado (${epoch.effectiveYear}) precede a Era Espacial (1957).`}
               {" "}Satélites artificiais, queimadas orbitais e tráfego aéreo estão suprimidos nesta época.
             </div>
           </div>

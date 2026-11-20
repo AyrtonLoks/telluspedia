@@ -6,13 +6,13 @@ import { useStudyStore } from "@/stores/studyStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
-import { resolveHistoricalEra, resolveEffectiveHistoricalYear } from "@/lib/historical-entities";
+import { HISTORICAL_ERAS } from "@/lib/historical-entities";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import { findMilestoneById } from "@/lib/country-data";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { getHistoricalRoute } from "@/lib/historical-routes";
 import { useObservatoryStore } from "@/stores/observatoryStore";
-import { isContemporaryEpoch } from "@/lib/observatory-data";
 import { useCosmicStore } from "@/stores/cosmicStore";
 
 export const StudyShareModal: React.FC = () => {
@@ -59,14 +59,9 @@ export const StudyShareModal: React.FC = () => {
 
   const comparatorIsos = useComparatorStore((s) => s.selectedIsos);
 
-  const timelineMode = useTimelineStore((s) => s.timelineMode);
-  const storeGeologicalMa = useTimelineStore((s) => s.selectedGeologicalMa ?? s.geologicalMa);
-  const geologicalMa =
-    typeof window === "undefined"
-      ? (useTimelineStore.getState().timelineMode === "GEOLOGICAL"
-          ? (useTimelineStore.getState().selectedGeologicalMa ?? useTimelineStore.getState().geologicalMa)
-          : null)
-      : (timelineMode === "GEOLOGICAL" ? storeGeologicalMa : null);
+  // Época ativa: fonte única (T12)
+  const epoch = useEpochState();
+  const geologicalMa = epoch.geologicalMa;
 
   const storeHistRouteId = useHistoricalRouteStore((s) => s.activeRouteId);
   const storeTimeRouteId = useTimelineStore((s) => s.activeRouteId);
@@ -105,37 +100,16 @@ export const StudyShareModal: React.FC = () => {
 
   if (!isShareModalOpen) return null;
 
-  // Compute active historical era and Apollo 11 status using canonical resolver
-  let milestoneYear: number | null = null;
-  if (selectedMilestoneId) {
-    const milestone = findMilestoneById(selectedMilestoneId);
-    if (milestone?.year) {
-      milestoneYear = milestone.year;
-    }
-  }
-
-  const effectiveYear = resolveEffectiveHistoricalYear({
-    selectedYear,
-    milestoneYear,
-    startYear,
-    endYear,
-  });
-
-  const eraDef = resolveHistoricalEra(effectiveYear);
-  const isHistoricalEraActive = !geologicalMa && eraDef.id !== "CONTEMPORARY";
-  const isApollo11Active =
-    !geologicalMa &&
-    (selectedMilestoneId === "glo-1969" ||
-      selectedMilestoneId === "usa-1969" ||
-      effectiveYear === 1969);
+  // Era histórica, cena Apollo 11 e contemporaneidade vêm do seletor único (T12):
+  // a Apollo só conta quando o marco/estudo a ativou explicitamente, não pelo ano.
+  const eraDef = HISTORICAL_ERAS[epoch.historicalEraId];
+  const isHistoricalEraActive = epoch.mode !== "GEOLOGICAL" && eraDef.id !== "CONTEMPORARY";
+  const isApollo11Active = epoch.activeScene === "APOLLO11";
 
   const geologicalEraDef = geologicalMa ? resolveGeologicalEra(geologicalMa) : null;
   const historicalRouteDef = activeRouteId ? getHistoricalRoute(activeRouteId) : null;
 
-  const isContemporary =
-    !geologicalMa &&
-    isContemporaryEpoch(effectiveYear, null) &&
-    activeRouteId !== "magellan-1519";
+  const isContemporary = epoch.isContemporary;
 
   const effectiveObservatoryLayers = isContemporary ? activeObservatoryLayers : [];
 

@@ -1648,16 +1648,21 @@ describe("Apollo 11 3D Trajectory, Telemetry & Space Flight Dynamics (RN12.1)", 
     assert.equal(useApollo11Store.getState().isPlaying, true);
   });
 
-  test("Apollo11TelemetryOverlay renders when 1969 or Apollo milestones are active and unmounts cleanly when inactive", () => {
+  test("Apollo11TelemetryOverlay renders only when an Apollo milestone is explicitly active (never by year alone — T12)", () => {
     // Inactive state: Year 2024, no milestone
     useTimelineStore.getState().selectYear(2024);
     useTimelineStore.getState().selectMilestone(null);
     let html = renderToStaticMarkup(React.createElement(Apollo11TelemetryOverlay));
     assert.equal(html, "", "Overlay should return null when Apollo 11 is inactive");
 
-    // Active state via Year 1969
+    // T12: o ano 1969 sozinho (ex.: playback da timeline) NÃO ativa a cena
     useTimelineStore.getState().selectYear(1969);
     useTimelineStore.getState().selectMilestone(null);
+    html = renderToStaticMarkup(React.createElement(Apollo11TelemetryOverlay));
+    assert.equal(html, "", "Year 1969 alone must not activate the Apollo 11 scene");
+
+    // Active state via explicit milestone selection
+    useTimelineStore.getState().selectMilestone("glo-1969");
     html = renderToStaticMarkup(React.createElement(Apollo11TelemetryOverlay));
     assert.ok(html.includes("data-apollo-telemetry-overlay=\"true\""), "Should render HUD container");
     assert.ok(html.includes("APOLLO 11"), "Should display Apollo 11 badge");

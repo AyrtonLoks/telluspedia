@@ -22,6 +22,7 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { MAGELLAN_ROUTE } from "@/lib/historical-routes";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 
 export interface HistoricalRouteOverlayProps {
   forceActive?: boolean;
@@ -30,8 +31,7 @@ export interface HistoricalRouteOverlayProps {
 export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
   forceActive = false,
 }) => {
-  const storeTimelineRouteId = useTimelineStore((s) => s.activeRouteId);
-  const storeRouteId = useHistoricalRouteStore((s) => s.activeRouteId);
+  const epochScene = useEpochState().activeScene;
   const storeIsPlaying = useHistoricalRouteStore((s) => s.isPlaying);
   const storeProgress = useHistoricalRouteStore((s) => s.progress);
   const storeWaypointIndex = useHistoricalRouteStore((s) => s.currentWaypointIndex);
@@ -91,13 +91,8 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
     return () => cancelAnimationFrame(animId);
   }, [isPlaying, playbackSpeed]);
 
-  const activeRouteId =
-    typeof window === "undefined"
-      ? (useHistoricalRouteStore.getState().activeRouteId ||
-         useTimelineStore.getState().activeRouteId)
-      : (storeRouteId || storeTimelineRouteId);
-
-  const isVisible = forceActive || activeRouteId === "magellan-1519";
+  // Cena de Magalhães: fonte única (T12)
+  const isVisible = forceActive || epochScene === "MAGELLAN";
 
   const totalWaypoints = MAGELLAN_ROUTE.waypoints.length;
   const currentWaypoint = useMemo(() => {

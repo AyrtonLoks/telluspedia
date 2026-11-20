@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTimelineStore, TimelinePreset } from "@/stores/timelineStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { cn } from "@/components/ui/cn";
+import { MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
 
 /** Todos os recortes usam o mesmo estilo; selecionado = superfície elevada (segmento ativo). */
 function presetClasses(isSelected: boolean) {
@@ -120,14 +121,14 @@ export const PresetSelector: React.FC = () => {
       id: "MAGELLAN_1519" as TimelinePreset,
       label: "⛵ Circum-navegação de Magalhães (1519–1522)",
       shortLabel: "⛵ Magalhães",
-      routeId: "magellan-1519",
+      routeId: MAGELLAN_ROUTE_ID,
     },
   ];
 
   const handleSelectPreset = (presetId: TimelinePreset) => {
     setPreset(presetId);
     if (presetId === "MAGELLAN_1519") {
-      useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
+      useHistoricalRouteStore.getState().setActiveRouteId(MAGELLAN_ROUTE_ID);
     } else {
       useHistoricalRouteStore.getState().setActiveRouteId(null);
     }

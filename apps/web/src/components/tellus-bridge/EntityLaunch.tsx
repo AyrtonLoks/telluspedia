@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
 import { usePathname, useSearchParams } from "next/navigation";
 import { resolveLaunch, studyUrl } from "@/lib/tellus-bridge/catalog";
 import { findMilestoneById, getCountryData } from "@/lib/country-data";
@@ -62,7 +63,7 @@ export function EntityLaunch() {
       timeline.setYearRange(event.year - 15, event.year + 15);
       timeline.selectYear(event.year);
       timeline.selectMilestone(event.id);
-      useHistoricalRouteStore.getState().setActiveRouteId(key === "magellan-1519" ? key : null);
+      useHistoricalRouteStore.getState().setActiveRouteId(key === MAGELLAN_ROUTE_ID ? key : null);
       if (event.latitude !== undefined && event.longitude !== undefined) {
         globe.flyTo(event.latitude, event.longitude, event.preferredAltitude ?? 1.8);
       }

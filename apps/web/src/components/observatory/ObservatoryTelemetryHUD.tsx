@@ -4,9 +4,8 @@ import React, { useState, useEffect } from "react";
 import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
-import { useTimelineStore } from "@/stores/timelineStore";
-import { useStudyStore } from "@/stores/studyStore";
-import { calculateIssPosition, isContemporaryEpoch, IssTelemetryData } from "@/lib/observatory-data";
+import { calculateIssPosition, IssTelemetryData } from "@/lib/observatory-data";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
@@ -41,26 +40,8 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
   const setSelectedEntity = useObservatoryStore((s) => s.setSelectedEntity);
   const flyTo = useGlobeStore((s) => s.flyTo);
 
-  const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
-  const selectedYear =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().selectedYear
-      : storeSelectedYear;
-
-  const storeGeologicalMa = useTimelineStore((s: any) => s.selectedGeologicalMa);
-  const selectedGeologicalMa =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().selectedGeologicalMa
-      : storeGeologicalMa;
-
-  const storeStudyMa = useStudyStore((s: any) => s.geologicalMa);
-  const studyGeologicalMa =
-    typeof window === "undefined"
-      ? useStudyStore.getState().geologicalMa
-      : storeStudyMa;
-
-  const effectiveMa = selectedGeologicalMa ?? studyGeologicalMa;
-  const isContemporary = isContemporaryEpoch(selectedYear, effectiveMa);
+  // Época ativa: fonte única (T12)
+  const isContemporary = useEpochState().isContemporary;
 
   // Telemetria dinâmica ao vivo da ISS a cada 1 segundo enquanto o HUD estiver aberto
   const [liveIss, setLiveIss] = useState<IssTelemetryData | null>(null);

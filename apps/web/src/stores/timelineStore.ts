@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
 
 export type MilestoneCategoryType =
   | "POLITICS_REGIMES"
@@ -268,10 +269,10 @@ export const useTimelineStore = create<TimelineState>((set) => ({
           endYear: 1522,
           selectedYear: 1519,
           selectedMilestoneId: null,
-          activeRouteId: "magellan-1519",
-          selectedRouteId: "magellan-1519",
+          activeRouteId: MAGELLAN_ROUTE_ID,
+          selectedRouteId: MAGELLAN_ROUTE_ID,
         });
-        syncRoute("magellan-1519");
+        syncRoute(MAGELLAN_ROUTE_ID);
         break;
     }
   },

@@ -5,23 +5,10 @@ import { RotateCcw } from "lucide-react";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useStudyStore } from "@/stores/studyStore";
-import {
-  resolveHistoricalEra,
-  resolveEffectiveHistoricalYear,
-  HISTORICAL_ENTITIES,
-} from "@/lib/historical-entities";
-import { findMilestoneById } from "@/lib/country-data";
+import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "@/lib/historical-entities";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 
-export interface HistoricalEraBadgeProps {
-  selectedYear?: number | null;
-  selectedMilestoneId?: string | null;
-}
-
-export const HistoricalEraBadge: React.FC<HistoricalEraBadgeProps> = (props) => {
-  const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
-  const storeMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const storeStartYear = useTimelineStore((s) => s.startYear);
-  const storeEndYear = useTimelineStore((s) => s.endYear);
+export const HistoricalEraBadge: React.FC = () => {
   const storeCurrentStudyId = useStudyStore((s) => s.currentStudyId);
 
   const currentStudyId =
@@ -29,68 +16,19 @@ export const HistoricalEraBadge: React.FC<HistoricalEraBadgeProps> = (props) => 
       ? useStudyStore.getState().currentStudyId
       : storeCurrentStudyId;
 
-  const selectedYear =
-    props.selectedYear !== undefined
-      ? props.selectedYear
-      : typeof window === "undefined"
-      ? useTimelineStore.getState().selectedYear
-      : storeSelectedYear;
-
-  const selectedMilestoneId =
-    props.selectedMilestoneId !== undefined
-      ? props.selectedMilestoneId
-      : typeof window === "undefined"
-      ? useTimelineStore.getState().selectedMilestoneId
-      : storeMilestoneId;
-
-  const startYear =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().startYear
-      : storeStartYear;
-
-  const endYear =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().endYear
-      : storeEndYear;
+  // Época ativa: fonte única (T12)
+  const epoch = useEpochState();
 
   const selectYear = useTimelineStore((s) => s.selectYear);
   const selectMilestone = useTimelineStore((s) => s.selectMilestone);
   const setYearRange = useTimelineStore((s) => s.setYearRange);
 
-  // Determine active reference year using canonical multi-parameter resolver
-  let milestoneYear: number | null = null;
-  if (selectedMilestoneId) {
-    const milestone = findMilestoneById(selectedMilestoneId);
-    if (milestone?.year) {
-      milestoneYear = milestone.year;
-    }
-  }
-
-  const storeGeologicalMa = useTimelineStore((s) => s.geologicalMa);
-  const storeTimelineMode = useTimelineStore((s) => s.timelineMode);
-
-  const geologicalMa =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().geologicalMa
-      : storeGeologicalMa;
-  const timelineMode =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().timelineMode
-      : storeTimelineMode;
-
   // Deep-time geological eras take precedence and have their own PaleoEraBadge
-  if (geologicalMa !== null || timelineMode === "GEOLOGICAL") {
+  if (epoch.mode === "GEOLOGICAL") {
     return null;
   }
 
-  const effectiveYear = resolveEffectiveHistoricalYear({
-    selectedYear,
-    milestoneYear,
-    startYear,
-    endYear,
-  });
-
-  const era = resolveHistoricalEra(effectiveYear);
+  const era = HISTORICAL_ERAS[epoch.historicalEraId];
 
   if (era.id === "CONTEMPORARY") {
     return null;

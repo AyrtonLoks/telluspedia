@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useMemo, useEffect, useState } from "react";
+import { MAGELLAN_DEPARTURE_MILESTONE_ID } from "@/lib/epoch/constants";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { MAGELLAN_ROUTE, HistoricalRouteWaypoint } from "@/lib/historical-routes";
@@ -330,7 +331,7 @@ export const HistoricalRouteTrajectory: React.FC = () => {
         const isHovered = hoveredWpIndex === index;
         const isSelectedMilestone =
           selectedMilestoneId === `magellan-${index}` ||
-          (index === 0 && selectedMilestoneId === "esp-1519") ||
+          (index === 0 && selectedMilestoneId === MAGELLAN_DEPARTURE_MILESTONE_ID) ||
           (index === 6 && selectedMilestoneId === "magellan-strait");
 
         const isKeyMilestone =

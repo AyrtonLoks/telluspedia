@@ -11,6 +11,7 @@ import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { MAGELLAN_STUDY_ROUTE } from "@/lib/study-epoch";
+import { APOLLO11_GLOBAL_MILESTONE_ID } from "@/lib/epoch/constants";
 
 function StudyContent({
   params,
@@ -86,7 +87,7 @@ function StudyContent({
               }
             }
             if (data.isApollo11Active) {
-              selectMilestone("glo-1969");
+              selectMilestone(APOLLO11_GLOBAL_MILESTONE_ID);
               selectYear(1969);
             } else {
               selectMilestone(null);

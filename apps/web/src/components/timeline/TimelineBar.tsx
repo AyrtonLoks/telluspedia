@@ -10,6 +10,7 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { PresetSelector } from "./PresetSelector";
 import { CategoryFilterPills } from "./CategoryFilterPills";
 import { TimelineAxis } from "./TimelineAxis";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
 
@@ -22,8 +23,6 @@ export const TimelineBar: React.FC = () => {
   const storeEndYear = useTimelineStore((s) => s.endYear);
   const selectYear = useTimelineStore((s) => s.selectYear);
   const setYearRange = useTimelineStore((s) => s.setYearRange);
-  const storeTimelineMode = useTimelineStore((s) => s.timelineMode);
-  const storeGeologicalMa = useTimelineStore((s) => s.geologicalMa);
 
   const storeIsReaderOpen = useGlobeStore((s) => s.isReaderOpen);
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
@@ -42,8 +41,6 @@ export const TimelineBar: React.FC = () => {
   const isExpanded = isServer ? useTimelineStore.getState().isExpanded : storeIsExpanded;
   const startYear = isServer ? useTimelineStore.getState().startYear : storeStartYear;
   const endYear = isServer ? useTimelineStore.getState().endYear : storeEndYear;
-  const timelineMode = isServer ? useTimelineStore.getState().timelineMode : storeTimelineMode;
-  const geologicalMa = isServer ? useTimelineStore.getState().geologicalMa : storeGeologicalMa;
   const isReaderOpen = isServer ? useGlobeStore.getState().isReaderOpen : storeIsReaderOpen;
   const selectedIso = isServer ? useGlobeStore.getState().selectedIso : storeSelectedIso;
   const isObservatoryPanelOpen = isServer
@@ -57,9 +54,8 @@ export const TimelineBar: React.FC = () => {
   const isPlaying = isServer ? useCosmicStore.getState().isPlaying : storeIsPlaying;
   const playbackSpeed = isServer ? useCosmicStore.getState().playbackSpeed : storePlaybackSpeed;
 
-  const isGeological =
-    timelineMode === "GEOLOGICAL" ||
-    (geologicalMa !== null && geologicalMa !== undefined && geologicalMa > 0);
+  // Época ativa: fonte única (T12)
+  const isGeological = useEpochState().mode === "GEOLOGICAL";
 
   const isCosmicDrawerOpen =
     (isCosmicMode || focusedBodyId === "MOON") &&
