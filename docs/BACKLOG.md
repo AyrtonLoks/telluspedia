@@ -36,14 +36,14 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12 |
-| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T17 |
+| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T17, T26 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17 |
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11 |
-| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25 |
+| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23 |
-| `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10 |
-| `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T11, T18, T19, T25 |
+| `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10, T26 |
+| `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T11, T18, T19, T25, T27 |
 
 Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está listado nela: **pare**, adicione o grupo à tarefa no Quadro (commit + push, como na reivindicação) e reavalie se ela ainda pode seguir.
 
@@ -156,7 +156,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | DONE | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | DONE | antigravity | — | G-TIMELINE |
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | DONE | codex | — | G-GLOBO |
-| T03 | Remover dados e citações inventados | Dados | P0 | G | IN_PROGRESS | — | — | G-PAIS |
+| T03 | Remover dados e citações inventados | Dados | P0 | G | REVIEW | antigravity | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | REVIEW | claude | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | REVIEW | codex | — | G-PIPELINE |
@@ -178,6 +178,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
 | T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
+| T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | TODO | — | T03 | G-PAIS, G-PIPELINE |
+| T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | TODO | — | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | TODO | — | D01 | G-GLOBO |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | TODO | — | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | — | — | G-OBS |
@@ -294,7 +296,7 @@ Também: rótulos dos anos do eixo ficam sob os pins (ex.: "1990").
 
 ### T03 · Remover dados e citações inventados (RN02)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t03-remover-dados-inventados · **Worktree:** ../telluspedia-wt/antigravity-t03
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t03-remover-dados-inventados · **Worktree:** ../telluspedia-wt/antigravity-t03
 - **Prioridade:** P0 · **Área:** Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-PAIS
 
 **Contexto / problema**
@@ -316,17 +318,18 @@ Só ~30 países têm dados reais em `apps/web/src/lib/country-data.ts` (`PILOT_C
 6. Abrir tarefa de follow-up para ingestão de indicadores do Banco Mundial (se ainda não existir).
 
 **Critérios de aceite**
-- [ ] `grep -n "10000000\|15000000\|30000000\|Capital Central\|Nação Soberana\|Chefe de Estado\|Moeda Local" apps/web/src` não retorna valores de fallback.
-- [ ] Clicar num país sem dados mostra nome real e estado "dados indisponíveis", nunca números inventados.
-- [ ] `GET /api/countries/XYZ` (inexistente) → 404.
-- [ ] Reader não exibe citações fictícias.
-- [ ] Testes atualizados e novos testes para o caso "sem dados".
+- [x] `grep -n "10000000\|15000000\|30000000\|Capital Central\|Nação Soberana\|Chefe de Estado\|Moeda Local" apps/web/src` não retorna valores de fallback.
+- [x] Clicar num país sem dados mostra nome real e estado "dados indisponíveis", nunca números inventados.
+- [x] `GET /api/countries/XYZ` (inexistente) → 404.
+- [x] Reader não exibe citações fictícias.
+- [x] Testes atualizados e novos testes para o caso "sem dados".
 
 **Como verificar**: testes unitários; manualmente clicar em COD, PER, KAZ e num país piloto (BRA).
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (92eec3b).
+- 2026-11-20 · antigravity · REVIEW · Implementado (commit 09b3048): (1) criado dataset real versionado `apps/web/public/data/countries-ne-110m.json` (gerado por `apps/web/scripts/generate-world-countries-dataset.mjs`) com 177 territórios do Natural Earth 1:110m (`world-atlas@2.0.2`), centroides reais via `d3-geo` (`geoCentroid`), nomes em português via Unicode CLDR (`Intl.DisplayNames pt-BR`), códigos ISO 3166-1 e bandeiras FlagCDN, com metadados RN02 (`source`, `sourceUrl`, `referenceDate`, `license`); (2) `country-data.ts`: criada interface `CountryData` com campos anuláveis + `completeness: "full" | "partial" | "none"` e `getCountryData(iso, year?): CountryData | null`, removendo todos os valores/textos inventados (incluindo fallbacks de população 10M/15M/30M, área 250k/350k, `"Capital Central"`, `"Nação Soberana"`, `"Chefe de Estado"`, `"Moeda Local"`, `"USD"` e coordenadas `(0,0)`); (3) atualizados todos os consumidores (`InspectorHUD`, `CountryHeader`, `CountryMetricsGrid`, `LocalClockWidget`, `LiveWeatherWidget`, `CountryMiniTimeline`, `ReaderContent`, `ReaderMode`, `HoverCardPreview`, `ComparisonGrid`, `EntityLaunch`, `pais/[iso]/page.tsx` e `GET /api/countries/[iso]` → 404 para ISOs inexistentes); (4) `ReaderContent`: estado vazio honesto ("Este dossiê ainda não foi escrito") com links reais (Wikipédia, Wikidata via `wikidataQid` e Banco Mundial), sem texto genérico nem notas `[1]–[3]` fictícias; (5) abertas tarefas de follow-up `T26` (ingestão de indicadores do Banco Mundial) e `T27` (bug intermitente do `next/font` com `Merriweather` v33 encontrado durante o build). Validação pós-rebase em `origin/master`: `grep` de fallbacks com zero valores inventados (apenas PIB histórico real em `historical-entities.ts`), `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 228/228 (31 suítes, incluindo nova `apps/web/test/country-data-integrity.test.tsx`), `pnpm build` ok (16/16 páginas). Pendente para aceite: conferência visual manual em COD, PER, KAZ e BRA pelo Ayrton.
 
 ---
 
@@ -879,6 +882,55 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+
+---
+
+### T26 · Ingestão de indicadores reais do Banco Mundial (177 países)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Dados · **Tamanho:** G · **Depende de:** T03 · **Grupos:** G-PAIS, G-PIPELINE
+
+**Contexto / problema**
+Após a remoção dos valores inventados na T03, os ~147 países fora de `PILOT_COUNTRIES` / `GLOBAL_COUNTRY_INFO` possuem identificação geográfica real (Natural Earth 1:110m + CLDR), mas exibem "Dado indisponível" para população, PIB, IDH, área e expectativa de vida.
+
+**O que fazer**
+1. Criar pipeline/script versionado para ingerir indicadores oficiais via API do Banco Mundial (`SP.POP.TOTL`, `NY.GDP.MKTP.CD`, `AG.SRF.TOTL.K2`, `SP.DYN.LE00.IN`, `MS.MIL.XPND.GD.ZS`) e REST Countries (capital, moeda, região, nome oficial) para todos os 177 países.
+2. Registrar fonte primária, código oficial do indicador e ano/data de referência em cada série (RN02).
+3. Persistir em dataset versionado (ou seed Prisma) e integrar ao `getCountryData` e `/api/countries`, mantendo `null` sempre que o órgão oficial não publicar o indicador.
+4. Adicionar testes de integridade do dataset ingerido.
+
+**Critérios de aceite**
+- [ ] Todos os países cobertos pela API do Banco Mundial exibem população, área e PIB reais com ano e link da fonte primária.
+- [ ] Ausências reais da fonte continuam renderizando "Dado indisponível".
+- [ ] Script de ingestão reproduzível e documentado.
+
+**Como verificar**: rodar script de ingestão, `pnpm test`, clicar em COD, KAZ, PER e BRA.
+
+**Log**
+- 2026-11-20 · antigravity · TODO · Tarefa de follow-up aberta ao concluir T03.
+
+---
+
+### T27 · Corrigir falha intermitente do loader next/font com Merriweather v33
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA
+
+**Contexto / problema**
+Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder intermitentemente URLs de `Merriweather` no formato `https://fonts.gstatic.com/l/font?kit=...&v=v33` (sem extensão `.woff2`). O `next/font/google/loader.js:122` executa `/\.(woff|woff2|eot|ttf|otf)$/.exec(googleFontFileUrl)[1]`, causando `TypeError: Cannot read properties of null (reading '1')` e quebrando o build de forma não determinística.
+
+**O que fazer**
+1. Avaliar atualização do `next` para versão 15.x que suporte URLs sem sufixo de extensão no `next/font/google`, ou empacotar `Merriweather` localmente (`next/font/local` / `@fontsource/merriweather`) eliminando dependência externa em build time.
+2. Validar que `pnpm build` passa de forma determinística (inclusive sem depender de POP específico do Google Fonts) e que os testes de `apps/web/test/fonts.test.ts` seguem verdes.
+
+**Critérios de aceite**
+- [ ] `pnpm build` passa de forma determinística sem erro em `next/font/google/loader.js`.
+- [ ] Fontes Geist, Geist Mono e Merriweather continuam carregadas corretamente.
+
+**Como verificar**: rodar `pnpm build` repetidamente e `pnpm test`.
+
+**Log**
+- 2026-11-20 · antigravity · TODO · Problema identificado durante validação de build da T03.
 
 ---
 
