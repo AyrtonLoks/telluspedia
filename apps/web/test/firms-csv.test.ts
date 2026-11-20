@@ -130,3 +130,82 @@ describe("T04: rota /api/observatory/firms com chave", () => {
     assert.match(body.meta.reason, /Invalid MAP_KEY/);
   });
 });
+
+// Reprovação de 2026-11-20: o VIIRS S-NPP NRT parou de publicar em 2026-11-02 e a API
+// passou a responder só o cabeçalho. A rota não pode depender de um único satélite.
+describe("T04: FIRMS tenta os satélites em ordem até achar focos", () => {
+  const realFetch = globalThis.fetch;
+  const realWarn = console.warn;
+  let requested: string[] = [];
+
+  function mockFirms(bodies: Record<string, string>) {
+    requested = [];
+    globalThis.fetch = (async (input: string | URL | Request) => {
+      const url = String(input);
+      const dataset = Object.keys(bodies).find((d) => url.includes(`/${d}/`));
+      requested.push(dataset ?? url);
+      return new Response(dataset ? bodies[dataset] : VIIRS_HEADER, { status: 200 });
+    }) as typeof fetch;
+  }
+
+  beforeEach(() => {
+    resetObservatorySources();
+    process.env.NASA_FIRMS_MAP_KEY = "test-key";
+    console.warn = () => {};
+  });
+
+  afterEach(() => {
+    globalThis.fetch = realFetch;
+    console.warn = realWarn;
+    delete process.env.NASA_FIRMS_MAP_KEY;
+  });
+
+  test("satélite sem dados (só cabeçalho) → usa o próximo e informa qual respondeu", async () => {
+    mockFirms({ VIIRS_NOAA21_NRT: VIIRS_HEADER, VIIRS_NOAA20_NRT: VIIRS_CSV });
+    const body = await (await firmsGET()).json();
+    assert.equal(body.meta.source, "live");
+    assert.equal(body.data.length, 3);
+    assert.match(body.meta.provider, /NOAA-20/);
+    assert.deepEqual(requested, ["VIIRS_NOAA21_NRT", "VIIRS_NOAA20_NRT"]);
+  });
+
+  test("primeiro satélite com dados → não faz chamadas extras", async () => {
+    mockFirms({ VIIRS_NOAA21_NRT: VIIRS_CSV });
+    const body = await (await firmsGET()).json();
+    assert.match(body.meta.provider, /NOAA-21/);
+    assert.deepEqual(requested, ["VIIRS_NOAA21_NRT"]);
+  });
+
+  test("todos sem dados → fallback listando os satélites consultados", async () => {
+    mockFirms({});
+    const body = await (await firmsGET()).json();
+    assert.equal(body.meta.source, "fallback");
+    assert.match(body.meta.reason, /NOAA-21/);
+    assert.match(body.meta.reason, /MODIS/);
+    assert.equal(requested.length, 4);
+  });
+
+  test("resposta que não é CSV (chave) → não insiste nos outros satélites", async () => {
+    requested = [];
+    globalThis.fetch = (async (input: string | URL | Request) => {
+      requested.push(String(input));
+      return new Response("Invalid MAP_KEY.", { status: 200 });
+    }) as typeof fetch;
+    const body = await (await firmsGET()).json();
+    assert.equal(body.meta.source, "fallback");
+    assert.equal(requested.length, 1);
+  });
+
+  test("leitura stale mantém o satélite que respondeu por último", async () => {
+    mockFirms({ VIIRS_NOAA21_NRT: VIIRS_HEADER, VIIRS_NOAA20_NRT: VIIRS_CSV });
+    const { firmsSource } = await import("../src/lib/observatory-sources");
+    const t0 = Date.now();
+    await firmsSource.get(t0);
+    globalThis.fetch = (async () => {
+      throw new TypeError("fetch failed");
+    }) as typeof fetch;
+    const later = await firmsSource.get(t0 + 16 * 60 * 1000);
+    assert.equal(later.envelope.meta.stale, true);
+    assert.match(later.envelope.meta.provider, /NOAA-20/);
+  });
+});

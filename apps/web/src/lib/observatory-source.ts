@@ -40,6 +40,11 @@ export const FALLBACK_TTL_MS = 60 * 1000;
 export const LAST_GOOD_MAX_AGE_MS = 6 * 60 * 60 * 1000;
 export const LOCAL_DATASET_PROVIDER = "TellusPedia (dataset local)";
 
+export interface LiveFetchContext {
+  /** Sobrescreve o provedor exibido para esta leitura (ex.: qual satélite respondeu). */
+  setProvider(provider: string): void;
+}
+
 export interface ObservatorySourceOptions<T> {
   /** Nome curto usado nos logs do servidor (ex.: "eonet"). */
   name: string;
@@ -49,7 +54,7 @@ export interface ObservatorySourceOptions<T> {
   fallbackTtlMs?: number;
   lastGoodMaxAgeMs?: number;
   /** Busca no provedor externo. Deve lançar (de preferência SourceUnavailableError) se não houver dado utilizável. */
-  fetchLive: () => Promise<T>;
+  fetchLive: (ctx: LiveFetchContext) => Promise<T>;
   /** Dados usados quando não há live nem último dado bom. */
   fallback: () => T;
   fallbackProvider?: string;
@@ -81,7 +86,7 @@ export function createObservatorySource<T>(opts: ObservatorySourceOptions<T>) {
   const lastGoodMaxAgeMs = opts.lastGoodMaxAgeMs ?? LAST_GOOD_MAX_AGE_MS;
 
   let cache: CacheEntry<T> | null = null;
-  let lastGood: { data: T; fetchedAt: number } | null = null;
+  let lastGood: { data: T; fetchedAt: number; provider: string } | null = null;
 
   async function get(now: number = Date.now()): Promise<ObservatorySourceResult<T>> {
     if (cache && now < cache.expiresAt) {
@@ -96,11 +101,12 @@ export function createObservatorySource<T>(opts: ObservatorySourceOptions<T>) {
     let ttlMs: number;
 
     try {
-      const data = await opts.fetchLive();
-      lastGood = { data, fetchedAt: now };
+      let provider = opts.liveProvider;
+      const data = await opts.fetchLive({ setProvider: (p) => (provider = p) });
+      lastGood = { data, fetchedAt: now, provider };
       envelope = {
         data,
-        meta: { source: "live", provider: opts.liveProvider, fetchedAt: new Date(now).toISOString(), stale: false },
+        meta: { source: "live", provider, fetchedAt: new Date(now).toISOString(), stale: false },
       };
       ttlMs = opts.liveTtlMs;
     } catch (err) {
@@ -112,7 +118,7 @@ export function createObservatorySource<T>(opts: ObservatorySourceOptions<T>) {
           data: lastGood.data,
           meta: {
             source: "live",
-            provider: opts.liveProvider,
+            provider: lastGood.provider,
             fetchedAt: new Date(lastGood.fetchedAt).toISOString(),
             stale: true,
             reason: `${reason}. Exibindo a última leitura válida.`,

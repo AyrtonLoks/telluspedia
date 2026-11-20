@@ -83,30 +83,53 @@ export const eonetSource = createObservatorySource<EonetEvent[]>({
 // ---------------------------------------------------------------------------
 // NASA FIRMS — focos de calor (parse por nome de coluna em lib/firms-csv.ts)
 // ---------------------------------------------------------------------------
+
+/**
+ * Satélites consultados em ordem; vale o primeiro que tiver focos. Satélites saem do ar
+ * (o VIIRS S-NPP NRT parou de publicar em 2026-11-02 e a API passou a responder só o
+ * cabeçalho), então a rota não pode depender de um só. NOAA-21/NOAA-20 (VIIRS 375 m)
+ * vêm antes do MODIS (1 km). Não somamos satélites: o mesmo foco apareceria duplicado.
+ * Disponibilidade atual: https://firms.modaps.eosdis.nasa.gov/api/data_availability/csv/<KEY>/ALL
+ */
+export const FIRMS_DATASETS = [
+  { id: "VIIRS_NOAA21_NRT", label: "VIIRS NOAA-21" },
+  { id: "VIIRS_NOAA20_NRT", label: "VIIRS NOAA-20" },
+  { id: "VIIRS_SNPP_NRT", label: "VIIRS S-NPP" },
+  { id: "MODIS_NRT", label: "MODIS Terra/Aqua" },
+] as const;
+
 export const firmsSource = createObservatorySource<FirmsHotspot[]>({
   name: "firms",
-  liveProvider: "NASA FIRMS (VIIRS SNPP NRT)",
+  liveProvider: "NASA FIRMS",
   liveTtlMs: 15 * 60 * 1000,
   fallback: () => FALLBACK_FIRMS_HOTSPOTS,
-  fetchLive: async () => {
+  fetchLive: async ({ setProvider }) => {
     const apiKey = process.env.NASA_FIRMS_MAP_KEY;
     if (!apiKey) throw new SourceUnavailableError("Chave NASA_FIRMS_MAP_KEY não configurada no servidor");
 
-    const res = await fetchWithTimeout(
-      `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/VIIRS_SNPP_NRT/world/1`,
-      // O CSV mundial de 24 h pode ter dezenas de milhares de linhas.
-      8000
-    );
-    const csv = await res.text();
-    // Chave inválida ou limite excedido: a API responde 200 com uma mensagem em texto, não CSV.
-    if (!/^\s*latitude,/i.test(csv)) {
-      throw new SourceUnavailableError(
-        `Resposta inesperada do FIRMS (verifique NASA_FIRMS_MAP_KEY): ${csv.trim().slice(0, 80)}`
+    for (const dataset of FIRMS_DATASETS) {
+      const res = await fetchWithTimeout(
+        `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/${dataset.id}/world/1`,
+        // O CSV mundial de 24 h tem dezenas de milhares de linhas (~2,5 MB).
+        8000
       );
+      const csv = await res.text();
+      // Chave inválida ou limite excedido: a API responde 200 com uma mensagem em texto, não CSV.
+      // Vale para todos os satélites, então não adianta tentar os demais.
+      if (!/^\s*latitude,/i.test(csv)) {
+        throw new SourceUnavailableError(
+          `Resposta inesperada do FIRMS (verifique NASA_FIRMS_MAP_KEY): ${csv.trim().slice(0, 80)}`
+        );
+      }
+      const parsed = parseFirmsCsv(csv);
+      if (parsed.length > 0) {
+        setProvider(`NASA FIRMS (${dataset.label} NRT)`);
+        return parsed;
+      }
     }
-    const parsed = parseFirmsCsv(csv);
-    if (parsed.length === 0) throw new SourceUnavailableError("Provedor não retornou focos válidos");
-    return parsed;
+    throw new SourceUnavailableError(
+      `Nenhum satélite retornou focos nas últimas 24 h (consultados: ${FIRMS_DATASETS.map((d) => d.label).join(", ")})`
+    );
   },
 });
 
