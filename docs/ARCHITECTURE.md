@@ -187,8 +187,14 @@ apps/web/
    $$\text{lat} = \arcsin(y / R) \cdot \frac{180}{\pi}, \quad \text{lng} = \arctan2(-z, x) \cdot \frac{180}{\pi}$$
 3. O ponto $(\text{lng}, \text{lat})$ é consultado em memória no índice espacial montado com `which-polygon` a partir do TopoJSON Natural Earth. O tempo de resposta é inferior a 0.2 milissegundos sem sobrecarregar a GPU com malhas 3D individuais.
 
+#### Fonte Única de Direção Solar (`useSunDirection.ts` — T14)
+- A luz direcional principal (`<SolarDirectionalLight />` em `GlobeCanvas.tsx`), o uniform `uSunDirection` do shader terrestre (`EarthSphere.tsx`) e a fase solar da Lua (`OrbitingMoon.tsx`) leem **exclusivamente** do hook canônico `useSunDirection()` (`apps/web/src/lib/epoch/useSunDirection.ts`).
+- Um único relógio reativo compartilhado (`SOLAR_CLOCK_INTERVAL_MS = 60.000 ms`, via `useSyncExternalStore`) atualiza todos os consumidores simultaneamente, eliminando divergência entre luz direcional e terminador após longos períodos com a aba aberta.
+- Cada atualização de direção solar (e a saída do Modo Leitura) aciona `invalidate()` no React Three Fiber para garantir atualização imediata mesmo com `frameloop="demand"` (RN22).
+- **Convenção de data para anos sem data exata**: quando a época ativa (`useEpochState`) define apenas um ano histórico (sem `exactDate` no marco e sem cena explícita com timestamp próprio), o motor astronômico (`resolveAstronomicalDate` em `lib/astronomy.ts`) utiliza **21 de junho às 12:00 UTC** (solstício de verão boreal ao meio-dia solar no Meridiano de Greenwich — constantes `YEAR_ONLY_REFERENCE_*_UTC`). A escolha garante iluminação global balanceada e reprodutível. Precedência completa: cena explícita `APOLLO11` (`1969-07-20T20:17:40Z`) > `exactDate` do marco > ano histórico (`21/jun 12:00 UTC`) > relógio UTC em tempo real.
+
 #### Render Loop Throttling (RN22)
-Quando o usuário expande a Camada 2 (Modo Leitura Profunda), o estado `isReaderOpen` aciona a desaceleração do loop gráfico do Three.js, reduzindo o consumo de energia e ciclos de GPU durante o estudo textual prolongado.
+Quando o usuário expande a Camada 2 (Modo Leitura Profunda), o estado `isReaderOpen` aciona `frameloop="demand"` no Three.js, reduzindo o consumo de energia e ciclos de GPU durante o estudo textual prolongado; atualizações astronômicas periódicas e o fechamento do leitor invocam `invalidate()` para redesenhar sob demanda.
 
 ### 2.3. Engenharia do Observatório Planetário & Tráfego Global (Horizonte 3)
 

@@ -287,7 +287,7 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, SLERP orbit
     assert.doesNotMatch(src, /position=\{targetLocalPos\}/, "Grupo da Lua não deve receber position={targetLocalPos} no JSX (causaria snap em re-renders)");
     assert.match(src, /stepOrbitalPosition/, "OrbitingMoon deve interpolar suavemente via stepOrbitalPosition");
     assert.match(src, /calculateLunarPosition/, "OrbitingMoon deve usar calculateLunarPosition");
-    assert.match(src, /resolveAstronomicalDate/, "OrbitingMoon deve resolver a data astronômica da época ativa");
+    assert.match(src, /useSunDirection/, "OrbitingMoon deve consumir a fonte única de data/direção solar (T14)");
     assert.match(src, /currentMoonWorldPos/, "OrbitingMoon deve manter currentMoonWorldPos atualizado");
     assert.match(src, /modelMatrix\s*\*\s*vec4\(normal,\s*0\.0\)/, "Shader lunar deve usar normal em espaço mundial (AGENTS.md §1)");
     assert.doesNotMatch(src, /normalMatrix\s*\*\s*normal/, "Proibido normalMatrix com uSunDirection");

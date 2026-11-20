@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
 import { Sun } from "lucide-react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { EarthSphere } from "./EarthSphere";
 import { CountryBorders } from "./CountryBorders";
@@ -29,24 +29,35 @@ import { CometHalleyTrajectory } from "./CometHalleyTrajectory";
 import { MeteorShowersLayer } from "./MeteorShowersLayer";
 
 import { useGlobeStore, MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "@/stores/globeStore";
-import {
-  calculateSubsolarPoint,
-  getSunDirectionVector,
-  resolveAstronomicalDate,
-} from "@/lib/astronomy";
 import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
 
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useEpochState } from "@/lib/epoch/useEpochState";
-import { findMilestoneById } from "@/lib/country-data";
+import { useSunDirection } from "@/lib/epoch/useSunDirection";
+
+/**
+ * Primary directional sunlight synchronized with EarthSphere and OrbitingMoon via
+ * the single-source-of-truth `useSunDirection()` hook (T14). Invalidates R3F on
+ * every solar clock tick and when exiting Reader Mode (`frameloop="demand"`).
+ */
+const SolarDirectionalLight: React.FC = () => {
+  const sun = useSunDirection();
+  const isThrottled = useGlobeStore((s) => s.isThrottled);
+  const { invalidate } = useThree();
+
+  useEffect(() => {
+    invalidate();
+  }, [sun.timestamp, isThrottled, invalidate]);
+
+  return <directionalLight position={sun.lightPosition} intensity={2.2} color="#ffffff" />;
+};
 
 export const GlobeCanvas: React.FC = () => {
   const [studyLighting, setStudyLighting] = useState(false);
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
-  const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
   // Época ativa: fonte única (T12). Cenas só por seleção explícita, nunca pelo ano.
   const epoch = useEpochState();
   const isGeological = epoch.mode === "GEOLOGICAL";
@@ -63,21 +74,6 @@ export const GlobeCanvas: React.FC = () => {
     const pos = calculatePlanetaryPosition("EARTH", selectedYear || new Date().getUTCFullYear()).scenePosition;
     return [pos.x, pos.y, pos.z] as [number, number, number];
   }, [isCosmicMode, selectedYear]);
-
-  // Compute primary solar light position synchronized with active date
-  const sunPosition = useMemo(() => {
-    const milestone = selectedMilestoneId ? findMilestoneById(selectedMilestoneId) : undefined;
-    const targetDate = resolveAstronomicalDate({
-      selectedYear,
-      selectedMilestoneExactDate: milestone?.exactDate ?? null,
-      selectedMilestoneYear: milestone?.year ?? null,
-      activeScene,
-    });
-
-    const subsolar = calculateSubsolarPoint(targetDate);
-    const dir = getSunDirectionVector(subsolar.latitude, subsolar.longitude);
-    return [dir.x * 10, dir.y * 10, dir.z * 10] as [number, number, number];
-  }, [selectedYear, selectedMilestoneId, activeScene]);
 
   // Click-outside handler on celestial vault to deselect active selection
   const handlePointerMissed = (event: MouseEvent) => {
@@ -102,9 +98,7 @@ export const GlobeCanvas: React.FC = () => {
       >
         {/* Ambient & Directional Sun Lighting */}
         <ambientLight intensity={isCosmicMode ? 0.25 : 0.15} />
-        {!isCosmicMode && (
-          <directionalLight position={sunPosition} intensity={2.2} color="#ffffff" />
-        )}
+        {!isCosmicMode && <SolarDirectionalLight />}
 
         {/* Orbit Controls with Natural Inertia & Calibrated Damping */}
         <OrbitControls

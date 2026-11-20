@@ -21,6 +21,15 @@ export const MOON_SCENE_ORBIT_RADIUS = 3.622;
 /** Historical Apollo 11 Eagle touchdown timestamp (Mare Tranquillitatis). */
 export const APOLLO11_LANDING_DATE = new Date("1969-07-20T20:17:40Z");
 
+/**
+ * Canonical UTC reference calendar date used for historical years without an exact date:
+ * June 21, 12:00 UTC (Northern Summer Solstice at Prime Meridian solar noon).
+ * Documented in docs/ARCHITECTURE.md (§2.2) for deterministic, balanced global daylight.
+ */
+export const YEAR_ONLY_REFERENCE_MONTH_UTC = 5; // 0-indexed: June
+export const YEAR_ONLY_REFERENCE_DAY_UTC = 21;
+export const YEAR_ONLY_REFERENCE_HOUR_UTC = 12;
+
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
 
@@ -401,7 +410,16 @@ export function resolveAstronomicalDate(input: {
   }
 
   if (typeof input.selectedMilestoneYear === "number" && Number.isFinite(input.selectedMilestoneYear)) {
-    return new Date(Date.UTC(Math.trunc(input.selectedMilestoneYear), 5, 21, 12, 0, 0));
+    return new Date(
+      Date.UTC(
+        Math.trunc(input.selectedMilestoneYear),
+        YEAR_ONLY_REFERENCE_MONTH_UTC,
+        YEAR_ONLY_REFERENCE_DAY_UTC,
+        YEAR_ONLY_REFERENCE_HOUR_UTC,
+        0,
+        0
+      )
+    );
   }
 
   if (typeof input.selectedYear === "number" && Number.isFinite(input.selectedYear)) {
@@ -413,7 +431,16 @@ export function resolveAstronomicalDate(input: {
       return new Date(start + frac * (end - start));
     }
     if (wholeYear !== now.getUTCFullYear()) {
-      return new Date(Date.UTC(wholeYear, 5, 21, 12, 0, 0));
+      return new Date(
+        Date.UTC(
+          wholeYear,
+          YEAR_ONLY_REFERENCE_MONTH_UTC,
+          YEAR_ONLY_REFERENCE_DAY_UTC,
+          YEAR_ONLY_REFERENCE_HOUR_UTC,
+          0,
+          0
+        )
+      );
     }
   }
 

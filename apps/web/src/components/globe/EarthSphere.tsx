@@ -6,7 +6,6 @@ import React, { useRef, useMemo, useEffect, useState } from "react";
 import * as THREE from "three";
 import { useFrame, useThree, ThreeEvent } from "@react-three/fiber";
 import { createEarthMaterial } from "./EarthShaderMaterial";
-import { calculateSubsolarPoint, getSunDirectionVector } from "@/lib/astronomy";
 import { vector3ToLatLng } from "@/lib/geo-spatial";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
@@ -14,7 +13,6 @@ import {
   NUMERIC_TO_ISO,
   NAME_TO_ISO,
   PILOT_COUNTRIES,
-  findMilestoneById,
 } from "@/lib/country-data";
 import {
   resolveHistoricalEntity,
@@ -22,6 +20,7 @@ import {
   HISTORICAL_ERAS,
 } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";
+import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import {
   loadHistoricalTopology,
@@ -135,9 +134,9 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   const setHoveredIso = useGlobeStore((s) => s.setHoveredIso);
   const flyTo = useGlobeStore((s) => s.flyTo);
 
-  // Época ativa: fonte única (T12)
-  const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
+  // Época ativa (T12) e direção solar canônica compartilhada (T14)
   const epoch = useEpochState();
+  const sun = useSunDirection();
   const isFirmsLayerActive = useObservatoryStore((s) => s.activeLayers.includes("NASA_FIRMS"));
   const isGeological = epoch.mode === "GEOLOGICAL";
   const effectiveGeologicalMa = epoch.geologicalMa;
@@ -159,14 +158,9 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
     return createProceduralPangeaTexture();
   }, []);
 
-  // Initialize shader material
+  // Initialize shader material (uSunDirection synced from canonical useSunDirection below)
   const earthMaterial = useMemo(() => {
-    const mat = createEarthMaterial(dayTexture, nightTexture, proceduralPaleoTexture);
-    const initialSubsolar = calculateSubsolarPoint(new Date());
-    mat.uniforms.uSunDirection.value.copy(
-      getSunDirectionVector(initialSubsolar.latitude, initialSubsolar.longitude)
-    );
-    return mat;
+    return createEarthMaterial(dayTexture, nightTexture, proceduralPaleoTexture);
   }, [dayTexture, nightTexture, proceduralPaleoTexture]);
 
   useEffect(() => {
@@ -329,35 +323,11 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
     }
   });
 
-  // Astronomical Sun Synchronization (RN10)
+  // Astronomical Sun Synchronization (RN10, T14 — single source of truth via useSunDirection)
   useEffect(() => {
-    const updateSun = () => {
-      let targetDate = new Date();
-
-      if (selectedMilestoneId) {
-        const milestone = findMilestoneById(selectedMilestoneId);
-        if (milestone) {
-          if (milestone.exactDate) {
-            targetDate = milestone.exactDate.includes("T")
-              ? new Date(milestone.exactDate)
-              : new Date(`${milestone.exactDate}T12:00:00Z`);
-          } else if (milestone.year) {
-            targetDate = new Date(Date.UTC(milestone.year, 5, 21, 12, 0, 0));
-          }
-        }
-      } else if (effectiveYear && effectiveYear !== new Date().getFullYear()) {
-        targetDate = new Date(Date.UTC(effectiveYear, 5, 21, 12, 0, 0));
-      }
-
-      const subsolar = calculateSubsolarPoint(targetDate);
-      const sunDir = getSunDirectionVector(subsolar.latitude, subsolar.longitude);
-      earthMaterial.uniforms.uSunDirection.value.copy(sunDir);
-    };
-
-    updateSun();
-    const interval = setInterval(updateSun, 60000); // refresh every minute
-    return () => clearInterval(interval);
-  }, [earthMaterial, effectiveYear, selectedMilestoneId]);
+    earthMaterial.uniforms.uSunDirection.value.copy(sun.direction);
+    invalidate();
+  }, [earthMaterial, sun.direction, sun.timestamp, invalidate]);
 
   // Helper to resolve ISO / canonical historical entity from picked TopoJSON feature
   const resolveIsoFromFeature = (feature: CountryProperties | null): string | null => {

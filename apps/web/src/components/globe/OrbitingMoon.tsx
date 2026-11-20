@@ -4,17 +4,12 @@ import React, { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEpochState } from "@/lib/epoch/useEpochState";
+import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { focusCelestialBody } from "@/stores/actions";
-import { findMilestoneById } from "@/lib/country-data";
 import { slerpVectors } from "@/lib/geo-spatial";
-import {
-  calculateLunarPosition,
-  calculateSubsolarPoint,
-  getSunDirectionVector,
-  resolveAstronomicalDate,
-} from "@/lib/astronomy";
+import { calculateLunarPosition } from "@/lib/astronomy";
 import { calculatePlanetaryPosition, currentMoonWorldPos } from "@/lib/astronomy-planets";
 
 const MOON_RADIUS = 0.27;
@@ -160,7 +155,7 @@ export const OrbitingMoon: React.FC = () => {
   const epoch = useEpochState();
   const isApolloScene = epoch.activeScene === "APOLLO11";
   const selectedYear = useTimelineStore((s) => s.selectedYear);
-  const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
+  const sun = useSunDirection();
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const isPlaying = useCosmicStore((s) => s.isPlaying);
@@ -172,29 +167,16 @@ export const OrbitingMoon: React.FC = () => {
   const isFocused = focusedBodyId === "MOON";
   const isHovered = hoveredBodyId === "MOON";
 
-  // Resolve exact UTC date from canonical epoch state (Apollo 11 -> 1969-07-20T20:17:40Z)
-  const activeDate = useMemo(() => {
-    const milestone = selectedMilestoneId ? findMilestoneById(selectedMilestoneId) : undefined;
-    return resolveAstronomicalDate({
-      selectedYear,
-      selectedMilestoneExactDate: milestone?.exactDate ?? null,
-      selectedMilestoneYear: milestone?.year ?? null,
-      activeScene: epoch.activeScene,
-    });
-  }, [selectedYear, selectedMilestoneId, epoch.activeScene]);
-
-  // Real geocentric lunar ephemeris (Meeus Ch. 47) & matching Earth-mode solar direction
+  // Real geocentric lunar ephemeris (Meeus Ch. 47) synchronized with canonical solar date & direction (T14 + T15)
   const { targetLocalPos, earthModeSunDir } = useMemo(() => {
-    const lunar = calculateLunarPosition(activeDate);
+    const lunar = calculateLunarPosition(sun.targetDate);
     const localPos = isCosmicMode ? lunar.cosmicRelativePosition : lunar.scenePosition;
-    const subsolar = calculateSubsolarPoint(activeDate);
-    const sunDir = getSunDirectionVector(subsolar.latitude, subsolar.longitude);
 
     return {
       targetLocalPos: localPos,
-      earthModeSunDir: sunDir,
+      earthModeSunDir: sun.direction,
     };
-  }, [activeDate, isCosmicMode]);
+  }, [sun.targetDate, sun.direction, isCosmicMode]);
 
   // Imperative animated position state (prevents React re-render 1-frame snap flashes)
   const initializedRef = useRef<boolean>(false);
@@ -298,6 +280,11 @@ export const OrbitingMoon: React.FC = () => {
       }
     }
 
+    if (!isCosmicMode && sun.isLiveClock) {
+      currentSunDirRef.current.copy(earthModeSunDir);
+      moonMat.uniforms.uSunDirection.value.copy(earthModeSunDir);
+    }
+
     moonMat.uniforms.uHighlightColor.value.set(isFocused ? "#38bdf8" : "#93c5fd");
     moonMat.uniforms.uHighlightStrength.value = isFocused ? 0.85 : isHovered ? 0.45 : 0.0;
     invalidate();
@@ -306,6 +293,8 @@ export const OrbitingMoon: React.FC = () => {
     isFocused,
     isHovered,
     isCosmicMode,
+    sun.isLiveClock,
+    sun.timestamp,
     earthModeSunDir,
     targetLocalPos,
     selectedYear,
