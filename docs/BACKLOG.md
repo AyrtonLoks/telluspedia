@@ -166,12 +166,12 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | DONE | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | DONE | codex | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | DONE | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
-| T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | REVIEW | codex | T12 | G-EPOCA, G-ESTUDOS, G-TIMELINE, G-GLOBO, G-FRONTEIRAS, G-PAIS, G-SHELL |
+| T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | DONE | codex | T12 | G-EPOCA, G-ESTUDOS, G-TIMELINE, G-GLOBO, G-FRONTEIRAS, G-PAIS, G-SHELL |
 | T14 | Fonte única de direção solar | 3D | P1 | M | TODO | — | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | TODO | — | T12 | G-EPOCA |
 | T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | TODO | — | — | G-FRONTEIRAS |
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | TODO | — | T13 | G-PAIS, G-ESTUDOS |
-| T18 | Pipeline de CI | Infra | P2 | M | TODO | — | — | G-INFRA |
+| T18 | Pipeline de CI | Infra | P2 | M | IN_PROGRESS | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | TODO | — | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | TODO | — | — | G-GLOBO |
@@ -625,7 +625,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T13 · Desacoplar stores Zustand e remover estado redundante
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t13-desacoplar-stores · **Worktree:** ../telluspedia-wt/codex-t13
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/t13-desacoplar-stores · **Worktree:** ../telluspedia-wt/codex-t13
 - **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** G · **Depende de:** T12 · **Grupos:** G-EPOCA, G-ESTUDOS, G-TIMELINE, G-GLOBO, G-FRONTEIRAS, G-PAIS, G-SHELL
 
 **Contexto / problema**
@@ -651,6 +651,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 - 2026-11-20 · codex · IN_PROGRESS · Reivindicada após o aceite da T11. T12 em DONE. Incluído G-TIMELINE para adaptar os controles da timeline às ações compostas.
 - 2026-11-20 · codex · IN_PROGRESS · Reservados G-GLOBO, G-FRONTEIRAS, G-PAIS e G-SHELL para migrar os chamadores de seleção/reset e tipar a integração do globo. Ma ativo em timelineStore, rota ativa em historicalRouteStore. O estudo persiste os mesmos campos como snapshot e aplica-os na restauração.
 - 2026-11-20 · codex · REVIEW · O Ma ativo ficou em `timelineStore.geologicalMa`, substituindo `selectedGeologicalMa` e `timelineMode`. A rota ativa ficou em `historicalRouteStore.activeRouteId`, substituindo `timelineStore.activeRouteId` e `selectedRouteId`. Removidas as cópias em `studyStore`. `stores/actions.ts` coordena seleção e reset do globo, presets, navegação e restauração. Estudos e forks continuam usando o formato persistido, com leitura dos aliases antigos na restauração. A tipagem da integração TopoJSON e dos consumidores reduziu as ocorrências de `any` em `apps/web/src` de 45 para 13, incluindo dois comentários. Sem `require(` nas stores e sem seletores `(s: any)`. Typecheck, lint, 366/366 testes e build passaram. Build validado com CSS e fontes Google já baixados. Chromium validou Magalhães → Pangeia → presente e a restauração de um snapshot legado com resposta HTTP simulada.
+- 2026-11-20 · ayrton · DONE · Aceite confirmado pelo Ayrton.
 
 ---
 
@@ -755,7 +756,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T18 · Pipeline de CI
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t18-pipeline-ci · **Worktree:** ../telluspedia-wt/codex-t18
 - **Prioridade:** P2 · **Área:** Infra · **Tamanho:** M · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -773,6 +774,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 4. D15 depende de alterações no painel do Observatório, cujo grupo está ocupado pela D05.
 
 ---
 
