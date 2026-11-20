@@ -163,7 +163,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | DONE | codex | — | G-ESTUDOS, G-INFRA |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | DONE | codex | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
-| T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | REVIEW | antigravity | — | G-PIPELINE |
+| T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | DONE | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | IN_PROGRESS | codex | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | REVIEW | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | TODO | — | T12 | G-EPOCA, G-ESTUDOS |
@@ -188,7 +188,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | TODO | — | — | G-COSMOS |
-| D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | TODO | — | — | G-COSMOS |
+| D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | IN_PROGRESS | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
@@ -520,7 +520,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T10 · Endurecer serviço Python (CORS, Docker, Redis)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t10-endurecer-python · **Worktree:** ../telluspedia-wt/antigravity-t10
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t10-endurecer-python · **Worktree:** ../telluspedia-wt/antigravity-t10
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PIPELINE
 
 **Contexto / problema**
@@ -549,6 +549,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (140e213).
 - 2026-11-20 · antigravity · REVIEW · Implementado (commit 54cc62a): (1) `app/core/config.py`: migrado para `model_config = SettingsConfigDict(env_file=".env", extra="ignore")`, adicionadas `ALLOWED_ORIGINS` (lista via env com rejeição de `*`, padrão localhost/127.0.0.1:3000), `CORS_ALLOW_CREDENTIALS=False`, `REDIS_RECONNECT_BACKOFF_SECONDS=30.0` e `REDIS_SOCKET_TIMEOUT_SECONDS=1.5`; (2) `app/main.py`: CORS restrito a `settings.ALLOWED_ORIGINS`, `allow_credentials=settings.CORS_ALLOW_CREDENTIALS`, métodos `["GET", "OPTIONS"]` e cabeçalhos `["Accept", "Content-Type"]`; (3) `app/api/endpoints/weather.py` e `astronomy.py`: log estruturado com `logger.error(..., exc_info=exc)` mantendo 502 genérico `"Weather fetch failed"` e validação 400 para `dt` inválido; (4) `app/core/redis_client.py` + `weather_proxy_service.py`: backoff de 30s com `time.monotonic()`, timeouts curtos, fechamento seguro de socket em falha e `mark_redis_unavailable()`; (5) `Dockerfile` + `.dockerignore` + `docker-compose.yml`: build multi-stage (sem `build-essential` na imagem final), usuário não-root `appuser` e `HEALTHCHECK` em `/health`; (6) `uv.lock`, `requirements.lock`, `pyproject.toml` e `services/data-pipeline/README.md` com instruções reproduzíveis de venv e `pytest`. Validação: `uv sync --frozen && uv run pytest` 14/14 passando (incluindo nova `tests/test_hardening.py`); `docker compose up --build -d data-pipeline` reportou `healthy`, `docker exec telluspedia-data-pipeline whoami` retornou `appuser`, `which gcc` ausente na imagem final e `GET /health` 200; pós-rebase em `origin/master`: `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 301/301 (38 suítes), `pnpm build` ok (17/17 páginas).
+- 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
@@ -1226,7 +1227,7 @@ O "catálogo HYG 3.500+" (`lib/hyg-star-data.ts:240-270`, `generateHygCatalog`) 
 
 ### D10 · Cometa Halley: visual e distância corretos
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d10-cometa-halley · **Worktree:** ../telluspedia-wt/antigravity-d10
 - **Prioridade:** P1 · **Área:** 3D · **Tamanho:** M · **Depende de:** — · **Grupos:** G-COSMOS
 
 **Contexto / problema**
@@ -1254,6 +1255,7 @@ Observação: a posição (≈ 35 UA em 2026) está **correta** — o afélio fo
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (e41bbef).
 
 ---
 
