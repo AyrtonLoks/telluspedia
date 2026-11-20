@@ -159,8 +159,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T03 | Remover dados e citações inventados | Dados | P0 | G | REVIEW | antigravity | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | REVIEW | claude | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
-| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | REVIEW | codex | — | G-PIPELINE, G-PAIS |
-| T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | TODO | — | — | G-ESTUDOS |
+| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | DONE | codex | — | G-PIPELINE, G-PAIS |
+| T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | IN_PROGRESS | codex | — | G-ESTUDOS |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | TODO | — | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | TODO | — | — | G-PIPELINE |
@@ -401,7 +401,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 ### T06 · Validar lat/lng em /api/weather
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t06-origem-do-clima · **Worktree:** ../telluspedia-wt/codex-t06
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/t06-origem-do-clima · **Worktree:** ../telluspedia-wt/codex-t06
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-PIPELINE, G-PAIS
 
 **Contexto / problema**
@@ -429,12 +429,13 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 - 2026-11-20 · codex · REVIEW · Validação decimal de coordenadas com finitude e limites antes de consultar os provedores. Parâmetros de URL montados pela API, pelo cliente web e pelo pipeline Python. Campos ausentes normalizados para null e exibidos como —, preservando zero. Os dois endpoints retornam mensagens genéricas em falhas de upstream. Cache Redis versionado para deixar expirar as entradas com valores padrão anteriores. Typecheck, lint, 235 testes web, 7 testes Python e build passaram. A versão de produção foi verificada por HTTP e no Chromium com pipeline simulado. O build reutilizou cópias temporárias dos arquivos originais do Google Fonts.
 - 2026-11-20 · codex · IN_PROGRESS · Reaberta após reprovação. O cartão exibia o clima do ponto de referência do país sem identificar o lugar ou a fonte.
 - 2026-11-20 · codex · REVIEW · Antes, o cartão mostrava temperatura e sensação sem informar o ponto consultado. Agora identifica Brasília na seleção do Brasil, exibe as coordenadas e vincula a documentação do Open-Meteo. Os dois caminhos da API propagam o horário de referência do modelo, exibido em UTC quando disponível. O cache Python foi versionado para preencher o horário em novas consultas. Typecheck, lint, 247 testes web, 7 testes Python, build e verificação HTTP/Chromium com provedor simulado passaram. O build reutilizou cópias temporárias dos arquivos originais do Google Fonts.
+- 2026-11-20 · ayrton · DONE · Aprovada após a identificação do ponto de referência, da fonte e do horário no cartão de clima.
 
 ---
 
 ### T07 · Schema e validação em POST /api/studies
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t07-validar-schema-studies · **Worktree:** ../telluspedia-wt/codex-t07
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-ESTUDOS
 
 **Contexto / problema**
@@ -455,6 +456,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Reivindicada como a próxima tarefa elegível da fase 3 após o aceite da T06.
 
 ---
 
