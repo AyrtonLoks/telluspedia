@@ -164,7 +164,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | DONE | codex | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | DONE | antigravity | — | G-PIPELINE |
-| T11 | Ajustar next.config e script de build | Infra | P1 | P | IN_PROGRESS | codex | — | G-INFRA |
+| T11 | Ajustar next.config e script de build | Infra | P1 | P | REVIEW | codex | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | REVIEW | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | TODO | — | T12 | G-EPOCA, G-ESTUDOS |
 | T14 | Fonte única de direção solar | 3D | P1 | M | TODO | — | T12 | G-EPOCA, G-GLOBO |
@@ -555,7 +555,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T11 · Ajustar next.config e script de build
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t11-next-config-build · **Worktree:** ../telluspedia-wt/codex-t11
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t11-next-config-build · **Worktree:** ../telluspedia-wt/codex-t11
 - **Prioridade:** P1 · **Área:** Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -570,13 +570,14 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 3. Remover o `rmSync` do script de build ou usar `distDir` separado para build (ex.: via env `NEXT_DIST_DIR`).
 
 **Critérios de aceite**
-- [ ] `/_next/image?url=https://exemplo.com/x.png&w=64&q=75` → 400.
-- [ ] Strict mode ativo sem regressões visíveis (globo, câmera, timeline, estudos).
-- [ ] `pnpm build` com `pnpm dev` rodando não derruba o dev.
+- [x] `/_next/image?url=https://exemplo.com/x.png&w=64&q=75` → 400.
+- [x] Strict mode ativo sem regressões visíveis (globo, câmera, timeline, estudos).
+- [x] `pnpm build` com `pnpm dev` rodando não derruba o dev.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Reivindicada como a próxima tarefa elegível da fase 3 após o aceite da T08.
+- 2026-11-20 · codex · REVIEW · Removido o hostname curinga do otimizador de imagens e ativado React Strict Mode. Next dev usa .next-dev, enquanto build e start usam .next. O script build chama next build diretamente. A URL remota de teste foi rejeitada com 400. A mesma instância do dev respondeu antes, durante e após o build. O Chromium verificou globo WebGL, voo e arraste da câmera, seleção de período, geração e restauração de estudo em desenvolvimento. Typecheck, lint, 345 testes e build passaram sobre o master que inclui a T12. A validação usou cópias temporárias dos arquivos originais do Google Fonts.
 
 ---
 
