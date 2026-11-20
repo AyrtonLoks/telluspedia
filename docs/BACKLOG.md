@@ -38,7 +38,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26, D14, D20 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12 |
@@ -165,7 +165,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | REVIEW | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | IN_PROGRESS | codex | — | G-INFRA |
-| T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | IN_PROGRESS | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE |
+| T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | IN_PROGRESS | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | TODO | — | T12 | G-EPOCA, G-ESTUDOS |
 | T14 | Fonte única de direção solar | 3D | P1 | M | TODO | — | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | TODO | — | T12 | G-EPOCA |
@@ -582,7 +582,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 ### T12 · Seletor único de época (`useEpochState`)
 
 - **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t12-epoch-state · **Worktree:** ../telluspedia-wt/claude-t12
-- **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** G · **Depende de:** — · **Grupos:** G-EPOCA, G-FRONTEIRAS, G-TIMELINE
+- **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** G · **Depende de:** — · **Grupos:** G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS
 
 **Contexto / problema**
 A regra "qual modo está ativo" (geológico, Magalhães, Apollo, ano efetivo, era histórica) é reimplementada, com divergências, em:
@@ -614,6 +614,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. G-TIMELINE adicionado (o passo 4 altera `TimelineAxis`). Nenhuma tarefa de G-EPOCA/G-FRONTEIRAS/G-TIMELINE em andamento.
+- 2026-11-20 · claude · IN_PROGRESS · G-OBS adicionado: `ObservatoryPanel` e `ObservatoryTelemetryHUD` também decidem localmente se a época é contemporânea (anacronismo) e passam a usar o seletor único. Nenhuma tarefa de G-OBS em andamento.
 
 ---
 
