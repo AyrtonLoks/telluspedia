@@ -21,6 +21,7 @@ import {
   createObservatorySource,
   type ObservatoryEnvelope,
 } from "./observatory-source";
+import { parseFirmsCsv } from "./firms-csv";
 
 async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
   const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
@@ -80,7 +81,7 @@ export const eonetSource = createObservatorySource<EonetEvent[]>({
 });
 
 // ---------------------------------------------------------------------------
-// NASA FIRMS — focos de calor (o parse do CSV é corrigido na tarefa T04)
+// NASA FIRMS — focos de calor (parse por nome de coluna em lib/firms-csv.ts)
 // ---------------------------------------------------------------------------
 export const firmsSource = createObservatorySource<FirmsHotspot[]>({
   name: "firms",
@@ -93,34 +94,17 @@ export const firmsSource = createObservatorySource<FirmsHotspot[]>({
 
     const res = await fetchWithTimeout(
       `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/VIIRS_SNPP_NRT/world/1`,
-      3500
+      // O CSV mundial de 24 h pode ter dezenas de milhares de linhas.
+      8000
     );
-    const csvText = await res.text();
-    const lines = csvText.trim().split("\n");
-
-    const parsed: FirmsHotspot[] = [];
-    for (let i = 1; i < Math.min(lines.length, 250); i++) {
-      const cols = lines[i].split(",");
-      if (cols.length >= 9) {
-        const lat = parseFloat(cols[0]);
-        const lng = parseFloat(cols[1]);
-        const brightness = parseFloat(cols[2]);
-        const frp = parseFloat(cols[10] || cols[4] || "50");
-        if (!isNaN(lat) && !isNaN(lng)) {
-          parsed.push({
-            id: `firms-live-${i}`,
-            lat,
-            lng,
-            brightness: isNaN(brightness) ? 350 : brightness,
-            frp: isNaN(frp) ? 80 : frp,
-            confidence: "high",
-            satellite: "VIIRS",
-            acqDate: cols[5] || new Date().toISOString().split("T")[0],
-          });
-        }
-      }
+    const csv = await res.text();
+    // Chave inválida ou limite excedido: a API responde 200 com uma mensagem em texto, não CSV.
+    if (!/^\s*latitude,/i.test(csv)) {
+      throw new SourceUnavailableError(
+        `Resposta inesperada do FIRMS (verifique NASA_FIRMS_MAP_KEY): ${csv.trim().slice(0, 80)}`
+      );
     }
-
+    const parsed = parseFirmsCsv(csv);
     if (parsed.length === 0) throw new SourceUnavailableError("Provedor não retornou focos válidos");
     return parsed;
   },

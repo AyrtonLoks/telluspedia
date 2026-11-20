@@ -16,6 +16,10 @@ export interface FirmsHotspot {
   confidence: "low" | "nominal" | "high";
   satellite: "MODIS" | "VIIRS";
   acqDate: string;
+  /** Hora da aquisição em UTC, formato HHMM (ex.: "0142"). */
+  acqTime?: string;
+  /** "D" = passagem diurna, "N" = noturna. */
+  daynight?: "D" | "N";
 }
 
 export interface EonetEvent {
