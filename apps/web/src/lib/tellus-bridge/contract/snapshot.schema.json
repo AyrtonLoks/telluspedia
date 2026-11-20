@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "kind",
+    "schemaVersion",
+    "exportedAt",
+    "sourceApp",
+    "summary",
+    "proficiency",
+    "overdue",
+    "suggestions"
+  ],
+  "properties": {
+    "kind": {
+      "enum": [
+        "TellusLabSnapshotV1"
+      ]
+    },
+    "schemaVersion": {
+      "enum": [
+        "1.0.0"
+      ]
+    },
+    "exportedAt": {
+      "$ref": "#/$defs/date"
+    },
+    "sourceApp": {
+      "enum": [
+        "telluslab"
+      ]
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "global",
+        "domains"
+      ],
+      "properties": {
+        "global": {
+          "$ref": "#/$defs/measure"
+        },
+        "domains": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/domainId"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "global",
+              "tracks",
+              "books"
+            ],
+            "properties": {
+              "global": {
+                "$ref": "#/$defs/measure"
+              },
+              "tracks": {
+                "type": "object",
+                "propertyNames": {
+                  "$ref": "#/$defs/trackId"
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/measure"
+                }
+              },
+              "books": {
+                "type": "object",
+                "propertyNames": {
+                  "$ref": "#/$defs/bookId"
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/measure"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "proficiency": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/nodeId"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "state",
+          "stability",
+          "difficulty",
+          "nextReviewAt",
+          "sessions",
+          "lastDiagnosis"
+        ],
+        "properties": {
+          "state": {
+            "enum": [
+              "S0",
+              "S1",
+              "S2",
+              "S3",
+              "S4",
+              "S5",
+              "S6"
+            ]
+          },
+          "stability": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "difficulty": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 10
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "nextReviewAt": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sessions": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lastDiagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/diagnosis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "overdue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "nodeId",
+          "dueAt",
+          "cards"
+        ],
+        "properties": {
+          "nodeId": {
+            "$ref": "#/$defs/nodeId"
+          },
+          "dueAt": {
+            "$ref": "#/$defs/date"
+          },
+          "cards": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 0
+    },
+    "suggestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "nodeId",
+          "reason"
+        ],
+        "properties": {
+          "nodeId": {
+            "$ref": "#/$defs/nodeId"
+          },
+          "reason": {
+            "enum": [
+              "advance",
+              "review"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 0
+    },
+    "backup": {
+      "type": "object",
+      "required": [
+        "prerequisiteMode",
+        "domains"
+      ],
+      "properties": {
+        "prerequisiteMode": {
+          "enum": [
+            "flexible",
+            "strict"
+          ]
+        },
+        "domains": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/domainId"
+          },
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "domainId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^DOM-[A-Z]+$"
+    },
+    "nodeId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^DOM-[A-Z]+:[1-9]\\d*\\.[1-9]\\d*$"
+    },
+    "bookId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^BIB-[A-Z]+-\\d{2}$"
+    },
+    "trackId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^TRL-(?:[A-Z]+-)?(?:[A-Z]+|\\d{2})$"
+    },
+    "diagnosis": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^DIF-[A-Z]+-0[1-6]$"
+    },
+    "date": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "measure": {
+      "type": "object",
+      "required": [
+        "completed",
+        "total",
+        "ratio"
+      ],
+      "properties": {
+        "completed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ratio": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "entity": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:dossier|country|event|era|figure|observatory):[A-Za-z0-9_-]+$"
+    }
+  }
+}

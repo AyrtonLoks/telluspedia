@@ -1,5 +1,6 @@
 "use client";
 
+import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React, { useMemo } from "react";
 import { Quote, Clock, Bookmark, ExternalLink } from "lucide-react";
 import { useReaderStore } from "@/stores/readerStore";
@@ -294,6 +295,8 @@ Para estudos comparativos preliminares, consulte as relações bilaterais com a 
       <div className="mt-6 font-serif text-slate-200 text-base leading-relaxed space-y-4">
         {content.split("\n\n").map((paragraph, idx) => renderFormattedParagraph(paragraph, idx))}
       </div>
+
+      <StudyContext entityId={`country:${country.isoCode}`} />
 
       {/* Footnotes & Academic References Section */}
       <div className="mt-12 pt-6 border-t border-slate-800 text-xs font-sans text-slate-400 space-y-3">

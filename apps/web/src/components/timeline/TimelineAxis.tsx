@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { MilestonePin } from "./MilestonePin";
-import { GLOBAL_MILESTONES, PILOT_COUNTRIES, MilestoneItem } from "@/lib/country-data";
+import { GLOBAL_MILESTONES, PILOT_COUNTRIES, findMilestoneById, MilestoneItem } from "@/lib/country-data";
 import { useGlobeStore } from "@/stores/globeStore";
 
 export const TimelineAxis: React.FC = () => {
@@ -121,6 +121,9 @@ export const TimelineAxis: React.FC = () => {
       }
     }
 
+    const selected = selectedMilestoneId && findMilestoneById(selectedMilestoneId);
+    if (selected && !all.some(item => item.id === selected.id)) all.push(selected);
+
     // Filter by year range and active categories
     const filtered = all.filter(
       (m) =>
@@ -131,7 +134,7 @@ export const TimelineAxis: React.FC = () => {
 
     // Sort chronologically
     return filtered.sort((a, b) => a.year - b.year);
-  }, [startYear, endYear, activeCategories, selectedIso]);
+  }, [startYear, endYear, activeCategories, selectedIso, selectedMilestoneId]);
 
   const handleAxisBackgroundClick = () => {
     selectMilestone(null);

@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "kind",
+    "schemaVersion",
+    "links"
+  ],
+  "properties": {
+    "kind": {
+      "enum": [
+        "TellusCrossLinkManifestV1"
+      ]
+    },
+    "schemaVersion": {
+      "enum": [
+        "1.0.0"
+      ]
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "entityId",
+          "kind",
+          "title",
+          "target",
+          "nodeIds",
+          "bookIds"
+        ],
+        "properties": {
+          "entityId": {
+            "$ref": "#/$defs/entity"
+          },
+          "kind": {
+            "enum": [
+              "dossier",
+              "country",
+              "event",
+              "era",
+              "figure",
+              "observatory"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^/(?:pais/[a-z]{3}|dossies/[a-z0-9-]+)?$"
+          },
+          "nodeIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/nodeId"
+            },
+            "minItems": 1
+          },
+          "bookIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/bookId"
+            },
+            "minItems": 0
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "domainId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^DOM-[A-Z]+$"
+    },
+    "nodeId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^DOM-[A-Z]+:[1-9]\\d*\\.[1-9]\\d*$"
+    },
+    "bookId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^BIB-[A-Z]+-\\d{2}$"
+    },
+    "trackId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^TRL-(?:[A-Z]+-)?(?:[A-Z]+|\\d{2})$"
+    },
+    "diagnosis": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^DIF-[A-Z]+-0[1-6]$"
+    },
+    "date": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "measure": {
+      "type": "object",
+      "required": [
+        "completed",
+        "total",
+        "ratio"
+      ],
+      "properties": {
+        "completed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ratio": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "entity": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:dossier|country|event|era|figure|observatory):[A-Za-z0-9_-]+$"
+    }
+  }
+}

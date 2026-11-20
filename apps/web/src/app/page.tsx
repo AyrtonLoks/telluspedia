@@ -1,5 +1,6 @@
 "use client";
 
+import { EntityLaunch } from "@/components/tellus-bridge/EntityLaunch";
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { TopNavBar } from "@/components/nav/TopNavBar";
@@ -40,6 +41,7 @@ export default function HomePage() {
       {/* Top Floating Navigation Bar */}
       <Suspense fallback={null}>
         <TopNavBar />
+        <EntityLaunch />
       </Suspense>
 
       {/* Floating Historical Era Badge */}
