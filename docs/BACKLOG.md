@@ -36,7 +36,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12 |
-| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T17, T26 |
+| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17 |
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11 |
@@ -159,7 +159,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T03 | Remover dados e citações inventados | Dados | P0 | G | REVIEW | antigravity | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | REVIEW | claude | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
-| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | REVIEW | codex | — | G-PIPELINE |
+| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | IN_PROGRESS | codex | — | G-PIPELINE, G-PAIS |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | TODO | — | — | G-ESTUDOS |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | TODO | — | — | G-OBS |
@@ -401,8 +401,8 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 ### T06 · Validar lat/lng em /api/weather
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t06-validar-coordenadas-weather · **Worktree:** ../telluspedia-wt/codex-t06
-- **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-PIPELINE
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t06-origem-do-clima · **Worktree:** ../telluspedia-wt/codex-t06
+- **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-PIPELINE, G-PAIS
 
 **Contexto / problema**
 `apps/web/src/app/api/weather/route.ts:17,30` interpola `lat`/`lng` crus na URL do pipeline e do Open-Meteo (`?lat=1&outro=...` injeta parâmetros). O fallback inventa valores quando um campo falta (22 °C, 50 % de umidade, vento 5) — linhas 36-41. O pipeline Python também inventa (20 °C) em `services/data-pipeline/app/services/weather_proxy_service.py:93-98`.
@@ -425,6 +425,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 - 2026-11-20 · codex · TODO · Devolvida à fila antes da implementação para priorizar a correção da D01.
 - 2026-11-20 · codex · IN_PROGRESS · Retomada por solicitação do Ayrton após o aceite da D01.
 - 2026-11-20 · codex · REVIEW · Validação decimal de coordenadas com finitude e limites antes de consultar os provedores. Parâmetros de URL montados pela API, pelo cliente web e pelo pipeline Python. Campos ausentes normalizados para null e exibidos como —, preservando zero. Os dois endpoints retornam mensagens genéricas em falhas de upstream. Cache Redis versionado para deixar expirar as entradas com valores padrão anteriores. Typecheck, lint, 235 testes web, 7 testes Python e build passaram. A versão de produção foi verificada por HTTP e no Chromium com pipeline simulado. O build reutilizou cópias temporárias dos arquivos originais do Google Fonts.
+- 2026-11-20 · codex · IN_PROGRESS · Reaberta após reprovação. O cartão exibia o clima do ponto de referência do país sem identificar o lugar ou a fonte.
 
 ---
 
