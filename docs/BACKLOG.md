@@ -155,7 +155,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T24 | Commitar trabalho pendente (TellusBridge) | Infra | P0 | P | DONE | ayrton | — | — |
 | T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | DONE | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | REVIEW | antigravity | — | G-TIMELINE |
-| D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | IN_PROGRESS | codex | — | G-GLOBO |
+| D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | REVIEW | codex | — | G-GLOBO |
 | T03 | Remover dados e citações inventados | Dados | P0 | G | IN_PROGRESS | antigravity | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | TODO | — | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | IN_PROGRESS | claude | — | G-OBS |
@@ -878,7 +878,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### D01 · Globo escuro: color space + tone mapping
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d01-cor-shader · **Worktree:** ../telluspedia-wt/codex-d01
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d01-cor-shader · **Worktree:** ../telluspedia-wt/codex-d01
 - **Prioridade:** P0 · **Área:** 3D · **Tamanho:** P · **Depende de:** — · **Grupos:** G-GLOBO
 
 **Contexto / problema**
@@ -892,16 +892,21 @@ O globo inteiro parece escuro e lavado. Causa principal (técnica): o `ShaderMat
 5. Conferir Lua e planetas (materiais padrão já convertem; ajustar intensidades se o tone mapping alterar).
 
 **Critérios de aceite**
-- [ ] Hemisfério diurno com cores naturais (oceano azul, desertos claros), comparável às imagens Blue Marble.
-- [ ] Hemisfério noturno escuro mas legível, com luzes de cidade.
-- [ ] Captura antes/depois anexada.
-- [ ] Invariante de normais em espaço mundial preservado.
+- [x] Hemisfério diurno com cores naturais (oceano azul, desertos claros), comparável às imagens Blue Marble.
+- [x] Hemisfério noturno escuro mas legível, com luzes de cidade.
+- [x] Captura antes/depois anexada.
+- [x] Invariante de normais em espaço mundial preservado.
+
+**Captura** — [Antes, dia e noite reais corrigidos e iluminação de estudo](evidence/d01/antes-depois.webp), da esquerda para a direita. Mesma câmera e instante de referência (20/03/2026 às 13h45 UTC).
+
+[Hemisfério noturno às 04h00 UTC](evidence/d01/noite.webp).
 
 **Como verificar**: `pnpm dev`; comparar visualmente; teste existente de shader continua passando.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Tarefa reivindicada em worktree próprio a partir de origin/master.
+- 2026-11-20 · codex · REVIEW · O shader converte a cor de saída para sRGB após ACES Filmic (exposição 1,1), com luz difusa, emissão das cidades e Fresnel recalibrados. Por decisão do Ayrton, o globo abre em iluminação de estudo e o botão alterna para o terminador astronômico. A comparação com a [Blue Marble](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/) guiou a leitura do azul do oceano e das regiões áridas. Verificado no Chromium com WebGL o controle por teclado e a renderização da Terra e da Lua. O modo Cosmos abriu e o painel de Marte respondeu, mas a captura dos planetas não terminou com a GPU por software. Typecheck, lint, 207 testes e build passaram. O build usou cópias temporárias dos arquivos originais das fontes do Google, após timeouts no download automático.
 
 ---
 
