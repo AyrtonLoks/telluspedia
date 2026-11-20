@@ -181,7 +181,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | TODO | — | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | TODO | — | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | TODO | — | D01 | G-GLOBO |
-| D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | IN_PROGRESS | codex | — | G-FRONTEIRAS |
+| D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | REVIEW | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | — | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | REVIEW | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | TODO | — | T05 | G-OBS |
@@ -1046,7 +1046,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D03 · Fronteiras com espessura real e highlight
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d03-fronteiras · **Worktree:** ../telluspedia-wt/codex-d03
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d03-fronteiras · **Worktree:** ../telluspedia-wt/codex-d03
 - **Prioridade:** P2 · **Área:** 3D · **Tamanho:** M · **Depende de:** — · **Grupos:** G-FRONTEIRAS
 
 **Contexto / problema**
@@ -1060,13 +1060,14 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 5. Manter cache de T16 e `dispose()` (invariantes).
 
 **Critérios de aceite**
-- [ ] Bordas com espessura consistente em telas HiDPI.
-- [ ] Seleção visualmente distinta do hover.
-- [ ] Sem z-fighting com a superfície.
+- [x] Bordas com espessura consistente em telas HiDPI.
+- [x] Seleção visualmente distinta do hover.
+- [x] Sem z-fighting com a superfície.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 6. D15 e a fase 5 dependem do grupo do Observatório, ocupado pela D05. A D02 também compartilha G-GLOBO com a D05.
+- 2026-11-20 · codex · REVIEW · Fronteiras com LineSegments2 e largura em pixels CSS. A largura e a opacidade das linhas base acompanham o zoom. Seleção com contorno de 3 px, halo e preenchimento esférico translúcido. Hover com contorno de 2,15 px. Contornos e preenchimentos calculados sob demanda e reaproveitados por atlas e ISO. Geometrias e materiais GPU descartados na troca ou desmontagem. A subdivisão mantém as faces e os segmentos acima da Terra. Captura anterior mostra o Brasil marcado por uma linha fina. Captura posterior no mesmo enquadramento mostra o Brasil preenchido e o Peru contornado sob o cursor. Chromium com viewport de 1366 × 850 confirmou 3 px CSS tanto em DPR 1× quanto 2×. Validados 376 testes, typecheck, lint e build. Testes de geometria cobrem territórios separados, o enclave do Lesoto, a Antártida, a Prússia e a reutilização do cache.
 
 ---
 
