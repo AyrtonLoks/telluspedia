@@ -193,7 +193,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
-| D15 | Gerenciador de layout de painéis | Design | P1 | M | IN_PROGRESS | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
+| D15 | Gerenciador de layout de painéis | Design | P1 | M | REVIEW | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
@@ -1393,7 +1393,7 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 
 ### D15 · Gerenciador de layout de painéis
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d15-layout-paineis · **Worktree:** ../telluspedia-wt/claude-d15
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d15-layout-paineis · **Worktree:** ../telluspedia-wt/claude-d15
 - **Prioridade:** P1 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA
 
 **Contexto / problema**
@@ -1407,14 +1407,15 @@ O Inspector do país (ex.: COD) e o painel do Observatório abrem na mesma colun
 5. Responsivo: em telas estreitas, o painel vira bottom sheet.
 
 **Critérios de aceite**
-- [ ] Nunca dois painéis laterais sobrepostos.
-- [ ] Timeline nunca fica sob um painel.
+- [x] Nunca dois painéis laterais sobrepostos.
+- [x] Timeline nunca fica sob um painel.
 - [ ] Funciona em 1366–2560 px e mobile.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. Grupos G-PAIS (InspectorHUD), G-COSMOS (CosmicInspectorHUD), G-OBS (ObservatoryPanel/telemetria) e G-TIMELINE (TimelineBar) adicionados: os painéis passam a ser renderizados pelo slot do layout. Nenhuma tarefa desses grupos em andamento.
 - 2026-11-20 · claude · IN_PROGRESS · G-EPOCA adicionado: os overlays da esquerda (Apollo 11 e rota de Magalhães) se sobrepõem ao botão “Iluminação de estudo” e entram no slot `leftOverlay`. Nenhuma tarefa de G-EPOCA em andamento.
+- 2026-11-20 · claude · REVIEW · Commit `d86e704`. **Modelo:** `stores/layoutStore.ts` guarda só a aba ativa do dock; quais painéis estão abertos continua nas stores de cada um (`globeStore.selectedIso`, `observatoryStore.isPanelOpen`, `cosmicStore` foco/inspector), derivado por `useRightDock()` (função pura `resolveRightDock`: abas na ordem País · Observatório · Cosmos; preferência por painel fechado cai no primeiro aberto). **`RightDock`** (`components/layout/`): coluna direita única em lg+ (`right-5`, de `top-[4.75rem]` — abaixo da navbar — até `bottom-4`, `w-96`), **um painel por vez**, com abas (`role=tablist`) quando há mais de um aberto; painel recém-aberto vira o ativo; em telas estreitas vira **bottom sheet** (`inset-x-2 bottom-2`, máx. 62vh, alça visual). `InspectorHUD`, `ObservatoryPanel` e o painel do `CosmicInspectorHUD` deixaram de usar `fixed` e só preenchem o dock; `CosmicInspectorHUD` ganhou `placement` ("dock" = painel do corpo focado; "floating" = botão de camadas, que desvia do dock); o modo recolhido do Observatório (D05) foi removido — as abas cumprem esse papel. Navbar: “Observatório” aberto atrás de outra aba vem para frente (`panelButtonAction`), senão abre/fecha. **Timeline:** recuo `lg:right-[26.5rem]` com o dock visível e `max-lg:hidden` quando o dock vira bottom sheet — nunca fica sob um painel. **Overlays da esquerda** (`leftOverlay`): Apollo 11, rota de Magalhães e lançador do TellusLab passaram de `top-20` (sobre o botão “Iluminação de estudo”) para `top-[7.5rem]`, com `max-h-[calc(100vh-18.5rem)]` + rolagem acima da timeline. **Bundle:** `CosmicInspectorHUD` e `CometHalleyTrajectory` (D10) importavam `cn` pelo barrel `@/components/ui`, que puxa Radix para a home — trocado pelo arquivo: **home 466 kB → 436 kB**. **Testes:** `test/layout-dock.test.tsx` (16: função pura, abas/um painel por vez, coluna × bottom sheet, timeline desviando/ocultando, ação do botão da navbar, botão cósmico desviando, Inspector cósmico no dock, invariantes estáticos — painéis sem `fixed`, página sem painéis fora do dock, overlays abaixo do botão); testes do modo recolhido da D05 removidos. **Validação após rebase:** typecheck ok, lint ok, 394/394 testes, build ok. **Não verificado pelo agente:** o critério “1366–2560 px e mobile” e a aparência — Chromium headless indisponível; as classes cobrem lg (≥ 1024 px) e telas estreitas, mas conferir em 1366 px (navbar + dock) e no celular. **Fora do escopo:** transições de abrir/fechar (D17); Comparador e Reader continuam modais de tela cheia (não laterais).
 
 ---
 
