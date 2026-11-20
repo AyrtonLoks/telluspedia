@@ -7,15 +7,28 @@ import { GLOBAL_MILESTONES, PILOT_COUNTRIES, findMilestoneById, MilestoneItem } 
 import { useGlobeStore } from "@/stores/globeStore";
 
 export const TimelineAxis: React.FC = () => {
-  const startYear = useTimelineStore((s) => s.startYear);
-  const endYear = useTimelineStore((s) => s.endYear);
-  const activeCategories = useTimelineStore((s) => s.activeCategories);
+  const storeStartYear = useTimelineStore((s) => s.startYear);
+  const storeEndYear = useTimelineStore((s) => s.endYear);
+  const storeActiveCategories = useTimelineStore((s) => s.activeCategories);
   const selectMilestone = useTimelineStore((s) => s.selectMilestone);
-  const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const timelineMode = useTimelineStore((s: any) => s.timelineMode);
-  const geologicalMa = useTimelineStore((s: any) => s.geologicalMa);
-  const selectGeologicalMa = useTimelineStore((s: any) => s.selectGeologicalMa);
-  const selectedIso = useGlobeStore((s) => s.selectedIso);
+  const storeSelectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
+  const storeTimelineMode = useTimelineStore((s) => s.timelineMode);
+  const storeGeologicalMa = useTimelineStore((s) => s.geologicalMa);
+  const selectGeologicalMa = useTimelineStore((s) => s.selectGeologicalMa);
+  const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
+
+  const isServer = typeof window === "undefined";
+  const startYear = isServer ? useTimelineStore.getState().startYear : storeStartYear;
+  const endYear = isServer ? useTimelineStore.getState().endYear : storeEndYear;
+  const activeCategories = isServer
+    ? useTimelineStore.getState().activeCategories
+    : storeActiveCategories;
+  const selectedMilestoneId = isServer
+    ? useTimelineStore.getState().selectedMilestoneId
+    : storeSelectedMilestoneId;
+  const timelineMode = isServer ? useTimelineStore.getState().timelineMode : storeTimelineMode;
+  const geologicalMa = isServer ? useTimelineStore.getState().geologicalMa : storeGeologicalMa;
+  const selectedIso = isServer ? useGlobeStore.getState().selectedIso : storeSelectedIso;
 
   const isGeological =
     timelineMode === "GEOLOGICAL" ||
@@ -93,7 +106,9 @@ export const TimelineAxis: React.FC = () => {
     if (span <= 20) step = 2;
     else if (span <= 50) step = 5;
     else if (span <= 100) step = 10;
-    else step = 25;
+    else if (span <= 250) step = 25;
+    else if (span <= 500) step = 50;
+    else step = 100;
 
     const items: { year: number; percent: number }[] = [];
     const firstTick = Math.ceil(startYear / step) * step;
@@ -135,6 +150,11 @@ export const TimelineAxis: React.FC = () => {
     // Sort chronologically
     return filtered.sort((a, b) => a.year - b.year);
   }, [startYear, endYear, activeCategories, selectedIso, selectedMilestoneId]);
+
+  const pinPercents = useMemo(
+    () => milestones.map((m) => Math.max(2, Math.min(98, ((m.year - startYear) / span) * 100))),
+    [milestones, startYear, span]
+  );
 
   const handleAxisBackgroundClick = () => {
     selectMilestone(null);
@@ -206,6 +226,7 @@ export const TimelineAxis: React.FC = () => {
               }`}
             >
               <button
+                type="button"
                 onClick={handleClick}
                 title={`${m.title} — ${m.subtitle}`}
                 className={`group relative flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-medium transition-all shadow-md ${
@@ -228,25 +249,47 @@ export const TimelineAxis: React.FC = () => {
 
   return (
     <div
+      data-testid="historical-timeline-axis"
       className="relative w-full h-16 my-1 select-none cursor-default"
       onClick={handleAxisBackgroundClick}
     >
       {/* Central Axis Line */}
       <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-900/40 via-cyan-500/50 to-cyan-900/40" />
 
-      {/* Year Ticks & Labels */}
-      {ticks.map((t) => (
-        <div
-          key={t.year}
-          style={{ left: `${t.percent}%` }}
-          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none"
-        >
-          <div className="w-[1px] h-3 bg-slate-600/70" />
-          <span className="mt-1 font-mono text-[9px] text-slate-400">
-            {t.year}
-          </span>
-        </div>
-      ))}
+      {/* Year Ticks & Labels (Hang strictly below central axis & pins so labels never collide with pins) */}
+      {ticks.map((t) => {
+        const isStartEdge = t.percent <= 2;
+        const isEndEdge = t.percent >= 98;
+        const hasNearbyPin = pinPercents.some((p) => Math.abs(p - t.percent) < 1.5);
+
+        return (
+          <div
+            key={t.year}
+            data-testid="timeline-year-tick"
+            data-year={t.year}
+            style={{
+              left: isEndEdge ? "auto" : `${t.percent}%`,
+              right: isEndEdge ? 0 : "auto",
+            }}
+            className={`absolute top-1/2 flex flex-col pointer-events-none ${
+              isEndEdge
+                ? "translate-x-0 items-end"
+                : isStartEdge
+                ? "translate-x-0 items-start"
+                : "-translate-x-1/2 items-center"
+            }`}
+          >
+            <div
+              className={`w-[1px] h-2.5 ${
+                hasNearbyPin ? "bg-slate-600/35" : "bg-slate-600/70"
+              }`}
+            />
+            <span className="mt-1 font-mono text-[10px] leading-none text-slate-400 whitespace-nowrap">
+              {t.year}
+            </span>
+          </div>
+        );
+      })}
 
       {/* Alternating Milestone Nodes */}
       {milestones.map((m, idx) => {
