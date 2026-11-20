@@ -156,10 +156,10 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | DONE | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | DONE | antigravity | — | G-TIMELINE |
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | REJECTED | codex | — | G-GLOBO |
-| T03 | Remover dados e citações inventados | Dados | P0 | G | TODO | — | — | G-PAIS |
+| T03 | Remover dados e citações inventados | Dados | P0 | G | IN_PROGRESS | — | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | TODO | — | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | IN_PROGRESS | claude | — | G-OBS |
-| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | TODO | — | — | G-PIPELINE |
+| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | IN_PROGRESS | codex | — | G-PIPELINE |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | TODO | — | — | G-ESTUDOS |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | TODO | — | — | G-OBS |
@@ -294,7 +294,7 @@ Também: rótulos dos anos do eixo ficam sob os pins (ex.: "1990").
 
 ### T03 · Remover dados e citações inventados (RN02)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t03-remover-dados-inventados · **Worktree:** ../telluspedia-wt/antigravity-t03
 - **Prioridade:** P0 · **Área:** Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-PAIS
 
 **Contexto / problema**
@@ -326,6 +326,7 @@ Só ~30 países têm dados reais em `apps/web/src/lib/country-data.ts` (`PILOT_C
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (92eec3b).
 
 ---
 
@@ -391,7 +392,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 ### T06 · Validar lat/lng em /api/weather
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t06-validar-coordenadas-weather · **Worktree:** ../telluspedia-wt/codex-t06
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-PIPELINE
 
 **Contexto / problema**
@@ -411,6 +412,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível por fase. Reivindicada em worktree próprio a partir de origin/master.
 
 ---
 
@@ -877,7 +879,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### D01 · Globo escuro: color space + tone mapping
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d01-cor-shader · **Worktree:** ../telluspedia-wt/codex-d01
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d01-cor-shader · **Worktree:** ../telluspedia-wt/codex-d01
 - **Prioridade:** P0 · **Área:** 3D · **Tamanho:** P · **Depende de:** — · **Grupos:** G-GLOBO
 
 **Contexto / problema**
@@ -891,16 +893,21 @@ O globo inteiro parece escuro e lavado. Causa principal (técnica): o `ShaderMat
 5. Conferir Lua e planetas (materiais padrão já convertem; ajustar intensidades se o tone mapping alterar).
 
 **Critérios de aceite**
-- [ ] Hemisfério diurno com cores naturais (oceano azul, desertos claros), comparável às imagens Blue Marble.
-- [ ] Hemisfério noturno escuro mas legível, com luzes de cidade.
-- [ ] Captura antes/depois anexada.
-- [ ] Invariante de normais em espaço mundial preservado.
+- [x] Hemisfério diurno com cores naturais (oceano azul, desertos claros), comparável às imagens Blue Marble.
+- [x] Hemisfério noturno escuro mas legível, com luzes de cidade.
+- [x] Captura antes/depois anexada.
+- [x] Invariante de normais em espaço mundial preservado.
+
+**Captura** — [Antes, dia e noite reais corrigidos e iluminação de estudo](evidence/d01/antes-depois.webp), da esquerda para a direita. Mesma câmera e instante de referência (20/03/2026 às 13h45 UTC).
+
+[Hemisfério noturno às 04h00 UTC](evidence/d01/noite.webp).
 
 **Como verificar**: `pnpm dev`; comparar visualmente; teste existente de shader continua passando.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Tarefa reivindicada em worktree próprio a partir de origin/master.
+- 2026-11-20 · codex · REVIEW · O shader converte a cor de saída para sRGB após ACES Filmic (exposição 1,1), com luz difusa, emissão das cidades e Fresnel recalibrados. Por decisão do Ayrton, o globo abre em iluminação de estudo e o botão alterna para o terminador astronômico. A comparação com a [Blue Marble](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/) guiou a leitura do azul do oceano e das regiões áridas. Verificado no Chromium com WebGL o controle por teclado e a renderização da Terra e da Lua. O modo Cosmos abriu e o painel de Marte respondeu, mas a captura dos planetas não terminou com a GPU por software. Typecheck, lint, 207 testes e build passaram. O build usou cópias temporárias dos arquivos originais das fontes do Google, após timeouts no download automático.
 
 ---
 

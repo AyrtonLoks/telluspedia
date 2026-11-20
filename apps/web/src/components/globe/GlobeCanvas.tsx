@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
+import * as THREE from "three";
+import { Sun } from "lucide-react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { EarthSphere } from "./EarthSphere";
@@ -37,6 +39,7 @@ import { isContemporaryEpoch } from "@/lib/observatory-data";
 import { findMilestoneById } from "@/lib/country-data";
 
 export const GlobeCanvas: React.FC = () => {
+  const [studyLighting, setStudyLighting] = useState(true);
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
@@ -131,7 +134,14 @@ export const GlobeCanvas: React.FC = () => {
       <Canvas
         camera={{ position: [0, 0, 2.5], fov: 45 }}
         frameloop={isThrottled ? "demand" : "always"}
-        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+        gl={{
+          antialias: true,
+          alpha: false,
+          powerPreference: "high-performance",
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.1,
+          outputColorSpace: THREE.SRGBColorSpace,
+        }}
         onPointerMissed={handlePointerMissed}
       >
         {/* Ambient & Directional Sun Lighting */}
@@ -179,7 +189,7 @@ export const GlobeCanvas: React.FC = () => {
           <OrbitingMoon />
 
           {/* 3D Earth Mesh with Shader */}
-          <EarthSphere />
+          <EarthSphere studyLighting={studyLighting} />
 
           {/* High-Resolution TopoJSON Borders */}
           <CountryBorders />
@@ -201,6 +211,16 @@ export const GlobeCanvas: React.FC = () => {
           {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
         </group>
       </Canvas>
+
+      <button
+        type="button"
+        aria-pressed={studyLighting}
+        onClick={() => setStudyLighting((enabled) => !enabled)}
+        className="glass-panel absolute left-3 top-[4.75rem] z-10 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 hover:border-cyan-400/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 aria-pressed:border-cyan-500/60 aria-pressed:text-cyan-300 sm:left-6"
+      >
+        <Sun aria-hidden="true" className="size-4" />
+        Iluminação de estudo
+      </button>
 
       {/* Floating Apollo 11 Space Flight Telemetry HUD Overlay */}
       {isApolloActive && <Apollo11TelemetryOverlay />}
