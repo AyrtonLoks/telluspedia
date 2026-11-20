@@ -184,7 +184,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | claude | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
-| D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | IN_PROGRESS | codex | T05 | G-OBS, G-INFRA |
+| D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | REVIEW | codex | T05 | G-OBS, G-INFRA |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
@@ -1153,7 +1153,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D06 · Eventos severos: símbolos, clusters, trilhas
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d06-eventos-eonet · **Worktree:** ../telluspedia-wt/codex-d06
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d06-eventos-eonet · **Worktree:** ../telluspedia-wt/codex-d06
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** T05 · **Grupos:** G-OBS, G-INFRA
 
 **Contexto / problema**
@@ -1167,13 +1167,14 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 5. Filtro por categoria na UI.
 
 **Critérios de aceite**
-- [ ] Categoria identificável pelo símbolo sem abrir o card.
-- [ ] Sem manchas sobrepostas em zoom distante (clusters).
-- [ ] Ciclones mostram trilha.
+- [x] Categoria identificável pelo símbolo sem abrir o card.
+- [x] Sem manchas sobrepostas em zoom distante (clusters).
+- [x] Ciclones mostram trilha.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 5. G-OBS e G-INFRA estão livres. Reservado G-INFRA para adicionar Supercluster ao workspace.
+- 2026-11-20 · codex · REVIEW · A rota preserva geometrias válidas e datadas, inclusive polígonos, e consulta até 100 eventos abertos. A camada usa sprites com escala em pixels CSS, símbolos por categoria, espiral animada para tempestades e Supercluster seguido de agrupamento em tela. Os grupos exibem a contagem e permitem escolher um evento. O card mostra data UTC, magnitude quando disponível e links das fontes. Pontos datados da trajetória são clicáveis. O filtro por categoria fica no Observatório. Capturas no Chromium com o mesmo cenário simulado mostram cinco círculos sobrepostos antes e um grupo com o número 5 depois, além dos símbolos e da trilha selecionada. Verificados clique, filtro e seleção de observações com magnitudes distintas. Na consulta direta à NASA, os 100 eventos foram normalizados e um tinha 22 observações. Typecheck, lint, 423 testes e build passaram.
 
 ---
 
