@@ -926,12 +926,13 @@ export function calculateHalleyPosition(dateOrYear: Date | number): HalleyPositi
     : 0;
   const activityFactor = hasTail ? Math.pow(rawActivity, 1.35) : 0;
 
-  const tailLength = hasTail ? Number((activityFactor * 14.0).toFixed(3)) : 0;
-  const tailOpacity = hasTail ? Number((activityFactor * 0.85).toFixed(3)) : 0;
-  const dustTailLength = hasTail ? Number((activityFactor * 10.5).toFixed(3)) : 0;
-  const dustTailOpacity = hasTail ? Number((activityFactor * 0.65).toFixed(3)) : 0;
-  const comaRadius = Number((0.22 + activityFactor * 1.18).toFixed(3));
-  const comaOpacity = Number((0.22 + activityFactor * 0.68).toFixed(3));
+  const tailLength = hasTail ? Number((activityFactor * 18.0).toFixed(3)) : 0;
+  const tailOpacity = hasTail ? Number((activityFactor * 0.92).toFixed(3)) : 0;
+  const dustTailLength = hasTail ? Number((activityFactor * 13.5).toFixed(3)) : 0;
+  const dustTailOpacity = hasTail ? Number((activityFactor * 0.78).toFixed(3)) : 0;
+  // Sprite diameter (radius = comaRadius / 2) — always comfortably larger than nucleus diameter (~0.32)
+  const comaRadius = Number((0.75 + activityFactor * 2.05).toFixed(3));
+  const comaOpacity = Number((0.24 + activityFactor * 0.68).toFixed(3));
 
   const isPerihelionPassage = rAu <= 1.5;
 

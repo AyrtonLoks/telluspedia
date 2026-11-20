@@ -20,10 +20,31 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { getLunarPhase } from "@/lib/astronomy";
 import {
   ASTROPHYSICAL_CATALOG,
+  HALLEY_TAIL_ACTIVATION_AU,
   computeAllPlanetaryPositions,
   calculateHalleyPosition,
   CelestialBodyId,
+  HalleyPosition,
 } from "@/lib/astronomy-planets";
+import { cn } from "@/components/ui";
+
+const HALLEY_EPOCH_PRESETS = [
+  { id: "perihelion-1986", label: "Periélio 1986", sublabel: "0,59 UA · cauda máx.", year: 1986.1081 },
+  { id: "approach-1986", label: "Aprox. Terra", sublabel: "0,42 UA · Abr 1986", year: 1986.274 },
+  { id: "aphelion-2026", label: "Afélio 2026", sublabel: "35 UA · sem cauda", year: 2026 },
+] as const;
+
+function formatCosmicEpoch(decimalYear: number): string {
+  const wholeYear = Math.floor(decimalYear);
+  const frac = decimalYear - wholeYear;
+  if (Math.abs(frac) < 1e-4) return String(wholeYear);
+  const start = Date.UTC(wholeYear, 0, 1);
+  const end = Date.UTC(wholeYear + 1, 0, 1);
+  const date = new Date(start + frac * (end - start));
+  const dd = String(date.getUTCDate()).padStart(2, "0");
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+  return `${dd}/${mm}/${date.getUTCFullYear()}`;
+}
 
 export const CosmicInspectorHUD: React.FC = () => {
   const storeIsCosmicMode = useCosmicStore((s) => s.isCosmicMode);
@@ -131,6 +152,7 @@ export const CosmicInspectorHUD: React.FC = () => {
   let distanceSunMkm = 0;
   let distanceEarthAu = 0;
   let distanceEarthMkm = 0;
+  let halleyTelemetry: HalleyPosition | null = null;
 
   if (focusedBodyId === "SUN") {
     distanceSunAu = 0;
@@ -139,6 +161,7 @@ export const CosmicInspectorHUD: React.FC = () => {
     distanceEarthMkm = 149.6;
   } else if (focusedBodyId === "HALLEY") {
     const h = calculateHalleyPosition(selectedYear);
+    halleyTelemetry = h;
     distanceSunAu = h.distanceSunAu;
     distanceSunMkm = h.distanceSunMkm;
     distanceEarthAu = h.distanceEarthAu;
@@ -190,7 +213,7 @@ export const CosmicInspectorHUD: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400 font-mono mt-0.5">
-              Ano Referência: {selectedYear}
+              Época: {formatCosmicEpoch(selectedYear)}
             </p>
           </div>
         </div>
@@ -231,6 +254,88 @@ export const CosmicInspectorHUD: React.FC = () => {
           </span>
         </div>
       </div>
+
+      {/* Halley Cometary Activity & Epoch Controls */}
+      {halleyTelemetry && (
+        <div
+          data-testid="halley-activity-panel"
+          className="rounded-card border border-line bg-surface-raised/80 p-3 space-y-2.5"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-caption font-medium text-fg-secondary">
+              Atividade cometária
+            </span>
+            <span
+              data-testid="halley-tail-status"
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-control border px-2 py-0.5 text-caption font-medium",
+                halleyTelemetry.hasTail
+                  ? "border-accent/50 bg-accent/15 text-accent"
+                  : "border-line bg-surface text-fg-muted"
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  halleyTelemetry.hasTail ? "bg-accent" : "bg-fg-muted"
+                )}
+              />
+              {halleyTelemetry.hasTail ? "Cauda dupla ativa" : "Sem cauda (afélio)"}
+            </span>
+          </div>
+
+          {halleyTelemetry.hasTail ? (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-caption">
+                <span className="text-fg-secondary">Sublimação solar (&lt; {HALLEY_TAIL_ACTIVATION_AU} UA)</span>
+                <span className="font-mono tabular-nums text-accent">
+                  {Math.round(halleyTelemetry.activityFactor * 100)}%
+                </span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface">
+                <div
+                  className="h-full rounded-full bg-accent transition-all duration-base ease-out"
+                  style={{ width: `${Math.max(4, Math.round(halleyTelemetry.activityFactor * 100))}%` }}
+                />
+              </div>
+              <p className="text-caption text-fg-muted">
+                Cauda iônica azulada (anti-solar) e cauda de poeira amarelada curvada.
+              </p>
+            </div>
+          ) : (
+            <p className="text-caption text-fg-muted">
+              Acima de {HALLEY_TAIL_ACTIVATION_AU} UA o gelo não sublima; apenas o núcleo rochoso e uma coma residual ficam visíveis.
+            </p>
+          )}
+
+          <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+            {HALLEY_EPOCH_PRESETS.map((preset) => {
+              const isActivePreset = Math.abs(selectedYear - preset.year) < 0.05;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  data-testid={`halley-epoch-${preset.id}`}
+                  aria-pressed={isActivePreset}
+                  onClick={() => useTimelineStore.getState().selectYear(preset.year)}
+                  className={cn(
+                    "flex flex-col items-start rounded-control border px-2 py-1.5 text-left transition-colors duration-fast ease-out",
+                    isActivePreset
+                      ? "border-accent bg-accent/15 text-accent"
+                      : "border-line bg-surface hover:border-line-strong text-fg"
+                  )}
+                >
+                  <span className="text-caption font-medium leading-tight">{preset.label}</span>
+                  <span className="text-caption font-mono tabular-nums text-fg-muted leading-tight">
+                    {preset.sublabel}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Astrophysical Fact Sheet */}
       <div className="space-y-1.5 text-xs">
