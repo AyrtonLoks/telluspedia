@@ -156,7 +156,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | DONE | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | REVIEW | antigravity | — | G-TIMELINE |
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | IN_PROGRESS | codex | — | G-GLOBO |
-| T03 | Remover dados e citações inventados | Dados | P0 | G | TODO | — | — | G-PAIS |
+| T03 | Remover dados e citações inventados | Dados | P0 | G | IN_PROGRESS | antigravity | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | TODO | — | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | IN_PROGRESS | claude | — | G-OBS |
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | TODO | — | — | G-PIPELINE |
@@ -294,7 +294,7 @@ Também: rótulos dos anos do eixo ficam sob os pins (ex.: "1990").
 
 ### T03 · Remover dados e citações inventados (RN02)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t03-remover-dados-inventados · **Worktree:** ../telluspedia-wt/antigravity-t03
 - **Prioridade:** P0 · **Área:** Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-PAIS
 
 **Contexto / problema**
@@ -326,6 +326,7 @@ Só ~30 países têm dados reais em `apps/web/src/lib/country-data.ts` (`PILOT_C
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (92eec3b).
 
 ---
 
