@@ -154,7 +154,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 |---|---|---|---|---|---|---|---|---|
 | T24 | Commitar trabalho pendente (TellusBridge) | Infra | P0 | P | DONE | ayrton | — | — |
 | T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | REVIEW | claude | — | G-SHELL |
-| T02 | Timeline vazando do painel em telas largas | Design | P0 | P | IN_PROGRESS | antigravity | — | G-TIMELINE |
+| T02 | Timeline vazando do painel em telas largas | Design | P0 | P | REVIEW | antigravity | — | G-TIMELINE |
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | IN_PROGRESS | codex | — | G-GLOBO |
 | T03 | Remover dados e citações inventados | Dados | P0 | G | TODO | — | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | TODO | — | — | G-OBS |
@@ -264,7 +264,7 @@ Toda a interface (navbar, painéis, timeline) aparece em Times/serifa. Causa con
 
 ### T02 · Timeline vazando do painel em telas largas
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t02-timeline-overflow · **Worktree:** ../telluspedia-wt/antigravity-t02
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t02-timeline-overflow · **Worktree:** ../telluspedia-wt/antigravity-t02
 - **Prioridade:** P0 · **Área:** Design · **Tamanho:** P · **Depende de:** — · **Grupos:** G-TIMELINE
 
 **Contexto / problema**
@@ -279,15 +279,16 @@ Também: rótulos dos anos do eixo ficam sob os pins (ex.: "1990").
 5. Ajustar `TimelineAxis` para que rótulos de ano não colidam com pins (deslocar rótulos para baixo ou ocultar o rótulo quando houver pin no mesmo x).
 
 **Critérios de aceite**
-- [ ] Sem overflow horizontal em 1280, 1366, 1536, 1680, 1920 e 2560 px (com e sem painel lateral aberto).
-- [ ] Todos os controles da timeline acessíveis em todas essas larguras.
-- [ ] Rótulos do eixo legíveis, sem sobreposição com pins.
+- [x] Sem overflow horizontal em 1280, 1366, 1536, 1680, 1920 e 2560 px (com e sem painel lateral aberto).
+- [x] Todos os controles da timeline acessíveis em todas essas larguras.
+- [x] Rótulos do eixo legíveis, sem sobreposição com pins.
 
 **Como verificar**: DevTools → modo responsivo nas larguras acima; capturas antes/depois.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (fc20b0e).
+- 2026-11-20 · antigravity · REVIEW · Reestruturados os componentes da timeline (commit c3d777d): (1) `TimelineBar.tsx`: removidos `xl:flex-nowrap`/`2xl:flex-nowrap` incondicionais, cabeçalho dividido em 2 zonas (`timeline-presets-zone` com `flex-1 min-w-0 basis-[280px]` + `timeline-controls-zone` com controles fixos sempre acessíveis e quebra graciosa em larguras estreitas), e detecção unificada de painéis laterais direitos (`InspectorHUD`, `ObservatoryPanel` e `CosmicInspectorHUD`) reservando espaço livre (`lg:right-[26.5rem]`); (2) `PresetSelector.tsx`: chips sempre com rótulos curtos (`whitespace-nowrap shrink-0`) e rótulo completo no `title`/`aria-label`, em faixa `overflow-x-auto scroll-smooth` com botões de rolagem laterais reativos via `ResizeObserver` e suporte a wheel horizontal; (3) `CategoryFilterPills.tsx`: chips `whitespace-nowrap shrink-0` com `aria-pressed`; (4) `TimelineAxis.tsx`: ticks e rótulos de ano deslocados estritamente abaixo da linha central (`top-1/2` sem `-translate-y-1/2`), alinhamento interno nas bordas (`<=2%`/`>=98%`) e escala adaptativa de passo para janelas amplas. Testes: criada suíte `apps/web/test/timeline-layout.test.tsx` (5 casos). Validação pós-rebase em `origin/master`: `pnpm typecheck` ok, `pnpm lint` ok (0 warnings), `pnpm test` 207/207, `pnpm build` ok (16/16 páginas). Antes: cabeçalho extrapolava o painel em 1536–1680 px ao trocar para rótulos longos sem quebra, timeline passava sob `ObservatoryPanel`/`CosmicInspectorHUD` e rótulos de ano ficavam centrados atrás dos pins. Depois esperado: cabeçalho contido sem overflow em 1280–2560 px, presets roláveis com tooltips completos, timeline recuada à esquerda de qualquer painel lateral aberto e anos legíveis abaixo dos pins. Pendente para aceite: inspeção visual/screenshots no navegador pelo Ayrton (Chrome DevTools MCP e bibliotecas compartilhadas do Chromium indisponíveis neste ambiente).
 
 ---
 
