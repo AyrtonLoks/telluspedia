@@ -43,7 +43,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10, T26 |
-| `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T07, T11, T18, T19, T25, T27 |
+| `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T07, T11, T18, T19, T25, T27, D04 |
 
 Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está listado nela: **pare**, adicione o grupo à tarefa no Quadro (commit + push, como na reivindicação) e reavalie se ela ainda pode seguir.
 
@@ -182,7 +182,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | TODO | — | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | TODO | — | D01 | G-GLOBO |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | IN_PROGRESS | codex | — | G-FRONTEIRAS |
-| D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | — | — | G-OBS |
+| D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | IN_PROGRESS | claude | — | G-OBS, G-INFRA |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | TODO | — | T05 | G-OBS |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
@@ -193,7 +193,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
-| D15 | Gerenciador de layout de painéis | Design | P1 | M | REVIEW | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
+| D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
@@ -1076,8 +1076,8 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D04 · ISS: SGP4 real, órbita correta, outros satélites
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d04-iss-sgp4 · **Worktree:** ../telluspedia-wt/claude-d04
+- **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-INFRA
 
 **Contexto / problema**
 - `lib/observatory-data.ts:78-138` (`calculateIssPosition`): modelo inventado — época arbitrária (`1700000000000`), sem TLE e sem nodo ascendente real. A posição não corresponde à ISS verdadeira.
@@ -1104,6 +1104,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. G-INFRA adicionado (dependência `satellite.js` no `package.json`). Nenhuma tarefa de G-OBS/G-INFRA em andamento.
 
 ---
 
@@ -1394,7 +1395,7 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 
 ### D15 · Gerenciador de layout de painéis
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d15-cosmos-fixes · **Worktree:** ../telluspedia-wt/claude-d15b
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d15-cosmos-fixes · **Worktree:** ../telluspedia-wt/claude-d15b
 - **Prioridade:** P1 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA
 
 **Contexto / problema**
@@ -1419,6 +1420,7 @@ O Inspector do país (ex.: COD) e o painel do Observatório abrem na mesma colun
 - 2026-11-20 · claude · REVIEW · Commit `d86e704`. **Modelo:** `stores/layoutStore.ts` guarda só a aba ativa do dock; quais painéis estão abertos continua nas stores de cada um (`globeStore.selectedIso`, `observatoryStore.isPanelOpen`, `cosmicStore` foco/inspector), derivado por `useRightDock()` (função pura `resolveRightDock`: abas na ordem País · Observatório · Cosmos; preferência por painel fechado cai no primeiro aberto). **`RightDock`** (`components/layout/`): coluna direita única em lg+ (`right-5`, de `top-[4.75rem]` — abaixo da navbar — até `bottom-4`, `w-96`), **um painel por vez**, com abas (`role=tablist`) quando há mais de um aberto; painel recém-aberto vira o ativo; em telas estreitas vira **bottom sheet** (`inset-x-2 bottom-2`, máx. 62vh, alça visual). `InspectorHUD`, `ObservatoryPanel` e o painel do `CosmicInspectorHUD` deixaram de usar `fixed` e só preenchem o dock; `CosmicInspectorHUD` ganhou `placement` ("dock" = painel do corpo focado; "floating" = botão de camadas, que desvia do dock); o modo recolhido do Observatório (D05) foi removido — as abas cumprem esse papel. Navbar: “Observatório” aberto atrás de outra aba vem para frente (`panelButtonAction`), senão abre/fecha. **Timeline:** recuo `lg:right-[26.5rem]` com o dock visível e `max-lg:hidden` quando o dock vira bottom sheet — nunca fica sob um painel. **Overlays da esquerda** (`leftOverlay`): Apollo 11, rota de Magalhães e lançador do TellusLab passaram de `top-20` (sobre o botão “Iluminação de estudo”) para `top-[7.5rem]`, com `max-h-[calc(100vh-18.5rem)]` + rolagem acima da timeline. **Bundle:** `CosmicInspectorHUD` e `CometHalleyTrajectory` (D10) importavam `cn` pelo barrel `@/components/ui`, que puxa Radix para a home — trocado pelo arquivo: **home 466 kB → 436 kB**. **Testes:** `test/layout-dock.test.tsx` (16: função pura, abas/um painel por vez, coluna × bottom sheet, timeline desviando/ocultando, ação do botão da navbar, botão cósmico desviando, Inspector cósmico no dock, invariantes estáticos — painéis sem `fixed`, página sem painéis fora do dock, overlays abaixo do botão); testes do modo recolhido da D05 removidos. **Validação após rebase:** typecheck ok, lint ok, 394/394 testes, build ok. **Não verificado pelo agente:** o critério “1366–2560 px e mobile” e a aparência — Chromium headless indisponível; as classes cobrem lg (≥ 1024 px) e telas estreitas, mas conferir em 1366 px (navbar + dock) e no celular. **Fora do escopo:** transições de abrir/fechar (D17); Comparador e Reader continuam modais de tela cheia (não laterais).
 - 2026-11-20 · ayrton · IN_PROGRESS · Reprovada (com screenshots), bugs no modo Cosmos: não dá para deselecionar um objeto; o botão “Camadas Cósmicas” some ao focar um objeto; ao clicar na Lua (ou na Terra) o país selecionado antes some da aba. Causas (diagnóstico do claude): o X do painel cósmico só fecha o painel e mantém o foco, e clicar no vazio não desfaz o foco no modo cósmico; o botão de camadas só renderiza sem corpo focado (herança de quando o painel ocupava o mesmo lugar); o clique da Lua e o “clique fora” do canvas zeram o país também no modo cósmico. Reaberta pelo claude em `../telluspedia-wt/claude-d15b`.
 - 2026-11-20 · claude · REVIEW · Commit `624c44f`. Ações centrais em `stores/actions.ts`: `focusCelestialBody(id)` (foca sem limpar o país), `clearCelestialFocus()` e `handleCanvasPointerMissed()` (no Cosmos, clique no vazio desfaz só o foco do corpo; no modo Terra mantém o comportamento antigo de deselecionar país/marco/entidade). `OrbitingMoon` usa `focusCelestialBody("MOON")` (deixou de chamar `setSelectedIso(null)`); `GlobeCanvas.onPointerMissed` usa `handleCanvasPointerMissed`; o X do painel cósmico chama `clearCelestialFocus` (antes, no modo cósmico, só fechava o painel e mantinha o foco). `CosmicInspectorHUD placement="floating"` mostra o botão “Camadas Cósmicas” em todo o modo Cosmos, inclusive com corpo focado (desvia do dock). Testes: `test/cosmos-dock.test.tsx` (6: país preservado ao focar Lua/Terra com abas País + Cosmos no dock, clique no vazio no Cosmos × modo Terra, X deseleciona, botão de camadas com corpo focado, ligação estática das ações); teste antigo do dock atualizado para a regra nova. Validação: typecheck ok, lint ok, 400/400 testes, build ok (home 437 kB). **Observado nos screenshots e fora do escopo:** rótulos de planeta gigantes quando a câmera chega perto (“0.9833 UA” sobre a navbar) — política de escala de rótulos é a D11 (G-COSMOS).
+- 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo claude a pedido).
 
 ---
 
