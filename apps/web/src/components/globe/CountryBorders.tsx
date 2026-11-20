@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { BufferAttribute, BufferGeometry, MathUtils, Vector3 } from "three";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { BufferAttribute, BufferGeometry, MathUtils, Vector3, type Mesh, type MeshBasicMaterial, type Object3D } from "three";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
@@ -22,15 +22,19 @@ import {
 
 const ignoreRaycast = () => null;
 
+function getBorderZoom(object: Object3D, cameraPosition: Vector3, center: Vector3) {
+  object.getWorldPosition(center);
+  return 1 - MathUtils.smoothstep(cameraPosition.distanceTo(center), 1.5, 5);
+}
+
 function makeWideLine(geometry: LineSegmentsGeometry, color: string, width: number, opacity: number, order: number) {
   const material = new LineMaterial({
     color,
     linewidth: width,
     opacity,
     transparent: true,
-    // In Three r170, alpha-to-coverage replaces opacity on segment caps.
-    // Restrict it to the opaque stroke and let MSAA smooth the translucent passes.
-    alphaToCoverage: opacity === 1,
+    // Keep the requested opacity on the rounded caps of translucent lines.
+    alphaToCoverage: false,
     depthWrite: false,
   });
   const line = new LineSegments2(geometry, material);
@@ -56,9 +60,7 @@ function BaseBorders({ topology, opacity, onFadedOut }: {
   }, [line]);
 
   useFrame(({ camera }, delta) => {
-    line.getWorldPosition(center);
-    const distance = camera.position.distanceTo(center);
-    const zoom = 1 - MathUtils.smoothstep(distance, 1.5, 5);
+    const zoom = getBorderZoom(line, camera.position, center);
     line.material.linewidth = MathUtils.lerp(0.7, 1.65, zoom);
     line.material.opacity = MathUtils.damp(line.material.opacity, opacity * (0.6 + 0.4 * zoom), 5, delta);
     line.visible = line.material.opacity > 0.005;
@@ -91,44 +93,74 @@ function combinePositions(isos: ReadonlySet<string>, positionsFor: (iso: string)
 
 type HighlightKind = "related" | "hover" | "selected";
 
+type ZoomRange = readonly [far: number, near: number];
+
+interface BorderStroke {
+  color: string;
+  width: ZoomRange;
+  opacity: ZoomRange;
+  order: number;
+}
+
 const highlightStyles = {
-  related: { color: "#22d3ee", width: 1.85, opacity: 0.76, order: 2 },
-  hover: { color: "#79e9ff", width: 2.15, opacity: 0.93, order: 3 },
-  selected: { color: "#b5f7ff", width: 3, opacity: 1, order: 5 },
-} satisfies Record<HighlightKind, { color: string; width: number; opacity: number; order: number }>;
+  related: { color: "#45a4b7", width: [0.85, 1.35], opacity: [0.43, 0.62], order: 2 },
+  hover: { color: "#78b5c3", width: [1, 1.45], opacity: [0.53, 0.72], order: 3 },
+  selected: { color: "#7ec9d7", width: [1.15, 1.8], opacity: [0.74, 0.86], order: 5 },
+} satisfies Record<HighlightKind, BorderStroke>;
+
+const selectionHalo: BorderStroke = {
+  color: "#559eaf",
+  width: [1.35, 2.65],
+  opacity: [0, 0.14],
+  order: 4,
+};
 
 function HighlightBorders({ positions, kind }: { positions: Float32Array; kind: HighlightKind }) {
   const lines = useMemo(() => {
     const geometry = new LineSegmentsGeometry().setPositions(positions);
-    const { color, width, opacity, order } = highlightStyles[kind];
-    const border = makeWideLine(geometry, color, width, opacity, order);
-    if (kind !== "selected") return [border];
-
-    return [
-      makeWideLine(geometry, "#22d3ee", 7, 0.24, order - 2),
-      makeWideLine(geometry, "#22d3ee", 4.7, 0.5, order - 1),
-      border,
-    ];
+    const strokes = kind === "selected" ? [selectionHalo, highlightStyles.selected] : [highlightStyles[kind]];
+    return strokes.map((stroke) => ({
+      stroke,
+      line: makeWideLine(geometry, stroke.color, stroke.width[0], stroke.opacity[0], stroke.order),
+    }));
   }, [positions, kind]);
+  const center = useMemo(() => new Vector3(), []);
+
+  useFrame(({ camera }) => {
+    const zoom = getBorderZoom(lines[0].line, camera.position, center);
+    for (const { line, stroke } of lines) {
+      line.material.linewidth = MathUtils.lerp(...stroke.width, zoom);
+      line.material.opacity = MathUtils.lerp(...stroke.opacity, zoom);
+      line.visible = line.material.opacity > 0.005;
+    }
+  });
 
   useEffect(() => () => {
-    lines[0].geometry.dispose();
-    for (const line of lines) line.material.dispose();
+    lines[0].line.geometry.dispose();
+    for (const { line } of lines) line.material.dispose();
   }, [lines]);
 
-  return lines.map((line) => <primitive key={line.renderOrder} object={line} />);
+  return lines.map(({ line }) => <primitive key={line.renderOrder} object={line} />);
 }
 
 function SelectedCountryFill({ positions }: { positions: Float32Array }) {
+  const fill = useRef<Mesh<BufferGeometry, MeshBasicMaterial>>(null);
+  const center = useMemo(() => new Vector3(), []);
   const geometry = useMemo(() => {
     return new BufferGeometry().setAttribute("position", new BufferAttribute(positions, 3));
   }, [positions]);
 
   useEffect(() => () => geometry.dispose(), [geometry]);
 
+  useFrame(({ camera }) => {
+    if (!fill.current) return;
+    const zoom = getBorderZoom(fill.current, camera.position, center);
+    fill.current.material.opacity = MathUtils.lerp(0.05, 0.12, zoom);
+  });
+
   return (
-    <mesh geometry={geometry} raycast={ignoreRaycast}>
-      <meshBasicMaterial color="#17d8f5" transparent opacity={0.22} depthWrite={false} />
+    <mesh ref={fill} geometry={geometry} raycast={ignoreRaycast}>
+      <meshBasicMaterial color="#3d9ca8" transparent opacity={0.05} depthWrite={false} />
     </mesh>
   );
 }
