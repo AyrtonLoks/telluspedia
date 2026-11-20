@@ -163,7 +163,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | DONE | codex | — | G-ESTUDOS, G-INFRA |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | REVIEW | codex | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
-| T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | IN_PROGRESS | antigravity | — | G-PIPELINE |
+| T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | REVIEW | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | TODO | — | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | TODO | — | — | G-EPOCA, G-FRONTEIRAS |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | TODO | — | T12 | G-EPOCA, G-ESTUDOS |
@@ -519,7 +519,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T10 · Endurecer serviço Python (CORS, Docker, Redis)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t10-endurecer-python · **Worktree:** ../telluspedia-wt/antigravity-t10
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t10-endurecer-python · **Worktree:** ../telluspedia-wt/antigravity-t10
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PIPELINE
 
 **Contexto / problema**
@@ -540,13 +540,14 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 6. Lock de dependências (`uv`/`pip-tools`) e instruções no README para rodar `pytest`.
 
 **Critérios de aceite**
-- [ ] `pytest` passa num venv criado conforme o README.
-- [ ] `docker compose up data-pipeline` sobe com healthcheck `healthy`.
-- [ ] Container roda como usuário não-root (`docker exec ... whoami`).
+- [x] `pytest` passa num venv criado conforme o README.
+- [x] `docker compose up data-pipeline` sobe com healthcheck `healthy`.
+- [x] Container roda como usuário não-root (`docker exec ... whoami`).
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (140e213).
+- 2026-11-20 · antigravity · REVIEW · Implementado (commit 54cc62a): (1) `app/core/config.py`: migrado para `model_config = SettingsConfigDict(env_file=".env", extra="ignore")`, adicionadas `ALLOWED_ORIGINS` (lista via env com rejeição de `*`, padrão localhost/127.0.0.1:3000), `CORS_ALLOW_CREDENTIALS=False`, `REDIS_RECONNECT_BACKOFF_SECONDS=30.0` e `REDIS_SOCKET_TIMEOUT_SECONDS=1.5`; (2) `app/main.py`: CORS restrito a `settings.ALLOWED_ORIGINS`, `allow_credentials=settings.CORS_ALLOW_CREDENTIALS`, métodos `["GET", "OPTIONS"]` e cabeçalhos `["Accept", "Content-Type"]`; (3) `app/api/endpoints/weather.py` e `astronomy.py`: log estruturado com `logger.error(..., exc_info=exc)` mantendo 502 genérico `"Weather fetch failed"` e validação 400 para `dt` inválido; (4) `app/core/redis_client.py` + `weather_proxy_service.py`: backoff de 30s com `time.monotonic()`, timeouts curtos, fechamento seguro de socket em falha e `mark_redis_unavailable()`; (5) `Dockerfile` + `.dockerignore` + `docker-compose.yml`: build multi-stage (sem `build-essential` na imagem final), usuário não-root `appuser` e `HEALTHCHECK` em `/health`; (6) `uv.lock`, `requirements.lock`, `pyproject.toml` e `services/data-pipeline/README.md` com instruções reproduzíveis de venv e `pytest`. Validação: `uv sync --frozen && uv run pytest` 14/14 passando (incluindo nova `tests/test_hardening.py`); `docker compose up --build -d data-pipeline` reportou `healthy`, `docker exec telluspedia-data-pipeline whoami` retornou `appuser`, `which gcc` ausente na imagem final e `GET /health` 200; pós-rebase em `origin/master`: `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 301/301 (38 suítes), `pnpm build` ok (17/17 páginas).
 
 ---
 
