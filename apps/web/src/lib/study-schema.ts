@@ -1,0 +1,114 @@
+import { z } from "zod";
+import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "./historical-entities";
+import { HISTORICAL_ROUTES } from "./historical-routes";
+import { PILOT_COUNTRIES, WORLD_COUNTRIES_CATALOG } from "./country-data";
+import { TIMELINE_MAX_YEAR, TIMELINE_MIN_YEAR, VALID_CELESTIAL_BODIES } from "./cosmos-validation";
+import type { ObservatoryLayerId } from "./observatory-data";
+import { normalizeStudyEpoch, MAX_STUDY_GEOLOGICAL_MA } from "./study-epoch";
+import { ALL_COSMIC_LAYERS } from "../stores/cosmicStore";
+import { MAX_CAMERA_ALTITUDE, MIN_CAMERA_ALTITUDE } from "../stores/globeStore";
+import { ALL_CATEGORIES } from "../stores/timelineStore";
+import type { StudyRecord } from "./studies-store";
+
+export const MAX_STUDY_TITLE_LENGTH = 200;
+export const MAX_STUDY_DESCRIPTION_LENGTH = 2000;
+export const MAX_STUDY_NOTES_LENGTH = 50000;
+const MAX_STUDY_ITEMS = 50;
+const DEFAULT_START_YEAR = 1974;
+const DEFAULT_END_YEAR = 2024;
+const country = z.enum([
+  ...new Set([
+    ...Object.keys(WORLD_COUNTRIES_CATALOG),
+    ...Object.keys(PILOT_COUNTRIES),
+    ...Object.keys(HISTORICAL_ENTITIES),
+  ]),
+]);
+const category = z.enum(ALL_CATEGORIES);
+const era = z.enum(Object.keys(HISTORICAL_ERAS));
+const route = z.string().trim().pipe(z.enum(Object.keys(HISTORICAL_ROUTES)));
+const body = z.enum([...VALID_CELESTIAL_BODIES]);
+const cosmicLayer = z.enum(ALL_COSMIC_LAYERS);
+const observatoryLayer = z.enum([
+  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES",
+] satisfies ObservatoryLayerId[]);
+const year = z.number().int().min(TIMELINE_MIN_YEAR).max(TIMELINE_MAX_YEAR);
+const latitude = z.number().min(-90).max(90);
+const longitude = z.number().min(-180).max(180);
+const altitude = z.number().min(MIN_CAMERA_ALTITUDE).max(MAX_CAMERA_ALTITUDE);
+const slug = z.string().max(128).regex(/^[A-Za-z0-9_-]+$/);
+
+export const studyInput = z.object({
+  parentId: slug.nullish(),
+  title: z.string().max(MAX_STUDY_TITLE_LENGTH).optional(),
+  description: z.string().max(MAX_STUDY_DESCRIPTION_LENGTH).nullish(),
+  markdownNotes: z.string().max(MAX_STUDY_NOTES_LENGTH).nullish(),
+  timelineStartYear: year.optional(),
+  timelineEndYear: year.optional(),
+  cameraLat: latitude.optional(),
+  cameraLng: longitude.optional(),
+  cameraAltitude: altitude.optional(),
+  selectedCountryIsos: z.array(country).max(MAX_STUDY_ITEMS).optional(),
+  activeCategories: z.array(category).max(MAX_STUDY_ITEMS).optional(),
+  activeObservatoryLayers: z.array(observatoryLayer).max(MAX_STUDY_ITEMS).optional(),
+  activeCosmicLayers: z.array(cosmicLayer).max(MAX_STUDY_ITEMS).optional(),
+  historicalEra: era.nullish(),
+  activeRouteId: route.nullish(),
+  focusedCelestialBody: body.nullish(),
+  geologicalMa: z.number().min(0).max(MAX_STUDY_GEOLOGICAL_MA).nullish(),
+  isApollo11Active: z.boolean().nullish(),
+  isCosmicMode: z.boolean().nullish(),
+}).refine(
+  ({ timelineStartYear, timelineEndYear }) =>
+    timelineStartYear === undefined || timelineEndYear === undefined || timelineStartYear <= timelineEndYear,
+  { path: ["timelineEndYear"], message: "End year must be on or after start year" },
+);
+
+function valid<T>(schema: z.ZodType<T>, input: unknown): T | undefined {
+  const parsed = schema.safeParse(input);
+  return parsed.success ? parsed.data : undefined;
+}
+
+function knownItems<T>(schema: z.ZodType<T>, input: unknown): T[] {
+  if (!Array.isArray(input)) return [];
+  return input.slice(0, MAX_STUDY_ITEMS).flatMap((item) => {
+    const value = valid(schema, item);
+    return value === undefined ? [] : [value];
+  });
+}
+
+export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
+  const start = valid(year, input.timelineStartYear);
+  const end = valid(year, input.timelineEndYear);
+  const activeRouteId = valid(route, input.activeRouteId);
+  const routeDefinition = activeRouteId ? HISTORICAL_ROUTES[activeRouteId] : undefined;
+  const defaultStart = routeDefinition?.startYear ?? DEFAULT_START_YEAR;
+  const defaultEnd = routeDefinition?.endYear ?? DEFAULT_END_YEAR;
+  const firstYear = start ?? Math.min(defaultStart, end ?? defaultEnd);
+  const lastYear = end ?? Math.max(defaultEnd, firstYear);
+  const timelineEndYear = Math.max(firstYear, lastYear);
+
+  return {
+    parentId: valid(slug, input.parentId) ?? null,
+    title: input.title || "Estudo Planetário",
+    description: input.description ?? "",
+    markdownNotes: input.markdownNotes ?? "",
+    timelineStartYear: Math.min(firstYear, lastYear),
+    timelineEndYear,
+    cameraLat: valid(latitude, input.cameraLat) ?? 0,
+    cameraLng: valid(longitude, input.cameraLng) ?? 0,
+    cameraAltitude: valid(altitude, input.cameraAltitude) ?? 2.5,
+    selectedCountryIsos: knownItems(country, input.selectedCountryIsos),
+    activeCategories: knownItems(category, input.activeCategories),
+    ...normalizeStudyEpoch({
+      timelineEndYear,
+      geologicalMa: input.geologicalMa,
+      historicalEra: valid(era, input.historicalEra),
+      activeRouteId,
+      isApollo11Active: input.isApollo11Active,
+      activeObservatoryLayers: knownItems(observatoryLayer, input.activeObservatoryLayers),
+    }),
+    isCosmicMode: Boolean(input.isCosmicMode),
+    focusedCelestialBody: valid(body, input.focusedCelestialBody) ?? null,
+    activeCosmicLayers: knownItems(cosmicLayer, input.activeCosmicLayers),
+  };
+}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getMemoryStudy } from "@/lib/studies-store";
+import { getMemoryStudy, restoreStudyRecord } from "@/lib/studies-store";
 
 export async function GET(
   req: NextRequest,
@@ -16,13 +16,13 @@ export async function GET(
         forks: true,
       },
     });
-    if (study) return NextResponse.json(study);
+    if (study) return NextResponse.json({ ...study, ...restoreStudyRecord(study) });
   } catch {
     // Database fallback
   }
 
   const memory = getMemoryStudy(slug);
-  if (memory) return NextResponse.json(memory);
+  if (memory) return NextResponse.json(restoreStudyRecord(memory));
 
   return NextResponse.json({ error: "Study not found" }, { status: 404 });
 }

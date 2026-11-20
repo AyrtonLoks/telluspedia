@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { normalizeStudyEpoch } from "@/lib/study-epoch";
 
 interface StudyState {
   currentStudyId: string | null;
@@ -100,45 +101,16 @@ export const useStudyStore = create<StudyState>((set) => ({
   isShareModalOpen: false,
 
   restoreStudy: (study) => {
-    const sanitizedMa =
-      typeof study.geologicalMa === "number" &&
-      Number.isFinite(study.geologicalMa) &&
-      study.geologicalMa > 0 &&
-      study.geologicalMa <= 4600
-        ? study.geologicalMa
-        : null;
-
-    const isAnachronistic =
-      sanitizedMa !== null ||
-      study.activeRouteId === "magellan-1519" ||
-      ["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(study.historicalEra || "");
-
-    const sanitizedLayers =
-      isAnachronistic
-        ? []
-        : Array.isArray(study.activeObservatoryLayers)
-          ? [...study.activeObservatoryLayers]
-          : [];
-
-    const isCosmic = Boolean(study.isCosmicMode);
-    const sanitizedCosmicLayers = Array.isArray(study.activeCosmicLayers)
-      ? [...study.activeCosmicLayers]
-      : [];
-
     set({
       currentStudyId: study.id,
       parentId: study.parentId || null,
       title: study.title,
       description: study.description || "",
       notes: study.notes || "",
-      historicalEra: sanitizedMa !== null ? null : (study.historicalEra || null),
-      isApollo11Active: sanitizedMa !== null ? false : Boolean(study.isApollo11Active),
-      geologicalMa: sanitizedMa,
-      activeRouteId: study.activeRouteId || null,
-      activeObservatoryLayers: sanitizedLayers,
-      isCosmicMode: isCosmic,
+      ...normalizeStudyEpoch(study),
+      isCosmicMode: Boolean(study.isCosmicMode),
       focusedCelestialBody: study.focusedCelestialBody || null,
-      activeCosmicLayers: sanitizedCosmicLayers,
+      activeCosmicLayers: Array.isArray(study.activeCosmicLayers) ? [...study.activeCosmicLayers] : [],
     });
   },
 
@@ -147,46 +119,7 @@ export const useStudyStore = create<StudyState>((set) => ({
   },
 
   forkStudy: (forked) => {
-    const sanitizedMa =
-      typeof forked.geologicalMa === "number" &&
-      Number.isFinite(forked.geologicalMa) &&
-      forked.geologicalMa > 0 &&
-      forked.geologicalMa <= 4600
-        ? forked.geologicalMa
-        : null;
-
-    const isAnachronistic =
-      sanitizedMa !== null ||
-      forked.activeRouteId === "magellan-1519" ||
-      ["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(forked.historicalEra || "");
-
-    const sanitizedLayers =
-      isAnachronistic
-        ? []
-        : Array.isArray(forked.activeObservatoryLayers)
-          ? [...forked.activeObservatoryLayers]
-          : [];
-
-    const isCosmic = Boolean(forked.isCosmicMode);
-    const sanitizedCosmicLayers = Array.isArray(forked.activeCosmicLayers)
-      ? [...forked.activeCosmicLayers]
-      : [];
-
-    set({
-      currentStudyId: forked.id,
-      parentId: forked.parentId,
-      title: forked.title || `[Fork] Estudo`,
-      description: forked.description || "",
-      notes: forked.notes || "",
-      historicalEra: sanitizedMa !== null ? null : (forked.historicalEra || null),
-      isApollo11Active: sanitizedMa !== null ? false : Boolean(forked.isApollo11Active),
-      geologicalMa: sanitizedMa,
-      activeRouteId: forked.activeRouteId || null,
-      activeObservatoryLayers: sanitizedLayers,
-      isCosmicMode: isCosmic,
-      focusedCelestialBody: forked.focusedCelestialBody || null,
-      activeCosmicLayers: sanitizedCosmicLayers,
-    });
+    useStudyStore.getState().restoreStudy({ ...forked, title: forked.title || "[Fork] Estudo" });
   },
 
   setCurrentStudyId: (id: string | null) => set({ currentStudyId: id }),

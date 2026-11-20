@@ -1,73 +1,82 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { prisma } from "@/lib/prisma";
-import { saveMemoryStudy, StudyRecord } from "@/lib/studies-store";
+import { saveMemoryStudy, type StudyRecord } from "@/lib/studies-store";
+import { sanitizeStudy, studyInput } from "@/lib/study-schema";
+import { studyCreationRetryAfter } from "@/lib/study-rate-limit";
+
+const MAX_BODY_BYTES = 384 * 1024;
+
+async function readBody(req: NextRequest) {
+  const reader = req.body?.getReader();
+  if (!reader) return { error: "Expected a JSON body", status: 400 } as const;
+
+  const decoder = new TextDecoder();
+  let bytes = 0;
+  let text = "";
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > MAX_BODY_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        return { error: "Study payload is too large", status: 413 } as const;
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    text += decoder.decode();
+  } finally {
+    reader.releaseLock();
+  }
+
+  try {
+    return { data: JSON.parse(text) as unknown };
+  } catch {
+    return { error: "Invalid JSON", status: 400 } as const;
+  }
+}
 
 export async function POST(req: NextRequest) {
+  const retryAfter = studyCreationRetryAfter(req.headers);
+  if (retryAfter) {
+    return NextResponse.json({ error: "Too many study creations" }, {
+      status: 429,
+      headers: { "Retry-After": String(retryAfter) },
+    });
+  }
+
   try {
-    const body = await req.json();
-    const slug = `estudo-${nanoid(8)}`;
+    const body = await readBody(req);
+    if ("error" in body) return NextResponse.json({ error: body.error }, { status: body.status });
 
-    const sanitizedMa =
-      typeof body.geologicalMa === "number" &&
-      Number.isFinite(body.geologicalMa) &&
-      body.geologicalMa > 0 &&
-      body.geologicalMa <= 4600
-        ? body.geologicalMa
-        : null;
-
-    const sanitizedRouteId =
-      typeof body.activeRouteId === "string" && body.activeRouteId.trim().length > 0
-        ? body.activeRouteId.trim()
-        : null;
-
-    const isAnachronistic =
-      sanitizedMa !== null ||
-      (typeof body.timelineEndYear === "number" && body.timelineEndYear < 1957) ||
-      sanitizedRouteId === "magellan-1519" ||
-      ["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(body.historicalEra || "");
+    const validated = studyInput.safeParse(body.data);
+    if (!validated.success) {
+      return NextResponse.json({
+        error: "Invalid study",
+        issues: validated.error.issues.slice(0, 10).map(({ path, message }) => ({
+          field: path.join("."),
+          message,
+        })),
+      }, { status: 400 });
+    }
 
     const studyData: StudyRecord = {
-      id: slug,
-      parentId: body.parentId || null,
-      title: body.title || "Estudo Planetário",
-      description: body.description || "",
-      timelineStartYear: body.timelineStartYear || 1974,
-      timelineEndYear: body.timelineEndYear || 2024,
-      selectedCountryIsos: Array.isArray(body.selectedCountryIsos) ? body.selectedCountryIsos : [],
-      activeCategories: Array.isArray(body.activeCategories) ? body.activeCategories : [],
-      cameraLat: typeof body.cameraLat === "number" ? body.cameraLat : 0,
-      cameraLng: typeof body.cameraLng === "number" ? body.cameraLng : 0,
-      cameraAltitude: typeof body.cameraAltitude === "number" ? body.cameraAltitude : 2.5,
-      markdownNotes: body.markdownNotes || "",
-      historicalEra: sanitizedMa !== null ? null : (body.historicalEra ?? null),
-      isApollo11Active: sanitizedMa !== null ? false : (body.isApollo11Active ?? false),
-      geologicalMa: sanitizedMa,
-      activeRouteId: sanitizedRouteId,
-      activeObservatoryLayers:
-        isAnachronistic
-          ? []
-          : Array.isArray(body.activeObservatoryLayers)
-            ? body.activeObservatoryLayers
-            : [],
-      isCosmicMode: Boolean(body.isCosmicMode),
-      focusedCelestialBody: body.focusedCelestialBody ?? null,
-      activeCosmicLayers: Array.isArray(body.activeCosmicLayers) ? body.activeCosmicLayers : [],
+      ...sanitizeStudy(validated.data),
+      id: `estudo-${nanoid(8)}`,
       createdAt: new Date().toISOString(),
     };
 
     try {
-      const created = await prisma.study.create({
-        data: studyData,
-      });
+      const created = await prisma.study.create({ data: studyData });
       saveMemoryStudy(studyData);
       return NextResponse.json(created);
     } catch {
-      // Prisma offline fallback
+      // The existing in-memory fallback is covered by T08.
       saveMemoryStudy(studyData);
       return NextResponse.json(studyData);
     }
-  } catch (err: any) {
-    return NextResponse.json({ error: "Failed to create study", detail: err?.message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Failed to create study" }, { status: 500 });
   }
 }

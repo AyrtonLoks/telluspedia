@@ -10,6 +10,7 @@ import { useStudyStore } from "@/stores/studyStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { MAGELLAN_STUDY_ROUTE } from "@/lib/study-epoch";
 
 function StudyContent({
   params,
@@ -40,6 +41,7 @@ function StudyContent({
             title: data.title,
             description: data.description,
             notes: data.markdownNotes,
+            timelineEndYear: data.timelineEndYear,
             historicalEra: data.historicalEra,
             isApollo11Active: data.isApollo11Active,
             geologicalMa: data.geologicalMa,
@@ -60,22 +62,9 @@ function StudyContent({
             useCosmicStore.getState().exitToEarthView();
           }
 
-          // Restauração das camadas do observatório com proteção contra anacronismos
-          const isStudyAnachronistic =
-            (data.geologicalMa !== undefined && data.geologicalMa !== null && data.geologicalMa > 0) ||
-            (typeof data.timelineEndYear === "number" && data.timelineEndYear < 1957) ||
-            data.activeRouteId === "magellan-1519" ||
-            ["PRUSSIA_1870", "WW1_1914", "WW2_1939"].includes(data.historicalEra || "");
+          useObservatoryStore.getState().setAllLayers(data.activeObservatoryLayers ?? []);
 
-          if (isStudyAnachronistic) {
-            useObservatoryStore.getState().setAllLayers([]);
-          } else if (Array.isArray(data.activeObservatoryLayers)) {
-            useObservatoryStore.getState().setAllLayers(data.activeObservatoryLayers);
-          } else {
-            useObservatoryStore.getState().setAllLayers([]);
-          }
-
-          if (data.timelineStartYear && data.timelineEndYear) {
+          if (data.timelineStartYear != null && data.timelineEndYear != null) {
             setYearRange(data.timelineStartYear, data.timelineEndYear);
           }
           if (data.geologicalMa !== undefined && data.geologicalMa !== null && data.geologicalMa > 0) {
@@ -106,7 +95,7 @@ function StudyContent({
           if (data.activeRouteId) {
             useHistoricalRouteStore.getState().setActiveRouteId(data.activeRouteId);
             useTimelineStore.getState().setActiveRouteId(data.activeRouteId);
-            if (data.activeRouteId === "magellan-1519" && !data.timelineStartYear) {
+            if (data.activeRouteId === MAGELLAN_STUDY_ROUTE && data.timelineStartYear == null) {
               setYearRange(1519, 1522);
               selectYear(1519);
             }
