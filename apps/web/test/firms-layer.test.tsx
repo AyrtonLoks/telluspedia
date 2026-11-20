@@ -5,7 +5,11 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { useObservatoryStore } from "../src/stores/observatoryStore";
 import { ObservatoryTelemetryHUD } from "../src/components/observatory/ObservatoryTelemetryHUD";
 import { FirmsLayerControls } from "../src/components/observatory/FirmsLayerControls";
-import { buildFirmsGeometry, firmsLayerOpacities } from "../src/components/globe/NasaFirmsLayer";
+import { buildFirmsGeometry, firmsLayerOpacities, visibleFirmsBbox } from "../src/components/globe/NasaFirmsLayer";
+import { FirmsCountrySummary } from "../src/components/observatory/FirmsCountrySummary";
+import { ObservatoryPanel } from "../src/components/observatory/ObservatoryPanel";
+import { useGlobeStore } from "../src/stores/globeStore";
+import { inFirmsBbox } from "../src/lib/firms-aggregate";
 import { FIRMS_FRP_STOPS, firmsMapUrl, formatAcqTime, frpColor, frpSize } from "../src/lib/firms-display";
 import { useTimelineStore } from "../src/stores/timelineStore";
 import type { FirmsHotspot } from "../src/lib/observatory-data";
@@ -42,7 +46,7 @@ describe("D05: escala visual", () => {
   });
 
   test("transição foco ↔ heatmap pela distância da câmera", () => {
-    const near = firmsLayerOpacities(1.6);
+    const near = firmsLayerOpacities(1.6, true);
     const mid = firmsLayerOpacities(2.5);
     const far = firmsLayerOpacities(4.5);
     assert.equal(near.points, 1);
@@ -50,6 +54,26 @@ describe("D05: escala visual", () => {
     assert.ok(mid.points > 0.8 && mid.cells > 0.3, "no zoom padrão os dois se somam");
     assert.equal(far.points, 0);
     assert.equal(far.cells, 1);
+  });
+
+  test("de perto, sem o detalhe carregado, as manchas não somem; com detalhe, saem de cena", () => {
+    assert.equal(firmsLayerOpacities(1.8, false).cells, 0.35);
+    assert.equal(firmsLayerOpacities(1.8, true).cells, 0);
+    assert.equal(firmsLayerOpacities(1.8, true).points, 1);
+  });
+
+  test("recorte visível: horizonte pela distância, arredondado, com antimeridiano e polos", () => {
+    const b = visibleFirmsBbox({ lat: -12.3, lng: -52.1 }, 1.6);
+    // horizonte a d = 1,6: acos(1/1,6) ≈ 51,3° → 55°; centro arredondado para -10°
+    assert.deepEqual([b.minLat, b.maxLat], [-65, 45]);
+    assert.ok(inFirmsBbox(-12.3, -52.1, b), "o ponto sob a câmera está no recorte");
+    assert.ok(!inFirmsBbox(-12.3, 120, b), "o lado oposto do globo fica de fora");
+    const again = visibleFirmsBbox({ lat: -11.9, lng: -51.2 }, 1.61);
+    assert.deepEqual(again, b, "movimentos pequenos não mudam o recorte (sem nova busca)");
+    const wrap = visibleFirmsBbox({ lat: 0, lng: 178 }, 1.2);
+    assert.ok(wrap.minLng > wrap.maxLng, "atravessa o antimeridiano");
+    const pole = visibleFirmsBbox({ lat: 80, lng: 0 }, 2.5);
+    assert.deepEqual([pole.minLng, pole.maxLng], [-180, 180]);
   });
 
   test("geometria tem posição, cor, tamanho e fase por foco (sem quadrados de PointsMaterial)", () => {
@@ -127,15 +151,51 @@ describe("D05: store e UI", () => {
     assert.match(html, /href="https:\/\/firms\.modaps\.eosdis\.nasa\.gov\/map\//);
   });
 
-  test("card da célula: contagem e FRP agregados", () => {
-    useObservatoryStore.getState().setSelectedEntity({
-      type: "FIRMS_CELL",
-      data: { lat: -9.5, lng: -55.5, count: 1234, frpSum: 5678.4, frpMax: 410, latestDate: "2026-11-20" },
+  test("resumo do país: todos os focos da janela no território, FRP somado e maior foco", () => {
+    useObservatoryStore.setState({
+      firmsByCountry: { BRA: { count: 3412, frpSum: 98765.4, frpMax: 410.2 } },
+      firmsWindow: { days: 2, confidence: "nominal" },
     });
-    const html = renderToStaticMarkup(<ObservatoryTelemetryHUD />);
-    assert.match(html, /1\.234 focos nesta área/);
-    assert.match(html, /5\.678 MW/);
-    assert.match(html, /Aproximar para ver os focos/);
+    const html = renderToStaticMarkup(<FirmsCountrySummary iso="BRA" />);
+    assert.match(html, /Brasil · nas últimas 48 h/);
+    assert.match(html, />3\.412</);
+    assert.match(html, />98\.765</);
+    assert.match(html, />410,2</);
+    const none = renderToStaticMarkup(<FirmsCountrySummary iso="ISL" />);
+    assert.match(none, /Nenhum foco detectado/);
+  });
+
+  test("painel do Observatório fica ao lado do Inspector quando há país selecionado", () => {
+    useObservatoryStore.setState({ isPanelOpen: true });
+    useGlobeStore.setState({ selectedIso: null, isReaderOpen: false });
+    assert.match(renderToStaticMarkup(<ObservatoryPanel />), /data-beside-inspector="false"/);
+    useGlobeStore.setState({ selectedIso: "BRA" });
+    const html = renderToStaticMarkup(<ObservatoryPanel />);
+    assert.match(html, /data-beside-inspector="true"/);
+    assert.match(html, /lg:right-\[26\.5rem\]/);
+    useGlobeStore.setState({ selectedIso: null });
+    useObservatoryStore.setState({ isPanelOpen: false });
+  });
+
+  test("detalhe da área visível: URL com bbox e resposta atrasada descartada", async () => {
+    const pending: Array<(v: Response) => void> = [];
+    globalThis.fetch = ((input: string | URL | Request) => {
+      urls.push(String(input));
+      return new Promise<Response>((resolve) => pending.push(resolve));
+    }) as typeof fetch;
+    const body = (id: string) =>
+      new Response(JSON.stringify({ data: [{ ...HOT, id }], meta: { source: "live", provider: "x", fetchedAt: "", stale: false }, total: 1 }));
+
+    const a = useObservatoryStore.getState().loadFirmsDetail({ minLng: -60, minLat: -20, maxLng: -40, maxLat: 0 });
+    const b = useObservatoryStore.getState().loadFirmsDetail({ minLng: 100, minLat: -10, maxLng: 120, maxLat: 5 });
+    assert.equal(urls[0], "/api/observatory/firms?days=1&confidence=nominal&bbox=-60,-20,-40,0");
+    pending[1](body("novo"));
+    await b;
+    pending[0](body("antigo"));
+    await a;
+    assert.equal(useObservatoryStore.getState().firmsDetail?.hotspots[0].id, "novo");
+    useObservatoryStore.getState().clearFirmsDetail();
+    assert.equal(useObservatoryStore.getState().firmsDetail, null);
   });
 
   test("controles: janelas 24 h/48 h/5 dias, filtro de confiança e legenda", () => {

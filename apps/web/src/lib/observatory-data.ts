@@ -7,8 +7,6 @@ export type ObservatoryLayerId =
   | "FLIGHTS_OPENSKY"
   | "MARITIME_ROUTES";
 
-import type { FirmsCell } from "./firms-aggregate";
-
 export interface FirmsHotspot {
   id: string;
   lat: number;
@@ -69,7 +67,6 @@ export interface MaritimeRoute {
 
 export type ObservatoryEntity =
   | { type: "FIRMS"; data: FirmsHotspot }
-  | { type: "FIRMS_CELL"; data: FirmsCell }
   | { type: "ISS"; data: IssTelemetryData }
   | { type: "EONET"; data: EonetEvent }
   | { type: "AIRCRAFT"; data: AircraftState }

@@ -16,6 +16,8 @@ import {
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
 import { FirmsLayerControls } from "./FirmsLayerControls";
+import { FirmsCountrySummary } from "./FirmsCountrySummary";
+import { useGlobeStore } from "@/stores/globeStore";
 import { ObservatoryLayerId } from "@/lib/observatory-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Button } from "@/components/ui/Button";
@@ -102,6 +104,14 @@ export const ObservatoryPanel: React.FC = () => {
 
   // Época ativa: fonte única (T12)
   const epoch = useEpochState();
+
+  // Com o Inspector do país aberto (canto direito), o Observatório fica à esquerda dele em vez
+  // de sobrepor; a altura para acima da timeline. Layout completo de painéis: D15.
+  const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
+  const storeReaderOpen = useGlobeStore((s) => s.isReaderOpen);
+  const selectedIso = typeof window === "undefined" ? useGlobeStore.getState().selectedIso : storeSelectedIso;
+  const isReaderOpen = typeof window === "undefined" ? useGlobeStore.getState().isReaderOpen : storeReaderOpen;
+  const isInspectorOpen = Boolean(selectedIso) && !isReaderOpen;
   const isContemporary = epoch.isContemporary;
   const effectiveMa = epoch.geologicalMa;
 
@@ -112,7 +122,13 @@ export const ObservatoryPanel: React.FC = () => {
       as="aside"
       aria-label="Observatório Planetário"
       data-testid="observatory-panel"
-      className="fixed right-6 top-20 z-30 max-h-[calc(100vh-6.5rem)] w-96 max-w-[calc(100vw-3rem)] overflow-hidden"
+      data-beside-inspector={isInspectorOpen ? "true" : "false"}
+      className={cn(
+        "fixed top-20 z-30 w-96 max-w-[calc(100vw-3rem)] overflow-hidden",
+        isInspectorOpen
+          ? "right-6 max-h-[calc(100vh-6.5rem)] lg:right-[26.5rem] lg:max-h-[calc(100vh-15rem)]"
+          : "right-6 max-h-[calc(100vh-6.5rem)]"
+      )}
     >
       <PanelHeader
         title="Observatório Planetário"
@@ -191,7 +207,12 @@ export const ObservatoryPanel: React.FC = () => {
                       isOffline={storeState.layerError[layer.id]}
                     />
                   </div>
-                  {layer.id === "NASA_FIRMS" && <FirmsLayerControls />}
+                  {layer.id === "NASA_FIRMS" && (
+                    <>
+                      {selectedIso && <FirmsCountrySummary iso={selectedIso} />}
+                      <FirmsLayerControls />
+                    </>
+                  )}
                   <StudyContext entityId={`observatory:${layer.id}`} />
                 </div>
               )}

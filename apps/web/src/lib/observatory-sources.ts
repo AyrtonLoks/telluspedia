@@ -21,6 +21,7 @@ import {
   type ObservatoryEnvelope,
 } from "./observatory-source";
 import { parseFirmsCsv } from "./firms-csv";
+import { createCountryLookup } from "./firms-country";
 import {
   buildFirmsPayload,
   type FirmsConfidenceFilter,
@@ -103,12 +104,18 @@ export const FIRMS_DATASETS = [
   { id: "MODIS_NRT", label: "MODIS Terra/Aqua" },
 ] as const;
 
+let cachedCountryLookup: ((lat: number, lng: number) => string | null) | null = null;
+/** Índice de países construído uma vez por processo (contagem de focos por país). */
+function countryLookup() {
+  return (cachedCountryLookup ??= createCountryLookup());
+}
+
 function createFirmsSource(days: FirmsWindowDays, confidence: FirmsConfidenceFilter) {
   return createObservatorySource<FirmsPayload>({
     name: `firms-${days}d-${confidence}`,
     liveProvider: "NASA FIRMS",
     liveTtlMs: 15 * 60 * 1000,
-    fallback: () => buildFirmsPayload(FALLBACK_FIRMS_HOTSPOTS, days, confidence),
+    fallback: () => buildFirmsPayload(FALLBACK_FIRMS_HOTSPOTS, days, confidence, { countryOf: countryLookup() }),
     fetchLive: async ({ setProvider }) => {
       const apiKey = process.env.NASA_FIRMS_MAP_KEY;
       if (!apiKey) throw new SourceUnavailableError("Chave NASA_FIRMS_MAP_KEY não configurada no servidor");
@@ -131,7 +138,7 @@ function createFirmsSource(days: FirmsWindowDays, confidence: FirmsConfidenceFil
         const parsed = parseFirmsCsv(csv, { limit: Number.POSITIVE_INFINITY });
         if (parsed.length > 0) {
           setProvider(`NASA FIRMS (${dataset.label} NRT)`);
-          return buildFirmsPayload(parsed, days, confidence);
+          return buildFirmsPayload(parsed, days, confidence, { countryOf: countryLookup() });
         }
       }
       throw new SourceUnavailableError(

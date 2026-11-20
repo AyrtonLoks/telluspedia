@@ -261,7 +261,7 @@ describe("D05: agregação dos focos", () => {
 
   test("acima do teto, ficam os focos de maior FRP; a grade conta todos", () => {
     const all = Array.from({ length: 10 }, (_, i) => hs(i, i, i + 1));
-    const p = buildFirmsPayload(all, 2, "all", 3);
+    const p = buildFirmsPayload(all, 2, "all", { maxPoints: 3 });
     assert.deepEqual(p.hotspots.map((h) => h.frp), [10, 9, 8]);
     assert.equal(p.total, 10);
     assert.equal(p.cells.reduce((n, c) => n + c.count, 0), 10);
@@ -323,5 +323,82 @@ describe("D05: rota com janela e confiança", () => {
     assert.equal(body.meta.source, "fallback");
     assert.ok(body.cells.length > 0);
     assert.ok(body.data.every((h: FirmsHotspot) => h.confidence !== "low"));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// D05 (reabertura): contagem por país e detalhe por área visível
+// ---------------------------------------------------------------------------
+import { aggregateByCountry, inFirmsBbox, parseFirmsBbox, selectFirmsInBbox } from "../src/lib/firms-aggregate";
+import { createCountryLookup } from "../src/lib/firms-country";
+
+describe("D05: focos por país e por área visível", () => {
+  test("lookup de país usa o índice do picking (Natural Earth, zero-padding)", () => {
+    const countryOf = createCountryLookup();
+    assert.equal(countryOf(-9.5, -55.5), "BRA");
+    assert.equal(countryOf(-2.34, 112.56), "IDN");
+    assert.equal(countryOf(39.85, -121.45), "USA");
+    assert.equal(countryOf(-30, -30), null, "oceano não tem país");
+  });
+
+  test("aggregateByCountry soma contagem, FRP total e máximo por ISO", () => {
+    const stats = aggregateByCountry([hs(-9.5, -55.5, 10), hs(-10, -52, 30), hs(39.85, -121.45, 5), hs(-30, -30, 99)], createCountryLookup());
+    assert.deepEqual(stats.BRA, { count: 2, frpSum: 40, frpMax: 30 });
+    assert.equal(stats.USA.count, 1);
+    assert.equal(Object.keys(stats).length, 2);
+  });
+
+  test("bbox: parse, antimeridiano e teto pelos maiores FRP", () => {
+    assert.deepEqual(parseFirmsBbox("-60,-20,-40,0"), { minLng: -60, minLat: -20, maxLng: -40, maxLat: 0 });
+    assert.equal(parseFirmsBbox("-60,-20,-40"), null);
+    assert.equal(parseFirmsBbox("-60,10,-40,0"), null, "minLat > maxLat");
+    assert.equal(parseFirmsBbox("a,b,c,d"), null);
+    const wrap = { minLng: 170, minLat: -10, maxLng: -170, maxLat: 10 };
+    assert.ok(inFirmsBbox(0, 175, wrap));
+    assert.ok(inFirmsBbox(0, -175, wrap));
+    assert.ok(!inFirmsBbox(0, 0, wrap));
+    const all = [hs(-5, -50, 1), hs(-6, -51, 9), hs(-7, -52, 5), hs(30, 30, 100)];
+    const r = selectFirmsInBbox(all, { minLng: -60, minLat: -20, maxLng: -40, maxLat: 0 }, 2);
+    assert.equal(r.total, 3);
+    assert.deepEqual(r.hotspots.map((h) => h.frp), [9, 5]);
+  });
+});
+
+describe("D05: rota — byCountry e bbox", () => {
+  const realFetch = globalThis.fetch;
+  const realWarn = console.warn;
+
+  beforeEach(() => {
+    resetObservatorySources();
+    process.env.NASA_FIRMS_MAP_KEY = "test-key";
+    console.warn = () => {};
+    globalThis.fetch = (async () => new Response(VIIRS_CSV, { status: 200 })) as typeof fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = realFetch;
+    console.warn = realWarn;
+    delete process.env.NASA_FIRMS_MAP_KEY;
+  });
+
+  test("visão global traz byCountry e não vaza a lista completa", async () => {
+    const body = await (await firmsGET(firmsReq("?confidence=all"))).json();
+    assert.equal(body.byCountry.IDN.count, 1);
+    assert.equal(body.byCountry.USA.count, 1);
+    assert.equal(body.all, undefined);
+  });
+
+  test("bbox devolve todos os focos do recorte, sem células", async () => {
+    const body = await (await firmsGET(firmsReq("?confidence=all&bbox=100,-10,120,5"))).json();
+    assert.equal(body.data.length, 1);
+    assert.equal(body.data[0].frp, 48.9);
+    assert.equal(body.total, 1);
+    assert.equal(body.cells, undefined);
+    assert.deepEqual(body.bbox, { minLng: 100, minLat: -10, maxLng: 120, maxLat: 5 });
+  });
+
+  test("bbox inválido → 400", async () => {
+    const res = await firmsGET(firmsReq("?bbox=1,2,3"));
+    assert.equal(res.status, 400);
   });
 });

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
+import { useTimelineStore } from "@/stores/timelineStore";
 import { calculateIssPosition, IssTelemetryData, type ObservatoryEntity } from "@/lib/observatory-data";
 import { firmsMapUrl, formatAcqTime, FIRMS_CONFIDENCE_LABEL } from "@/lib/firms-display";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -15,7 +16,6 @@ import { cn } from "@/components/ui/cn";
 
 const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone; icon: React.ReactNode }> = {
   FIRMS: { title: "Foco de Calor (FIRMS)", tone: "layer-fires", icon: <Flame /> },
-  FIRMS_CELL: { title: "Concentração de Focos", tone: "layer-fires", icon: <Flame /> },
   ISS: { title: "Telemetria Orbital ISS", tone: "layer-satellites", icon: <Radio /> },
   EONET: { title: "Evento Severo NASA", tone: "layer-events", icon: <Activity /> },
   AIRCRAFT: { title: "Aeronave Comercial", tone: "layer-aircraft", icon: <Plane /> },
@@ -41,6 +41,9 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
       ? useObservatoryStore.getState().selectedEntity
       : storeSelectedEntity;
   const setSelectedEntity = useObservatoryStore((s) => s.setSelectedEntity);
+  const storeTimelineExpanded = useTimelineStore((s) => s.isExpanded);
+  const isTimelineExpanded =
+    typeof window === "undefined" ? useTimelineStore.getState().isExpanded : storeTimelineExpanded;
   const flyTo = useGlobeStore((s) => s.flyTo);
 
   // Época ativa: fonte única (T12)
@@ -74,7 +77,11 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
   return (
     <Panel
       data-testid="observatory-telemetry-hud"
-      className="fixed bottom-24 left-6 z-30 w-80 max-w-[calc(100vw-3rem)]"
+      // Acima da timeline (expandida ≈ 9 rem; recolhida ≈ 4 rem), sem cobri-la.
+      className={cn(
+        "fixed left-6 z-30 w-80 max-w-[calc(100vw-3rem)]",
+        isTimelineExpanded ? "bottom-[10.5rem]" : "bottom-[5.5rem]"
+      )}
     >
       <PanelHeader
         headingLevel={3}
@@ -124,41 +131,6 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
               </a>
             </div>
             <p className="text-caption text-fg-muted">Fonte: NASA FIRMS (Fire Information for Resource Management System).</p>
-          </>
-        )}
-
-        {selectedEntity.type === "FIRMS_CELL" && (
-          <>
-            <div className="space-y-0.5">
-              <div className="text-label font-medium text-fg">
-                {selectedEntity.data.count.toLocaleString("pt-BR")} focos nesta área
-              </div>
-              <span className="text-caption text-fg-muted">
-                Célula de ~1° em torno de {selectedEntity.data.lat.toFixed(2)}°, {selectedEntity.data.lng.toFixed(2)}° · mais recente em {selectedEntity.data.latestDate}
-              </span>
-            </div>
-
-            <div className={FIELD_GRID}>
-              <Field label="FRP somado">{Math.round(selectedEntity.data.frpSum).toLocaleString("pt-BR")} MW</Field>
-              <Field label="FRP máximo">{selectedEntity.data.frpMax.toLocaleString("pt-BR")} MW</Field>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button variant="primary" size="sm" className="flex-1" onClick={() => handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.5)}>
-                <Crosshair aria-hidden="true" className="h-4 w-4" />
-                Aproximar para ver os focos
-              </Button>
-              <a
-                href={firmsMapUrl(selectedEntity.data.lat, selectedEntity.data.lng, selectedEntity.data.latestDate)}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Abrir no mapa oficial NASA FIRMS"
-                title="Abrir no mapa oficial NASA FIRMS (fonte primária)"
-                className={buttonClasses("secondary", "sm", "w-8 px-0")}
-              >
-                <ExternalLink aria-hidden="true" className="h-4 w-4" />
-              </a>
-            </div>
           </>
         )}
 
