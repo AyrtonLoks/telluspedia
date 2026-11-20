@@ -162,7 +162,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | DONE | codex | — | G-PIPELINE, G-PAIS |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | IN_PROGRESS | codex | — | G-ESTUDOS, G-INFRA |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
-| T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | TODO | — | — | G-OBS |
+| T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | IN_PROGRESS | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | TODO | — | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | TODO | — | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | TODO | — | — | G-EPOCA, G-FRONTEIRAS |
@@ -487,7 +487,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T09 · Cache sem limite em /api/observatory/cosmos
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t09-cosmos-lru-cache · **Worktree:** ../telluspedia-wt/antigravity-t09
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -504,6 +504,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (4cb10a9).
 
 ---
 
