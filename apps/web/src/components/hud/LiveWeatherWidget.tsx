@@ -9,6 +9,10 @@ interface LiveWeatherWidgetProps {
   lng: number;
 }
 
+function formatMeasurement(value: number | null | undefined, unit: string) {
+  return value == null ? "—" : `${Math.round(value)}${unit}`;
+}
+
 export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,7 +29,10 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng }
         }
       })
       .catch(() => {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setWeather(null);
+          setLoading(false);
+        }
       });
 
     return () => {
@@ -33,8 +40,10 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng }
     };
   }, [lat, lng]);
 
-  const getWeatherIcon = (code?: number) => {
-    if (code === undefined) return <Sun className="w-4 h-4 text-amber-400" />;
+  const current = loading ? null : weather;
+
+  const getWeatherIcon = (code: number | null | undefined) => {
+    if (code == null) return null;
     if (code >= 51 && code <= 67) return <CloudRain className="w-4 h-4 text-blue-400" />;
     if (code >= 1 && code <= 3) return <Cloud className="w-4 h-4 text-slate-300" />;
     return <Sun className="w-4 h-4 text-amber-400" />;
@@ -43,29 +52,27 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng }
   return (
     <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-700/40 text-xs">
       <div className="flex items-center gap-2">
-        {getWeatherIcon(weather?.weather_code)}
+        {getWeatherIcon(current?.weather_code)}
         <div>
           <div className="font-semibold text-slate-100 text-sm">
-            {loading ? "..." : weather ? `${Math.round(weather.temperature)}°C` : "N/D"}
+            {loading ? "..." : formatMeasurement(current?.temperature, "°C")}
           </div>
           <div className="text-[10px] text-slate-400">
-            {weather ? `Sensação ${Math.round(weather.apparent_temperature)}°C` : "Clima local"}
+            {current ? `Sensação ${formatMeasurement(current.apparent_temperature, "°C")}` : "Clima local"}
           </div>
         </div>
       </div>
 
-      {weather && (
-        <div className="flex items-center gap-3 text-[11px] text-slate-300">
-          <div className="flex items-center gap-1" title="Umidade Relativa">
-            <Droplets className="w-3 h-3 text-cyan-400" />
-            <span>{Math.round(weather.relative_humidity)}%</span>
-          </div>
-          <div className="flex items-center gap-1" title="Velocidade do Vento">
-            <Wind className="w-3 h-3 text-slate-400" />
-            <span>{Math.round(weather.wind_speed)} km/h</span>
-          </div>
+      <div className="flex items-center gap-3 text-[11px] text-slate-300">
+        <div className="flex items-center gap-1" title="Umidade Relativa">
+          <Droplets className="w-3 h-3 text-cyan-400" />
+          <span>{formatMeasurement(current?.relative_humidity, "%")}</span>
         </div>
-      )}
+        <div className="flex items-center gap-1" title="Velocidade do Vento">
+          <Wind className="w-3 h-3 text-slate-400" />
+          <span>{formatMeasurement(current?.wind_speed, " km/h")}</span>
+        </div>
+      </div>
     </div>
   );
 };

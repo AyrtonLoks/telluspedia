@@ -13,5 +13,5 @@ async def get_weather(
         raise HTTPException(status_code=400, detail="Invalid coordinates range.")
     try:
         return await WeatherProxyService.get_current_weather(lat, lng)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Weather service upstream error: {str(e)}")
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail="Weather fetch failed") from exc

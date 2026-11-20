@@ -1,13 +1,12 @@
 from pydantic import BaseModel
-from typing import Optional
 
 class CurrentWeather(BaseModel):
-    temperature: float
-    apparent_temperature: float
-    relative_humidity: float
-    precipitation: float
-    weather_code: int
-    wind_speed: float
+    temperature: float | None = None
+    apparent_temperature: float | None = None
+    relative_humidity: float | None = None
+    precipitation: float | None = None
+    weather_code: int | None = None
+    wind_speed: float | None = None
 
 class WeatherResponse(BaseModel):
     latitude: float

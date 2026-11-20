@@ -60,12 +60,12 @@ export interface Milestone {
 }
 
 export interface WeatherData {
-  temperature: number;
-  apparent_temperature: number;
-  relative_humidity: number;
-  precipitation: number;
-  weather_code: number;
-  wind_speed: number;
+  temperature: number | null;
+  apparent_temperature: number | null;
+  relative_humidity: number | null;
+  precipitation: number | null;
+  weather_code: number | null;
+  wind_speed: number | null;
   cached?: boolean;
 }
 
@@ -115,7 +115,8 @@ export async function fetchMilestones(params?: {
 
 export async function fetchWeather(lat: number, lng: number): Promise<WeatherData | null> {
   try {
-    const res = await fetch(`/api/weather?lat=${lat}&lng=${lng}`);
+    const params = new URLSearchParams({ lat: String(lat), lng: String(lng) });
+    const res = await fetch(`/api/weather?${params}`);
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
