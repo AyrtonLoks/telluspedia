@@ -124,7 +124,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                   ["ORBITS", "Órbitas Keplerianas"],
                   ["CONSTELLATIONS", "88 Constelações IAU"],
                   ["ASTEROIDS", "Cinturão de Asteroides"],
-                  ["LABELS", "Rótulos Planetários"],
+                  ["LABELS", "Rótulos do céu e dos planetas"],
                   ["COMETS", "Cometa 1P/Halley"],
                   ["METEORS", "Chuvas de Meteoros"],
                 ] as Array<[CosmicLayerId, string]>
@@ -133,6 +133,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                 return (
                   <button
                     key={layerId}
+                    aria-pressed={isActive}
                     onClick={() => toggleLayer(layerId)}
                     className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-left transition-colors ${
                       isActive
@@ -150,6 +151,14 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                 );
               })}
             </div>
+            <a
+              href="https://github.com/AyrtonLoks/telluspedia/blob/master/docs/DATA_SOURCES.md#catálogo-estelar-e-via-láctea-d09"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-block text-slate-400 hover:text-cyan-300 underline underline-offset-2"
+            >
+              Fontes do céu
+            </a>
           </div>
         )}
       </aside>

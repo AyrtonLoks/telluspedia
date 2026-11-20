@@ -1,5 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import * as THREE from "three";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -19,10 +21,11 @@ import {
 } from "../src/lib/astronomy-planets";
 
 import {
-  generateHygCatalog,
+  decodeHygCatalog,
   equatorialToVector3,
   bvToRgb,
-  BRIGHT_STARS,
+  greenwichSiderealAngle,
+  starAppearance,
   IAU_CONSTELLATIONS,
 } from "../src/lib/hyg-star-data";
 
@@ -159,54 +162,61 @@ describe("Horizonte 4: Expansão Cósmica, Efemérides Keplerianas & Abóbada HY
     }
   });
 
-  test("6. Abóbada Celeste HYG com 3.500+ Estrelas e Cores Espectrais B-V (hyg-star-data)", () => {
-    const catalog = generateHygCatalog(3600);
-    assert.ok(catalog.length >= 3500, `Catálogo deve conter 3500+ estrelas (tem ${catalog.length})`);
+  const catalogBytes = readFileSync(resolve(__dirname, "../public/data/sky/hyg-v4.1.bin"));
+  const catalog = decodeHygCatalog(Uint8Array.from(catalogBytes).buffer);
 
-    // Validação de estrelas de referência conhecidas
-    const sirius = BRIGHT_STARS.find((s) => s.name === "Sirius");
-    assert.ok(sirius);
-    assert.equal(sirius.vMag, -1.46);
+  test("6. Catálogo HYG v4.1 contém medições reais até V=6,5", () => {
+    assert.equal(catalog.visibleCount, 8920);
+    assert.equal(catalog.stars.length, 8922);
+    assert.ok(catalog.stars.slice(0, catalog.visibleCount).every((star) => star.vMag <= 6.5));
+    assert.ok(catalog.stars.slice(catalog.visibleCount).every((star) => star.vMag > 6.5));
+    assert.ok(catalog.stars.every((star) => star.ra >= 0 && star.ra < 360 && Math.abs(star.dec) <= 90));
 
-    const betelgeuse = BRIGHT_STARS.find((s) => s.name === "Betelgeuse");
-    assert.ok(betelgeuse);
-    assert.ok(betelgeuse.bv > 1.5, "Betelgeuse deve ter B-V > 1.5 (supergigante vermelha)");
+    const sirius = catalog.stars.find((star) => star.hip === 32349);
+    assert.equal(sirius?.name, "Sirius");
+    assert.ok(sirius && Math.abs(sirius.vMag + 1.44) < 0.0001);
+    assert.ok(Math.abs(sirius.ra - 101.287215) < 0.0001);
+    assert.equal(catalog.stars.some((star) => star.name === "Sol"), false);
+    assert.throws(() => decodeHygCatalog(new ArrayBuffer(4)), /Invalid HYG1/);
 
-    // Teste da função de projeção de cor B-V para RGB
-    const blueColor = bvToRgb(-0.2); // Classe O/B
-    assert.ok(blueColor[2] > blueColor[0], "Estrela azul deve ter componente azul dominante");
+    const bright = starAppearance(sirius.vMag);
+    const faint = starAppearance(6.5);
+    assert.ok(bright.diameter > faint.diameter && bright.opacity > faint.opacity);
+    assert.ok(bvToRgb(-0.2)[2] > bvToRgb(-0.2)[0]);
+    assert.ok(bvToRgb(1.8)[0] > bvToRgb(1.8)[2]);
+    assert.ok(bvToRgb(Number.NaN).every(Number.isFinite));
 
-    const redColor = bvToRgb(1.8); // Classe M
-    assert.ok(redColor[0] > redColor[2], "Estrela vermelha deve ter componente vermelho dominante");
-
-    // Projeção equatorial esférica (equatorialToVector3)
-    const polarisVec = equatorialToVector3(37.95, 89.26, 500);
-    assert.ok(Math.abs(polarisVec.length() - 500) < 1e-3, "Raio celeste deve ser exatamente 500");
-    assert.ok(polarisVec.y > 490, "Polaris (Dec ~89.3°) deve estar próxima ao polo norte celeste (+Y)");
+    const polaris = catalog.stars.find((star) => star.hip === 11767);
+    assert.ok(polaris && equatorialToVector3(polaris.ra, polaris.dec).y > 0.99);
+    const epoch = new Date("2000-01-01T12:00:00Z");
+    const gmst = greenwichSiderealAngle(epoch);
+    assert.ok(Math.abs(THREE.MathUtils.radToDeg(gmst) - 280.46061837) < 1e-7);
+    const greenwich = equatorialToVector3(THREE.MathUtils.radToDeg(gmst), 0)
+      .applyAxisAngle(new THREE.Vector3(0, 1, 0), -gmst);
+    assert.ok(greenwich.distanceTo(new THREE.Vector3(1, 0, 0)) < 1e-9);
   });
 
-  test("7. Integridade das 88 Constelações Oficiais IAU e Asterismos (iauConstellations)", () => {
-    assert.ok(IAU_CONSTELLATIONS.length >= 8, "Deve conter as principais constelações da IAU catalogadas");
+  test("7. Traçados das 88 constelações do Stellarium têm rótulos pt-BR e vértices HIP válidos", () => {
+    assert.equal(IAU_CONSTELLATIONS.length, 88);
+    assert.equal(new Set(IAU_CONSTELLATIONS.map((c) => c.iauCode)).size, 88);
+    const hips = new Set(catalog.stars.map((star) => star.hip));
 
-    const crux = IAU_CONSTELLATIONS.find((c) => c.id === "CRUX");
-    assert.ok(crux, "Cruzeiro do Sul (Crux) deve estar presente");
-    assert.ok(crux.lines.length >= 2, "Crux deve conter hastes vertical e horizontal");
-
-    const orion = IAU_CONSTELLATIONS.find((c) => c.id === "ORION");
-    assert.ok(orion, "Órion deve estar presente");
-    assert.ok(orion.lines.length >= 5, "Órion deve conter cinturão e ombros");
-
-    // Validação de projeção 3D de todas as linhas de constelação
-    for (const c of IAU_CONSTELLATIONS) {
-      for (const [p1, p2] of c.lines) {
-        const v1 = equatorialToVector3(p1[0], p1[1], 450);
-        const v2 = equatorialToVector3(p2[0], p2[1], 450);
-        assert.ok(!Number.isNaN(v1.x) && !Number.isNaN(v1.y) && !Number.isNaN(v1.z));
-        assert.ok(!Number.isNaN(v2.x) && !Number.isNaN(v2.y) && !Number.isNaN(v2.z));
-        assert.ok(Math.abs(v1.length() - 450) < 1e-3);
-        assert.ok(Math.abs(v2.length() - 450) < 1e-3);
+    for (const constellation of IAU_CONSTELLATIONS) {
+      assert.ok(constellation.namePt && constellation.paths.length > 0);
+      for (const line of constellation.paths) {
+        assert.ok(line.length > 1 && line.every((id) => hips.has(id)));
       }
     }
+
+    const orion = IAU_CONSTELLATIONS.find((c) => c.iauCode === "Ori");
+    assert.equal(orion?.namePt, "Órion");
+    assert.deepEqual(orion.paths[0], [26727, 26311, 25930]);
+    const crux = IAU_CONSTELLATIONS.find((c) => c.iauCode === "Cru");
+    assert.equal(crux?.namePt, "Cruzeiro do Sul");
+    assert.deepEqual(crux.paths, [[61084, 60718], [62434, 59747]]);
+    const ursa = IAU_CONSTELLATIONS.find((c) => c.iauCode === "UMa");
+    assert.equal(ursa?.namePt, "Ursa Maior");
+    assert.deepEqual(ursa.paths[0], [67301, 65378, 62956, 59774, 54061, 53910, 58001, 59774]);
   });
 
   test("8. Gerenciador de Estado Cósmico (useCosmicStore): Transições, Alvos e Camadas", () => {

@@ -82,8 +82,25 @@ Mapear, classificar e documentar todas as APIs públicas, repositórios científ
   - **OpenSky Network API**: Dados abertos de recepção ADS-B para visualização de aeronaves sobrevoando o globo.
   - **Global Fishing Watch, NOAA MarineCadastre & OpenSeaMap**: Dados históricos e agregados de AIS (*Automatic Identification System*) para traçado das principais rotas marítimas comerciais nos oceanos.
 - **RN-FONTE-12 — Abóbada Celeste, Constelações por Data e Expansão Cósmica (RN19, RN20)**:
-  - **HYG Star Database (Hipparcos, Yale Bright Star & Gliese Catalogs) + Limites Oficiais da IAU (União Astronômica Internacional)**: Coordenadas estelares e vetores de movimento próprio para renderizar as constelações exatas no céu no dia selecionado na timeline ou na data atual (**RN19**).
+  - **Abóbada celeste J2000**. As estrelas do HYG, os traçados do Stellarium e a Via Láctea compartilham o mesmo referencial. Ver [catálogo estelar e Via Láctea](#catálogo-estelar-e-via-láctea-d09).
   - **NASA JPL Horizons API & Minor Planet Center (MPC)**: Efemérides de alta precisão para a órbita da Lua, planetas do Sistema Solar, asteroides, cometas e meteoros na visão expandida do Cosmos (**RN18, RN20**).
+
+
+#### Catálogo estelar e Via Láctea (D09)
+
+- **HYG v4.1**. David Nash / Astronomy Nexus, com dados de Hipparcos, Yale Bright Star e Gliese. A adaptação converte ascensão reta de horas para graus e empacota 8.920 registros observados até V = 6,5. Dois registros HIP adicionais dão suporte aos traçados. O índice B−V ausente é sinalizado no arquivo e recebe uma cor neutra na apresentação. [CSV original, revisão c7f7f88](https://github.com/astronexus/HYG-Database/blob/c7f7f883fe678cc7680169a50ccd7dcc49b060ce/hyg/CURRENT/hygdata_v41.csv) · [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Constelações modernas do Stellarium v25.4**. Equipe do Stellarium e tradutores pt-BR. A adaptação preserva os caminhos HIP das 88 regiões da IAU e incorpora seus nomes em português do Brasil. Os traçados são as figuras da cultura celeste Modern (IAU) do Stellarium. [Traçados](https://github.com/Stellarium/stellarium/blob/v25.4/skycultures/modern/index.json) · [Nomes pt-BR](https://github.com/Stellarium/stellarium/blob/v25.4/po/stellarium-skycultures/pt_BR.po) · [CC BY-SA 4.0 para os dados](https://github.com/Stellarium/stellarium/blob/v25.4/skycultures/modern/description.md#license)
+- **Fundo da Via Láctea**. NASA/Goddard Space Flight Center Scientific Visualization Studio, visualização de Ernie Wright, com dados Gaia DR2 de ESA/Gaia/DPAC. JPEG de 1024 × 512 do fundo sem estrelas brilhantes, mantido intacto e atenuado na renderização. [Deep Star Maps 2020](https://svs.gsfc.nasa.gov/4851/) · [Termos de reutilização do NASA SVS](https://svs.gsfc.nasa.gov/help/#frequently-asked-questions)
+
+O céu usa +X para ascensão reta de 0 h, +Y para o polo norte celeste e −Z para ascensão reta de 6 h. No globo terrestre, a longitude celeste acompanha `α − GMST` na data astronômica ativa. No Cosmos, o céu converte do equador para a eclíptica J2000 pela obliquidade média de 23,4392911°. As posições do catálogo são fixas na época J2000.
+
+Regenere os dados com Python 3 a partir dos três arquivos vinculados acima.
+
+```sh
+python3 apps/web/scripts/build-star-catalog.py hygdata_v41.csv index.json pt_BR.po
+```
+
+O binário `HYG1` contém uma contagem total e uma de estrelas visíveis em uint32 little-endian. Cada registro tem 24 bytes com HIP, ascensão reta, declinação, magnitude V, índice B−V e deslocamento na tabela de nomes UTF-8. Os arquivos adaptados do HYG e do Stellarium são distribuídos sob CC BY-SA 4.0.
 
 ---
 
