@@ -153,7 +153,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | ID | Título | Área | Prio | Tam | Status | Responsável | Depende de | Grupos |
 |---|---|---|---|---|---|---|---|---|
 | T24 | Commitar trabalho pendente (TellusBridge) | Infra | P0 | P | DONE | ayrton | — | — |
-| T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | TODO | — | — | G-SHELL |
+| T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | IN_PROGRESS | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | TODO | — | — | G-TIMELINE |
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | TODO | — | — | G-GLOBO |
 | T03 | Remover dados e citações inventados | Dados | P0 | G | TODO | — | — | G-PAIS |
@@ -231,7 +231,7 @@ Na data da auditoria havia 15 arquivos modificados e diretórios inteiros não r
 
 ### T01 · Carregar fontes Geist/Merriweather (UI renderizando em serifa)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t01-fontes · **Worktree:** ../telluspedia-wt/claude-t01
 - **Prioridade:** P0 · **Área:** Design · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL
 
 **Contexto / problema**
@@ -257,6 +257,7 @@ Toda a interface (navbar, painéis, timeline) aparece em Times/serifa. Causa con
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (59396d2).
 
 ---
 
