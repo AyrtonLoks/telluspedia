@@ -159,7 +159,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T03 | Remover dados e citações inventados | Dados | P0 | G | IN_PROGRESS | — | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | REVIEW | claude | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
-| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | IN_PROGRESS | codex | — | G-PIPELINE |
+| T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | REVIEW | codex | — | G-PIPELINE |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | TODO | — | — | G-ESTUDOS |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | TODO | — | — | G-OBS |
@@ -396,7 +396,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 ### T06 · Validar lat/lng em /api/weather
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t06-validar-coordenadas-weather · **Worktree:** ../telluspedia-wt/codex-t06
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t06-validar-coordenadas-weather · **Worktree:** ../telluspedia-wt/codex-t06
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-PIPELINE
 
 **Contexto / problema**
@@ -410,15 +410,16 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 5. Testes da rota (válido, inválido, upstream falhando).
 
 **Critérios de aceite**
-- [ ] `GET /api/weather?lat=abc&lng=1` → 400.
-- [ ] `GET /api/weather?lat=1%26x%3D1&lng=2` → 400.
-- [ ] Nenhum valor meteorológico inventado em TS ou Python.
+- [x] `GET /api/weather?lat=abc&lng=1` → 400.
+- [x] `GET /api/weather?lat=1%26x%3D1&lng=2` → 400.
+- [x] Nenhum valor meteorológico inventado em TS ou Python.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível por fase. Reivindicada em worktree próprio a partir de origin/master.
 - 2026-11-20 · codex · TODO · Devolvida à fila antes da implementação para priorizar a correção da D01.
 - 2026-11-20 · codex · IN_PROGRESS · Retomada por solicitação do Ayrton após o aceite da D01.
+- 2026-11-20 · codex · REVIEW · Validação decimal de coordenadas com finitude e limites antes de consultar os provedores. Parâmetros de URL montados pela API, pelo cliente web e pelo pipeline Python. Campos ausentes normalizados para null e exibidos como —, preservando zero. Os dois endpoints retornam mensagens genéricas em falhas de upstream. Cache Redis versionado para deixar expirar as entradas com valores padrão anteriores. Typecheck, lint, 235 testes web, 7 testes Python e build passaram. A versão de produção foi verificada por HTTP e no Chromium com pipeline simulado. O build reutilizou cópias temporárias dos arquivos originais do Google Fonts.
 
 ---
 
