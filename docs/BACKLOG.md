@@ -165,7 +165,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | REVIEW | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | IN_PROGRESS | codex | — | G-INFRA |
-| T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | IN_PROGRESS | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
+| T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | REVIEW | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | TODO | — | T12 | G-EPOCA, G-ESTUDOS |
 | T14 | Fonte única de direção solar | 3D | P1 | M | TODO | — | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | TODO | — | T12 | G-EPOCA |
@@ -581,7 +581,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T12 · Seletor único de época (`useEpochState`)
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t12-epoch-state · **Worktree:** ../telluspedia-wt/claude-t12
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/t12-epoch-state · **Worktree:** ../telluspedia-wt/claude-t12
 - **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** G · **Depende de:** — · **Grupos:** G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS
 
 **Contexto / problema**
@@ -606,15 +606,16 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 6. Testes unitários exaustivos da função pura (tabela de casos).
 
 **Critérios de aceite**
-- [ ] Nenhum componente calcula `isGeologicalActive`/`isApolloActive`/`isMagellanActive` localmente.
-- [ ] `grep -rn '"pangea-250ma"\|"magellan-1519"\|"usa-1969"' apps/web/src --include=*.tsx` → 0 ocorrências em componentes.
-- [ ] Playback passando por 1969 não ativa o Apollo.
-- [ ] Testes da função pura cobrindo todas as combinações relevantes.
+- [x] Nenhum componente calcula `isGeologicalActive`/`isApolloActive`/`isMagellanActive` localmente.
+- [x] `grep -rn '"pangea-250ma"\|"magellan-1519"\|"usa-1969"' apps/web/src --include=*.tsx` → 0 ocorrências em componentes.
+- [x] Playback passando por 1969 não ativa o Apollo.
+- [x] Testes da função pura cobrindo todas as combinações relevantes.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. G-TIMELINE adicionado (o passo 4 altera `TimelineAxis`). Nenhuma tarefa de G-EPOCA/G-FRONTEIRAS/G-TIMELINE em andamento.
 - 2026-11-20 · claude · IN_PROGRESS · G-OBS adicionado: `ObservatoryPanel` e `ObservatoryTelemetryHUD` também decidem localmente se a época é contemporânea (anacronismo) e passam a usar o seletor único. Nenhuma tarefa de G-OBS em andamento.
+- 2026-11-20 · claude · REVIEW · Commit `678dcf8`. **Novo** `lib/epoch/`: `constants.ts` (IDs de marcos geológicos com idade em Ma, rota e marcos de Magalhães, marcos da Apollo 11, `SPACE_AGE_START_YEAR = 1957`, `DEFAULT_GEOLOGICAL_MA = 250`); `resolveEpoch.ts` — função **pura** `resolveEpoch(input) → { mode, effectiveYear, geologicalMa, historicalEraId, activeScene, isContemporary }` com precedência documentada **geológico > cena explícita (Magalhães > Apollo) > ano** (ano efetivo = ano selecionado > ano do marco > ano representativo do intervalo; `effectiveYear: null` = presente); `useEpochState.ts` — hook com `useShallow` sobre timelineStore, studyStore e historicalRouteStore (+ `getEpochState()` imperativo; lê `getState()` no render de servidor, como os demais componentes, para os testes com renderToStaticMarkup). **Migrados para o seletor:** `GlobeCanvas`, `EarthSphere`, `CountryBorders`, `OrbitingMoon`, `Apollo11TelemetryOverlay`, `HistoricalRouteOverlay`, `HistoricalRouteTrajectory` (constante), `HistoricalEraBadge` (props de override sem uso removidos), `PaleoEraBadge` (prop mantido), `TimelineBar`, `TimelineAxis`, `StudyShareModal`, `ObservatoryPanel` e `ObservatoryTelemetryHUD` (anacronismo agora inclui a cena de Magalhães e o modo geológico vindo de marco/estudo), `PresetSelector`/`EntityLaunch`/`/study/[slug]` (constantes); `timelineStore` e `study-epoch` usam `MAGELLAN_ROUTE_ID`. **Mudança de comportamento (intencional, critério da tarefa):** Apollo e Magalhães só por seleção explícita de marco/rota/estudo — o playback passando por 1969 ou 1519 não liga mais as cenas, e salvar um estudo no intervalo da Guerra Fria não grava mais `isApollo11Active` só porque o ano representativo é 1969. O teste antigo `Apollo11TelemetryOverlay renders when 1969…` foi atualizado para a regra nova. A contemporaneidade da telemetria passou a usar o **ano efetivo** (antes o globo usava só o ano selecionado): no recorte Guerras Mundiais sem ano selecionado, as camadas do Observatório ficam suprimidas no globo e no painel, de forma consistente. **Testes:** `test/epoch.test.ts` (44 casos: 39 da tabela, pureza, varredura de playback 1960–1975 e 3 verificações estáticas — nenhum `.tsx` com IDs especiais literais, com `isGeologicalActive/isApolloActive/isMagellanActive` locais ou com `=== 1969/1519`). **Validação:** typecheck ok, lint ok, 345/345 testes, build ok (home 431 kB). **Fora do escopo / pendências:** `InspectorHUD` ainda calcula o ano efetivo localmente para buscar os dados do país (G-PAIS; migrar junto da T13 ou D20); a direção solar segue em `GlobeCanvas`/`EarthSphere` a partir do ano/marco — é a T14; a restauração de estudo da Guerra Fria sem Apollo ainda seleciona 1968 (contorno antigo, inofensivo). **Desbloqueia:** T13, T14, T15 (e D12, que depende também da T20).
 
 ---
 
