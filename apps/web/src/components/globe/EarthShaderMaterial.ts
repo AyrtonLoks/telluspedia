@@ -15,7 +15,7 @@ export const EarthShader = {
     uNightTexture: { value: createPlaceholderTexture(2, 5, 11) as THREE.Texture },
     uPaleoTexture: { value: null as THREE.Texture | null },
     uPaleoFactor: { value: 0.0 },
-    uStudyLighting: { value: 1.0 },
+    uStudyLighting: { value: 0.0 },
     uAtmosphereColor: { value: new THREE.Color("#00d4ff") },
     uAtmospherePower: { value: 3.2 },
     uTime: { value: 0 },

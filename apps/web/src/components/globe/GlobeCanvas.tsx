@@ -39,7 +39,7 @@ import { isContemporaryEpoch } from "@/lib/observatory-data";
 import { findMilestoneById } from "@/lib/country-data";
 
 export const GlobeCanvas: React.FC = () => {
-  const [studyLighting, setStudyLighting] = useState(true);
+  const [studyLighting, setStudyLighting] = useState(false);
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
