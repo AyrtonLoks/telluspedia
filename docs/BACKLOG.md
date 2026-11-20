@@ -186,7 +186,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | DONE | codex | T05 | G-OBS, G-INFRA |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | DONE | codex | T05 | G-OBS |
-| D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | IN_PROGRESS | codex | T05 | G-OBS |
+| D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | REVIEW | codex | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
@@ -1219,7 +1219,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D08 · Embarcações reais via AIS
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d08-embarcacoes-ais · **Worktree:** ../telluspedia-wt/codex-d08
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d08-embarcacoes-ais · **Worktree:** ../telluspedia-wt/codex-d08
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** T05 · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -1235,12 +1235,13 @@ A camada "Rotas Marítimas Globais" é só um conjunto de 5 polylines estáticas
 
 **Critérios de aceite**
 - [ ] Navios reais visíveis nos principais corredores (Malaca, Suez, Canal da Mancha) com posições atualizadas.
-- [ ] Chave do provedor nunca exposta ao navegador.
-- [ ] Fallback rotulado "Simulado".
+- [x] Chave do provedor nunca exposta ao navegador.
+- [x] Fallback rotulado "Simulado".
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 5. T05 está concluída e G-OBS está livre.
+- 2026-11-20 · codex · REVIEW · Integração AIS Stream pelo servidor, amostra por MMSI a cada 20 s, globo com ícones orientados por tipo, extrapolação limitada, partículas por corredor e ficha com fonte. Capturas locais de Malaca no mesmo enquadramento mostram antes a linha estática e depois a frota simulada colorida com partículas. Chromium validou o fallback em Malaca, Suez e Canal da Mancha e, com um feed controlado, a atualização, o movimento e a ficha. Typecheck, lint, 447 testes e build passaram. A captura de navios reais segue pendente de uma chave `AISSTREAM_API_KEY` no servidor. Os códigos AIS agrupam porta-contêineres em cargueiros. Implementação em `fd3f103`.
 
 ---
 
