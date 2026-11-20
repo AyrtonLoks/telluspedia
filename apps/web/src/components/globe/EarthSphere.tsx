@@ -124,7 +124,7 @@ function createProceduralPangeaTexture(width = 512, height = 256): THREE.DataTex
   return texture;
 }
 
-export const EarthSphere: React.FC = () => {
+export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLighting }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const { invalidate } = useThree();
 
@@ -210,6 +210,11 @@ export const EarthSphere: React.FC = () => {
     );
     return mat;
   }, [dayTexture, nightTexture, proceduralPaleoTexture]);
+
+  useEffect(() => {
+    earthMaterial.uniforms.uStudyLighting.value = studyLighting ? 1 : 0;
+    invalidate();
+  }, [earthMaterial, studyLighting, invalidate]);
 
   // Ref to track loaded raster paleogeographic texture for proper WebGL GPU disposal
   const loadedPaleoTextureRef = useRef<THREE.Texture | null>(null);
