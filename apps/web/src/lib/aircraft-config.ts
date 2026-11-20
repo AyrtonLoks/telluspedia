@@ -1,0 +1,3 @@
+export const AIRCRAFT_POLL_MS = 120_000;
+export const AIRCRAFT_DEFAULT_LIMIT = 2_000;
+export const AIRCRAFT_MAX_LIMIT = 4_000;

@@ -3919,7 +3919,7 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
     assert.ok(html.includes("Observatório Planetário"));
     assert.ok(html.includes("Queimadas Ativas (FIRMS)"));
     assert.ok(html.includes("ISS &amp; Satélites Artificiais"));
-    assert.ok(html.includes("Tráfego Aéreo Comercial"));
+    assert.ok(html.includes("Tráfego Aéreo"));
 
     // Validação de exibição do banner de anacronismo
     assert.ok(
@@ -3971,7 +3971,7 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
     useObservatoryStore.getState().setSelectedEntity({ type: "AIRCRAFT", data: plane });
 
     const planeHtml = renderToStaticMarkup(React.createElement(ObservatoryTelemetryHUD));
-    assert.ok(planeHtml.includes("Aeronave Comercial"));
+    assert.ok(planeHtml.includes("Aeronave rastreada"));
     assert.ok(planeHtml.includes(plane.callsign));
     assert.ok(planeHtml.includes(`${plane.altitudeMeters} m`));
     assert.ok(planeHtml.includes("Focar Câmera na Aeronave"));

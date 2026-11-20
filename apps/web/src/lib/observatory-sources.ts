@@ -20,6 +20,8 @@ import {
   createObservatorySource,
   type ObservatoryEnvelope,
 } from "./observatory-source";
+import { fetchOpenSkyFleet, resetOpenSky } from "./opensky";
+import { AIRCRAFT_POLL_MS } from "./aircraft-config";
 import { normalizeEonetEvents } from "./eonet-data";
 import { parseFirmsCsv } from "./firms-csv";
 import { createCountryLookup } from "./firms-country";
@@ -213,53 +215,14 @@ export const issSource = createObservatorySource<IssTelemetryData>({
 });
 
 // ---------------------------------------------------------------------------
-// Tráfego aéreo — OpenSky (consulta anônima, Atlântico Norte e Europa Central)
+// Tráfego aéreo — amostra global autenticada do OpenSky
 // ---------------------------------------------------------------------------
 export const aircraftSource = createObservatorySource<AircraftState[]>({
   name: "traffic/aircraft",
   liveProvider: "OpenSky Network",
-  liveTtlMs: 120 * 1000,
+  liveTtlMs: AIRCRAFT_POLL_MS,
   fallback: () => FALLBACK_AIRCRAFT_FLEET,
-  fetchLive: async () => {
-    const res = await fetchWithTimeout(
-      "https://opensky-network.org/api/states/all?lamin=10&lomin=-80&lamax=60&lomax=20",
-      2500
-    );
-    const json = await res.json();
-    if (!Array.isArray(json?.states) || json.states.length === 0) {
-      throw new SourceUnavailableError("Provedor não retornou aeronaves");
-    }
-
-    const liveAircraft: AircraftState[] = [];
-    for (const s of json.states.slice(0, 80)) {
-      const icao24 = s[0];
-      const callsign = (s[1] || "").trim();
-      const originCountry = s[2] || "Internacional";
-      const lng = s[5];
-      const lat = s[6];
-      const altitudeMeters = s[7] || s[13] || 10000;
-      const velocityMs = s[9] || 240;
-      const headingDeg = s[10] || 0;
-
-      if (typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng)) {
-        liveAircraft.push({
-          icao24,
-          callsign: callsign || `FLIGHT-${icao24}`,
-          originCountry,
-          lat,
-          lng,
-          altitudeMeters: Math.round(altitudeMeters),
-          velocityMs: Math.round(velocityMs),
-          headingDeg: Math.round(headingDeg),
-        });
-      }
-    }
-
-    if (liveAircraft.length < 10) {
-      throw new SourceUnavailableError(`Provedor retornou poucas aeronaves válidas (${liveAircraft.length})`);
-    }
-    return liveAircraft;
-  },
+  fetchLive: fetchOpenSkyFleet,
 });
 
 // ---------------------------------------------------------------------------
@@ -289,4 +252,5 @@ export function resetObservatorySources() {
   issSource.reset();
   satellitesSource.reset();
   aircraftSource.reset();
+  resetOpenSky();
 }

@@ -13,6 +13,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { TONES, type Tone } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
+import { DataSourceBadge } from "./DataSourceBadge";
 
 const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone; icon: React.ReactNode }> = {
   FIRMS: { title: "Foco de Calor (FIRMS)", tone: "layer-fires", icon: <Flame /> },
@@ -20,7 +21,7 @@ const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone
   SATELLITE: { title: "Satélite Artificial", tone: "layer-satellites", icon: <Radio /> },
   EONET: { title: "Evento Severo NASA", tone: "layer-events", icon: <Activity /> },
   EONET_CLUSTER: { title: "Eventos próximos", tone: "layer-events", icon: <Activity /> },
-  AIRCRAFT: { title: "Aeronave Comercial", tone: "layer-aircraft", icon: <Plane /> },
+  AIRCRAFT: { title: "Aeronave rastreada", tone: "layer-aircraft", icon: <Plane /> },
   MARITIME: { title: "Corredor Mercante", tone: "layer-maritime", icon: <Anchor /> },
 };
 
@@ -52,6 +53,7 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
   const isContemporary = useEpochState().isContemporary;
 
   // ISS: a mesma propagação SGP4 que posiciona o modelo 3D (D04), atualizada a cada segundo.
+  const aircraftMeta = useObservatoryStore((s) => s.layerMeta.FLIGHTS_OPENSKY);
   const storeIss = useObservatoryStore((s) => s.issTelemetry);
   const refreshIssTelemetry = useObservatoryStore((s) => s.refreshIssTelemetry);
   const isIssSelected = selectedEntity?.type === "ISS";
@@ -75,6 +77,10 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
         ? storeIss
         : selectedEntity.data
       : null;
+
+  const aircraftPosition = selectedEntity.type === "AIRCRAFT"
+    ? selectedEntity.estimatedPosition ?? selectedEntity.data
+    : null;
 
   const meta = ENTITY_META[selectedEntity.type];
 
@@ -224,28 +230,39 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
           </>
         )}
 
-        {selectedEntity.type === "AIRCRAFT" && (
+        {selectedEntity.type === "AIRCRAFT" && aircraftPosition && (
           <>
             <div className="space-y-0.5">
               <div className="font-mono text-label font-medium text-fg">
-                {selectedEntity.data.callsign} ({selectedEntity.data.icao24})
+                {selectedEntity.data.callsign || "Sem indicativo"} ({selectedEntity.data.icao24})
               </div>
-              <span className="text-caption text-fg-muted">Origem / Registro: {selectedEntity.data.originCountry}</span>
+              <span className="text-caption text-fg-muted">País do transponder: {selectedEntity.data.originCountry}</span>
+              <div><DataSourceBadge meta={selectedEntity.meta ?? aircraftMeta} /></div>
             </div>
 
             <div className={FIELD_GRID}>
               <Field label="Altitude de voo">{selectedEntity.data.altitudeMeters} m</Field>
               <Field label="Velocidade">{Math.round(selectedEntity.data.velocityMs * 3.6)} km/h</Field>
               <Field label="Rumo">{selectedEntity.data.headingDeg}°</Field>
-              <Field label="Posição">
-                {selectedEntity.data.lat.toFixed(1)}°, {selectedEntity.data.lng.toFixed(1)}°
+              <Field label={selectedEntity.estimatedPosition ? "Posição estimada" : "Posição"}>
+                {aircraftPosition.lat.toFixed(2)}°, {aircraftPosition.lng.toFixed(2)}°
               </Field>
             </div>
+            {selectedEntity.data.positionTimestamp != null && (
+              <p className="text-caption text-fg-muted">
+                Última posição recebida · {new Date(selectedEntity.data.positionTimestamp).toLocaleString("pt-BR", { timeZone: "UTC" })} UTC
+              </p>
+            )}
 
-            <Button variant="primary" size="sm" className="w-full" onClick={() => handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.8)}>
-              <Crosshair aria-hidden="true" className="h-4 w-4" />
-              Focar Câmera na Aeronave
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="primary" size="sm" className="flex-1" onClick={() => handleFocus(aircraftPosition.lat, aircraftPosition.lng, 1.8)}>
+                <Crosshair aria-hidden="true" className="h-4 w-4" />
+                Focar Câmera na Aeronave
+              </Button>
+              <a href="https://openskynetwork.github.io/opensky-api/rest.html" target="_blank" rel="noreferrer" className={buttonClasses("secondary", "sm")}>
+                OpenSky <ExternalLink aria-hidden="true" className="h-3 w-3" />
+              </a>
+            </div>
           </>
         )}
 

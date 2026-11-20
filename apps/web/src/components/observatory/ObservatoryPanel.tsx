@@ -74,9 +74,9 @@ const LAYER_OPTIONS: LayerOption[] = [
   },
   {
     id: "FLIGHTS_OPENSKY",
-    name: "Tráfego Aéreo Comercial",
+    name: "Tráfego Aéreo",
     source: "OpenSky Network (ADS-B)",
-    description: "Frotas de aviação civil em altitude de cruzeiro e rumo ativo.",
+    description: "Amostra global de aeronaves em voo. A posição entre transmissões é estimada.",
     icon: Plane,
     tone: "layer-aircraft",
     badgeText: (s) => `${s.aircraftFleet?.length || 0} voos rastreados`,

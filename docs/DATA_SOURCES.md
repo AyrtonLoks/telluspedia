@@ -79,12 +79,18 @@ Mapear, classificar e documentar todas as APIs públicas, repositórios científ
   - **NOAA Marine Debris Program, Global Drifter Program (GDP) & NASA CYGNSS**: Conjuntos de dados científicos sobre acúmulo de microplásticos, giros oceânicos e fluxo de lixo marítimo (**RN17**).
 - **RN-FONTE-11 — Lua, ISS, Satélites Artificiais e Tráfego Aéreo/Marítimo (RN18)**:
   - **CelesTrak GP API & Space-Track.org**: Catálogos oficiais de elementos orbitais (*Two-Line Elements* - TLE / OMM) para posicionamento em tempo real da Estação Espacial Internacional (ISS) e satélites artificiais.
-  - **OpenSky Network API**: Dados abertos de recepção ADS-B para visualização de aeronaves sobrevoando o globo.
+  - **OpenSky Network API**. Amostra global de vetores ADS-B. Ver [tráfego aéreo](#tráfego-aéreo-d07).
   - **Global Fishing Watch, NOAA MarineCadastre & OpenSeaMap**: Dados históricos e agregados de AIS (*Automatic Identification System*) para traçado das principais rotas marítimas comerciais nos oceanos.
 - **RN-FONTE-12 — Abóbada Celeste, Constelações por Data e Expansão Cósmica (RN19, RN20)**:
   - **Abóbada celeste J2000**. As estrelas do HYG, os traçados do Stellarium e a Via Láctea compartilham o mesmo referencial. Ver [catálogo estelar e Via Láctea](#catálogo-estelar-e-via-láctea-d09).
   - **NASA JPL Horizons API & Minor Planet Center (MPC)**: Efemérides de alta precisão para a órbita da Lua, planetas do Sistema Solar, asteroides, cometas e meteoros na visão expandida do Cosmos (**RN18, RN20**).
 
+
+#### Tráfego aéreo (D07)
+
+- **Telemetria ADS-B**. OpenSky Network, Matthias Schäfer et al., *Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research*, IPSN 2014, p. 83–94. O país exibido corresponde ao endereço ICAO do transponder. [Documentação REST](https://openskynetwork.github.io/opensky-api/rest.html) · [Publicação](https://s3.opensky-network.org/website-public-files/publications/ipsn2014.pdf)
+- **Configuração do provedor**. O servidor aceita `OPENSKY_CLIENT_ID` e `OPENSKY_CLIENT_SECRET` para OAuth 2.0. A operação contínua requer licença escrita do OpenSky. A consulta global tem cache de 120 s e retorna uma amostra por células geográficas. `OPENSKY_AIRCRAFT_LIMIT` ajusta o limite entre 1 e 4.000 aeronaves, com padrão de 2.000. A frota local aparece como **Simulado** quando usada. [Termos do OpenSky](https://opensky-network.org/about/terms-of-use)
+- **Modelo 3D**. Modelo original genérico do TellusPedia com 220 triângulos no detalhe e 15 na silhueta distante. Nariz em +Z, asas no eixo X e dorso em +Y. A escala visual é adaptativa. As posições entre amostras usam rumo e velocidade em uma esfera terrestre; o rastro usa posições amostradas no cliente. Gere o GLB com `python3 apps/web/scripts/build-aircraft-model.py`. A geometria e o GLB são disponibilizados sob [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 
 #### Catálogo estelar e Via Láctea (D09)
 

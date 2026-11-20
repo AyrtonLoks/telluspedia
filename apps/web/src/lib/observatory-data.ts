@@ -1,5 +1,6 @@
 import { geoCentroid } from "d3-geo";
 import { latLngToVector3 } from "./geo-spatial";
+import type { ObservatoryMeta } from "./observatory-source";
 import { referenceIssTelemetry } from "./satellites";
 
 export type ObservatoryLayerId =
@@ -123,6 +124,8 @@ export interface AircraftState {
   altitudeMeters: number;
   velocityMs: number;
   headingDeg: number;
+  /** Horário da última posição recebida, em milissegundos UTC. */
+  positionTimestamp?: number;
 }
 
 export interface MaritimeRoute {
@@ -140,7 +143,7 @@ export type ObservatoryEntity =
   | { type: "SATELLITE"; data: SatelliteSnapshot }
   | { type: "EONET"; data: EonetEvent; observationIndex?: number }
   | { type: "EONET_CLUSTER"; data: { lat: number; lng: number; events: EonetEvent[] } }
-  | { type: "AIRCRAFT"; data: AircraftState }
+  | { type: "AIRCRAFT"; data: AircraftState; estimatedPosition?: { lat: number; lng: number }; meta?: ObservatoryMeta }
   | { type: "MARITIME"; data: MaritimeRoute };
 
 /**
