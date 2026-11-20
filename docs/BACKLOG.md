@@ -157,7 +157,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | DONE | antigravity | — | G-TIMELINE |
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | DONE | codex | — | G-GLOBO |
 | T03 | Remover dados e citações inventados | Dados | P0 | G | REVIEW | antigravity | — | G-PAIS |
-| T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | IN_PROGRESS | claude | — | G-OBS |
+| T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | REVIEW | claude | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | REVIEW | codex | — | G-PIPELINE |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | TODO | — | — | G-ESTUDOS |
@@ -335,7 +335,7 @@ Só ~30 países têm dados reais em `apps/web/src/lib/country-data.ts` (`PILOT_C
 
 ### T04 · Corrigir parse do CSV do FIRMS
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t04-firms-source · **Worktree:** ../telluspedia-wt/claude-t04b
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/t04-firms-source · **Worktree:** ../telluspedia-wt/claude-t04b
 - **Prioridade:** P0 · **Área:** Dados · **Tamanho:** P · **Depende de:** — · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -360,6 +360,7 @@ Só ~30 países têm dados reais em `apps/web/src/lib/country-data.ts` (`PILOT_C
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master (cfd0cc5). Inclui `NASA_FIRMS_MAP_KEY` no `.env.example` (aprovado pelo Ayrton).
 - 2026-11-20 · claude · REVIEW · Commit `b628720`. Novo `apps/web/src/lib/firms-csv.ts` (`parseFirmsCsv`, função pura): colunas mapeadas pelo nome do cabeçalho; suporta VIIRS (`bright_ti4`, confiança `l/n/h`) e MODIS (`brightness`, confiança 0–100 → <30 low, 30–79 nominal, ≥80 high); FRP da coluna `frp`; `acq_time` (HHMM) e `daynight` adicionados como campos opcionais em `FirmsHotspot`; linhas inválidas descartadas (coordenada fora da faixa, FRP/brilho ausente, confiança desconhecida, data não ISO, linha truncada); suporta CRLF; ids estáveis (`firms-<data>-<hora>-<lat>-<lng>`). Limite padrão 1.000 focos mantendo os de **maior FRP** (antes: as primeiras 250 linhas, viés geográfico do CSV) — a D05 pode rever com heatmap/instancing. `observatory-sources.ts`: usa o parser; resposta que não é CSV (chave inválida/limite) vira fallback com motivo citando `NASA_FIRMS_MAP_KEY` e o texto da API; timeout 3,5 s → 8 s (CSV mundial pode ter dezenas de milhares de linhas). `.env.example` documenta `NASA_FIRMS_MAP_KEY` com o link de obtenção. Testes: `apps/web/test/firms-csv.test.ts` (10 casos, incluindo regressão "version 2.0NRT nunca vira FRP", que falharia no parser antigo, e a rota com chave + fetch mockado). Validação após rebase sobre a D01: typecheck ok, lint ok, 231/231 testes, build ok. Não verificado com a API real: não havia chave no ambiente do agente — conferir após configurar a chave (badge "Ao vivo" e FRPs variados, não todos ≈2). Nota de ambiente: em worktree novo, rodar `pnpm db:generate` **na raiz** do worktree; rodado dentro de `apps/web` não gera o Prisma client e o typecheck falha em `prisma/seed.ts`.
 - 2026-11-20 · ayrton · IN_PROGRESS · Reprovada: com chave válida, o log mostra `[observatory/firms] provedor indisponível: Provedor não retornou focos válidos` e o badge fica "Simulado". Causa (diagnóstico do claude): o VIIRS S-NPP NRT parou de publicar em 2026-11-02 (`/api/data_availability` → `max_date` 2026-11-02); a API responde só o cabeçalho. NOAA-20, NOAA-21 e MODIS seguem ativos. Reaberta pelo claude no worktree `../telluspedia-wt/claude-t04b`.
+- 2026-11-20 · claude · REVIEW · Commit `0216aa1`. `firmsSource` agora percorre `FIRMS_DATASETS` em ordem (VIIRS NOAA-21 → NOAA-20 → S-NPP → MODIS) e usa o primeiro satélite com focos; não soma satélites (duplicaria focos). Resposta que não é CSV (chave/limite) interrompe na hora, sem consumir transações nos demais. Se nenhum tiver focos: fallback com motivo listando os satélites consultados. `createObservatorySource`: `fetchLive` recebe `ctx.setProvider()`, e o `meta.provider` mostra o satélite que respondeu (ex.: "NASA FIRMS (VIIRS NOAA-21 NRT)"), inclusive na leitura stale. Testes: +5 casos em `firms-csv.test.ts` (satélite só com cabeçalho → próximo; sem chamadas extras; todos vazios; chave inválida não insiste; stale mantém provider). **Verificado com a API real** (chave do Ayrton, sem expô-la): live, NOAA-21, 1.000 focos em ~2 s, FRP 45–860 MW (589 valores distintos), confiança high 296 / nominal 535 / low 169. Validação: typecheck ok, lint ok, 247/247 testes, build ok. Para conferir: reiniciar o dev server (o cache do processo guarda o fallback por até 60 s), ligar Queimadas → badge "Ao vivo" com o satélite no tooltip.
 
 ---
 
