@@ -153,7 +153,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | ID | Título | Área | Prio | Tam | Status | Responsável | Depende de | Grupos |
 |---|---|---|---|---|---|---|---|---|
 | T24 | Commitar trabalho pendente (TellusBridge) | Infra | P0 | P | DONE | ayrton | — | — |
-| T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | REVIEW | claude | — | G-SHELL |
+| T01 | Carregar fontes Geist/Merriweather (UI em serifa) | Design | P0 | P | DONE | claude | — | G-SHELL |
 | T02 | Timeline vazando do painel em telas largas | Design | P0 | P | IN_PROGRESS | antigravity | — | G-TIMELINE |
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | IN_PROGRESS | codex | — | G-GLOBO |
 | T03 | Remover dados e citações inventados | Dados | P0 | G | TODO | — | — | G-PAIS |
