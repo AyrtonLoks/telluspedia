@@ -1339,6 +1339,7 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. Passo 1: proposta de direção visual para aprovação do Ayrton antes de codificar. G-SHELL bloqueado enquanto isso (T22, T25, T27, D15–D19 aguardam).
+- 2026-11-20 · claude · IN_PROGRESS · Proposta de direção visual “Instrumento sereno” publicada para aprovação: https://claude.ai/artifact/7Mc8S56HuFpXUL6j9Rx9wL (artefato privado do Ayrton; 3 pranchas: Fundamentos/tokens, Componentes, Composição com navbar + Observatório + timeline). Resumo: superfícies neutras quase pretas (`#05070B`/`#0C1018`/`#131925`), bordas brancas 8%/14% em vez de ciano, um acento `#4CC3E0` só para interativo/selecionado, sem glow; cores saturadas só para dados (5 categorias + 5 camadas); Geist em 5 tamanhos de UI (12/13/15/18/24, mínimo 12 px — some 9/10/11 px), Geist Mono só para números com tabular-nums, Merriweather só no texto corrido do Reader; raios 6/10/14; 2 níveis de elevação; movimento 120/200/320 ms. Aguardando aprovação do Ayrton antes de codificar.
 
 ---
 
