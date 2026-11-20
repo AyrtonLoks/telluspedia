@@ -161,7 +161,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | DONE | codex | — | G-PIPELINE, G-PAIS |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | DONE | codex | — | G-ESTUDOS, G-INFRA |
-| T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | IN_PROGRESS | codex | T07 | G-ESTUDOS |
+| T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | REVIEW | codex | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | IN_PROGRESS | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | TODO | — | — | G-INFRA |
@@ -470,7 +470,7 @@ Criação e fork compartilham 10 tentativas por minuto em memória por instânci
 
 ### T08 · Fallback em memória dos estudos não pode mentir
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t08-fallback-estudos · **Worktree:** ../telluspedia-wt/codex-t08
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t08-fallback-estudos · **Worktree:** ../telluspedia-wt/codex-t08
 - **Prioridade:** P1 · **Área:** Backend · **Tamanho:** P · **Depende de:** T07 · **Grupos:** G-ESTUDOS
 
 **Contexto / problema**
@@ -483,12 +483,13 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 4. A UI de compartilhamento (`StudyShareModal`) deve mostrar erro quando a criação falhar.
 
 **Critérios de aceite**
-- [ ] Em modo produção sem banco, criar estudo retorna 503 e a UI mostra erro.
-- [ ] Nenhum `catch {}` silencioso nas rotas de API.
+- [x] Em modo produção sem banco, criar estudo retorna 503 e a UI mostra erro.
+- [x] Nenhum `catch {}` silencioso nas rotas de API.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Reivindicada como a próxima tarefa elegível da fase 3 após o aceite da T07.
+- 2026-11-20 · codex · REVIEW · Em produção, indisponibilidade do banco retorna 503 na criação, leitura e fork. O 404 identifica consultas bem-sucedidas sem o estudo. Erros do Prisma têm logs com operação e identificador. Fora de produção, o uso da memória gera aviso e a resposta recebe X-Study-Persistence: memory. Antes o modal apresentava o link em memória como permanente. Agora marca esse link como temporário e mostra a indisponibilidade no 503. Typecheck, lint, 301 testes e build passaram. A versão de produção foi verificada por HTTP e no Chromium com Postgres inacessível em um servidor isolado. O rótulo temporário foi verificado com uma resposta simulada no navegador. O build reutilizou cópias temporárias dos arquivos originais do Google Fonts.
 
 ---
 
