@@ -13,6 +13,29 @@ import {
   FALLBACK_MARITIME_ROUTES,
   calculateIssPosition,
 } from "@/lib/observatory-data";
+import {
+  type ObservatoryMeta,
+  initialLocalMeta,
+  isObservatoryEnvelope,
+} from "@/lib/observatory-source";
+
+const ALL_LAYERS: ObservatoryLayerId[] = [
+  "NASA_FIRMS",
+  "NASA_EONET",
+  "ISS_SATELLITES",
+  "FLIGHTS_OPENSKY",
+  "MARITIME_ROUTES",
+];
+
+function perLayer<T>(make: () => T): Record<ObservatoryLayerId, T> {
+  return Object.fromEntries(ALL_LAYERS.map((id) => [id, make()])) as Record<ObservatoryLayerId, T>;
+}
+
+async function fetchEnvelope(url: string) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
 
 interface ObservatoryState {
   activeLayers: ObservatoryLayerId[];
@@ -28,6 +51,10 @@ interface ObservatoryState {
 
   isLoading: Record<ObservatoryLayerId, boolean>;
   hasLoaded: Record<ObservatoryLayerId, boolean>;
+  /** Procedência do dado exibido em cada camada (T05). */
+  layerMeta: Record<ObservatoryLayerId, ObservatoryMeta>;
+  /** true quando o próprio servidor do TellusPedia não respondeu (dados locais em uso). */
+  layerError: Record<ObservatoryLayerId, boolean>;
 
   toggleLayer: (layerId: ObservatoryLayerId) => void;
   setLayerActive: (layerId: ObservatoryLayerId, active: boolean) => void;
@@ -72,6 +99,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     FLIGHTS_OPENSKY: false,
     MARITIME_ROUTES: false,
   },
+  layerMeta: perLayer(initialLocalMeta),
+  layerError: perLayer(() => false),
 
   toggleLayer: (layerId) => {
     const { activeLayers, loadLayerData, hasLoaded } = get();
@@ -128,55 +157,76 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       isLoading: { ...s.isLoading, [layerId]: true },
     }));
 
+    // Camadas atualizadas por esta carga (tráfego traz aviões e rotas marítimas juntos).
+    const affected: ObservatoryLayerId[] =
+      layerId === "FLIGHTS_OPENSKY" || layerId === "MARITIME_ROUTES"
+        ? ["FLIGHTS_OPENSKY", "MARITIME_ROUTES"]
+        : [layerId];
+
+    const applyMeta = (id: ObservatoryLayerId, meta: ObservatoryMeta) =>
+      set((s) => ({
+        layerMeta: { ...s.layerMeta, [id]: meta },
+        layerError: { ...s.layerError, [id]: false },
+      }));
+
     try {
       if (layerId === "NASA_FIRMS") {
-        const res = await fetch("/api/observatory/firms");
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            set({ firmsHotspots: data });
-          }
+        const body = await fetchEnvelope("/api/observatory/firms");
+        if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
+          set({ firmsHotspots: body.data as FirmsHotspot[] });
+          applyMeta("NASA_FIRMS", body.meta);
         }
       } else if (layerId === "NASA_EONET") {
-        const res = await fetch("/api/observatory/eonet");
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            set({ eonetEvents: data });
-          }
+        const body = await fetchEnvelope("/api/observatory/eonet");
+        if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
+          set({ eonetEvents: body.data as EonetEvent[] });
+          applyMeta("NASA_EONET", body.meta);
         }
       } else if (layerId === "ISS_SATELLITES") {
-        const res = await fetch("/api/observatory/iss");
-        if (res.ok) {
-          const data = await res.json();
-          if (data && typeof data.latitude === "number") {
-            set({ issTelemetry: data });
-          }
-        } else {
-          set({ issTelemetry: calculateIssPosition() });
+        const body = await fetchEnvelope("/api/observatory/iss");
+        const data = isObservatoryEnvelope(body) ? (body.data as IssTelemetryData) : null;
+        if (data && typeof data.latitude === "number") {
+          set({ issTelemetry: data });
+          applyMeta("ISS_SATELLITES", (body as { meta: ObservatoryMeta }).meta);
         }
-      } else if (layerId === "FLIGHTS_OPENSKY" || layerId === "MARITIME_ROUTES") {
-        const res = await fetch("/api/observatory/traffic");
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.aircraft && Array.isArray(data.aircraft)) {
-            set({ aircraftFleet: data.aircraft });
-          }
-          if (data?.maritimeRoutes && Array.isArray(data.maritimeRoutes)) {
-            set({ maritimeRoutes: data.maritimeRoutes });
-          }
+      } else {
+        const body = await fetchEnvelope("/api/observatory/traffic");
+        if (isObservatoryEnvelope(body?.aircraft) && Array.isArray(body.aircraft.data)) {
+          set({ aircraftFleet: body.aircraft.data as AircraftState[] });
+          applyMeta("FLIGHTS_OPENSKY", body.aircraft.meta);
         }
-        set((s) => ({
-          hasLoaded: { ...s.hasLoaded, FLIGHTS_OPENSKY: true, MARITIME_ROUTES: true },
-        }));
+        if (isObservatoryEnvelope(body?.maritimeRoutes) && Array.isArray(body.maritimeRoutes.data)) {
+          set({ maritimeRoutes: body.maritimeRoutes.data as MaritimeRoute[] });
+          applyMeta("MARITIME_ROUTES", body.maritimeRoutes.meta);
+        }
       }
     } catch {
-      // Fallbacks já inicializados no estado inicial
+      // Servidor do TellusPedia inacessível: mantém os dados locais e sinaliza "Offline".
+      set((s) => {
+        const layerError = { ...s.layerError };
+        const layerMeta = { ...s.layerMeta };
+        for (const id of affected) {
+          layerError[id] = true;
+          layerMeta[id] = {
+            ...initialLocalMeta(),
+            fetchedAt: new Date().toISOString(),
+            reason: "Servidor do TellusPedia indisponível; exibindo dados locais de referência",
+          };
+        }
+        return { layerError, layerMeta };
+      });
+      if (layerId === "ISS_SATELLITES") set({ issTelemetry: calculateIssPosition() });
     } finally {
-      set((s) => ({
-        isLoading: { ...s.isLoading, [layerId]: false },
-        hasLoaded: { ...s.hasLoaded, [layerId]: true },
-      }));
+      set((s) => {
+        const isLoading = { ...s.isLoading };
+        const hasLoaded = { ...s.hasLoaded };
+        for (const id of affected) {
+          isLoading[id] = false;
+          hasLoaded[id] = true;
+        }
+        isLoading[layerId] = false;
+        return { isLoading, hasLoaded };
+      });
     }
   },
 
