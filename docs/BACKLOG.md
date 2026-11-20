@@ -41,7 +41,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10, T26 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T07, T11, T18, T19, T25, T27 |
 
@@ -164,9 +164,9 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | DONE | codex | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | DONE | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | DONE | antigravity | — | G-PIPELINE |
-| T11 | Ajustar next.config e script de build | Infra | P1 | P | REVIEW | codex | — | G-INFRA |
+| T11 | Ajustar next.config e script de build | Infra | P1 | P | DONE | codex | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | DONE | claude | — | G-EPOCA, G-FRONTEIRAS, G-TIMELINE, G-OBS |
-| T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | TODO | — | T12 | G-EPOCA, G-ESTUDOS |
+| T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | IN_PROGRESS | codex | T12 | G-EPOCA, G-ESTUDOS, G-TIMELINE |
 | T14 | Fonte única de direção solar | 3D | P1 | M | TODO | — | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | TODO | — | T12 | G-EPOCA |
 | T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | TODO | — | — | G-FRONTEIRAS |
@@ -555,7 +555,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T11 · Ajustar next.config e script de build
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t11-next-config-build · **Worktree:** ../telluspedia-wt/codex-t11
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/t11-next-config-build · **Worktree:** ../telluspedia-wt/codex-t11
 - **Prioridade:** P1 · **Área:** Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -578,6 +578,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Reivindicada como a próxima tarefa elegível da fase 3 após o aceite da T08.
 - 2026-11-20 · codex · REVIEW · Removido o hostname curinga do otimizador de imagens e ativado React Strict Mode. Next dev usa .next-dev, enquanto build e start usam .next. O script build chama next build diretamente. A URL remota de teste foi rejeitada com 400. A mesma instância do dev respondeu antes, durante e após o build. O Chromium verificou globo WebGL, voo e arraste da câmera, seleção de período, geração e restauração de estudo em desenvolvimento. Typecheck, lint, 345 testes e build passaram sobre o master que inclui a T12. A validação usou cópias temporárias dos arquivos originais do Google Fonts.
+- 2026-11-20 · ayrton · DONE · Aprovados o isolamento do build, o Strict Mode e a política do otimizador de imagens.
 
 ---
 
@@ -624,8 +625,8 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T13 · Desacoplar stores Zustand e remover estado redundante
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** G · **Depende de:** T12 · **Grupos:** G-EPOCA, G-ESTUDOS
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t13-desacoplar-stores · **Worktree:** ../telluspedia-wt/codex-t13
+- **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** G · **Depende de:** T12 · **Grupos:** G-EPOCA, G-ESTUDOS, G-TIMELINE
 
 **Contexto / problema**
 - `stores/timelineStore.ts:93` usa `require("./historicalRouteStore")` **dentro do `set`** para contornar dependência circular; `globeStore` importa `timelineStore` e `readerStore` e dispara efeitos dentro de reducers.
@@ -647,6 +648,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Reivindicada após o aceite da T11. T12 em DONE. Incluído G-TIMELINE para adaptar os controles da timeline às ações compostas.
 
 ---
 
