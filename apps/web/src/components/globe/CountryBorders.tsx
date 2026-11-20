@@ -1,23 +1,17 @@
 "use client";
 
-import React, { useMemo, useState, useEffect, useRef } from "react";
-import * as THREE from "three";
+import { useEffect, useMemo, useState } from "react";
+import { BufferAttribute, BufferGeometry, MathUtils, Vector3 } from "three";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
+import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
+import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
 import { useFrame } from "@react-three/fiber";
-import * as topojson from "topojson-client";
-import { latLngToVector3 } from "@/lib/geo-spatial";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useTimelineStore } from "@/stores/timelineStore";
-import {
-  NUMERIC_TO_ISO,
-  NAME_TO_ISO,
-  findMilestoneById,
-} from "@/lib/country-data";
-import {
-  resolveHistoricalEntity,
-  HISTORICAL_ENTITIES,
-  HISTORICAL_ERAS,
-} from "@/lib/historical-entities";
+import { findMilestoneById } from "@/lib/country-data";
+import { getBaseBorderPositions, getCountryFill, getCountryOutline } from "@/lib/country-border-geometry";
+import { resolveHistoricalEntity, HISTORICAL_ERAS } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import {
   contemporaryTopology,
@@ -26,305 +20,207 @@ import {
   getHistoricalTopologySync,
 } from "@/lib/historical-topology";
 
-export const CountryBorders: React.FC = () => {
-  const selectedIso = useGlobeStore((s) => s.selectedIso);
-  const hoveredIso = useGlobeStore((s) => s.hoveredIso);
-  const isComparatorOpen = useComparatorStore((s) => s.isOpen);
-  const comparatorIsos = useComparatorStore((s) => s.selectedIsos);
+const ignoreRaycast = () => null;
 
-  const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
+function makeWideLine(geometry: LineSegmentsGeometry, color: string, width: number, opacity: number, order: number) {
+  const material = new LineMaterial({
+    color,
+    linewidth: width,
+    opacity,
+    transparent: true,
+    // In Three r170, alpha-to-coverage replaces opacity on segment caps.
+    // Restrict it to the opaque stroke and let MSAA smooth the translucent passes.
+    alphaToCoverage: opacity === 1,
+    depthWrite: false,
+  });
+  const line = new LineSegments2(geometry, material);
+  line.renderOrder = order;
+  line.raycast = ignoreRaycast;
+  return line;
+}
 
-  // Época ativa: fonte única (T12)
+function BaseBorders({ topology, opacity, onFadedOut }: {
+  topology: CountryTopology;
+  opacity: number;
+  onFadedOut?: () => void;
+}) {
+  const line = useMemo(() => {
+    const geometry = new LineSegmentsGeometry().setPositions(getBaseBorderPositions(topology));
+    return makeWideLine(geometry, "#58c9ff", 1, 0, 1);
+  }, [topology]);
+  const center = useMemo(() => new Vector3(), []);
+
+  useEffect(() => () => {
+    line.geometry.dispose();
+    line.material.dispose();
+  }, [line]);
+
+  useFrame(({ camera }, delta) => {
+    line.getWorldPosition(center);
+    const distance = camera.position.distanceTo(center);
+    const zoom = 1 - MathUtils.smoothstep(distance, 1.5, 5);
+    line.material.linewidth = MathUtils.lerp(0.7, 1.65, zoom);
+    line.material.opacity = MathUtils.damp(line.material.opacity, opacity * (0.6 + 0.4 * zoom), 5, delta);
+    line.visible = line.material.opacity > 0.005;
+    if (!line.visible && opacity === 0) onFadedOut?.();
+  });
+
+  return <primitive object={line} />;
+}
+
+function combinePositions(isos: ReadonlySet<string>, positionsFor: (iso: string) => Float32Array | undefined) {
+  const arrays: Float32Array[] = [];
+  let length = 0;
+  for (const iso of isos) {
+    const positions = positionsFor(iso);
+    if (!positions?.length) continue;
+    arrays.push(positions);
+    length += positions.length;
+  }
+  if (!length) return null;
+  if (arrays.length === 1) return arrays[0];
+
+  const combined = new Float32Array(length);
+  let offset = 0;
+  for (const positions of arrays) {
+    combined.set(positions, offset);
+    offset += positions.length;
+  }
+  return combined;
+}
+
+type HighlightKind = "related" | "hover" | "selected";
+
+const highlightStyles = {
+  related: { color: "#22d3ee", width: 1.85, opacity: 0.76, order: 2 },
+  hover: { color: "#79e9ff", width: 2.15, opacity: 0.93, order: 3 },
+  selected: { color: "#b5f7ff", width: 3, opacity: 1, order: 5 },
+} satisfies Record<HighlightKind, { color: string; width: number; opacity: number; order: number }>;
+
+function HighlightBorders({ positions, kind }: { positions: Float32Array; kind: HighlightKind }) {
+  const lines = useMemo(() => {
+    const geometry = new LineSegmentsGeometry().setPositions(positions);
+    const { color, width, opacity, order } = highlightStyles[kind];
+    const border = makeWideLine(geometry, color, width, opacity, order);
+    if (kind !== "selected") return [border];
+
+    return [
+      makeWideLine(geometry, "#22d3ee", 7, 0.24, order - 2),
+      makeWideLine(geometry, "#22d3ee", 4.7, 0.5, order - 1),
+      border,
+    ];
+  }, [positions, kind]);
+
+  useEffect(() => () => {
+    lines[0].geometry.dispose();
+    for (const line of lines) line.material.dispose();
+  }, [lines]);
+
+  return lines.map((line) => <primitive key={line.renderOrder} object={line} />);
+}
+
+function SelectedCountryFill({ positions }: { positions: Float32Array }) {
+  const geometry = useMemo(() => {
+    return new BufferGeometry().setAttribute("position", new BufferAttribute(positions, 3));
+  }, [positions]);
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
+
+  return (
+    <mesh geometry={geometry} raycast={ignoreRaycast}>
+      <meshBasicMaterial color="#17d8f5" transparent opacity={0.22} depthWrite={false} />
+    </mesh>
+  );
+}
+
+function addHighlight(isos: Set<string>, iso: string | null | undefined, effectiveYear: number | null) {
+  if (!iso) return;
+  isos.add(iso);
+  const historicalIso = resolveHistoricalEntity(iso, effectiveYear);
+  if (historicalIso) isos.add(historicalIso);
+}
+
+export function CountryBorders() {
+  const selectedIso = useGlobeStore((state) => state.selectedIso);
+  const hoveredIso = useGlobeStore((state) => state.hoveredIso);
+  const isComparatorOpen = useComparatorStore((state) => state.isOpen);
+  const comparatorIsos = useComparatorStore((state) => state.selectedIsos);
+  const selectedMilestoneId = useTimelineStore((state) => state.selectedMilestoneId);
+
   const epoch = useEpochState();
   const isGeological = epoch.mode === "GEOLOGICAL";
   const effectiveYear = epoch.effectiveYear;
   const era = HISTORICAL_ERAS[epoch.historicalEraId];
-
-  // Material refs for smooth cross-fading via useFrame
-  const baseMaterialRef = useRef<THREE.LineBasicMaterial>(null);
-  const historicalMaterialRef = useRef<THREE.LineBasicMaterial>(null);
-
-  // Asynchronous state for historical topology with instant sync cache initialization
-  const [historicalTopology, setHistoricalTopology] = useState<CountryTopology | null>(() => {
-    return era.topoJsonPath ? getHistoricalTopologySync(era.topoJsonPath) : null;
-  });
-
-  // Track mounting state to allow full opacity fade-out before unmounting
-  const [isHistoricalMounted, setIsHistoricalMounted] = useState<boolean>(
-    () => era.id !== "CONTEMPORARY" && !!(era.topoJsonPath ? getHistoricalTopologySync(era.topoJsonPath) : null)
+  const isHistorical = era.id !== "CONTEMPORARY";
+  const [historicalTopology, setHistoricalTopology] = useState<CountryTopology | null>(
+    () => era.topoJsonPath ? getHistoricalTopologySync(era.topoJsonPath) : null
   );
 
   useEffect(() => {
-    if (era.id === "CONTEMPORARY" || !era.topoJsonPath) {
-      // Do NOT immediately unmount or nullify! Let useFrame lerp opacity down to 0 first!
+    if (!isHistorical || !era.topoJsonPath) return;
+
+    const cached = getHistoricalTopologySync(era.topoJsonPath);
+    if (cached) {
+      setHistoricalTopology(cached);
       return;
     }
 
-    setIsHistoricalMounted(true);
-
-    const syncTopo = getHistoricalTopologySync(era.topoJsonPath);
-    if (syncTopo) {
-      setHistoricalTopology(syncTopo);
-      return;
-    }
-
-    let isMounted = true;
-    loadHistoricalTopology(era.topoJsonPath).then((topo) => {
-      if (isMounted && topo) {
-        setHistoricalTopology(topo);
-      }
+    let active = true;
+    loadHistoricalTopology(era.topoJsonPath).then((topology) => {
+      if (active && topology) setHistoricalTopology(topology);
     });
+    return () => { active = false; };
+  }, [isHistorical, era.topoJsonPath]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [era.id, era.topoJsonPath]);
+  const topology = isHistorical && historicalTopology ? historicalTopology : contemporaryTopology;
+  const selected = useMemo(() => {
+    const isos = new Set<string>();
+    addHighlight(isos, selectedIso, effectiveYear);
+    return isos;
+  }, [selectedIso, effectiveYear]);
 
-  // Contemporary base borders geometry (World Atlas 110m)
-  const baseBordersGeometry = useMemo(() => {
-    const topology = contemporaryTopology;
-    const mesh = topojson.mesh(topology, topology.objects.countries);
-    const points: THREE.Vector3[] = [];
-
-    if (mesh && mesh.coordinates) {
-      for (const line of mesh.coordinates) {
-        for (let i = 0; i < line.length - 1; i++) {
-          const [lng1, lat1] = line[i];
-          const [lng2, lat2] = line[i + 1];
-          points.push(latLngToVector3(lat1, lng1, 1.002));
-          points.push(latLngToVector3(lat2, lng2, 1.002));
-        }
-      }
-    }
-
-    const geom = new THREE.BufferGeometry();
-    geom.setFromPoints(points);
-    return geom;
-  }, []);
-
-  // Historical borders geometry of active era
-  const historicalBordersGeometry = useMemo(() => {
-    if (!historicalTopology || !isHistoricalMounted) return null;
-
-    try {
-      const mesh = topojson.mesh(
-        historicalTopology,
-        historicalTopology.objects.countries
-      );
-      const points: THREE.Vector3[] = [];
-
-      if (mesh && mesh.coordinates) {
-        for (const line of mesh.coordinates) {
-          for (let i = 0; i < line.length - 1; i++) {
-            const [lng1, lat1] = line[i];
-            const [lng2, lat2] = line[i + 1];
-            points.push(latLngToVector3(lat1, lng1, 1.002));
-            points.push(latLngToVector3(lat2, lng2, 1.002));
-          }
-        }
-      }
-
-      if (points.length === 0) return null;
-
-      const geom = new THREE.BufferGeometry();
-      geom.setFromPoints(points);
-      return geom;
-    } catch (err) {
-      console.error("Failed to build historical borders geometry:", err);
-      return null;
-    }
-  }, [historicalTopology, isHistoricalMounted]);
-
-  // Highlighted borders for selected / hovered / comparator entities and active milestone bloc
-  const highlightGeometry = useMemo(() => {
+  const selectedPositions = useMemo(
+    () => isGeological ? null : combinePositions(selected, (iso) => getCountryOutline(topology, iso)),
+    [isGeological, topology, selected]
+  );
+  const selectedFill = useMemo(
+    () => isGeological ? null : combinePositions(selected, (iso) => getCountryFill(topology, iso)),
+    [isGeological, topology, selected]
+  );
+  const hoverPositions = useMemo(() => {
     if (isGeological) return null;
-    const isHistorical = era.id !== "CONTEMPORARY" && !!historicalTopology;
-    const topology = isHistorical ? historicalTopology : contemporaryTopology;
-    if (!topology || !topology.objects?.countries?.geometries) return null;
-
-    const geometries = topology.objects.countries.geometries;
-    const activeIsos = new Set<string>();
-
-    if (selectedIso) {
-      activeIsos.add(selectedIso);
-      const hist = resolveHistoricalEntity(selectedIso, effectiveYear);
-      if (hist) activeIsos.add(hist);
-    }
-    if (hoveredIso) {
-      activeIsos.add(hoveredIso);
-      const hist = resolveHistoricalEntity(hoveredIso, effectiveYear);
-      if (hist) activeIsos.add(hist);
-    }
+    const isos = new Set<string>();
+    addHighlight(isos, hoveredIso, effectiveYear);
+    for (const iso of selected) isos.delete(iso);
+    return combinePositions(isos, (iso) => getCountryOutline(topology, iso));
+  }, [isGeological, topology, hoveredIso, effectiveYear, selected]);
+  const relatedPositions = useMemo(() => {
+    if (isGeological) return null;
+    const isos = new Set<string>();
     if (isComparatorOpen) {
-      for (const iso of comparatorIsos) {
-        activeIsos.add(iso);
-        const hist = resolveHistoricalEntity(iso, effectiveYear);
-        if (hist) activeIsos.add(hist);
-      }
+      for (const iso of comparatorIsos) addHighlight(isos, iso, effectiveYear);
     }
-
-    if (selectedMilestoneId) {
-      const milestone = findMilestoneById(selectedMilestoneId);
-      if (milestone) {
-        if (milestone.blocIsos && milestone.blocIsos.length > 0) {
-          for (const iso of milestone.blocIsos) {
-            activeIsos.add(iso);
-            const hist = resolveHistoricalEntity(iso, effectiveYear);
-            if (hist) activeIsos.add(hist);
-          }
-        }
-        if (milestone.countryIso) {
-          activeIsos.add(milestone.countryIso);
-          const hist = resolveHistoricalEntity(milestone.countryIso, effectiveYear);
-          if (hist) activeIsos.add(hist);
-        }
-      }
-    }
-
-    if (activeIsos.size === 0) return null;
-
-    const points: THREE.Vector3[] = [];
-
-    for (const geom of geometries) {
-      const rawId =
-        geom.id !== undefined && geom.id !== null ? String(geom.id) : "";
-      const numId = rawId.padStart(3, "0");
-      const countryName = geom.properties?.name;
-
-      const iso =
-        (HISTORICAL_ENTITIES[rawId] ? rawId : undefined) ||
-        NUMERIC_TO_ISO[numId] ||
-        (countryName ? NAME_TO_ISO[countryName] : undefined) ||
-        rawId;
-
-      if (iso && activeIsos.has(iso)) {
-        const countryMesh = topojson.mesh(topology, geom);
-        if (countryMesh && countryMesh.coordinates) {
-          for (const line of countryMesh.coordinates) {
-            for (let i = 0; i < line.length - 1; i++) {
-              const [lng1, lat1] = line[i];
-              const [lng2, lat2] = line[i + 1];
-              // Elevated slightly more to prevent z-fighting
-              points.push(latLngToVector3(lat1, lng1, 1.004));
-              points.push(latLngToVector3(lat2, lng2, 1.004));
-            }
-          }
-        }
-      }
-    }
-
-    if (points.length === 0) return null;
-
-    const geom = new THREE.BufferGeometry();
-    geom.setFromPoints(points);
-    return geom;
-  }, [
-    selectedIso,
-    hoveredIso,
-    isComparatorOpen,
-    comparatorIsos,
-    selectedMilestoneId,
-    era.id,
-    effectiveYear,
-    historicalTopology,
-    isGeological,
-  ]);
-
-  // Clean up WebGL buffer geometries on update/unmount to prevent GPU memory leaks
-  useEffect(() => {
-    return () => {
-      baseBordersGeometry.dispose();
-    };
-  }, [baseBordersGeometry]);
-
-  useEffect(() => {
-    return () => {
-      historicalBordersGeometry?.dispose();
-    };
-  }, [historicalBordersGeometry]);
-
-  useEffect(() => {
-    return () => {
-      highlightGeometry?.dispose();
-    };
-  }, [highlightGeometry]);
-
-  // Smooth cross-fade of border opacities via useFrame with THREE.MathUtils.lerp
-  useFrame((_, delta) => {
-    const isHistoricalActive = era.id !== "CONTEMPORARY";
-    const targetBaseOpacity = isHistoricalActive || isGeological ? 0.0 : 0.35;
-    const targetHistOpacity = isHistoricalActive && !isGeological ? 0.45 : 0.0;
-    const lerpSpeed = Math.min(delta * 4, 1.0);
-
-    if (baseMaterialRef.current) {
-      baseMaterialRef.current.opacity = THREE.MathUtils.lerp(
-        baseMaterialRef.current.opacity,
-        targetBaseOpacity,
-        lerpSpeed
-      );
-      baseMaterialRef.current.visible = baseMaterialRef.current.opacity > 0.005;
-    }
-
-    if (historicalMaterialRef.current) {
-      historicalMaterialRef.current.opacity = THREE.MathUtils.lerp(
-        historicalMaterialRef.current.opacity,
-        targetHistOpacity,
-        lerpSpeed
-      );
-      const isVisible = historicalMaterialRef.current.opacity > 0.005;
-      historicalMaterialRef.current.visible = isVisible;
-
-      // When fully faded out and in CONTEMPORARY era, cleanly unmount and dispose historical mesh
-      if (!isVisible && !isHistoricalActive && isHistoricalMounted) {
-        setIsHistoricalMounted(false);
-        setHistoricalTopology(null);
-      }
-    }
-  });
+    const milestone = selectedMilestoneId ? findMilestoneById(selectedMilestoneId) : null;
+    addHighlight(isos, milestone?.countryIso, effectiveYear);
+    for (const iso of milestone?.blocIsos ?? []) addHighlight(isos, iso, effectiveYear);
+    for (const iso of selected) isos.delete(iso);
+    return combinePositions(isos, (iso) => getCountryOutline(topology, iso));
+  }, [isGeological, topology, isComparatorOpen, comparatorIsos, selectedMilestoneId, effectiveYear, selected]);
 
   return (
     <group>
-      {/* Contemporary Base Borders */}
-      <lineSegments geometry={baseBordersGeometry} raycast={() => null}>
-        <lineBasicMaterial
-          ref={baseMaterialRef}
-          color="#38bdf8"
-          transparent
-          opacity={era.id === "CONTEMPORARY" ? 0.35 : 0.0}
-          linewidth={1}
-          depthWrite={false}
+      <BaseBorders topology={contemporaryTopology} opacity={isHistorical || isGeological ? 0 : 0.46} />
+      {historicalTopology && (
+        <BaseBorders
+          topology={historicalTopology}
+          opacity={isHistorical && !isGeological ? 0.54 : 0}
+          onFadedOut={isHistorical ? undefined : () => setHistoricalTopology(null)}
         />
-      </lineSegments>
-
-      {/* Historical Era Borders */}
-      {historicalBordersGeometry && (
-        <lineSegments
-          geometry={historicalBordersGeometry}
-          raycast={() => null}
-        >
-          <lineBasicMaterial
-            ref={historicalMaterialRef}
-            color="#38bdf8"
-            transparent
-            opacity={0.0}
-            linewidth={1}
-            depthWrite={false}
-          />
-        </lineSegments>
       )}
-
-      {/* Active Highlights */}
-      {highlightGeometry && (
-        <lineSegments geometry={highlightGeometry} raycast={() => null}>
-          <lineBasicMaterial
-            color="#22d3ee"
-            transparent
-            opacity={0.95}
-            linewidth={2}
-            depthWrite={false}
-          />
-        </lineSegments>
-      )}
+      {selectedFill && <SelectedCountryFill positions={selectedFill} />}
+      {relatedPositions && <HighlightBorders positions={relatedPositions} kind="related" />}
+      {hoverPositions && <HighlightBorders positions={hoverPositions} kind="hover" />}
+      {selectedPositions && <HighlightBorders positions={selectedPositions} kind="selected" />}
     </group>
   );
-};
+}
