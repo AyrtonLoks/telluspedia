@@ -135,11 +135,11 @@ describe("D15: invariantes de layout no código", () => {
   });
 
   test("a página não renderiza painéis laterais fora do dock", () => {
-    const page = read("src/app/page.tsx");
-    assert.match(page, /<RightDock \/>/);
-    assert.doesNotMatch(page, /<InspectorHUD\b/);
-    assert.doesNotMatch(page, /<ObservatoryPanel\b/);
-    assert.match(page, /<CosmicInspectorHUD placement="floating" \/>/);
+    const shell = read("src/components/shell/GlobeExperienceShell.tsx");
+    assert.match(shell, /<RightDock \/>/);
+    assert.doesNotMatch(shell, /<InspectorHUD\b/);
+    assert.doesNotMatch(shell, /<ObservatoryPanel\b/);
+    assert.match(shell, /<CosmicInspectorHUD placement="floating" \/>/);
   });
 
   test("overlays da esquerda ficam abaixo do botão 'Iluminação de estudo' e acima da timeline", () => {

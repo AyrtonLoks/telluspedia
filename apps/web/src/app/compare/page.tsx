@@ -1,35 +1,21 @@
-"use client";
+import React from "react";
+import type { Metadata } from "next";
+import { GlobeExperienceShell } from "@/components/shell/GlobeExperienceShell";
+import { buildCompareMetadata, parseCompareIsos } from "@/lib/server-loaders";
 
-import React, { useEffect, use, Suspense } from "react";
-import HomePage from "@/app/page";
-import { useComparatorStore } from "@/stores/comparatorStore";
-
-function CompareContent({
-  searchParams,
-}: {
-  searchParams: Promise<{ c?: string }>;
-}) {
-  const resolvedParams = use(searchParams);
-  const openComparator = useComparatorStore((s) => s.openComparator);
-  const setSelectedIsos = useComparatorStore((s) => s.setSelectedIsos);
-
-  useEffect(() => {
-    if (resolvedParams.c) {
-      const isos = resolvedParams.c.split(",").map((i) => i.trim().toUpperCase());
-      setSelectedIsos(isos);
-    }
-    openComparator();
-  }, [resolvedParams.c, setSelectedIsos, openComparator]);
-
-  return <HomePage />;
+interface ComparePageProps {
+  searchParams: Promise<{ c?: string | string[] }>;
 }
 
-export default function CompareDirectPage(props: {
-  searchParams: Promise<{ c?: string }>;
-}) {
-  return (
-    <Suspense fallback={null}>
-      <CompareContent searchParams={props.searchParams} />
-    </Suspense>
-  );
+export async function generateMetadata({ searchParams }: ComparePageProps): Promise<Metadata> {
+  const resolved = await searchParams;
+  const isos = parseCompareIsos(resolved.c);
+  return buildCompareMetadata(isos);
+}
+
+export default async function CompareDirectPage({ searchParams }: ComparePageProps) {
+  const resolved = await searchParams;
+  const isos = parseCompareIsos(resolved.c);
+
+  return <GlobeExperienceShell initialState={{ kind: "compare", isos }} />;
 }

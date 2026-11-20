@@ -26,10 +26,27 @@ const merriweather = Merriweather({
   preload: false,
 });
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_URL),
   title: "TellusPedia — Enciclopédia Geopolítica e Observatório Planetário",
   description:
     "Enciclopédia de alta densidade integrando globo 3D em tempo real com efemérides solares NOAA, linha do tempo semântica, comparador multidisciplinar e citações acadêmicas padronizadas.",
+  openGraph: {
+    title: "TellusPedia — Enciclopédia Geopolítica e Observatório Planetário",
+    description:
+      "Globo 3D em tempo real, linha do tempo histórica, comparador de países e estudos compartilháveis.",
+    type: "website",
+    locale: "pt_BR",
+    siteName: "TellusPedia",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TellusPedia — Enciclopédia Geopolítica e Observatório Planetário",
+    description:
+      "Globo 3D em tempo real, linha do tempo histórica, comparador de países e estudos compartilháveis.",
+  },
 };
 
 export default function RootLayout({
@@ -42,7 +59,7 @@ export default function RootLayout({
       lang="pt-BR"
       className={`dark ${geistSans.variable} ${geistMono.variable} ${merriweather.variable}`}
     >
-      <body className="bg-[#030712] text-slate-100 antialiased overflow-hidden min-h-screen font-sans">
+      <body className="bg-bg text-fg antialiased min-h-screen font-sans">
         {children}
       </body>
     </html>

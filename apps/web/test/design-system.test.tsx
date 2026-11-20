@@ -119,6 +119,8 @@ const MIGRATED = [
   "src/components/timeline/PresetSelector.tsx",
   "src/components/timeline/CategoryFilterPills.tsx",
   "src/components/tellus-bridge/StudyContext.tsx",
+  "src/components/shell/GlobeExperienceShell.tsx",
+  "src/app/not-found.tsx",
   "src/app/dev/ui/page.tsx",
   // Os próprios primitivos também só podem usar tokens.
   ...fs

@@ -30,7 +30,7 @@ export default async function DossierPage({ params, searchParams }: {
   const origin = launch?.link.entityId === link.entityId ? launch.origin : null;
 
   return (
-    <main className="h-dvh overflow-y-auto">
+    <main className="min-h-screen">
       <article className="mx-auto max-w-3xl space-y-6 px-5 py-10">
         <nav aria-label="Localização" className="flex flex-wrap gap-4 text-sm text-cyan-300">
           <Link href="/" className="hover:underline">Globo</Link>
