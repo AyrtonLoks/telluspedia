@@ -1,8 +1,9 @@
 "use client";
 
+import { resetGlobeView } from "@/stores/actions";
+
 import React from "react";
 import { X, MapPin, Globe } from "lucide-react";
-import { useGlobeStore } from "@/stores/globeStore";
 import { DataCompleteness } from "@/lib/country-data";
 import { IconButton } from "@/components/ui/IconButton";
 
@@ -27,7 +28,6 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
   isoCode,
   completeness,
 }) => {
-  const resetView = useGlobeStore((s) => s.resetView);
   const [flagError, setFlagError] = React.useState(false);
 
   React.useEffect(() => {
@@ -74,7 +74,7 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
           </div>
         </div>
 
-        <IconButton label="Fechar painel" icon={<X />} size="sm" onClick={resetView} />
+        <IconButton label="Fechar painel" icon={<X />} size="sm" onClick={resetGlobeView} />
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-4 text-label text-fg-secondary">

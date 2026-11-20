@@ -1,5 +1,7 @@
 "use client";
 
+import { selectCountry } from "@/stores/actions";
+
 import React, { useState, useRef, useEffect } from "react";
 import { getCountryData } from "@/lib/country-data";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -20,7 +22,6 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({ isoCode, chi
   const containerRef = useRef<HTMLSpanElement>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const setSelectedIso = useGlobeStore((s) => s.setSelectedIso);
   const flyTo = useGlobeStore((s) => s.flyTo);
   const addCountry = useComparatorStore((s) => s.addCountry);
   const openComparator = useComparatorStore((s) => s.openComparator);
@@ -63,7 +64,7 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({ isoCode, chi
 
   const handleFocusGlobe = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelectedIso(isoCode);
+    selectCountry(isoCode);
     useTimelineStore.getState().selectMilestone(null);
     if (
       country &&

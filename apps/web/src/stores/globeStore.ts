@@ -1,6 +1,4 @@
 import { create } from "zustand";
-import { useTimelineStore } from "./timelineStore";
-import { useReaderStore } from "./readerStore";
 
 export const MIN_CAMERA_ALTITUDE = 1.5;
 export const MAX_CAMERA_ALTITUDE = 6.0;
@@ -60,19 +58,7 @@ export const useGlobeStore = create<GlobeState>((set) => ({
   isThrottled: false,
 
   setSelectedIso: (iso) =>
-    set((state) => {
-      if (iso && iso !== state.selectedIso) {
-        try {
-          useReaderStore.getState().resetActiveDimension();
-        } catch {
-          // safe fallback
-        }
-      }
-      return {
-        selectedIso: iso,
-        ...(iso === null ? { hoveredIso: null } : {}),
-      };
-    }),
+    set({ selectedIso: iso, ...(iso === null ? { hoveredIso: null } : {}) }),
 
   setHoveredIso: (iso) => set({ hoveredIso: iso }),
 
@@ -97,14 +83,7 @@ export const useGlobeStore = create<GlobeState>((set) => ({
       isThrottled: isOpen,
     }),
 
-  resetView: () => {
-    try {
-      useTimelineStore.getState().selectMilestone(null);
-      useTimelineStore.getState().selectYear(null);
-      useReaderStore.getState().resetActiveDimension();
-    } catch {
-      // safe fallback if store is not initialized
-    }
+  resetView: () =>
     set((state) => ({
       selectedIso: null,
       hoveredIso: null,
@@ -114,6 +93,5 @@ export const useGlobeStore = create<GlobeState>((set) => ({
       flyToTrigger: state.flyToTrigger + 1,
       isReaderOpen: false,
       isThrottled: false,
-    }));
-  },
+    })),
 }));

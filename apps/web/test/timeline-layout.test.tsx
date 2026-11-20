@@ -19,11 +19,7 @@ function resetAllStores() {
     selectedMilestoneId: null,
     activeCategories: [...ALL_CATEGORIES],
     isExpanded: true,
-    timelineMode: "HISTORICAL",
     geologicalMa: null,
-    selectedGeologicalMa: null,
-    activeRouteId: null,
-    selectedRouteId: null,
   });
   useGlobeStore.setState({
     selectedIso: null,

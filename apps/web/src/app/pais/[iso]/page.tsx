@@ -1,5 +1,7 @@
 "use client";
 
+import { selectCountry } from "@/stores/actions";
+
 import React, { useEffect, use, Suspense } from "react";
 import HomePage from "@/app/page";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -13,14 +15,13 @@ function CountryContent({
   const resolvedParams = use(params);
   const iso = resolvedParams.iso?.toUpperCase();
 
-  const setSelectedIso = useGlobeStore((s) => s.setSelectedIso);
   const flyTo = useGlobeStore((s) => s.flyTo);
 
   useEffect(() => {
     if (iso) {
       const country = getCountryData(iso);
       if (country) {
-        setSelectedIso(country.isoCode);
+        selectCountry(country.isoCode);
         if (
           country.latitude !== null &&
           country.longitude !== null &&
@@ -29,10 +30,10 @@ function CountryContent({
           flyTo(country.latitude, country.longitude, 2.0);
         }
       } else {
-        setSelectedIso(null);
+        selectCountry(null);
       }
     }
-  }, [iso, setSelectedIso, flyTo]);
+  }, [iso, flyTo]);
 
   return <HomePage />;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { historicalRouteActions } from "@/stores/actions";
+
 import React, { useRef, useMemo, useEffect, useState } from "react";
 import { MAGELLAN_DEPARTURE_MILESTONE_ID } from "@/lib/epoch/constants";
 import * as THREE from "three";
@@ -238,9 +240,9 @@ export const HistoricalRouteTrajectory: React.FC = () => {
 
     if (isActive) {
       if (routeStore.isPlaying) {
-        routeStore.tick(delta);
+        historicalRouteActions.tick(delta);
       }
-      progress = routeStore.progress;
+      progress = useHistoricalRouteStore.getState().progress;
       localProgressRef.current = progress;
     } else {
       // Standalone continuous loop when route is not actively driven by HUD

@@ -1,0 +1,175 @@
+import { HISTORICAL_ERAS } from "@/lib/historical-entities";
+import { MAGELLAN_ROUTE } from "@/lib/historical-routes";
+import type { ObservatoryLayerId } from "@/lib/observatory-data";
+import type { CelestialBodyId } from "@/lib/astronomy-planets";
+import type { StudyRecord } from "@/lib/studies-store";
+import { normalizeStudyEpoch } from "@/lib/study-epoch";
+import {
+  APOLLO11_GLOBAL_MILESTONE_ID,
+  DEFAULT_GEOLOGICAL_MA,
+  MAGELLAN_MILESTONE_IDS,
+  MAGELLAN_ROUTE_ID,
+} from "@/lib/epoch/constants";
+import { useComparatorStore } from "./comparatorStore";
+import { ALL_COSMIC_LAYERS, useCosmicStore } from "./cosmicStore";
+import { useGlobeStore } from "./globeStore";
+import { useHistoricalRouteStore, type HistoricalRouteState } from "./historicalRouteStore";
+import { useObservatoryStore } from "./observatoryStore";
+import { useReaderStore } from "./readerStore";
+import { useStudyStore } from "./studyStore";
+import { ALL_CATEGORIES, useTimelineStore, type MilestoneCategoryType, type TimelinePreset } from "./timelineStore";
+
+export function selectCountry(iso: string | null) {
+  const globe = useGlobeStore.getState();
+  if (iso && iso !== globe.selectedIso) useReaderStore.getState().resetActiveDimension();
+  globe.setSelectedIso(iso);
+}
+
+export function resetGlobeView() {
+  useTimelineStore.setState({ selectedMilestoneId: null, selectedYear: null });
+  useReaderStore.getState().resetActiveDimension();
+  useGlobeStore.getState().resetView();
+}
+
+export function enterGeologicalMode(age = DEFAULT_GEOLOGICAL_MA, milestoneId: string | null = null) {
+  useHistoricalRouteStore.getState().setActiveRouteId(null);
+  useTimelineStore.setState({ geologicalMa: age, selectedYear: null, selectedMilestoneId: milestoneId });
+}
+
+export function restoreContemporaryTimeline() {
+  useHistoricalRouteStore.getState().setActiveRouteId(null);
+  useTimelineStore.setState({
+    geologicalMa: null,
+    startYear: 1974,
+    endYear: 2024,
+    selectedYear: 2024,
+    selectedMilestoneId: null,
+  });
+}
+
+export function selectHistoricalRoute(id: string | null) {
+  useHistoricalRouteStore.getState().setActiveRouteId(id);
+  if (id === MAGELLAN_ROUTE_ID) {
+    useTimelineStore.setState({ geologicalMa: null, selectedYear: MAGELLAN_ROUTE.startYear });
+  } else {
+    const timeline = useTimelineStore.getState();
+    if (timeline.selectedMilestoneId && MAGELLAN_MILESTONE_IDS.includes(timeline.selectedMilestoneId)) {
+      timeline.selectMilestone(null);
+    }
+  }
+}
+
+const historicalRanges = {
+  LAST_50_YEARS: [1974, 2024],
+  COLD_WAR: [1947, 1991],
+  WORLD_WARS: [1914, 1945],
+  "21ST_CENTURY": [2000, 2026],
+} as const;
+
+export function applyTimelinePreset(preset: TimelinePreset | string) {
+  switch (preset) {
+    case "PANGEA_250MA": return enterGeologicalMode(250);
+    case "GONDWANA_150MA": return enterGeologicalMode(150);
+    case "KPG_66MA": return enterGeologicalMode(66);
+    case "MAGELLAN_1519":
+      useTimelineStore.setState({
+        startYear: MAGELLAN_ROUTE.startYear,
+        endYear: MAGELLAN_ROUTE.endYear,
+        selectedMilestoneId: null,
+      });
+      return selectHistoricalRoute(MAGELLAN_ROUTE_ID);
+    case "LAST_50_YEARS":
+    case "COLD_WAR":
+    case "WORLD_WARS":
+    case "21ST_CENTURY": {
+      const [startYear, endYear] = historicalRanges[preset];
+      useHistoricalRouteStore.getState().setActiveRouteId(null);
+      useTimelineStore.setState({ startYear, endYear, geologicalMa: null, selectedMilestoneId: null, selectedYear: null });
+    }
+  }
+}
+
+function advanceRoute(change: (route: HistoricalRouteState) => void) {
+  change(useHistoricalRouteStore.getState());
+  const { currentWaypointIndex } = useHistoricalRouteStore.getState();
+  const timeline = useTimelineStore.getState();
+  const date = MAGELLAN_ROUTE.waypoints[currentWaypointIndex]?.calendarDate;
+  const year = date ? Number(date.slice(0, 4)) : NaN;
+  if (
+    timeline.geologicalMa === null && timeline.selectedYear !== year &&
+    year >= MAGELLAN_ROUTE.startYear && year <= MAGELLAN_ROUTE.endYear
+  ) {
+    timeline.selectYear(year);
+  }
+}
+
+export const historicalRouteActions = {
+  togglePlay: () => advanceRoute((route) => route.togglePlay()),
+  seek: (progress: number) => advanceRoute((route) => route.seek(progress)),
+  nextWaypoint: () => advanceRoute((route) => route.nextWaypoint()),
+  prevWaypoint: () => advanceRoute((route) => route.prevWaypoint()),
+  reset: () => advanceRoute((route) => route.reset()),
+  tick: (deltaSeconds: number) => advanceRoute((route) => route.tick(deltaSeconds)),
+};
+
+export type StudySnapshot = Partial<StudyRecord> & {
+  id: string;
+  title: string;
+  selectedGeologicalMa?: number | null;
+  selectedRouteId?: string | null;
+};
+
+export function restoreStudySnapshot(study: StudySnapshot) {
+  const epoch = normalizeStudyEpoch({
+    ...study,
+    geologicalMa: study.geologicalMa === undefined ? study.selectedGeologicalMa : study.geologicalMa,
+    activeRouteId: study.activeRouteId === undefined ? study.selectedRouteId : study.activeRouteId,
+  });
+  useStudyStore.getState().restoreStudy({ ...study, ...epoch, notes: study.markdownNotes });
+
+  const timeline = useTimelineStore.getState();
+  const restoredRange = study.timelineStartYear != null && study.timelineEndYear != null
+    ? { startYear: study.timelineStartYear, endYear: study.timelineEndYear }
+    : epoch.activeRouteId === MAGELLAN_ROUTE_ID
+      ? { startYear: MAGELLAN_ROUTE.startYear, endYear: MAGELLAN_ROUTE.endYear }
+      : {};
+  const historicalEra = Object.values(HISTORICAL_ERAS).find((era) => era.id === epoch.historicalEra);
+  let selectedYear = historicalEra?.id === "COLD_WAR_1969" ? 1968 : historicalEra?.representativeYear ?? null;
+  if (epoch.geologicalMa !== null) selectedYear = null;
+  else if (epoch.activeRouteId === MAGELLAN_ROUTE_ID) selectedYear = MAGELLAN_ROUTE.startYear;
+  else if (epoch.isApollo11Active) selectedYear = 1969;
+
+  const activeCategories = study.activeCategories?.filter(
+    (category): category is MilestoneCategoryType => ALL_CATEGORIES.some((allowed) => allowed === category)
+  );
+  useTimelineStore.setState({
+    ...restoredRange,
+    geologicalMa: epoch.geologicalMa,
+    selectedYear,
+    selectedMilestoneId: epoch.isApollo11Active ? APOLLO11_GLOBAL_MILESTONE_ID : null,
+    activeCategories: activeCategories ?? timeline.activeCategories,
+  });
+  const historicalRoute = useHistoricalRouteStore.getState();
+  historicalRoute.setActiveRouteId(epoch.activeRouteId);
+  if (epoch.geologicalMa !== null) historicalRoute.pause();
+
+  const cosmic = useCosmicStore.getState();
+  if (study.isCosmicMode) {
+    cosmic.enterCosmicView((study.focusedCelestialBody ?? undefined) as CelestialBodyId | undefined);
+    if (study.activeCosmicLayers) {
+      const layers = study.activeCosmicLayers;
+      cosmic.setLayers(ALL_COSMIC_LAYERS.filter((layer) => layers.includes(layer)));
+    }
+  } else {
+    cosmic.exitToEarthView();
+  }
+  // As rotas de estudos validam os IDs de camadas antes de retornar o snapshot.
+  useObservatoryStore.getState().setAllLayers(epoch.activeObservatoryLayers as ObservatoryLayerId[]);
+
+  const countries = study.selectedCountryIsos ?? [];
+  selectCountry(countries[0] ?? null);
+  useComparatorStore.getState().setSelectedIsos(countries);
+  if (study.cameraLat !== undefined && study.cameraLng !== undefined) {
+    useGlobeStore.getState().flyTo(study.cameraLat, study.cameraLng, study.cameraAltitude ?? 2.2);
+  }
+}

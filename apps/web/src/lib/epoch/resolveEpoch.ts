@@ -3,10 +3,10 @@
  * timeline, Observatório e estudos.
  *
  * Precedência:
- *   1. Geológico — modo GEOLOGICAL, idade (Ma) > 0 na timeline ou no estudo, ou marco geológico
+ *   1. Geológico — idade (Ma) > 0 na timeline ou marco geológico
  *      selecionado. Nesse caso não há cena nem telemetria contemporânea.
- *   2. Cena explícita — Magalhães (rota ativa em qualquer store, ou marco da expedição) e, depois,
- *      Apollo 11 (marco da missão ou estudo restaurado com a cena). Cenas NUNCA são ativadas só
+ *   2. Cena explícita — Magalhães (rota ativa ou marco da expedição) e, depois,
+ *      Apollo 11 (marco da missão). Cenas NUNCA são ativadas só
  *      pelo ano: o playback passando por 1519 ou 1969 não as liga.
  *   3. Ano — ano efetivo (ano selecionado > ano do marco > ano representativo do intervalo) e a
  *      era histórica correspondente.
@@ -14,7 +14,6 @@
 import { resolveEffectiveHistoricalYear, resolveHistoricalEra, type HistoricalEraId } from "../historical-entities";
 import {
   APOLLO11_MILESTONE_IDS,
-  DEFAULT_GEOLOGICAL_MA,
   GEOLOGICAL_MILESTONE_MA,
   MAGELLAN_MILESTONE_IDS,
   MAGELLAN_ROUTE_ID,
@@ -31,16 +30,8 @@ export interface EpochInput {
   milestoneYear?: number | null;
   startYear?: number | null;
   endYear?: number | null;
-  timelineMode?: "HISTORICAL" | "GEOLOGICAL" | null;
   geologicalMa?: number | null;
-  selectedGeologicalMa?: number | null;
-  /** Rotas ativas em timelineStore (activeRouteId/selectedRouteId) e historicalRouteStore. */
-  routeIds?: ReadonlyArray<string | null | undefined>;
-  study?: {
-    geologicalMa?: number | null;
-    activeRouteId?: string | null;
-    isApollo11Active?: boolean | null;
-  } | null;
+  activeRouteId?: string | null;
 }
 
 export interface EpochState {
@@ -63,22 +54,15 @@ function resolveGeologicalMa(input: EpochInput): number | null {
   const milestoneMa = isGeologicalMilestoneId(input.selectedMilestoneId)
     ? GEOLOGICAL_MILESTONE_MA[input.selectedMilestoneId]
     : null;
-  const explicit =
-    positiveMa(input.selectedGeologicalMa) ??
-    positiveMa(input.geologicalMa) ??
-    milestoneMa ??
-    positiveMa(input.study?.geologicalMa);
-  if (explicit !== null) return explicit;
-  return input.timelineMode === "GEOLOGICAL" ? DEFAULT_GEOLOGICAL_MA : null;
+  return positiveMa(input.geologicalMa) ?? milestoneMa;
 }
 
 function resolveScene(input: EpochInput): EpochScene | null {
   const milestone = input.selectedMilestoneId ?? null;
-  const routes = [...(input.routeIds ?? []), input.study?.activeRouteId];
-  if (routes.includes(MAGELLAN_ROUTE_ID) || (milestone !== null && MAGELLAN_MILESTONE_IDS.includes(milestone))) {
+  if (input.activeRouteId === MAGELLAN_ROUTE_ID || (milestone !== null && MAGELLAN_MILESTONE_IDS.includes(milestone))) {
     return "MAGELLAN";
   }
-  if ((milestone !== null && APOLLO11_MILESTONE_IDS.includes(milestone)) || input.study?.isApollo11Active) {
+  if (milestone !== null && APOLLO11_MILESTONE_IDS.includes(milestone)) {
     return "APOLLO11";
   }
   return null;

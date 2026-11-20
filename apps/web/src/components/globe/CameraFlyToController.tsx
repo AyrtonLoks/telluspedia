@@ -13,11 +13,21 @@ function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
+type FlightControls = {
+  target: THREE.Vector3;
+  enabled: boolean;
+  update: () => void;
+  state?: number;
+  _sphericalDelta?: THREE.Spherical;
+  _panOffset?: THREE.Vector3;
+  _scale?: number;
+};
+
 /**
  * Resets OrbitControls delta states to eliminate residual damping,
  * pan, or zoom inertia from interfering with camera flights.
  */
-function resetControlsDeltas(ctrl: any) {
+function resetControlsDeltas(ctrl: FlightControls | null) {
   if (!ctrl) return;
   if (ctrl.target) ctrl.target.set(0, 0, 0);
   if (ctrl.state !== undefined) ctrl.state = -1;
@@ -28,7 +38,7 @@ function resetControlsDeltas(ctrl: any) {
 
 export const CameraFlyToController: React.FC = () => {
   const { camera } = useThree();
-  const controlsHook = useThree((state) => (state as any).controls);
+  const controlsHook = useThree((state) => state.controls as FlightControls | null);
 
   const flyToTrigger = useGlobeStore((s) => s.flyToTrigger);
   const cameraLat = useGlobeStore((s) => s.cameraLat);
@@ -123,7 +133,7 @@ export const CameraFlyToController: React.FC = () => {
   useFrame((state) => {
     if (!isAnimating.current) return;
 
-    const activeControls = (state as any).controls || controlsHook;
+    const activeControls = (state.controls as FlightControls | null) ?? controlsHook;
 
     const clockTime = state.clock.getElapsedTime();
     if (startTime.current < 0) {

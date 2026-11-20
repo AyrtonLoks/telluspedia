@@ -1,9 +1,11 @@
 "use client";
 
+import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
+import { applyTimelinePreset } from "@/stores/actions";
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTimelineStore, TimelinePreset } from "@/stores/timelineStore";
-import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { cn } from "@/components/ui/cn";
 import { MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
 
@@ -19,8 +21,7 @@ export const PresetSelector: React.FC = () => {
   const startYear = useTimelineStore((s) => s.startYear);
   const endYear = useTimelineStore((s) => s.endYear);
   const geologicalMa = useTimelineStore((s) => s.geologicalMa);
-  const activeRouteId = useTimelineStore((s) => s.activeRouteId);
-  const setPreset = useTimelineStore((s) => s.setPreset);
+  const activeRouteId = useHistoricalRouteStore((s) => s.activeRouteId);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -125,15 +126,6 @@ export const PresetSelector: React.FC = () => {
     },
   ];
 
-  const handleSelectPreset = (presetId: TimelinePreset) => {
-    setPreset(presetId);
-    if (presetId === "MAGELLAN_1519") {
-      useHistoricalRouteStore.getState().setActiveRouteId(MAGELLAN_ROUTE_ID);
-    } else {
-      useHistoricalRouteStore.getState().setActiveRouteId(null);
-    }
-  };
-
   return (
     <div className="relative flex items-center min-w-0 flex-1">
       {canScrollLeft && (
@@ -165,7 +157,7 @@ export const PresetSelector: React.FC = () => {
             <button
               key={p.id}
               type="button"
-              onClick={() => handleSelectPreset(p.id)}
+              onClick={() => applyTimelinePreset(p.id)}
               title={p.label}
               aria-label={p.label}
               aria-pressed={isSelected}
@@ -185,7 +177,7 @@ export const PresetSelector: React.FC = () => {
             <button
               key={p.id}
               type="button"
-              onClick={() => handleSelectPreset(p.id)}
+              onClick={() => applyTimelinePreset(p.id)}
               title={p.label}
               aria-label={p.label}
               aria-pressed={isSelected}
@@ -205,7 +197,7 @@ export const PresetSelector: React.FC = () => {
             <button
               key={p.id}
               type="button"
-              onClick={() => handleSelectPreset(p.id)}
+              onClick={() => applyTimelinePreset(p.id)}
               title={p.label}
               aria-label={p.label}
               aria-pressed={isSelected}

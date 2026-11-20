@@ -9,8 +9,6 @@ interface StudyState {
   notes: string;
   historicalEra: string | null;
   isApollo11Active: boolean;
-  geologicalMa: number | null;
-  activeRouteId: string | null;
   activeObservatoryLayers: string[];
   isCosmicMode: boolean;
   focusedCelestialBody: string | null;
@@ -74,8 +72,6 @@ interface StudyState {
   setNotes: (notes: string) => void;
   setHistoricalEra: (era: string | null) => void;
   setIsApollo11Active: (active: boolean) => void;
-  setGeologicalMa: (ma: number | null) => void;
-  setActiveRouteId: (routeId: string | null) => void;
   setActiveObservatoryLayers: (layers: string[]) => void;
   setIsCosmicMode: (isCosmic: boolean) => void;
   setFocusedCelestialBody: (body: string | null) => void;
@@ -92,8 +88,6 @@ export const useStudyStore = create<StudyState>((set) => ({
   notes: "",
   historicalEra: null,
   isApollo11Active: false,
-  geologicalMa: null,
-  activeRouteId: null,
   activeObservatoryLayers: [],
   isCosmicMode: false,
   focusedCelestialBody: null,
@@ -101,13 +95,16 @@ export const useStudyStore = create<StudyState>((set) => ({
   isShareModalOpen: false,
 
   restoreStudy: (study) => {
+    const { historicalEra, isApollo11Active, activeObservatoryLayers } = normalizeStudyEpoch(study);
     set({
       currentStudyId: study.id,
       parentId: study.parentId || null,
       title: study.title,
       description: study.description || "",
       notes: study.notes || "",
-      ...normalizeStudyEpoch(study),
+      historicalEra,
+      isApollo11Active,
+      activeObservatoryLayers,
       isCosmicMode: Boolean(study.isCosmicMode),
       focusedCelestialBody: study.focusedCelestialBody || null,
       activeCosmicLayers: Array.isArray(study.activeCosmicLayers) ? [...study.activeCosmicLayers] : [],
@@ -128,8 +125,6 @@ export const useStudyStore = create<StudyState>((set) => ({
   setNotes: (notes) => set({ notes }),
   setHistoricalEra: (historicalEra) => set({ historicalEra }),
   setIsApollo11Active: (isApollo11Active) => set({ isApollo11Active }),
-  setGeologicalMa: (geologicalMa) => set({ geologicalMa }),
-  setActiveRouteId: (activeRouteId) => set({ activeRouteId }),
   setActiveObservatoryLayers: (layers) => set({ activeObservatoryLayers: layers }),
   setIsCosmicMode: (isCosmic) => set({ isCosmicMode: isCosmic }),
   setFocusedCelestialBody: (body) => set({ focusedCelestialBody: body }),
@@ -144,8 +139,6 @@ export const useStudyStore = create<StudyState>((set) => ({
       notes: "",
       historicalEra: null,
       isApollo11Active: false,
-      geologicalMa: null,
-      activeRouteId: null,
       activeObservatoryLayers: [],
       isCosmicMode: false,
       focusedCelestialBody: null,

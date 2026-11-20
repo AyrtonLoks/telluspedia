@@ -64,11 +64,10 @@ export const StudyShareModal: React.FC = () => {
   const geologicalMa = epoch.geologicalMa;
 
   const storeHistRouteId = useHistoricalRouteStore((s) => s.activeRouteId);
-  const storeTimeRouteId = useTimelineStore((s) => s.activeRouteId);
   const activeRouteId =
     typeof window === "undefined"
-      ? (useHistoricalRouteStore.getState().activeRouteId || useTimelineStore.getState().activeRouteId || null)
-      : (storeHistRouteId || storeTimeRouteId || null);
+      ? useHistoricalRouteStore.getState().activeRouteId
+      : storeHistRouteId;
 
   const storeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
   const activeObservatoryLayers =

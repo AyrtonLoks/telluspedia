@@ -1,8 +1,9 @@
 "use client";
 
+import { restoreContemporaryTimeline, selectCountry } from "@/stores/actions";
+
 import React from "react";
 import { RotateCcw } from "lucide-react";
-import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "@/lib/historical-entities";
@@ -19,9 +20,6 @@ export const HistoricalEraBadge: React.FC = () => {
   // Época ativa: fonte única (T12)
   const epoch = useEpochState();
 
-  const selectYear = useTimelineStore((s) => s.selectYear);
-  const selectMilestone = useTimelineStore((s) => s.selectMilestone);
-  const setYearRange = useTimelineStore((s) => s.setYearRange);
 
   // Deep-time geological eras take precedence and have their own PaleoEraBadge
   if (epoch.mode === "GEOLOGICAL") {
@@ -35,16 +33,14 @@ export const HistoricalEraBadge: React.FC = () => {
   }
 
   const handleRestoreCurrent = () => {
-    selectMilestone(null);
-    selectYear(2024);
-    setYearRange(1974, 2024);
+    restoreContemporaryTimeline();
     useStudyStore.getState().setHistoricalEra(null);
     useStudyStore.getState().setIsApollo11Active(false);
 
     // If currently selected country is an extinct historical entity, transition to modern sovereign successor
     const currentIso = useGlobeStore.getState().selectedIso;
     if (currentIso && HISTORICAL_ENTITIES[currentIso]?.successorIsos?.length > 0) {
-      useGlobeStore.getState().setSelectedIso(HISTORICAL_ENTITIES[currentIso].successorIsos[0]);
+      selectCountry(HISTORICAL_ENTITIES[currentIso].successorIsos[0]);
     }
   };
 

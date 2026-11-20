@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { MAGELLAN_ROUTE } from "../lib/historical-routes";
-import { useTimelineStore } from "./timelineStore";
 
 export interface HistoricalRouteState {
   activeRouteId: string | null;
@@ -28,20 +27,7 @@ export interface HistoricalRouteState {
 export const useHistoricalRouteStore = create<HistoricalRouteState>((set, get) => {
   const waypointsCount = MAGELLAN_ROUTE.waypoints.length;
 
-  const syncTimelineYearForWaypoint = (index: number) => {
-    try {
-      if (useTimelineStore.getState().geologicalMa !== null) return;
-      const wp = MAGELLAN_ROUTE.waypoints[index];
-      if (wp?.calendarDate) {
-        const yr = parseInt(wp.calendarDate.slice(0, 4), 10);
-        if (Number.isFinite(yr) && yr >= 1519 && yr <= 1522) {
-          useTimelineStore.getState().selectYear(yr);
-        }
-      }
-    } catch {
-      // Safe fallback in isolated environments
-    }
-  };
+  let lastTickTime = 0;
 
   return {
     activeRouteId: null,
@@ -52,40 +38,18 @@ export const useHistoricalRouteStore = create<HistoricalRouteState>((set, get) =
     isMinimized: false,
 
     setActiveRouteId: (id) => {
-      if (!id) {
+      if (id === null) {
         set({ activeRouteId: null, isPlaying: false });
-        try {
-          if (useTimelineStore.getState().activeRouteId !== null) {
-            useTimelineStore.getState().setActiveRouteId(null);
-          }
-        } catch {
-          // safe
-        }
         return;
       }
-      set({
-        activeRouteId: id,
-        isPlaying: true,
-        progress: 0.0,
-        currentWaypointIndex: 0,
-      });
-      try {
-        if (useTimelineStore.getState().activeRouteId !== id) {
-          useTimelineStore.getState().setActiveRouteId(id);
-        }
-        if (useTimelineStore.getState().geologicalMa === null) {
-          useTimelineStore.getState().selectYear(1519);
-        }
-      } catch {
-        // safe
-      }
+      lastTickTime = 0;
+      set({ activeRouteId: id, isPlaying: true, progress: 0, currentWaypointIndex: 0 });
     },
 
     play: () => {
       const state = get();
       if (state.progress >= 1.0) {
         set({ progress: 0.0, currentWaypointIndex: 0, isPlaying: true });
-        syncTimelineYearForWaypoint(0);
       } else {
         set({ isPlaying: true });
       }
@@ -98,7 +62,6 @@ export const useHistoricalRouteStore = create<HistoricalRouteState>((set, get) =
       if (!state.isPlaying) {
         if (state.progress >= 1.0) {
           set({ progress: 0.0, currentWaypointIndex: 0, isPlaying: true });
-          syncTimelineYearForWaypoint(0);
         } else {
           set({ isPlaying: true });
         }
@@ -114,7 +77,6 @@ export const useHistoricalRouteStore = create<HistoricalRouteState>((set, get) =
         Math.floor(clamped * (waypointsCount - 1) + 0.5)
       );
       set({ progress: clamped, currentWaypointIndex: waypointIdx });
-      syncTimelineYearForWaypoint(waypointIdx);
     },
 
     setProgress: (prog) => {
@@ -127,7 +89,6 @@ export const useHistoricalRouteStore = create<HistoricalRouteState>((set, get) =
         const nextIdx = state.currentWaypointIndex + 1;
         const newProg = Number((nextIdx / (waypointsCount - 1)).toFixed(4));
         set({ currentWaypointIndex: nextIdx, progress: newProg });
-        syncTimelineYearForWaypoint(nextIdx);
       }
     },
 
@@ -137,7 +98,6 @@ export const useHistoricalRouteStore = create<HistoricalRouteState>((set, get) =
         const prevIdx = state.currentWaypointIndex - 1;
         const newProg = Number((prevIdx / (waypointsCount - 1)).toFixed(4));
         set({ currentWaypointIndex: prevIdx, progress: newProg });
-        syncTimelineYearForWaypoint(prevIdx);
       }
     },
 
@@ -145,22 +105,20 @@ export const useHistoricalRouteStore = create<HistoricalRouteState>((set, get) =
       const clampedIndex = Math.max(0, Math.min(waypointsCount - 1, index));
       const newProg = Number((clampedIndex / (waypointsCount - 1)).toFixed(4));
       set({ currentWaypointIndex: clampedIndex, progress: newProg });
-      syncTimelineYearForWaypoint(clampedIndex);
     },
 
     reset: () => {
       set({ progress: 0.0, currentWaypointIndex: 0, isPlaying: false });
-      syncTimelineYearForWaypoint(0);
     },
 
     tick: (deltaSeconds: number) => {
       const state = get();
       if (!state.isPlaying) return;
       const now = Date.now();
-      if ((state as any)._lastTickTime && now - (state as any)._lastTickTime < 5) {
+      if (lastTickTime && now - lastTickTime < 5) {
         return;
       }
-      (state as any)._lastTickTime = now;
+      lastTickTime = now;
 
       // 90 seconds for complete circumnavigation at 1x speed
       const baseDurationSeconds = 90.0;

@@ -1,5 +1,7 @@
 "use client";
 
+import { enterGeologicalMode, restoreContemporaryTimeline } from "@/stores/actions";
+
 import React, { useMemo } from "react";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { MilestonePin } from "./MilestonePin";
@@ -15,7 +17,6 @@ export const TimelineAxis: React.FC = () => {
   const storeActiveCategories = useTimelineStore((s) => s.activeCategories);
   const selectMilestone = useTimelineStore((s) => s.selectMilestone);
   const storeSelectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const selectGeologicalMa = useTimelineStore((s) => s.selectGeologicalMa);
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
 
   const isServer = typeof window === "undefined";
@@ -139,7 +140,7 @@ export const TimelineAxis: React.FC = () => {
       (m) =>
         m.year >= startYear &&
         m.year <= endYear &&
-        activeCategories.includes(m.category as any)
+        activeCategories.includes(m.category)
     );
 
     // Sort chronologically
@@ -197,15 +198,9 @@ export const TimelineAxis: React.FC = () => {
           const handleClick = (e: React.MouseEvent) => {
             e.stopPropagation();
             if (m.ageMa === 0) {
-              const timeline = useTimelineStore.getState();
-              timeline.setGeologicalMa(null);
-              timeline.setTimelineMode("HISTORICAL");
-              timeline.selectYear(2024);
-              timeline.setYearRange(1974, 2024);
-              timeline.selectMilestone(null);
+              restoreContemporaryTimeline();
             } else {
-              selectGeologicalMa(m.ageMa);
-              selectMilestone(m.id);
+              enterGeologicalMode(m.ageMa, m.id);
             }
           };
 
@@ -297,7 +292,7 @@ export const TimelineAxis: React.FC = () => {
             summary={m.summary}
             year={m.year}
             exactDate={m.exactDate}
-            category={m.category as any}
+            category={m.category}
             sourcePrimary={m.sourcePrimary}
             latitude={m.latitude}
             longitude={m.longitude}

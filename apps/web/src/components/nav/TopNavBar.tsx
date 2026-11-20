@@ -1,5 +1,7 @@
 "use client";
 
+import { selectCountry, resetGlobeView } from "@/stores/actions";
+
 import Link from "next/link";
 import React, { useState } from "react";
 import { Globe, Search, BarChart2, Share2, RotateCcw, Radio, Orbit, BookOpen } from "lucide-react";
@@ -23,9 +25,7 @@ function navItemClasses(isActive: boolean) {
 }
 
 export const TopNavBar: React.FC = () => {
-  const setSelectedIso = useGlobeStore((s) => s.setSelectedIso);
   const flyTo = useGlobeStore((s) => s.flyTo);
-  const resetView = useGlobeStore((s) => s.resetView);
   const openComparator = useComparatorStore((s) => s.openComparator);
   const setShareModalOpen = useStudyStore((s) => s.setShareModalOpen);
   const storeIsPanelOpen = useObservatoryStore((s) => s.isPanelOpen);
@@ -47,7 +47,7 @@ export const TopNavBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleCountrySelect = (iso: string) => {
-    setSelectedIso(iso);
+    selectCountry(iso);
     useTimelineStore.getState().selectMilestone(null);
     const country = PILOT_COUNTRIES[iso] || getCountryData(iso);
     if (country && country.latitude && country.longitude) {
@@ -164,7 +164,7 @@ export const TopNavBar: React.FC = () => {
           <span className="hidden sm:inline">Compartilhar</span>
         </button>
 
-        <IconButton label="Resetar visão da Terra" icon={<RotateCcw />} onClick={resetView} />
+        <IconButton label="Resetar visão da Terra" icon={<RotateCcw />} onClick={resetGlobeView} />
       </nav>
     </header>
   );

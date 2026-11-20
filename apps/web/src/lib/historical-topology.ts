@@ -2,17 +2,27 @@ import * as topojson from "topojson-client";
 import whichPolygon from "which-polygon";
 import worldAtlas from "world-atlas/countries-110m.json";
 
-// In-memory LRU/Map cache for loaded TopoJSON topologies
-const topologyCache = new Map<string, any>();
+export type CountryProperties = {
+  id?: string | number;
+  name?: string;
+  iso?: string;
+};
 
-// In-flight request deduplication cache
-const inFlightRequests = new Map<string, Promise<any>>();
+type Topology = Parameters<typeof topojson.mesh>[0];
+type Geometry = NonNullable<Parameters<typeof topojson.mesh>[1]>;
+type CountryCollection = Extract<Geometry, { type: "GeometryCollection" }> & {
+  geometries: (Geometry & { properties?: CountryProperties })[];
+};
+export type CountryTopology = Topology & { objects: { countries: CountryCollection } };
+export type CountrySpatialIndex = (point: [number, number]) => CountryProperties | null;
 
-// In-memory cache for which-polygon spatial query indices (<0.2ms)
-const spatialIndexCache = new Map<string, any>();
+export const contemporaryTopology: CountryTopology = worldAtlas;
 
-// Static fallback loaders that work across bundlers, SSR and headless test environments
-const STATIC_TOPOLOGY_LOADERS: Record<string, () => Promise<any>> = {
+const topologyCache = new Map<string, CountryTopology>();
+const inFlightRequests = new Map<string, Promise<CountryTopology | null>>();
+const spatialIndexCache = new Map<string, CountrySpatialIndex>();
+
+const STATIC_TOPOLOGY_LOADERS: Record<string, () => Promise<{ default: unknown }>> = {
   "/data/history/borders-1870.json": () =>
     import("../../public/data/history/borders-1870.json"),
   "/data/history/borders-1914.json": () =>
@@ -23,127 +33,79 @@ const STATIC_TOPOLOGY_LOADERS: Record<string, () => Promise<any>> = {
     import("../../public/data/history/borders-1969.json"),
 };
 
-/**
- * Asynchronously loads a historical TopoJSON dataset by path with in-memory caching.
- * Tries browser fetch first, falling back to bundled dynamic imports if offline or in Node test runner.
- * Deduplicates concurrent requests for the same dataset.
- */
-export async function loadHistoricalTopology(topoJsonPath: string): Promise<any> {
-  if (!topoJsonPath) return null;
+function isCountryTopology(data: unknown): data is CountryTopology {
+  if (typeof data !== "object" || data === null) return false;
+  const topology = data as Partial<CountryTopology>;
+  const countries = topology.objects?.countries;
+  return topology.type === "Topology" && Array.isArray(topology.arcs) &&
+    countries?.type === "GeometryCollection" && Array.isArray(countries.geometries);
+}
 
-  if (topologyCache.has(topoJsonPath)) {
-    return topologyCache.get(topoJsonPath);
-  }
-
-  if (inFlightRequests.has(topoJsonPath)) {
-    return inFlightRequests.get(topoJsonPath);
-  }
-
-  const loadPromise = (async () => {
+async function fetchHistoricalTopology(path: string): Promise<CountryTopology | null> {
+  if (typeof window !== "undefined" && typeof fetch === "function") {
     try {
-      // 1. Try browser fetch if in client browser environment
-      if (typeof window !== "undefined" && typeof fetch === "function") {
-        try {
-          const res = await fetch(topoJsonPath);
-          if (res.ok) {
-            const data = await res.json();
-            topologyCache.set(topoJsonPath, data);
-            return data;
-          }
-        } catch {
-          // Fetch failed or blocked; continue to static loader fallback
-        }
+      const response = await fetch(path);
+      if (response.ok) {
+        const data: unknown = await response.json();
+        if (isCountryTopology(data)) return data;
       }
-
-      // 2. Fallback to bundled loader (works seamlessly in Next.js SSR, build and headless tests)
-      const loader = STATIC_TOPOLOGY_LOADERS[topoJsonPath];
-      if (loader) {
-        try {
-          const mod = await loader();
-          const data = mod.default || mod;
-          topologyCache.set(topoJsonPath, data);
-          return data;
-        } catch (err) {
-          console.error(`Failed to load historical topology via static loader for ${topoJsonPath}:`, err);
-        }
-      }
-
-      return null;
-    } finally {
-      inFlightRequests.delete(topoJsonPath);
+    } catch {
+      // Fall back to the bundled dataset.
     }
-  })();
-
-  inFlightRequests.set(topoJsonPath, loadPromise);
-  return loadPromise;
-}
-
-/**
- * Synchronously retrieves already loaded topology from cache.
- */
-export function getHistoricalTopologySync(topoJsonPath: string): any {
-  return topologyCache.get(topoJsonPath) || null;
-}
-
-/**
- * Returns or builds an in-memory which-polygon spatial index for a given topology.
- * Ensures <0.2ms raycasting point-in-polygon queries.
- */
-export function getHistoricalSpatialIndex(key: string, topology: any): any {
-  if (!topology || !topology.objects?.countries) return null;
-
-  if (spatialIndexCache.has(key)) {
-    return spatialIndexCache.get(key);
   }
 
+  const load = STATIC_TOPOLOGY_LOADERS[path];
+  if (!load) return null;
   try {
-    const featureCollection = topojson.feature(
-      topology,
-      topology.objects.countries
-    ) as any;
-
-    if (featureCollection && featureCollection.features) {
-      featureCollection.features.forEach((f: any) => {
-        if (f.properties) {
-          f.properties.id = f.id;
-        }
-      });
-      const index = whichPolygon(featureCollection);
-      spatialIndexCache.set(key, index);
-      return index;
-    }
-  } catch (err) {
-    console.error(`Failed to construct which-polygon index for ${key}:`, err);
-  }
-
-  return null;
-}
-
-/**
- * Returns the cached contemporary spatial index initialized from world-atlas (110m).
- */
-export function getContemporarySpatialIndex(): any {
-  const CONTEMPORARY_KEY = "WORLD_ATLAS_110M";
-  if (spatialIndexCache.has(CONTEMPORARY_KEY)) {
-    return spatialIndexCache.get(CONTEMPORARY_KEY);
-  }
-
-  try {
-    const topology = worldAtlas as any;
-    const featureCollection = topojson.feature(
-      topology,
-      topology.objects.countries
-    ) as any;
-    featureCollection.features.forEach((f: any) => {
-      if (f.properties) {
-        f.properties.id = f.id;
-      }
-    });
-    const index = whichPolygon(featureCollection);
-    spatialIndexCache.set(CONTEMPORARY_KEY, index);
-    return index;
-  } catch (err) {
-    console.error("Failed to construct contemporary spatial index:", err);
+    const module = await load();
+    return isCountryTopology(module.default) ? module.default : null;
+  } catch (error) {
+    console.error(`Failed to load historical topology for ${path}:`, error);
     return null;
   }
+}
+
+export async function loadHistoricalTopology(path: string): Promise<CountryTopology | null> {
+  if (!path) return null;
+
+  const cached = topologyCache.get(path);
+  if (cached) return cached;
+  const inFlight = inFlightRequests.get(path);
+  if (inFlight) return inFlight;
+
+  const request = fetchHistoricalTopology(path).then((data) => {
+    if (data) topologyCache.set(path, data);
+    return data;
+  }).finally(() => inFlightRequests.delete(path));
+
+  inFlightRequests.set(path, request);
+  return request;
+}
+
+export function getHistoricalTopologySync(path: string): CountryTopology | null {
+  return topologyCache.get(path) ?? null;
+}
+
+export function getHistoricalSpatialIndex(key: string, topology: CountryTopology | null): CountrySpatialIndex | null {
+  if (!topology) return null;
+
+  const cached = spatialIndexCache.get(key);
+  if (cached) return cached;
+
+  try {
+    const featureCollection = topojson.feature<CountryProperties>(topology, topology.objects.countries);
+    for (const feature of featureCollection.features) {
+      if (feature.properties) feature.properties.id = feature.id;
+    }
+    const index = whichPolygon<CountryProperties>(featureCollection);
+    spatialIndexCache.set(key, index);
+    return index;
+  } catch (error) {
+    console.error(`Failed to construct which-polygon index for ${key}:`, error);
+    return null;
+  }
+}
+
+export function getContemporarySpatialIndex(): CountrySpatialIndex | null {
+  return getHistoricalSpatialIndex("WORLD_ATLAS_110M", contemporaryTopology);
 }

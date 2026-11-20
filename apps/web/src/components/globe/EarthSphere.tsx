@@ -1,5 +1,7 @@
 "use client";
 
+import { selectCountry } from "@/stores/actions";
+
 import React, { useRef, useMemo, useEffect, useState } from "react";
 import * as THREE from "three";
 import { useFrame, useThree, ThreeEvent } from "@react-three/fiber";
@@ -23,6 +25,8 @@ import { useEpochState } from "@/lib/epoch/useEpochState";
 import {
   loadHistoricalTopology,
   getHistoricalTopologySync,
+  type CountryProperties,
+  type CountrySpatialIndex,
   getHistoricalSpatialIndex,
   getContemporarySpatialIndex,
 } from "@/lib/historical-topology";
@@ -127,7 +131,6 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   const meshRef = useRef<THREE.Mesh>(null);
   const { invalidate } = useThree();
 
-  const setSelectedIso = useGlobeStore((s) => s.setSelectedIso);
   const setHoveredIso = useGlobeStore((s) => s.setHoveredIso);
   const flyTo = useGlobeStore((s) => s.flyTo);
 
@@ -233,7 +236,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   }, [earthMaterial, proceduralPaleoTexture, dayTexture, nightTexture]);
 
   // Dynamic spatial index (<0.2ms) switching seamlessly between contemporary and historical eras
-  const [historicalSpatialIndex, setHistoricalSpatialIndex] = useState<any>(() => {
+  const [historicalSpatialIndex, setHistoricalSpatialIndex] = useState<CountrySpatialIndex | null>(() => {
     if (era.id !== "CONTEMPORARY" && era.topoJsonPath) {
       const cached = getHistoricalTopologySync(era.topoJsonPath);
       return cached ? getHistoricalSpatialIndex(era.id, cached) : null;
@@ -287,9 +290,9 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
 
     const resolved = resolveHistoricalEntity(currentIso, effectiveYear);
     if (resolved && resolved !== currentIso) {
-      setSelectedIso(resolved);
+      selectCountry(resolved);
     }
-  }, [effectiveYear, setSelectedIso]);
+  }, [effectiveYear]);
 
   // Update shader animation frame & smooth 60 FPS lerp for paleogeographic cross-fade
   useFrame((_, delta) => {
@@ -342,19 +345,18 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   }, [earthMaterial, effectiveYear, selectedMilestoneId]);
 
   // Helper to resolve ISO / canonical historical entity from picked TopoJSON feature
-  const resolveIsoFromFeature = (feature: any): string | null => {
+  const resolveIsoFromFeature = (feature: CountryProperties | null): string | null => {
     if (!feature) return null;
-    const rawId = feature.id ?? feature.properties?.id ?? feature.iso;
+    const rawId = feature.id ?? feature.iso;
     const numId =
       rawId !== undefined && rawId !== null ? String(rawId).padStart(3, "0") : "";
-    const name = feature.name ?? feature.properties?.name;
+    const name = feature.name;
 
     const matchedIso =
       (rawId && HISTORICAL_ENTITIES[String(rawId)] ? String(rawId) : undefined) ||
       NUMERIC_TO_ISO[numId] ||
       (name && NAME_TO_ISO[name]) ||
-      rawId ||
-      null;
+      (rawId != null ? String(rawId) : null);
 
     if (!matchedIso) return null;
 
@@ -404,7 +406,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
     }
 
     if (isGeological) {
-      setSelectedIso(null);
+      selectCountry(null);
       setHoveredIso(null);
       return;
     }
@@ -415,7 +417,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
     const iso = resolveIsoFromFeature(feature);
 
     if (iso) {
-      setSelectedIso(iso);
+      selectCountry(iso);
       useTimelineStore.getState().selectMilestone(null);
 
       const pilot = PILOT_COUNTRIES[iso];
@@ -429,7 +431,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
         flyTo(lat, lng, 2.0);
       }
     } else {
-      setSelectedIso(null);
+      selectCountry(null);
       setHoveredIso(null);
       useTimelineStore.getState().selectMilestone(null);
     }

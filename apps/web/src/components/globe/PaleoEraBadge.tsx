@@ -1,8 +1,9 @@
 "use client";
 
+import { restoreContemporaryTimeline } from "@/stores/actions";
+
 import React from "react";
 import { RotateCcw, Mountain } from "lucide-react";
-import { useTimelineStore } from "@/stores/timelineStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -36,36 +37,6 @@ export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
       ? "🦖"
       : "🌋";
 
-  const handleRestoreCurrent = () => {
-    const timeline = useTimelineStore.getState();
-    timeline.setGeologicalMa(null);
-    timeline.setTimelineMode("HISTORICAL");
-    timeline.selectYear(2024);
-    timeline.setYearRange(1974, 2024);
-    timeline.selectMilestone(null);
-    timeline.setActiveRouteId(null);
-
-    try {
-      const { useHistoricalRouteStore } = require("@/stores/historicalRouteStore");
-      useHistoricalRouteStore.getState().setActiveRouteId(null);
-    } catch {
-      // safe
-    }
-
-    const study = useStudyStore.getState();
-    if (study) {
-      if (typeof study.setHistoricalEra === "function") {
-        study.setHistoricalEra(null);
-      }
-      if (typeof study.setGeologicalMa === "function") {
-        study.setGeologicalMa(null);
-      }
-      if (typeof study.setActiveRouteId === "function") {
-        study.setActiveRouteId(null);
-      }
-    }
-  };
-
   // Reposicionamento dinâmico contra o ForkStudyBanner para evitar sobreposição na barra superior
   const positionClass = currentStudyId
     ? "top-24 sm:top-20"
@@ -93,7 +64,7 @@ export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
       <div className="h-4 w-[1px] bg-slate-700/60" />
 
       <button
-        onClick={handleRestoreCurrent}
+        onClick={restoreContemporaryTimeline}
         title="Restaurar Geografia Contemporânea"
         className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 hover:border-amber-400/50 text-[11px] font-medium text-slate-300 hover:text-amber-300 transition-all shadow-sm"
       >

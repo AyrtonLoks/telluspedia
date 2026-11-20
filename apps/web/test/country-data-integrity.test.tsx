@@ -23,7 +23,6 @@ function resetStores() {
     endYear: 2024,
     selectedYear: null,
     selectedMilestoneId: null,
-    timelineMode: "HISTORICAL",
     geologicalMa: null,
   });
   useComparatorStore.setState({ selectedIsos: [], isOpen: false });

@@ -1,5 +1,7 @@
 "use client";
 
+import { selectCountry } from "@/stores/actions";
+
 import Link from "next/link";
 import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React, { useEffect, useRef } from "react";
@@ -54,7 +56,6 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   const selectMilestone = useTimelineStore((s) => s.selectMilestone);
   const selectYear = useTimelineStore((s) => s.selectYear);
   const flyTo = useGlobeStore((s) => s.flyTo);
-  const setSelectedIso = useGlobeStore((s) => s.setSelectedIso);
   const setReaderOpen = useGlobeStore((s) => s.setReaderOpen);
   const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
@@ -234,7 +235,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedIso(effectiveCountryIso);
+                selectCountry(effectiveCountryIso);
                 if (latitude !== undefined && longitude !== undefined) {
                   flyTo(latitude, longitude, preferredAltitude ?? 1.8);
                 }
@@ -251,7 +252,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedIso(effectiveCountryIso);
+                selectCountry(effectiveCountryIso);
                 setActiveDimension("HISTORY");
                 setReaderOpen(true);
               }}

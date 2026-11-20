@@ -1,7 +1,9 @@
 "use client";
 
+import { applyTimelinePreset, selectCountry, selectHistoricalRoute } from "@/stores/actions";
+
 import React, { useEffect } from "react";
-import { MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
+import { MAGELLAN_MILESTONE_IDS, MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
 import { usePathname, useSearchParams } from "next/navigation";
 import { resolveLaunch, studyUrl } from "@/lib/tellus-bridge/catalog";
 import { findMilestoneById, getCountryData } from "@/lib/country-data";
@@ -9,7 +11,6 @@ import type { ObservatoryLayerId } from "@/lib/observatory-data";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
-import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { useTimelineStore, ALL_CATEGORIES } from "@/stores/timelineStore";
 
 const observatoryLayers = new Set<ObservatoryLayerId>([
@@ -45,7 +46,7 @@ export function EntityLaunch() {
         globe.setSelectedIso(null);
         return;
       }
-      globe.setSelectedIso(country.isoCode);
+      selectCountry(country.isoCode);
       if (
         country.latitude !== null &&
         country.longitude !== null &&
@@ -57,23 +58,24 @@ export function EntityLaunch() {
       const event = findMilestoneById(key);
       if (!event) return;
       globe.setSelectedIso(null);
-      timeline.setTimelineMode("HISTORICAL");
+      timeline.setGeologicalMa(null);
       timeline.setAllCategories([...ALL_CATEGORIES]);
       if (!timeline.isExpanded) timeline.toggleExpanded();
       timeline.setYearRange(event.year - 15, event.year + 15);
+      selectHistoricalRoute(MAGELLAN_MILESTONE_IDS.includes(key) ? MAGELLAN_ROUTE_ID : null);
       timeline.selectYear(event.year);
       timeline.selectMilestone(event.id);
-      useHistoricalRouteStore.getState().setActiveRouteId(key === MAGELLAN_ROUTE_ID ? key : null);
       if (event.latitude !== undefined && event.longitude !== undefined) {
         globe.flyTo(event.latitude, event.longitude, event.preferredAltitude ?? 1.8);
       }
     } else if (entity.kind === "era") {
       globe.setSelectedIso(null);
-      timeline.setPreset(key);
+      applyTimelinePreset(key);
       if (!timeline.isExpanded) timeline.toggleExpanded();
     } else if (entity.kind === "observatory") {
       globe.setSelectedIso(null);
-      timeline.setTimelineMode("HISTORICAL");
+      selectHistoricalRoute(null);
+      timeline.setGeologicalMa(null);
       timeline.selectMilestone(null);
       timeline.selectYear(null);
       if (key === "COSMOS") {

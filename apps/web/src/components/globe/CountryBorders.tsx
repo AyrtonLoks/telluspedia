@@ -4,7 +4,6 @@ import React, { useMemo, useState, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import * as topojson from "topojson-client";
-import worldAtlas from "world-atlas/countries-110m.json";
 import { latLngToVector3 } from "@/lib/geo-spatial";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -21,6 +20,8 @@ import {
 } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import {
+  contemporaryTopology,
+  type CountryTopology,
   loadHistoricalTopology,
   getHistoricalTopologySync,
 } from "@/lib/historical-topology";
@@ -44,7 +45,7 @@ export const CountryBorders: React.FC = () => {
   const historicalMaterialRef = useRef<THREE.LineBasicMaterial>(null);
 
   // Asynchronous state for historical topology with instant sync cache initialization
-  const [historicalTopology, setHistoricalTopology] = useState<any>(() => {
+  const [historicalTopology, setHistoricalTopology] = useState<CountryTopology | null>(() => {
     return era.topoJsonPath ? getHistoricalTopologySync(era.topoJsonPath) : null;
   });
 
@@ -81,7 +82,7 @@ export const CountryBorders: React.FC = () => {
 
   // Contemporary base borders geometry (World Atlas 110m)
   const baseBordersGeometry = useMemo(() => {
-    const topology = worldAtlas as any;
+    const topology = contemporaryTopology;
     const mesh = topojson.mesh(topology, topology.objects.countries);
     const points: THREE.Vector3[] = [];
 
@@ -138,7 +139,7 @@ export const CountryBorders: React.FC = () => {
   const highlightGeometry = useMemo(() => {
     if (isGeological) return null;
     const isHistorical = era.id !== "CONTEMPORARY" && !!historicalTopology;
-    const topology = isHistorical ? historicalTopology : (worldAtlas as any);
+    const topology = isHistorical ? historicalTopology : contemporaryTopology;
     if (!topology || !topology.objects?.countries?.geometries) return null;
 
     const geometries = topology.objects.countries.geometries;

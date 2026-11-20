@@ -1,3 +1,4 @@
+import { applyTimelinePreset, enterGeologicalMode, resetGlobeView, restoreStudySnapshot, selectCountry } from "../src/stores/actions";
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
@@ -51,6 +52,7 @@ import { StudyShareModal } from "../src/components/study/StudyShareModal";
 import { InspectorHUD } from "../src/components/hud/InspectorHUD";
 import {
   loadHistoricalTopology,
+  type CountryProperties,
   getHistoricalSpatialIndex,
   getContemporarySpatialIndex,
 } from "../src/lib/historical-topology";
@@ -264,7 +266,7 @@ describe("Spatial Indexing & TopoJSON Picking (<0.2ms)", () => {
   featureCollection.features.forEach((f: any) => {
     if (f.properties) f.properties.id = f.id;
   });
-  const query = whichPolygon(featureCollection);
+  const query = whichPolygon<CountryProperties>(featureCollection);
 
   test("Spatial index resolves coordinates to correct countries", () => {
     // Brasília (-47.88, -15.79) -> Brazil (076 -> BRA)
@@ -272,7 +274,7 @@ describe("Spatial Indexing & TopoJSON Picking (<0.2ms)", () => {
     assert.ok(brazilFeature, "Expected feature for Brazil coordinates");
     const brazilIso =
       NUMERIC_TO_ISO[String(brazilFeature.id).padStart(3, "0")] ||
-      NAME_TO_ISO[brazilFeature.name];
+      NAME_TO_ISO[brazilFeature.name ?? ""];
     assert.equal(brazilIso, "BRA");
 
     // Berlin (13.40, 52.52) -> Germany (276 -> DEU)
@@ -280,7 +282,7 @@ describe("Spatial Indexing & TopoJSON Picking (<0.2ms)", () => {
     assert.ok(germanyFeature, "Expected feature for Germany coordinates");
     const germanyIso =
       NUMERIC_TO_ISO[String(germanyFeature.id).padStart(3, "0")] ||
-      NAME_TO_ISO[germanyFeature.name];
+      NAME_TO_ISO[germanyFeature.name ?? ""];
     assert.equal(germanyIso, "DEU");
 
     // Tokyo (139.69, 35.68) -> Japan (392 -> JPN)
@@ -288,7 +290,7 @@ describe("Spatial Indexing & TopoJSON Picking (<0.2ms)", () => {
     assert.ok(japanFeature, "Expected feature for Japan coordinates");
     const japanIso =
       NUMERIC_TO_ISO[String(japanFeature.id).padStart(3, "0")] ||
-      NAME_TO_ISO[japanFeature.name];
+      NAME_TO_ISO[japanFeature.name ?? ""];
     assert.equal(japanIso, "JPN");
   });
 });
@@ -587,7 +589,7 @@ describe("Camera Movement, Safe Altitude & Globe Store Transitions", () => {
     useTimelineStore.getState().selectMilestone("bra-1822");
 
     const prevTrigger = useGlobeStore.getState().flyToTrigger;
-    useGlobeStore.getState().resetView();
+    resetGlobeView();
 
     const resetState = useGlobeStore.getState();
     assert.equal(resetState.selectedIso, null);
@@ -1147,13 +1149,13 @@ describe("Refinements: Solar Lighting, Border Highlighting, HUD Expansion, Timez
   test("9. resetView clears both selectedMilestoneId and selectedYear", () => {
     useTimelineStore.getState().selectMilestone("bra-1822");
     useTimelineStore.getState().selectYear(1822);
-    useGlobeStore.getState().setSelectedIso("BRA");
+    selectCountry("BRA");
 
     assert.equal(useTimelineStore.getState().selectedMilestoneId, "bra-1822");
     assert.equal(useTimelineStore.getState().selectedYear, 1822);
     assert.equal(useGlobeStore.getState().selectedIso, "BRA");
 
-    useGlobeStore.getState().resetView();
+    resetGlobeView();
 
     assert.equal(useTimelineStore.getState().selectedMilestoneId, null);
     assert.equal(useTimelineStore.getState().selectedYear, null);
@@ -1316,12 +1318,12 @@ describe("Primary Data Source URLs & Reader Citation Workflow", () => {
 
   test("setSelectedIso automatically resets activeDimension when changing countries", () => {
     // 1. User was reading Brazilian politics
-    useGlobeStore.getState().setSelectedIso("BRA");
+    selectCountry("BRA");
     useReaderStore.getState().setActiveDimension("GOVERNMENT_POLITICS");
     assert.equal(useReaderStore.getState().activeDimension, "GOVERNMENT_POLITICS");
 
     // 2. User selects USA on the globe or search bar
-    useGlobeStore.getState().setSelectedIso("USA");
+    selectCountry("USA");
 
     // 3. activeDimension is automatically reset to "GEOGRAPHY" without manual intervention
     assert.equal(
@@ -1335,7 +1337,7 @@ describe("Primary Data Source URLs & Reader Citation Workflow", () => {
     useReaderStore.getState().setActiveDimension("GOVERNMENT_POLITICS");
     assert.equal(useReaderStore.getState().activeDimension, "GOVERNMENT_POLITICS");
 
-    useGlobeStore.getState().resetView();
+    resetGlobeView();
     assert.equal(
       useReaderStore.getState().activeDimension,
       "GEOGRAPHY",
@@ -1877,7 +1879,7 @@ describe("Componente 4: Persistência & Compartilhamento de Estudos (RN16) e Com
     assert.ok(html.includes("top-24 sm:top-20"), "Lower positioning when study banner is active");
 
     // Test Restore Cartography: resets timeline, clears studyStore era, and migrates historical entity to modern successor
-    useGlobeStore.getState().setSelectedIso("PRU");
+    selectCountry("PRU");
     assert.equal(useGlobeStore.getState().selectedIso, "PRU");
 
     // Simulate clicking restore (using the exact handler logic)
@@ -1889,7 +1891,7 @@ describe("Componente 4: Persistência & Compartilhamento de Estudos (RN16) e Com
 
     const currentIso = useGlobeStore.getState().selectedIso;
     if (currentIso && HISTORICAL_ENTITIES[currentIso]?.successorIsos?.length > 0) {
-      useGlobeStore.getState().setSelectedIso(HISTORICAL_ENTITIES[currentIso].successorIsos[0]);
+      selectCountry(HISTORICAL_ENTITIES[currentIso].successorIsos[0]);
     }
 
     assert.equal(useTimelineStore.getState().selectedYear, 2024);
@@ -1900,7 +1902,7 @@ describe("Componente 4: Persistência & Compartilhamento de Estudos (RN16) e Com
     // Cleanup
     useStudyStore.getState().resetStudy();
     useTimelineStore.getState().selectYear(null);
-    useGlobeStore.getState().setSelectedIso(null);
+    selectCountry(null);
   });
 
   test("9. Cold War study restore: preserves cartography without falsely activating Apollo 11 when isApollo11Active is false", () => {
@@ -2086,7 +2088,7 @@ describe("Componente 1: Datasets Históricos & Base de Conhecimento de Entidades
       // Verify which-polygon spatial indexing works
       const fc = topojson.feature(topo, topo.objects.countries) as any;
       assert.equal(fc.type, "FeatureCollection");
-      const spatialIndex = whichPolygon(fc);
+      const spatialIndex = whichPolygon<CountryProperties>(fc);
       assert.ok(spatialIndex, `Spatial index must initialize for ${file}`);
     }
 
@@ -2095,7 +2097,7 @@ describe("Componente 1: Datasets Históricos & Base de Conhecimento de Entidades
     const topo1870 = JSON.parse(fs.readFileSync(path.join(historyDir, "borders-1870.json"), "utf-8"));
     const fc1870 = topojson.feature(topo1870, topo1870.objects.countries) as any;
     fc1870.features.forEach((f: any) => { if (f.properties) f.properties.id = f.id; });
-    const idx1870 = whichPolygon(fc1870);
+    const idx1870 = whichPolygon<CountryProperties>(fc1870);
     const berlin1870 = idx1870([13.4, 52.52]);
     assert.equal(berlin1870?.id, "PRU");
     const vienna1870 = idx1870([16.37, 48.20]);
@@ -2109,7 +2111,7 @@ describe("Componente 1: Datasets Históricos & Base de Conhecimento de Entidades
     const topo1969 = JSON.parse(fs.readFileSync(path.join(historyDir, "borders-1969.json"), "utf-8"));
     const fc1969 = topojson.feature(topo1969, topo1969.objects.countries) as any;
     fc1969.features.forEach((f: any) => { if (f.properties) f.properties.id = f.id; });
-    const idx1969 = whichPolygon(fc1969);
+    const idx1969 = whichPolygon<CountryProperties>(fc1969);
     const moscow1969 = idx1969([37.61, 55.75]);
     assert.equal(moscow1969?.id, "SUN");
     const kyiv1969 = idx1969([30.52, 50.45]);
@@ -2319,7 +2321,7 @@ describe("Componente 2 e 3: Three.js Historical Cartography, Raycasting Picking 
   });
 
   test("4. InspectorHUD renders authentic Prussia data, hides live weather, and displays leader title & vigência", () => {
-    useGlobeStore.getState().setSelectedIso("PRU");
+    selectCountry("PRU");
     useTimelineStore.getState().selectYear(1870);
 
     const html = renderToStaticMarkup(React.createElement(InspectorHUD));
@@ -2342,12 +2344,12 @@ describe("Componente 2 e 3: Three.js Historical Cartography, Raycasting Picking 
     }
 
     // Cleanup
-    useGlobeStore.getState().setSelectedIso(null);
+    selectCountry(null);
     useTimelineStore.getState().selectYear(null);
   });
 
   test("5. InspectorHUD renders authentic USSR data in 1969 with Brezhnev and hidden weather", () => {
-    useGlobeStore.getState().setSelectedIso("SUN");
+    selectCountry("SUN");
     useTimelineStore.getState().selectYear(1969);
 
     const html = renderToStaticMarkup(React.createElement(InspectorHUD));
@@ -2361,12 +2363,12 @@ describe("Componente 2 e 3: Three.js Historical Cartography, Raycasting Picking 
     assert.ok(!html.includes("Clima local"), "Live weather widget must be hidden for USSR");
 
     // Cleanup
-    useGlobeStore.getState().setSelectedIso(null);
+    selectCountry(null);
     useTimelineStore.getState().selectYear(null);
   });
 
   test("6. InspectorHUD renders modern weather widget and no historical context for contemporary Brazil", () => {
-    useGlobeStore.getState().setSelectedIso("BRA");
+    selectCountry("BRA");
     useTimelineStore.getState().selectYear(2024);
 
     const html = renderToStaticMarkup(React.createElement(InspectorHUD));
@@ -2379,7 +2381,7 @@ describe("Componente 2 e 3: Three.js Historical Cartography, Raycasting Picking 
     assert.ok(!html.includes("data-historical-context=\"true\""), "Must not render historical context for modern Brazil");
 
     // Cleanup
-    useGlobeStore.getState().setSelectedIso(null);
+    selectCountry(null);
     useTimelineStore.getState().selectYear(null);
   });
 
@@ -2560,7 +2562,6 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
 
     // Quando inativo e sem forceActive, não renderiza nada
     useHistoricalRouteStore.getState().setActiveRouteId(null);
-    useTimelineStore.getState().setActiveRouteId(null);
     const htmlInactive = renderToStaticMarkup(React.createElement(HistoricalRouteOverlay, { forceActive: false }));
     assert.equal(htmlInactive, "");
   });
@@ -2598,45 +2599,40 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
 
   test("4. useTimelineStore suporta modo geológico, rota de navegação e transição de presets", () => {
     // Inicializar no presente
-    useTimelineStore.getState().setPreset("LAST_50_YEARS");
-    assert.equal(useTimelineStore.getState().timelineMode, "HISTORICAL");
+    applyTimelinePreset("LAST_50_YEARS");
     assert.equal(useTimelineStore.getState().geologicalMa, null);
-    assert.equal(useTimelineStore.getState().activeRouteId, null);
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
     assert.equal(useTimelineStore.getState().startYear, 1974);
     assert.equal(useTimelineStore.getState().endYear, 2024);
 
     // Preset Pangeia
-    useTimelineStore.getState().setPreset("PANGEA_250MA");
-    assert.equal(useTimelineStore.getState().timelineMode, "GEOLOGICAL");
+    applyTimelinePreset("PANGEA_250MA");
     assert.equal(useTimelineStore.getState().geologicalMa, 250);
-    assert.equal(useTimelineStore.getState().selectedGeologicalMa, 250);
 
     // Preset Gondwana
-    useTimelineStore.getState().setPreset("GONDWANA_150MA");
+    applyTimelinePreset("GONDWANA_150MA");
     assert.equal(useTimelineStore.getState().geologicalMa, 150);
 
     // Preset Cretáceo
-    useTimelineStore.getState().setPreset("KPG_66MA");
+    applyTimelinePreset("KPG_66MA");
     assert.equal(useTimelineStore.getState().geologicalMa, 66);
 
     // Preset Circum-navegação de Magalhães
-    useTimelineStore.getState().setPreset("MAGELLAN_1519");
-    assert.equal(useTimelineStore.getState().timelineMode, "HISTORICAL");
+    applyTimelinePreset("MAGELLAN_1519");
     assert.equal(useTimelineStore.getState().geologicalMa, null);
-    assert.equal(useTimelineStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
     assert.equal(useTimelineStore.getState().startYear, 1519);
     assert.equal(useTimelineStore.getState().endYear, 1522);
 
     // Retorno ao contemporâneo
-    useTimelineStore.getState().setPreset("21ST_CENTURY");
-    assert.equal(useTimelineStore.getState().timelineMode, "HISTORICAL");
-    assert.equal(useTimelineStore.getState().activeRouteId, null);
+    applyTimelinePreset("21ST_CENTURY");
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
     assert.equal(useTimelineStore.getState().startYear, 2000);
     assert.equal(useTimelineStore.getState().endYear, 2026);
   });
 
   test("5. PresetSelector renderiza opções humanas, geológicas e marítimas", () => {
-    useTimelineStore.getState().setPreset("LAST_50_YEARS");
+    applyTimelinePreset("LAST_50_YEARS");
     const html = renderToStaticMarkup(React.createElement(PresetSelector));
     assert.ok(html.includes("50 Anos Padrão"));
     assert.ok(html.includes("Século XXI"));
@@ -3425,19 +3421,9 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
     assert.equal(originalStudy.activeRouteId, "magellan-1519");
   });
 
-  test("3. useStudyStore gerencia geologicalMa, activeRouteId e ciclo de vida", () => {
+  test("3. Metadados do estudo não alteram a era nem a rota ativa", () => {
+    applyTimelinePreset("PANGEA_250MA");
     const store = useStudyStore.getState();
-    store.resetStudy();
-
-    assert.equal(useStudyStore.getState().geologicalMa, null);
-    assert.equal(useStudyStore.getState().activeRouteId, null);
-
-    store.setGeologicalMa(250);
-    assert.equal(useStudyStore.getState().geologicalMa, 250);
-
-    store.setActiveRouteId("magellan-1519");
-    assert.equal(useStudyStore.getState().activeRouteId, "magellan-1519");
-
     store.setStudy({
       id: "estudo-completo-66ma",
       title: "Cretáceo K-Pg e Extinção",
@@ -3446,19 +3432,18 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
     });
 
     assert.equal(useStudyStore.getState().currentStudyId, "estudo-completo-66ma");
-    assert.equal(useStudyStore.getState().geologicalMa, 66);
-    assert.equal(useStudyStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useTimelineStore.getState().geologicalMa, 250);
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
 
     store.resetStudy();
-    assert.equal(useStudyStore.getState().geologicalMa, null);
-    assert.equal(useStudyStore.getState().activeRouteId, null);
+    assert.equal(useStudyStore.getState().currentStudyId, null);
+    assert.equal(useTimelineStore.getState().geologicalMa, 250);
+    applyTimelinePreset("LAST_50_YEARS");
   });
 
   test("4. StudyShareModal exibe badges de Era Geológica e Rota de Expedição quando ativos", () => {
-    useTimelineStore.getState().selectGeologicalMa(250);
+    enterGeologicalMode(250);
     useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
-    useStudyStore.getState().setGeologicalMa(250);
-    useStudyStore.getState().setActiveRouteId("magellan-1519");
     useStudyStore.getState().setShareModalOpen(true);
 
     const html = renderToStaticMarkup(React.createElement(StudyShareModal));
@@ -3475,13 +3460,13 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
 
     // Cleanup
     useStudyStore.getState().setShareModalOpen(false);
-    useTimelineStore.getState().selectGeologicalMa(null);
+    useTimelineStore.getState().setGeologicalMa(null);
     useHistoricalRouteStore.getState().setActiveRouteId(null);
     useStudyStore.getState().resetStudy();
   });
 
   test("5. StudyShareModal omite badges paleogeográficos e de expedição no modo padrão contemporâneo", () => {
-    useTimelineStore.getState().selectGeologicalMa(null);
+    useTimelineStore.getState().setGeologicalMa(null);
     useHistoricalRouteStore.getState().setActiveRouteId(null);
     useStudyStore.getState().resetStudy();
     useStudyStore.getState().setShareModalOpen(true);
@@ -3494,34 +3479,33 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
     useStudyStore.getState().setShareModalOpen(false);
   });
 
-  test("6. Restauração de Estudo (/study/[slug]): Aplica geologicalMa e activeRouteId nas stores correspondentes", () => {
-    // Cenário 1: Restauração de estudo paleogeográfico com rota ativa
-    const studyPayload = {
+  test("6. Restauração de estudos antigos aplica a época, mantém o snapshot e limpa a seleção anterior", () => {
+    const legacyStudy = Object.freeze({
       id: "estudo-restaurar-123",
-      geologicalMa: 250,
-      activeRouteId: "magellan-1519",
-    };
-
-    useTimelineStore.getState().selectGeologicalMa(studyPayload.geologicalMa);
-    useHistoricalRouteStore.getState().setActiveRouteId(studyPayload.activeRouteId);
-    useTimelineStore.getState().setActiveRouteId(studyPayload.activeRouteId);
-
-    assert.equal(useTimelineStore.getState().timelineMode, "GEOLOGICAL");
-    assert.equal(useTimelineStore.getState().selectedGeologicalMa, 250);
+      title: "Pangeia",
+      selectedGeologicalMa: 250,
+      selectedRouteId: "magellan-1519",
+    });
+    restoreStudySnapshot(legacyStudy);
     assert.equal(useTimelineStore.getState().geologicalMa, 250);
     assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
-    assert.equal(useTimelineStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
 
-    // Cenário 2: Restauração de estudo contemporâneo (limpeza estrita)
-    useTimelineStore.getState().selectGeologicalMa(null);
-    useHistoricalRouteStore.getState().setActiveRouteId(null);
-    useTimelineStore.getState().setActiveRouteId(null);
-
-    assert.equal(useTimelineStore.getState().timelineMode, "HISTORICAL");
-    assert.equal(useTimelineStore.getState().selectedGeologicalMa, null);
+    applyTimelinePreset("LAST_50_YEARS");
     assert.equal(useTimelineStore.getState().geologicalMa, null);
     assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
-    assert.equal(useTimelineStore.getState().activeRouteId, null);
+    assert.equal(legacyStudy.selectedGeologicalMa, 250);
+    assert.equal(legacyStudy.selectedRouteId, "magellan-1519");
+
+    restoreStudySnapshot({ id: "estudo-apollo", title: "Apollo 11", isApollo11Active: true });
+    assert.equal(useTimelineStore.getState().selectedMilestoneId, "glo-1969");
+    assert.equal(useTimelineStore.getState().selectedYear, 1969);
+    restoreStudySnapshot({ id: "estudo-contemporaneo", title: "Presente", timelineStartYear: 1974, timelineEndYear: 2024 });
+    assert.equal(useTimelineStore.getState().selectedMilestoneId, null);
+    assert.equal(useTimelineStore.getState().selectedYear, null);
+    assert.equal(useTimelineStore.getState().geologicalMa, null);
+    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
+    useStudyStore.getState().resetStudy();
   });
 
   test("7. Fator de atenuação e extinção de luzes urbanas para uPaleoFactor > 0", () => {
@@ -3622,8 +3606,6 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
 
     assert.equal(useStudyStore.getState().currentStudyId, "estudo-restaurado-store");
     assert.equal(useStudyStore.getState().parentId, "root-123");
-    assert.equal(useStudyStore.getState().geologicalMa, 66);
-    assert.equal(useStudyStore.getState().activeRouteId, "magellan-1519");
     assert.equal(useStudyStore.getState().historicalEra, null);
     assert.equal(useStudyStore.getState().isApollo11Active, false);
 
@@ -3638,8 +3620,6 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
 
     assert.equal(useStudyStore.getState().currentStudyId, "fork-estudo-store-999");
     assert.equal(useStudyStore.getState().parentId, "estudo-restaurado-store");
-    assert.equal(useStudyStore.getState().geologicalMa, 66);
-    assert.equal(useStudyStore.getState().activeRouteId, "magellan-1519");
 
     store.resetStudy();
   });
@@ -3648,9 +3628,8 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
     // Configura estado com Apollo 11 inicialmente ativo, mas depois alternado para modo geológico
     useTimelineStore.getState().selectYear(1969);
     useTimelineStore.getState().selectMilestone("glo-1969");
-    useTimelineStore.getState().selectGeologicalMa(250); // Pangeia ativada
+    enterGeologicalMode(250); // Pangeia ativada
     useHistoricalRouteStore.getState().setActiveRouteId(null);
-    useStudyStore.getState().setGeologicalMa(250);
     useStudyStore.getState().setShareModalOpen(true);
 
     const html = renderToStaticMarkup(React.createElement(StudyShareModal));
@@ -3665,15 +3644,13 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
 
     // Cleanup
     useStudyStore.getState().setShareModalOpen(false);
-    useTimelineStore.getState().selectGeologicalMa(null);
+    useTimelineStore.getState().setGeologicalMa(null);
     useStudyStore.getState().resetStudy();
   });
 
   test("12. StudyShareModal respeita desativação de rotas históricas (omite badge se rota foi desativada)", () => {
     // Cenário: estudo carregado tinha rota, mas o usuário a desativou na HUD
     useHistoricalRouteStore.getState().setActiveRouteId(null);
-    useTimelineStore.getState().setActiveRouteId(null);
-    useStudyStore.getState().setGeologicalMa(null);
     useStudyStore.getState().setShareModalOpen(true);
 
     const html = renderToStaticMarkup(React.createElement(StudyShareModal));
@@ -3952,7 +3929,7 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
   test("10. ObservatoryPanel renderiza componentes sem <div> dentro de <p> e exibe anacronismo em anos anteriores a 1957", () => {
     useObservatoryStore.getState().setPanelOpen(true);
     useTimelineStore.getState().selectYear(1914); // Primeira Guerra Mundial
-    useTimelineStore.getState().selectGeologicalMa(null);
+    useTimelineStore.getState().setGeologicalMa(null);
 
     const html = renderToStaticMarkup(React.createElement(ObservatoryPanel));
 
@@ -4035,7 +4012,7 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
 
   test("12. StudyShareModal exibe badge do Observatório Planetário quando há camadas ativas", () => {
     useObservatoryStore.getState().setAllLayers(["NASA_FIRMS", "ISS_SATELLITES"]);
-    useTimelineStore.getState().selectGeologicalMa(null);
+    useTimelineStore.getState().setGeologicalMa(null);
     useStudyStore.getState().setShareModalOpen(true);
 
     const html = renderToStaticMarkup(React.createElement(StudyShareModal));
@@ -4056,8 +4033,7 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
   test("13. StudyShareModal suprime badge do Observatório quando era geológica ou época pré-1957 está ativa", () => {
     // 1. Configura camadas ativas no observatório, mas ativa Pangeia (250 Ma)
     useObservatoryStore.getState().setAllLayers(["NASA_FIRMS", "ISS_SATELLITES"]);
-    useTimelineStore.getState().selectGeologicalMa(250);
-    useStudyStore.getState().setGeologicalMa(250);
+    enterGeologicalMode(250);
     useStudyStore.getState().setShareModalOpen(true);
 
     const htmlGeo = renderToStaticMarkup(React.createElement(StudyShareModal));
@@ -4072,8 +4048,7 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
     );
 
     // 2. Configura Primeira Guerra Mundial (1914): deve suprimir badge do observatório
-    useTimelineStore.getState().selectGeologicalMa(null);
-    useStudyStore.getState().setGeologicalMa(null);
+    useTimelineStore.getState().setGeologicalMa(null);
     useTimelineStore.getState().selectYear(1914);
     useTimelineStore.getState().setYearRange(1914, 1918);
 
@@ -4085,7 +4060,6 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
 
     // 3. Configura Circum-navegação de Magalhães (1519): deve suprimir badge
     useTimelineStore.getState().selectYear(1519);
-    useTimelineStore.getState().setActiveRouteId("magellan-1519");
     useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
 
     const htmlMagellan = renderToStaticMarkup(React.createElement(StudyShareModal));
@@ -4096,7 +4070,6 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
 
     // Cleanup
     useHistoricalRouteStore.getState().setActiveRouteId(null);
-    useTimelineStore.getState().setActiveRouteId(null);
     useTimelineStore.getState().selectYear(2026);
     useTimelineStore.getState().setYearRange(1974, 2024);
     useStudyStore.getState().setShareModalOpen(false);

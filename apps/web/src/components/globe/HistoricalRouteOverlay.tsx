@@ -1,5 +1,7 @@
 "use client";
 
+import { historicalRouteActions, selectHistoricalRoute } from "@/stores/actions";
+
 import React, { useMemo, useEffect } from "react";
 import {
   Anchor,
@@ -18,7 +20,6 @@ import {
   X,
   Eye,
 } from "lucide-react";
-import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { MAGELLAN_ROUTE } from "@/lib/historical-routes";
@@ -60,14 +61,9 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
       ? useHistoricalRouteStore.getState().playbackSpeed
       : storeSpeed;
 
-  const togglePlay = useHistoricalRouteStore((s) => s.togglePlay);
-  const seek = useHistoricalRouteStore((s) => s.seek);
-  const nextWaypoint = useHistoricalRouteStore((s) => s.nextWaypoint);
-  const prevWaypoint = useHistoricalRouteStore((s) => s.prevWaypoint);
-  const reset = useHistoricalRouteStore((s) => s.reset);
+  const { togglePlay, seek, nextWaypoint, prevWaypoint, reset } = historicalRouteActions;
   const setPlaybackSpeed = useHistoricalRouteStore((s) => s.setPlaybackSpeed);
   const toggleMinimized = useHistoricalRouteStore((s) => s.toggleMinimized);
-  const setActiveRouteId = useHistoricalRouteStore((s) => s.setActiveRouteId);
 
   const flyTo = useGlobeStore((s) => s.flyTo);
 
@@ -81,7 +77,7 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
       const dt = (now - lastTime) / 1000;
       lastTime = now;
       const safeDt = Math.min(dt, 0.1);
-      useHistoricalRouteStore.getState().tick(safeDt);
+      historicalRouteActions.tick(safeDt);
       if (useHistoricalRouteStore.getState().isPlaying) {
         animId = requestAnimationFrame(loop);
       }
@@ -100,30 +96,29 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
     return MAGELLAN_ROUTE.waypoints[idx] || MAGELLAN_ROUTE.waypoints[0];
   }, [currentWaypointIndex, totalWaypoints]);
 
-  const waypointAny = (currentWaypoint || {}) as any;
   const leaguesNavigated: number =
-    typeof waypointAny.leaguesNavigated === "number"
-      ? waypointAny.leaguesNavigated
+    typeof currentWaypoint.leaguesNavigated === "number"
+      ? currentWaypoint.leaguesNavigated
       : Math.round(((currentWaypointIndex + 1) / totalWaypoints) * 14450);
 
   const daysAtSea: number =
-    typeof waypointAny.daysAtSea === "number"
-      ? waypointAny.daysAtSea
-      : typeof waypointAny.dayOfVoyage === "number"
-      ? waypointAny.dayOfVoyage
+    typeof currentWaypoint.daysAtSea === "number"
+      ? currentWaypoint.daysAtSea
+      : typeof currentWaypoint.dayOfVoyage === "number"
+      ? currentWaypoint.dayOfVoyage
       : 0;
 
   const vessel: string =
-    waypointAny.vessel ||
+    currentWaypoint.vessel ||
     (currentWaypointIndex >= 11 ? "Nau Victoria" : "Nau Trinidad (Capitânia)");
 
   const commander: string =
-    waypointAny.commander ||
+    currentWaypoint.commander ||
     (currentWaypointIndex >= 11 ? "Juan Sebastián Elcano" : "Fernão de Magalhães");
 
   const pigafettaDiary: string | null =
-    waypointAny.pigafettaDiary ||
-    waypointAny.quoteFromPigafetta ||
+    currentWaypoint.pigafettaDiary ||
+    currentWaypoint.quoteFromPigafetta ||
     null;
 
   if (!isVisible) {
@@ -131,8 +126,7 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
   }
 
   const handleClose = () => {
-    setActiveRouteId(null);
-    useTimelineStore.getState().setActiveRouteId(null);
+    selectHistoricalRoute(null);
   };
 
   const handleFlyToShip = () => {
