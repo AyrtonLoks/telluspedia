@@ -43,7 +43,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10, T26 |
-| `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T11, T18, T19, T25, T27 |
+| `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T07, T11, T18, T19, T25, T27 |
 
 Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está listado nela: **pare**, adicione o grupo à tarefa no Quadro (commit + push, como na reivindicação) e reavalie se ela ainda pode seguir.
 
@@ -160,7 +160,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | DONE | claude | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | DONE | codex | — | G-PIPELINE, G-PAIS |
-| T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | IN_PROGRESS | codex | — | G-ESTUDOS |
+| T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | IN_PROGRESS | codex | — | G-ESTUDOS, G-INFRA |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | TODO | — | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | TODO | — | — | G-PIPELINE |
@@ -437,7 +437,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 ### T07 · Schema e validação em POST /api/studies
 
 - **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t07-validar-schema-studies · **Worktree:** ../telluspedia-wt/codex-t07
-- **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-ESTUDOS
+- **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-ESTUDOS, G-INFRA
 
 **Contexto / problema**
 `apps/web/src/app/api/studies/route.ts:30-57` aceita o corpo sem schema: sem limite de tamanho de `title`/`description`/`markdownNotes`, arrays sem checagem de tipo dos itens, `focusedCelestialBody`/`historicalEra` livres, `err.message` exposto (linha 71), sem rate limit. A lógica de sanitização (faixa de `geologicalMa`, lista de eras anacrônicas `["PRUSSIA_1870","WW1_1914","WW2_1939"]`, `"magellan-1519"`) está copiada em 3 lugares: `studies/route.ts`, `lib/studies-store.ts:63-117` (`forkStudyRecord`) e `lib/studies-store.ts:119-173` (`restoreStudyRecord`) — 6 ocorrências da lista no total.
@@ -458,6 +458,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Reivindicada como a próxima tarefa elegível da fase 3 após o aceite da T06.
+- 2026-11-20 · codex · IN_PROGRESS · Incluído G-INFRA, pois o schema requer adicionar Zod ao manifesto e ao lockfile. Grupo conferido e disponível.
 
 ---
 
