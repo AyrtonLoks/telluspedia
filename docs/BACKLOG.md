@@ -36,12 +36,12 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13 |
-| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13 |
+| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12 |
-| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15 |
+| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10, T26 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T07, T11, T18, T19, T25, T27 |
 
@@ -183,7 +183,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | TODO | — | D01 | G-GLOBO |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | REVIEW | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | — | — | G-OBS |
-| D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | REVIEW | claude | T04, T05 | G-OBS, G-GLOBO |
+| D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | TODO | — | T05 | G-OBS |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
@@ -193,7 +193,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
-| D15 | Gerenciador de layout de painéis | Design | P1 | M | TODO | — | D14 | G-SHELL |
+| D15 | Gerenciador de layout de painéis | Design | P1 | M | IN_PROGRESS | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
@@ -1107,7 +1107,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D05 · Queimadas: sprites, heatmap, dados reais
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d05-queimadas-v3 · **Worktree:** ../telluspedia-wt/claude-d05c
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d05-queimadas-v3 · **Worktree:** ../telluspedia-wt/claude-d05c
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** T04, T05 · **Grupos:** G-OBS, G-GLOBO
 
 **Contexto / problema**
@@ -1135,6 +1135,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 - 2026-11-20 · claude · REVIEW · Commit `c7a24c8`. Correções da reprovação: **(1) seleção visível** — anel branco pulsante no foco selecionado e anel ciano no foco sob o mouse (`FRAGMENT_RING`, blending normal); cursor de mão só sobre um foco. **(2) zoom** — abaixo de 2,6 de distância a camada calcula o recorte visível (horizonte `acos(1/d)`, arredondado a 5°, antimeridiano/polos, debounce 350 ms) e carrega **todos** os focos da área via `/api/observatory/firms?bbox=` (até 12.000, os de maior FRP; respostas fora de ordem descartadas); enquanto carrega, a mancha fica com piso de 35% em vez de sumir. **(3) clique no país** — manchas não capturam clique (`raycast={() => null}`); focos só num raio de 10 px de tela, no hemisfério visível, ficando o mais próximo do raio; card de célula (`FIRMS_CELL`) removido. **(4) sobreposição** — com país selecionado, o Observatório vai para `lg:right-[26.5rem]` (à esquerda do Inspector) com altura acima da timeline; o card de telemetria sobe acima da timeline (expandida/recolhida). Layout completo de painéis segue na D15. **(5) focos do país** — o servidor conta todos os focos da janela por país (`lib/firms-country.ts`: mesmo índice which-polygon/Natural Earth do picking, zero-padding) e devolve `byCountry`; o painel mostra “<país> · nas últimas 24 h: N focos · MW somados · MW no maior” (ou “Nenhum foco detectado”). **Testes:** +6 no servidor (lookup de país real — BRA/IDN/USA/oceano, agregação por país, bbox/antimeridiano/teto, rota com byCountry sem vazar a lista completa, bbox e bbox inválido → 400) e +6 no cliente (piso das manchas, recorte visível, resumo do país, painel ao lado do Inspector, detalhe com resposta atrasada descartada); teste do card de célula removido. **API real:** 24 h → BRA 2.462 focos (SSD 4.374 lidera), 5 dias → BRA 14.962; detalhe da área da Amazônia em 12–75 ms (cache). **Custo conhecido:** a contagem por país soma ~3 s à primeira carga de 5 dias (169 mil lookups; cache de 15 min). **Validação após rebase:** typecheck ok, lint ok, 377/377 testes, build ok (home 433 kB). **Não verificado visualmente pelo agente** (Chromium headless indisponível) — conferir: hover/anel, zoom na Amazônia mostrando muitos focos, clique em país com a camada ligada, resumo do Brasil no painel, painéis lado a lado.
 - 2026-11-20 · ayrton · IN_PROGRESS · Reprovada de novo (com screenshots): (1) de perto não dá para distinguir focos das luzes noturnas das cidades; (2) com um país aberto, o Observatório fica na frente da visão — layout ruim para navegação; (3) as manchas vistas de longe “somem” ao aproximar (ex.: Sudeste do Brasil) e o clique seleciona o país — falta credibilidade na representação. Observado também: o resumo diz “Brasil · Nenhum foco detectado” com milhares de focos no país. Reaberta pelo claude em `../telluspedia-wt/claude-d05c`; G-GLOBO adicionado para atenuar as luzes urbanas da textura noturna com a camada ligada (nenhuma tarefa de G-GLOBO em andamento).
 - 2026-11-20 · claude · REVIEW · Commit `1c1bd69`. **Mudança de abordagem (representação honesta):** o heatmap/células e o carregamento por área visível foram **removidos** — cada ponto do globo é um foco detectado, em qualquer zoom; a densidade aparece porque focos reais se acumulam. Diagnóstico do Sudeste: nas 24 h havia **8 focos** (148 em 5 dias) — as “manchas” grandes vinham de 1–2 focos fracos inflados pela gaussiana de ~2°. **Servidor:** envia **todos** os focos da janela em formato colunar `firms-columns-v1` (`lib/firms-aggregate.ts`: coordenadas com 3 casas ≈ 110 m, datas indexadas, confiança/dia-noite codificados); medido no dev server: 24 h = 28.211 focos, 960 KB (≈ 190 KB com gzip); 5 dias = 169.020 focos, 5,7 MB (≈ 1,1 MB com gzip — `next start` comprime por padrão). `byCountry` mantido (BRA 2.462 em 24 h). **Causa do “Brasil · Nenhum foco”:** cache HTTP do navegador servindo a resposta da 1ª versão (mesma URL, sem `byCountry`) — agora a URL leva `schema=3`, respostas em formato antigo são rejeitadas (`decodeFirmsColumns` → null) e, sem `byCountry`, o painel diz “Contagem por país indisponível” em vez de afirmar zero. **Distinção de luzes urbanas:** marcadores com disco saturado + contorno escuro (≥ 6 px) + centro de brasa, sem cintilação nem blending aditivo; paleta laranja → vermelho → magenta (sem amarelo-claro); `EarthShaderMaterial` ganhou `uCityLights` e o `EarthSphere` atenua as luzes urbanas para 30% com a camada ligada (único toque em G-GLOBO). **Layout:** ao abrir um país, o Observatório se recolhe numa barra compacta (“Observatório Planetário · N camadas ativas” + expandir/fechar); botão de recolher no cabeçalho; a navbar reexpande. Layout completo de painéis segue na D15. **Picking:** índice espacial de células de 0,5° (interseção raio–esfera → lat/lng → vizinhança), consulta < 1 ms com 170 mil focos; só lado visível; raio de 9 px. **Testes:** formato colunar (ida e volta, rejeição de formato antigo), lookup de país (inclui Sudeste), rota (todos os focos, schema, sem `cells`), store (schema na URL, `byCountry` ausente → indisponível), painel recolhido/expandido, paleta sem amarelo de luz urbana, uniforme `uCityLights`, índice de picking (vizinhança, antimeridiano, desempenho). **Validação após rebase (upstream só CI/README):** typecheck ok, lint ok, 374/374 testes, build ok. Home 466 kB — igual ao `master` atual sem a D05 (o aumento de 433 → 466 kB veio de outras entregas; medido num build de `4a69ccf`). **Atenção:** a T15 (antigravity, G-EPOCA) foi reivindicada durante esta reabertura; a D05 alterou um bloco isolado do `EarthSphere` (atenuação das luzes) — conferir no merge. **Não verificado visualmente pelo agente** (Chromium headless indisponível): conferir marcadores × luzes urbanas de perto, Sudeste com poucos marcadores coerentes ao aproximar, clique em país, barra recolhida ao abrir um país.
+- 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo claude a pedido).
 
 ---
 
@@ -1391,8 +1392,8 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 
 ### D15 · Gerenciador de layout de painéis
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P1 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d15-layout-paineis · **Worktree:** ../telluspedia-wt/claude-d15
+- **Prioridade:** P1 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE
 
 **Contexto / problema**
 O Inspector do país (ex.: COD) e o painel do Observatório abrem na mesma coluna direita e se sobrepõem; a timeline passa por baixo do painel; o Cosmic Inspector disputa o mesmo espaço. Cada painel posiciona-se com classes fixas independentes.
@@ -1411,6 +1412,7 @@ O Inspector do país (ex.: COD) e o painel do Observatório abrem na mesma colun
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. Grupos G-PAIS (InspectorHUD), G-COSMOS (CosmicInspectorHUD), G-OBS (ObservatoryPanel/telemetria) e G-TIMELINE (TimelineBar) adicionados: os painéis passam a ser renderizados pelo slot do layout. Nenhuma tarefa desses grupos em andamento.
 
 ---
 
