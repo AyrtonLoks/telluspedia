@@ -182,7 +182,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | TODO | — | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | REVIEW | claude | D01 | G-GLOBO, G-EPOCA |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
-| D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | IN_PROGRESS | claude | — | G-OBS |
+| D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | REVIEW | claude | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | DONE | codex | T05 | G-OBS, G-INFRA |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | REVIEW | codex | T05 | G-OBS |
@@ -1086,7 +1086,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D04 · ISS: SGP4 real, órbita correta, outros satélites
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d04-satellite-ux · **Worktree:** ../telluspedia-wt/claude-d04c
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d04-satellite-ux · **Worktree:** ../telluspedia-wt/claude-d04c
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -1119,6 +1119,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 - 2026-11-20 · ayrton · IN_PROGRESS · Correções pedidas (com screenshot): (1) há uma linha a mais abaixo da trajetória da ISS, colada no globo (é o ground track — lido como trajetória duplicada); (2) satélites e estações ficaram bons, mas são difíceis de identificar e selecionar. Reaberta pelo claude em `../telluspedia-wt/claude-d04b`; G-INFRA liberado (sem mudança de dependências).
 - 2026-11-20 · claude · TODO · Reabertura desfeita antes de qualquer código: a D06 (codex) está IN_PROGRESS em G-OBS, o mesmo grupo — pelo protocolo, a D04 não pode ficar em andamento ao mesmo tempo. Correções pendentes (retomar quando G-OBS estiver livre): ground track desligado por padrão com opção “Rastro na superfície”; satélites mais fáceis de identificar e selecionar (pontos maiores com contorno, raio de clique maior, cursor, anel de hover/seleção e etiqueta com o nome).
 - 2026-11-20 · claude · IN_PROGRESS · Retomada: G-OBS livre (D07 do codex em REVIEW). Worktree a partir de origin/master.
+- 2026-11-20 · claude · REVIEW · Commit `24dd5a3`. (1) Ground track desligado por padrão (`observatoryStore.showIssGroundTrack = false`) com chip “Rastro na superfície” no painel — era lido como trajetória duplicada; a órbita (anel) continua sempre visível. (2) Satélites: pontos maiores com contorno escuro (estações 9 px, visíveis 7 px, tamanho por vértice), raio de clique 12 px (ISS 20 px), cursor de mão, anel ciano de hover e anel branco no satélite selecionado (acompanham o movimento a cada 1 s), etiqueta `<Html>` com o nome (“ISS (ZARYA) · Estação Espacial Internacional” / “<nome> · estação|satélite”) sem capturar eventos. Legenda do painel atualizada. Testes: +2 (toggle do rastro; invariantes da camada). Validação: typecheck ok, lint ok, 435/435 testes, build ok. Não verificado visualmente pelo agente — conferir hover/etiqueta e clique nos pontos.
 
 ---
 
