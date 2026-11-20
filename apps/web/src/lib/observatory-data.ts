@@ -1,4 +1,5 @@
 import { latLngToVector3 } from "./geo-spatial";
+import { referenceIssTelemetry } from "./satellites";
 
 export type ObservatoryLayerId =
   | "NASA_FIRMS"
@@ -43,6 +44,21 @@ export interface IssTelemetryData {
   timestamp: number;
   orbitInclinationDeg: number;
   groundTrack: { lat: number; lng: number }[];
+  /** Época do TLE usado na propagação (ISO). */
+  tleEpoch?: string;
+}
+
+/** Satélite (exceto a ISS) no instante do clique — posição por SGP4 (D04). */
+export interface SatelliteSnapshot {
+  name: string;
+  noradId: number;
+  category: "station" | "visual";
+  lat: number;
+  lng: number;
+  altKm: number;
+  velocityKmh: number;
+  tleEpoch: string;
+  timestamp: number;
 }
 
 export interface AircraftState {
@@ -68,82 +84,18 @@ export interface MaritimeRoute {
 export type ObservatoryEntity =
   | { type: "FIRMS"; data: FirmsHotspot }
   | { type: "ISS"; data: IssTelemetryData }
+  | { type: "SATELLITE"; data: SatelliteSnapshot }
   | { type: "EONET"; data: EonetEvent }
   | { type: "AIRCRAFT"; data: AircraftState }
   | { type: "MARITIME"; data: MaritimeRoute };
 
 /**
- * Propagador orbital analítico de alta precisão para a Estação Espacial Internacional (ISS).
- * Parâmetros orbitais:
- * - Inclinação i = 51.64°
- * - Altitude média h ≈ 408 km
- * - Período orbital T ≈ 92.68 minutos (5560.8 segundos)
- * - Velocidade média v ≈ 27.600 km/h
+ * Posição da ISS por SGP4 a partir do TLE de referência (lib/satellites.ts). Usada só como fallback
+ * “Simulado” e em testes — com dados ao vivo, a telemetria vem dos TLEs do CelesTrak (D04).
+ * (Substitui o antigo modelo analítico inventado, que não correspondia à ISS real.)
  */
 export function calculateIssPosition(timestamp: number = Date.now()): IssTelemetryData {
-  const epochBase = 1700000000000; // Referência estável
-  const elapsedSeconds = (timestamp - epochBase) / 1000;
-
-  const orbitalPeriod = 5560.8; // segundos (~92.68 min)
-  const earthRotationRate = (2 * Math.PI) / 86400; // rad/s
-  const meanMotion = (2 * Math.PI) / orbitalPeriod; // rad/s
-  const inclinationRad = (51.64 * Math.PI) / 180;
-
-  const currentU = (meanMotion * elapsedSeconds) % (2 * Math.PI);
-  const sinLat = Math.sin(inclinationRad) * Math.sin(currentU);
-  const latRad = Math.asin(Math.max(-1, Math.min(1, sinLat)));
-  const currentLat = (latRad * 180) / Math.PI;
-
-  const nodeLng = Math.atan2(
-    Math.cos(inclinationRad) * Math.sin(currentU),
-    Math.cos(currentU)
-  );
-  const earthRotAngle = (earthRotationRate * elapsedSeconds) % (2 * Math.PI);
-  let currentLngRad = nodeLng - earthRotAngle;
-  let currentLng = ((currentLngRad * 180) / Math.PI) % 360;
-  if (currentLng > 180) currentLng -= 360;
-  if (currentLng < -180) currentLng += 360;
-
-  const altitudeKm = Number((408.0 + 3.2 * Math.sin(currentU * 2)).toFixed(1));
-  const velocityKmh = Number((27580 + 30 * Math.cos(currentU)).toFixed(0));
-
-  // Cálculo da trilha orbital (ground track) ao longo de 1 órbita completa (-46 min a +46 min)
-  const groundTrack: { lat: number; lng: number }[] = [];
-  const trackSamples = 60;
-  const stepSeconds = orbitalPeriod / trackSamples;
-
-  for (let i = -trackSamples / 2; i <= trackSamples / 2; i++) {
-    const t = elapsedSeconds + i * stepSeconds;
-    const u = (meanMotion * t) % (2 * Math.PI);
-    const sLat = Math.sin(inclinationRad) * Math.sin(u);
-    const lRad = Math.asin(Math.max(-1, Math.min(1, sLat)));
-    const trackLat = Number(((lRad * 180) / Math.PI).toFixed(2));
-
-    const nLng = Math.atan2(
-      Math.cos(inclinationRad) * Math.sin(u),
-      Math.cos(u)
-    );
-    const eRot = (earthRotationRate * t) % (2 * Math.PI);
-    let lDeg = (((nLng - eRot) * 180) / Math.PI) % 360;
-    if (lDeg > 180) lDeg -= 360;
-    if (lDeg < -180) lDeg += 360;
-
-    groundTrack.push({ lat: trackLat, lng: Number(lDeg.toFixed(2)) });
-  }
-
-  // Visibilidade aproximada com base na latitude solar (iluminação diurna vs eclipse orbital)
-  const isDaylight = Math.sin(currentU) > -0.2;
-
-  return {
-    latitude: Number(currentLat.toFixed(4)),
-    longitude: Number(currentLng.toFixed(4)),
-    altitudeKm,
-    velocityKmh,
-    visibility: isDaylight ? "daylight" : "eclipsed",
-    timestamp,
-    orbitInclinationDeg: 51.64,
-    groundTrack,
-  };
+  return referenceIssTelemetry(timestamp);
 }
 
 /**

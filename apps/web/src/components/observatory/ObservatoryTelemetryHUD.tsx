@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
-import { calculateIssPosition, IssTelemetryData, type ObservatoryEntity } from "@/lib/observatory-data";
+import { type ObservatoryEntity } from "@/lib/observatory-data";
 import { firmsMapUrl, formatAcqTime, FIRMS_CONFIDENCE_LABEL } from "@/lib/firms-display";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Button, buttonClasses } from "@/components/ui/Button";
@@ -17,6 +17,7 @@ import { cn } from "@/components/ui/cn";
 const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone; icon: React.ReactNode }> = {
   FIRMS: { title: "Foco de Calor (FIRMS)", tone: "layer-fires", icon: <Flame /> },
   ISS: { title: "Telemetria Orbital ISS", tone: "layer-satellites", icon: <Radio /> },
+  SATELLITE: { title: "Satélite Artificial", tone: "layer-satellites", icon: <Radio /> },
   EONET: { title: "Evento Severo NASA", tone: "layer-events", icon: <Activity /> },
   AIRCRAFT: { title: "Aeronave Comercial", tone: "layer-aircraft", icon: <Plane /> },
   MARITIME: { title: "Corredor Mercante", tone: "layer-maritime", icon: <Anchor /> },
@@ -49,20 +50,16 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
   // Época ativa: fonte única (T12)
   const isContemporary = useEpochState().isContemporary;
 
-  // Telemetria dinâmica ao vivo da ISS a cada 1 segundo enquanto o HUD estiver aberto
-  const [liveIss, setLiveIss] = useState<IssTelemetryData | null>(null);
-
+  // ISS: a mesma propagação SGP4 que posiciona o modelo 3D (D04), atualizada a cada segundo.
+  const storeIss = useObservatoryStore((s) => s.issTelemetry);
+  const refreshIssTelemetry = useObservatoryStore((s) => s.refreshIssTelemetry);
+  const isIssSelected = selectedEntity?.type === "ISS";
   useEffect(() => {
-    if (selectedEntity?.type !== "ISS") {
-      setLiveIss(null);
-      return;
-    }
-    setLiveIss(calculateIssPosition(Date.now()));
-    const interval = setInterval(() => {
-      setLiveIss(calculateIssPosition(Date.now()));
-    }, 1000);
+    if (!isIssSelected) return;
+    refreshIssTelemetry();
+    const interval = setInterval(() => refreshIssTelemetry(), 1000);
     return () => clearInterval(interval);
-  }, [selectedEntity]);
+  }, [isIssSelected, refreshIssTelemetry]);
 
   if (!selectedEntity || !isContemporary) return null;
 
@@ -70,7 +67,13 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
     flyTo(lat, lng, altitude);
   };
 
-  const activeIss = liveIss || (selectedEntity.type === "ISS" ? selectedEntity.data : null);
+  // Vale a leitura mais recente entre a telemetria do store e a do momento do clique.
+  const activeIss =
+    selectedEntity.type === "ISS"
+      ? storeIss && storeIss.timestamp >= selectedEntity.data.timestamp
+        ? storeIss
+        : selectedEntity.data
+      : null;
 
   const meta = ENTITY_META[selectedEntity.type];
 
@@ -134,12 +137,38 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
           </>
         )}
 
+        {selectedEntity.type === "SATELLITE" && (
+          <>
+            <div className="space-y-0.5">
+              <div className="text-label font-medium text-fg">{selectedEntity.data.name}</div>
+              <span className="font-mono text-caption tabular-nums text-fg-muted">
+                NORAD ID: {selectedEntity.data.noradId} · {selectedEntity.data.category === "station" ? "Estação espacial" : "Satélite visível a olho nu"}
+              </span>
+            </div>
+            <div className={FIELD_GRID}>
+              <Field label="Altitude">{selectedEntity.data.altKm.toFixed(0)} km</Field>
+              <Field label="Velocidade">{Math.round(selectedEntity.data.velocityKmh).toLocaleString("pt-BR")} km/h</Field>
+              <Field label="Coordenadas">
+                {selectedEntity.data.lat.toFixed(2)}°, {selectedEntity.data.lng.toFixed(2)}°
+              </Field>
+              <Field label="Época do TLE">
+                {new Date(selectedEntity.data.tleEpoch).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
+              </Field>
+            </div>
+            <p className="text-caption text-fg-muted">Posição no instante do clique, calculada por SGP4 (TLE do CelesTrak).</p>
+          </>
+        )}
+
         {selectedEntity.type === "ISS" && activeIss && (
           <>
             <div className="space-y-0.5">
               <div className="text-label font-medium text-fg">Estação Espacial Internacional (Zvezda / Destiny)</div>
               <span className="font-mono text-caption tabular-nums text-fg-muted">
                 NORAD ID: 25544 · Inclinação: {activeIss.orbitInclinationDeg}°
+              </span>
+              <span className="block text-caption text-fg-muted">
+                Posição calculada por SGP4 a partir do TLE do CelesTrak
+                {activeIss.tleEpoch ? ` (época ${new Date(activeIss.tleEpoch).toLocaleString("pt-BR", { timeZone: "UTC" })} UTC)` : ""}
               </span>
             </div>
 

@@ -23,6 +23,15 @@ import {
 import { parseFirmsCsv } from "./firms-csv";
 import { createCountryLookup } from "./firms-country";
 import {
+  ISS_NORAD_ID,
+  REFERENCE_ISS_TLE,
+  mergeSatelliteGroups,
+  parseTleText,
+  tleEpochToIso,
+  type SatelliteCategory,
+  type SatelliteTle,
+} from "./satellites";
+import {
   buildFirmsPayload,
   type FirmsConfidenceFilter,
   type FirmsPayload,
@@ -165,6 +174,45 @@ export function getFirmsSource(days: FirmsWindowDays = 1, confidence: FirmsConfi
 export const firmsSource = getFirmsSource(1, "nominal");
 
 // ---------------------------------------------------------------------------
+// Satélites — TLEs do CelesTrak (D04). A posição é propagada com SGP4 no cliente (lib/satellites.ts).
+// Grupos: "stations" (ISS, Tiangong…) e "visual" (~150 objetos mais brilhantes).
+// ---------------------------------------------------------------------------
+const CELESTRAK_GROUPS: { group: string; category: SatelliteCategory }[] = [
+  { group: "stations", category: "station" },
+  { group: "visual", category: "visual" },
+];
+
+function referenceSatellites(): SatelliteTle[] {
+  const epoch = tleEpochToIso(REFERENCE_ISS_TLE.line1) ?? new Date(0).toISOString();
+  return [{ ...REFERENCE_ISS_TLE, noradId: ISS_NORAD_ID, category: "station", epoch }];
+}
+
+export const satellitesSource = createObservatorySource<SatelliteTle[]>({
+  name: "satellites",
+  liveProvider: "CelesTrak (TLE) + SGP4",
+  // TLEs mudam poucas vezes por dia; o CelesTrak pede para não consultar a cada poucos minutos.
+  liveTtlMs: 4 * 60 * 60 * 1000,
+  fallbackProvider: "TellusPedia (TLE de referência da ISS, 2026-11-20 — impreciso)",
+  fallback: referenceSatellites,
+  fetchLive: async () => {
+    const groups = await Promise.all(
+      CELESTRAK_GROUPS.map(async ({ group, category }) => {
+        const res = await fetchWithTimeout(
+          `https://celestrak.org/NORAD/elements/gp.php?GROUP=${group}&FORMAT=tle`,
+          10000
+        );
+        return parseTleText(await res.text(), category);
+      })
+    );
+    const merged = mergeSatelliteGroups(...groups);
+    if (!merged.some((s) => s.noradId === ISS_NORAD_ID)) {
+      throw new SourceUnavailableError("CelesTrak não retornou o TLE da ISS");
+    }
+    return merged;
+  },
+});
+
+// ---------------------------------------------------------------------------
 // ISS — telemetria (wheretheiss.at); sem provedor, usa o modelo orbital aproximado local
 // ---------------------------------------------------------------------------
 export const issSource = createObservatorySource<IssTelemetryData>({
@@ -273,5 +321,6 @@ export function resetObservatorySources() {
   eonetSource.reset();
   for (const source of firmsSources.values()) source.reset();
   issSource.reset();
+  satellitesSource.reset();
   aircraftSource.reset();
 }

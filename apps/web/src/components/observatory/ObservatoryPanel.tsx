@@ -17,6 +17,7 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
 import { FirmsLayerControls } from "./FirmsLayerControls";
 import { FirmsCountrySummary } from "./FirmsCountrySummary";
+import { SatelliteLayerControls } from "./SatelliteLayerControls";
 import { useGlobeStore } from "@/stores/globeStore";
 import { ObservatoryLayerId } from "@/lib/observatory-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -59,8 +60,8 @@ const LAYER_OPTIONS: LayerOption[] = [
   {
     id: "ISS_SATELLITES",
     name: "ISS & Satélites Artificiais",
-    source: "CelesTrak / Telemetria Orbital",
-    description: "Estação Espacial Internacional: posição atual e rastro orbital.",
+    source: "CelesTrak (TLE) + SGP4",
+    description: "Estação Espacial Internacional e satélites: posição real, órbita e rastro na superfície.",
     icon: Radio,
     tone: "layer-satellites",
     badgeText: (s) => `Altitude: ${s.issTelemetry?.altitudeKm || 408} km`,
@@ -186,6 +187,7 @@ export const ObservatoryPanel: React.FC = () => {
                       isOffline={storeState.layerError[layer.id]}
                     />
                   </div>
+                  {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>
                       {selectedIso && <FirmsCountrySummary iso={selectedIso} />}

@@ -109,6 +109,7 @@ import {
 import { ObservatoryPanel } from "../src/components/observatory/ObservatoryPanel";
 import { ObservatoryTelemetryHUD } from "../src/components/observatory/ObservatoryTelemetryHUD";
 import { TopNavBar } from "../src/components/nav/TopNavBar";
+import { REFERENCE_ISS_TLE, altitudeToSceneRadius, greatCircleKm, tleEpochToIso } from "../src/lib/satellites";
 
 describe("Astronomy & Solar Calculations (NOAA Algorithm)", () => {
   test("Equinox solar declination is near 0 degrees", () => {
@@ -3771,67 +3772,47 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
     assert.ok(useObservatoryStore.getState().maritimeRoutes.length > 0);
   });
 
-  test("5. Propagador Orbital da ISS (calculateIssPosition): envelope LEO, velocidade e inclinação 51.64°", () => {
-    const now = Date.now();
-    const telemetry = calculateIssPosition(now);
+  test("5. Posição da ISS por SGP4 (calculateIssPosition, TLE de referência): envelope físico real", () => {
+    // D04: o antigo modelo analítico inventado foi substituído por SGP4. Instante = época do TLE de
+    // referência, para o teste ser determinístico (SGP4 longe da época acumula erro).
+    const t0 = Date.parse(tleEpochToIso(REFERENCE_ISS_TLE.line1)!);
+    const telemetry = calculateIssPosition(t0);
 
-    // 1. Altitude orbital dentro do envelope da órbita baixa da Terra (LEO) [400 km, 420 km]
-    assert.ok(
-      telemetry.altitudeKm >= 400 && telemetry.altitudeKm <= 420,
-      `Altitude da ISS fora do envelope LEO: ${telemetry.altitudeKm} km`
-    );
+    // Altitude real da ISS (varia com reboosts e decaimento): órbita baixa entre 370 e 460 km
+    assert.ok(telemetry.altitudeKm >= 370 && telemetry.altitudeKm <= 460, `Altitude: ${telemetry.altitudeKm} km`);
+    // Velocidade orbital de LEO
+    assert.ok(telemetry.velocityKmh >= 27400 && telemetry.velocityKmh <= 27800, `Velocidade: ${telemetry.velocityKmh} km/h`);
+    // Inclinação da ISS ≈ 51,6° (do próprio TLE)
+    assert.ok(Math.abs(telemetry.orbitInclinationDeg - 51.64) < 0.1, `Inclinação: ${telemetry.orbitInclinationDeg}`);
+    // Latitude geodésica limitada pela inclinação (a geodésica fica ~0,2° acima da geocêntrica)
+    assert.ok(Math.abs(telemetry.latitude) <= 52, `Latitude: ${telemetry.latitude}`);
+    assert.ok(telemetry.longitude >= -180 && telemetry.longitude <= 180);
 
-    // 2. Velocidade orbital próxima a 27.600 km/h [27.500, 27.700]
-    assert.ok(
-      telemetry.velocityKmh >= 27500 && telemetry.velocityKmh <= 27700,
-      `Velocidade da ISS fora da calibração física: ${telemetry.velocityKmh} km/h`
-    );
-
-    // 3. Inclinação orbital oficial de 51.64 graus
-    assert.equal(telemetry.orbitInclinationDeg, 51.64);
-
-    // 4. Latitude máxima e mínima limitada estritamente pela inclinação orbital [-51.64°, +51.64°]
-    assert.ok(
-      telemetry.latitude >= -51.65 && telemetry.latitude <= 51.65,
-      `Latitude da ISS extrapolou a inclinação orbital: ${telemetry.latitude}`
-    );
-
-    // 5. Longitude contida no intervalo geodésico padrão [-180°, +180°]
-    assert.ok(
-      telemetry.longitude >= -180 && telemetry.longitude <= 180,
-      `Longitude da ISS fora de [-180, 180]: ${telemetry.longitude}`
-    );
-
-    // 6. Teste de amostragem em 100 instantes temporais ao longo de 24 horas
-    for (let i = 0; i < 100; i++) {
-      const sampleTime = now + i * 15 * 60 * 1000;
-      const sample = calculateIssPosition(sampleTime);
-      assert.ok(Number.isFinite(sample.latitude));
-      assert.ok(Number.isFinite(sample.longitude));
-      assert.ok(sample.latitude >= -51.65 && sample.latitude <= 51.65);
+    // 96 amostras ao longo de 24 h a partir da época
+    for (let i = 0; i < 96; i++) {
+      const sample = calculateIssPosition(t0 + i * 15 * 60 * 1000);
+      assert.ok(Number.isFinite(sample.latitude) && Number.isFinite(sample.longitude));
+      assert.ok(Math.abs(sample.latitude) <= 52);
       assert.ok(sample.longitude >= -180 && sample.longitude <= 180);
-      assert.ok(sample.altitudeKm >= 400 && sample.altitudeKm <= 420);
+      assert.ok(sample.altitudeKm >= 370 && sample.altitudeKm <= 460);
     }
   });
 
   test("6. Trilha orbital contínua da ISS (groundTrack): cobre 1 órbita completa sem NaNs", () => {
-    const telemetry = calculateIssPosition();
+    const t0 = Date.parse(tleEpochToIso(REFERENCE_ISS_TLE.line1)!);
+    const telemetry = calculateIssPosition(t0);
     assert.ok(Array.isArray(telemetry.groundTrack));
-    assert.ok(
-      telemetry.groundTrack.length >= 30,
-      `Trilha orbital da ISS deve conter pelo menos 30 waypoints, recebeu ${telemetry.groundTrack.length}`
-    );
-
+    assert.ok(telemetry.groundTrack.length >= 30, `Trilha com ${telemetry.groundTrack.length} pontos`);
     for (const pt of telemetry.groundTrack) {
-      assert.ok(Number.isFinite(pt.lat), `Latitude não finita encontrada na trilha: ${pt.lat}`);
-      assert.ok(Number.isFinite(pt.lng), `Longitude não finita encontrada na trilha: ${pt.lng}`);
-      assert.ok(pt.lat >= -51.65 && pt.lat <= 51.65);
+      assert.ok(Number.isFinite(pt.lat) && Number.isFinite(pt.lng));
+      assert.ok(Math.abs(pt.lat) <= 52);
       assert.ok(pt.lng >= -180 && pt.lng <= 180);
-
-      // Verificação da projeção esférica 3D em Three.js
-      const vec = latLngToVector3(pt.lat, pt.lng, 1.18);
-      assert.ok(Math.abs(vec.length() - 1.18) < 1e-4, "Raio 3D da órbita deve ser exatamente 1.18");
     }
+    // Altitude em escala real do globo (raio 1 = 6.371 km): ≈ 1,06–1,07, não 1,18
+    const r = altitudeToSceneRadius(telemetry.altitudeKm);
+    assert.ok(r > 1.05 && r < 1.08, `Raio da órbita na cena: ${r}`);
+    const vec = latLngToVector3(telemetry.latitude, telemetry.longitude, r);
+    assert.ok(Math.abs(vec.length() - r) < 1e-6);
   });
 
   test("7. Envelopes de altitude e afastamento da crosta terrestre (RN21)", () => {
@@ -4256,20 +4237,20 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
   });
 
   test("18. Propagação orbital dinâmica contínua da ISS e integridade de telemetria", () => {
-    const t0 = 1700000000000;
+    const t0 = Date.parse(tleEpochToIso(REFERENCE_ISS_TLE.line1)!);
     const pos0 = calculateIssPosition(t0);
     const pos60s = calculateIssPosition(t0 + 60000); // 1 minuto depois
 
-    // Em 60 segundos, a ISS viaja ~460 km (~4 graus de arco na Terra)
-    assert.ok(pos0.latitude !== pos60s.latitude || pos0.longitude !== pos60s.longitude);
-    assert.ok(pos0.altitudeKm >= 400 && pos0.altitudeKm <= 420);
-    assert.ok(pos60s.altitudeKm >= 400 && pos60s.altitudeKm <= 420);
-    assert.ok(pos0.velocityKmh >= 27500 && pos0.velocityKmh <= 27650);
+    // Em 60 s a ISS percorre ~460 km de arco
+    const km = greatCircleKm({ lat: pos0.latitude, lng: pos0.longitude }, { lat: pos60s.latitude, lng: pos60s.longitude });
+    assert.ok(km > 380 && km < 520, `Deslocamento em 60 s: ${km.toFixed(0)} km`);
+    assert.ok(pos0.altitudeKm >= 370 && pos0.altitudeKm <= 460);
+    assert.ok(pos60s.altitudeKm >= 370 && pos60s.altitudeKm <= 460);
 
-    // Trilha orbital contém 61 amostras contínuas (-30 a +30)
-    assert.equal(pos0.groundTrack.length, 61);
+    // Trilha: uma órbita (±meio período) com passo de 1,5 min
+    assert.ok(pos0.groundTrack.length >= 60 && pos0.groundTrack.length <= 66, `Trilha: ${pos0.groundTrack.length}`);
     for (const pt of pos0.groundTrack) {
-      assert.ok(!Number.isNaN(pt.lat) && pt.lat >= -52 && pt.lat <= 52);
+      assert.ok(!Number.isNaN(pt.lat) && Math.abs(pt.lat) <= 52);
       assert.ok(!Number.isNaN(pt.lng) && pt.lng >= -180 && pt.lng <= 180);
     }
   });

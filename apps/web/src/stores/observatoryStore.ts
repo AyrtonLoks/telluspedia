@@ -26,10 +26,26 @@ import {
   type FirmsConfidenceFilter,
   type FirmsWindowDays,
 } from "@/lib/firms-aggregate";
+import {
+  ISS_NORAD_ID,
+  buildIssTelemetry,
+  toSatrec,
+  type SatelliteCategory,
+  type SatelliteTle,
+} from "@/lib/satellites";
+import type { SatRec } from "satellite.js";
 
 export interface FirmsWindow {
   days: FirmsWindowDays;
   confidence: FirmsConfidenceFilter;
+}
+
+/** satrec por TLE (montar o satrec é a parte cara; a propagação é barata). */
+const satrecCache = new Map<string, SatRec | null>();
+function cachedSatrec(tle: SatelliteTle): SatRec | null {
+  const key = tle.line1 + tle.line2;
+  if (!satrecCache.has(key)) satrecCache.set(key, toSatrec(tle));
+  return satrecCache.get(key) ?? null;
 }
 
 const DEFAULT_FIRMS_WINDOW: FirmsWindow = { days: 1, confidence: "nominal" };
@@ -71,6 +87,10 @@ interface ObservatoryState {
   firmsByCountry: Record<string, FirmsCountryStats> | null;
   eonetEvents: EonetEvent[];
   issTelemetry: IssTelemetryData | null;
+  /** TLEs (CelesTrak) propagados com SGP4 no cliente (D04). */
+  satellites: SatelliteTle[];
+  /** Categorias de satélites visíveis no globo (a ISS aparece sempre que a camada está ligada). */
+  satelliteCategories: SatelliteCategory[];
   aircraftFleet: AircraftState[];
   maritimeRoutes: MaritimeRoute[];
 
@@ -91,6 +111,9 @@ interface ObservatoryState {
   /** Muda janela/confiança das queimadas e recarrega a camada. */
   setFirmsWindow: (window: Partial<FirmsWindow>) => void;
   loadLayerData: (layerId: ObservatoryLayerId) => Promise<void>;
+  /** Recalcula a telemetria da ISS por SGP4 no instante dado (HUD, painel e modelo usam este valor). */
+  refreshIssTelemetry: (now?: number) => void;
+  toggleSatelliteCategory: (category: SatelliteCategory) => void;
   resetObservatory: () => void;
 }
 
@@ -112,6 +135,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   firmsByCountry: null,
   eonetEvents: FALLBACK_EONET_EVENTS,
   issTelemetry: calculateIssPosition(),
+  satellites: [],
+  satelliteCategories: ["station", "visual"],
   aircraftFleet: FALLBACK_AIRCRAFT_FLEET,
   maritimeRoutes: FALLBACK_MARITIME_ROUTES,
 
@@ -182,6 +207,20 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
 
   setSelectedEntity: (entity) => set({ selectedEntity: entity }),
 
+  refreshIssTelemetry: (now = Date.now()) => {
+    const iss = get().satellites.find((t) => t.noradId === ISS_NORAD_ID);
+    const rec = iss ? cachedSatrec(iss) : null;
+    const telemetry = rec ? buildIssTelemetry(rec, now, iss!.epoch) : null;
+    set({ issTelemetry: telemetry ?? calculateIssPosition(now) });
+  },
+
+  toggleSatelliteCategory: (category) =>
+    set((s) => ({
+      satelliteCategories: s.satelliteCategories.includes(category)
+        ? s.satelliteCategories.filter((c) => c !== category)
+        : [...s.satelliteCategories, category],
+    })),
+
   setFirmsWindow: (window) => {
     const next = { ...get().firmsWindow, ...window };
     const cur = get().firmsWindow;
@@ -234,11 +273,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           applyMeta("NASA_EONET", body.meta);
         }
       } else if (layerId === "ISS_SATELLITES") {
-        const body = await fetchEnvelope("/api/observatory/iss");
-        const data = isObservatoryEnvelope(body) ? (body.data as IssTelemetryData) : null;
-        if (data && typeof data.latitude === "number") {
-          set({ issTelemetry: data });
-          applyMeta("ISS_SATELLITES", (body as { meta: ObservatoryMeta }).meta);
+        const body = await fetchEnvelope("/api/observatory/satellites");
+        if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
+          set({ satellites: body.data as SatelliteTle[] });
+          get().refreshIssTelemetry();
+          applyMeta("ISS_SATELLITES", body.meta);
         }
       } else {
         const body = await fetchEnvelope("/api/observatory/traffic");
