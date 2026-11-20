@@ -133,3 +133,22 @@ O binário `HYG1` contém uma contagem total e uma de estrelas visíveis em uint
 
 - **Restrição de Chamadas Diretas do Navegador (Proxy e Curadoria Server-Side)**: APIs governamentais e científicas como a WHO GHO OData API (OMS) e a NASA JPL Horizons API não permitem chamadas diretas via navegador do usuário final (por bloqueio de CORS ou limites de rate limit). Portanto, a premissa de negócio estabelece que o TellusPedia realizará a ingestão, o tratamento e o cache em sua própria camada de dados controlada pelo sistema (**RN01, RN23**).
 - **Premissa de Atribuição Obrigatória (NASA, OMS, IBGE, Wikidata)**: Conforme as políticas de dados abertos da NASA (Earthdata / GIBS / FIRMS) e da OMS, a interface do TellusPedia exibirá os créditos institucionais das agências sempre que suas respectivas camadas visuais ou séries históricas estiverem ativas na tela (**RN02, RN17**).
+
+---
+
+## Anexo — Texturas do globo (D02, 2026-11-20)
+
+Arquivos em `apps/web/public/textures/`, todos derivados de imagens da NASA em **domínio público**
+(obras do governo dos EUA). Baixados das cópias hospedadas no Wikimedia Commons, porque o servidor
+original `eoimages.gsfc.nasa.gov` estava inacessível no momento da integração.
+
+| Arquivo | Origem | Licença | Processamento |
+|---|---|---|---|
+| `earth_day_4k.jpg`, `earth_day_2k.jpg` | NASA Visible Earth — Blue Marble Next Generation, “Whole world - land and oceans” ([Commons](https://commons.wikimedia.org/wiki/File:Whole_world_-_land_and_oceans_12000.jpg)) | Domínio público (NASA) | Miniatura 3840×1920 do Commons; versão 2048×1024 por redimensionamento; JPEG q86 |
+| `earth_night_4k.jpg`, `earth_night_2k.jpg` | NASA Earth Observatory — “The earth at night” (luzes noturnas, Suomi NPP VIIRS) ([Commons](https://commons.wikimedia.org/wiki/File:The_earth_at_night.jpg)) | Domínio público (NASA) | Idem |
+| `earth_surface_2k.png` — canal R | NASA — elevação SRTM “srtm_ramp2” em tons de cinza ([Commons](https://commons.wikimedia.org/wiki/File:Srtm_ramp2.world.21600x10800.jpg)) | Domínio público (NASA) | Redimensionado para 2048×1024; usado como altura relativa para o relevo (gradiente no shader) — não é altitude em metros |
+| `earth_surface_2k.png` — canal G | Derivado de `earth_day` | — | Máscara de água: pixels próximos da cor do oceano da Blue Marble (RGB 11,10,50) e com azul dominante; transição suave; desfoque de 0,6 px |
+
+**Escolha de resolução:** 3840 px quando `maxTextureSize ≥ 8192`, senão 2048 px (`pickEarthTextureSet` em `EarthSphere.tsx`).
+
+**Pendências:** nuvens — nenhuma textura de nuvens em domínio público estava acessível (a “Blue Marble 2002” do Commons é a superfície sem nuvens); KTX2/Basis — sem ferramentas de conversão no ambiente (JPEG/PNG com mipmaps do WebGL).

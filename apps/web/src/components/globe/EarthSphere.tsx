@@ -127,9 +127,23 @@ function createProceduralPangeaTexture(width = 512, height = 256): THREE.DataTex
   return texture;
 }
 
-export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLighting }) => {
+/** Conjunto de texturas por capacidade da GPU (D02). */
+export function pickEarthTextureSet(maxTextureSize: number) {
+  const hi = maxTextureSize >= 8192;
+  return {
+    quality: hi ? "4k" : "2k",
+    day: hi ? "/textures/earth_day_4k.jpg" : "/textures/earth_day_2k.jpg",
+    night: hi ? "/textures/earth_night_4k.jpg" : "/textures/earth_night_2k.jpg",
+    surface: "/textures/earth_surface_2k.png",
+  } as const;
+}
+
+export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolean }> = ({
+  studyLighting,
+  atmosphere = true,
+}) => {
   const meshRef = useRef<THREE.Mesh>(null);
-  const { invalidate } = useThree();
+  const { invalidate, gl } = useThree();
 
   const setHoveredIso = useGlobeStore((s) => s.setHoveredIso);
   const flyTo = useGlobeStore((s) => s.flyTo);
@@ -143,15 +157,22 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   const effectiveYear = epoch.effectiveYear;
   const era = HISTORICAL_ERAS[epoch.historicalEraId];
 
-  // Load NASA planetary textures with immediate render invalidation on load
-  const [dayTexture, nightTexture] = useMemo(() => {
+  // Texturas NASA (domínio público — docs/DATA_SOURCES.md). D02: 3840 px quando a GPU aguenta,
+  // 2048 px como fallback; superfície (elevação + água) em espaço linear: são dados, não cor.
+  const [dayTexture, nightTexture, surfaceTexture] = useMemo(() => {
+    const set = pickEarthTextureSet(gl.capabilities.maxTextureSize);
+    const anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     const loader = new THREE.TextureLoader();
-    const day = loader.load("/textures/earth_day.jpg", () => invalidate());
-    const night = loader.load("/textures/earth_night.png", () => invalidate());
+    const day = loader.load(set.day, () => invalidate());
+    const night = loader.load(set.night, () => invalidate());
+    const surface = loader.load(set.surface, () => invalidate());
     day.colorSpace = THREE.SRGBColorSpace;
     night.colorSpace = THREE.SRGBColorSpace;
-    return [day, night];
-  }, [invalidate]);
+    surface.colorSpace = THREE.NoColorSpace;
+    day.anisotropy = anisotropy;
+    night.anisotropy = anisotropy;
+    return [day, night, surface];
+  }, [invalidate, gl]);
 
   // Procedural Pangea texture initialized immediately as base fallback
   const proceduralPaleoTexture = useMemo(() => {
@@ -160,8 +181,23 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
 
   // Initialize shader material (uSunDirection synced from canonical useSunDirection below)
   const earthMaterial = useMemo(() => {
-    return createEarthMaterial(dayTexture, nightTexture, proceduralPaleoTexture);
-  }, [dayTexture, nightTexture, proceduralPaleoTexture]);
+    return createEarthMaterial(dayTexture, nightTexture, proceduralPaleoTexture, surfaceTexture);
+  }, [dayTexture, nightTexture, proceduralPaleoTexture, surfaceTexture]);
+
+  useEffect(() => {
+    earthMaterial.uniforms.uAtmosphereShell.value = atmosphere ? 1 : 0;
+    invalidate();
+  }, [earthMaterial, atmosphere, invalidate]);
+
+  // Descarte das texturas da Terra ao desmontar (RN21)
+  useEffect(
+    () => () => {
+      dayTexture.dispose();
+      nightTexture.dispose();
+      surfaceTexture.dispose();
+    },
+    [dayTexture, nightTexture, surfaceTexture]
+  );
 
   useEffect(() => {
     earthMaterial.uniforms.uStudyLighting.value = studyLighting ? 1 : 0;

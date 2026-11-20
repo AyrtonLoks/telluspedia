@@ -3,10 +3,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
-import { Sun } from "lucide-react";
+import { CloudSun, Sun } from "lucide-react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { EarthSphere } from "./EarthSphere";
+import { Atmosphere } from "./Atmosphere";
+
+/** Botões de alternância sobre o globo (tokens do design system — D14). */
+const GLOBE_TOGGLE =
+  "flex h-9 items-center gap-2 rounded-control border border-line bg-surface/86 px-3 text-label font-medium text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:text-fg aria-pressed:border-accent/40 aria-pressed:bg-accent/15 aria-pressed:text-fg";
 import { CountryBorders } from "./CountryBorders";
 import { OrbitingMoon } from "./OrbitingMoon";
 import { SkyStars } from "./SkyStars";
@@ -56,6 +61,8 @@ const SolarDirectionalLight: React.FC = () => {
 
 export const GlobeCanvas: React.FC = () => {
   const [studyLighting, setStudyLighting] = useState(false);
+  // D02: atmosfera com espalhamento (ligada por padrão; desativável).
+  const [showAtmosphere, setShowAtmosphere] = useState(true);
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   // Época ativa: fonte única (T12). Cenas só por seleção explícita, nunca pelo ano.
@@ -139,7 +146,8 @@ export const GlobeCanvas: React.FC = () => {
           <OrbitingMoon />
 
           {/* 3D Earth Mesh with Shader */}
-          <EarthSphere studyLighting={studyLighting} />
+          <EarthSphere studyLighting={studyLighting} atmosphere={showAtmosphere} />
+          {showAtmosphere && <Atmosphere />}
 
           {/* High-Resolution TopoJSON Borders */}
           <CountryBorders />
@@ -162,15 +170,27 @@ export const GlobeCanvas: React.FC = () => {
         </group>
       </Canvas>
 
-      <button
-        type="button"
-        aria-pressed={studyLighting}
-        onClick={() => setStudyLighting((enabled) => !enabled)}
-        className="glass-panel absolute left-3 top-[4.75rem] z-10 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 hover:border-cyan-400/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 aria-pressed:border-cyan-500/60 aria-pressed:text-cyan-300 sm:left-6"
-      >
-        <Sun aria-hidden="true" className="size-4" />
-        Iluminação de estudo
-      </button>
+      <div className="absolute left-3 top-[4.75rem] z-10 flex items-center gap-2 sm:left-6">
+        <button
+          type="button"
+          aria-pressed={studyLighting}
+          onClick={() => setStudyLighting((enabled) => !enabled)}
+          className={GLOBE_TOGGLE}
+        >
+          <Sun aria-hidden="true" className="size-4" />
+          Iluminação de estudo
+        </button>
+        <button
+          type="button"
+          aria-pressed={showAtmosphere}
+          onClick={() => setShowAtmosphere((enabled) => !enabled)}
+          className={GLOBE_TOGGLE}
+          title="Atmosfera com espalhamento (azul no limbo diurno, laranja no terminador)"
+        >
+          <CloudSun aria-hidden="true" className="size-4" />
+          Atmosfera
+        </button>
+      </div>
 
       {/* Floating Apollo 11 Space Flight Telemetry HUD Overlay */}
       {activeScene === "APOLLO11" && <Apollo11TelemetryOverlay />}

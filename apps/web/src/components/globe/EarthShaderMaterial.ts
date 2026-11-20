@@ -14,6 +14,15 @@ export const EarthShader = {
     uDayTexture: { value: createPlaceholderTexture(11, 25, 46) as THREE.Texture },
     uNightTexture: { value: createPlaceholderTexture(2, 5, 11) as THREE.Texture },
     uPaleoTexture: { value: null as THREE.Texture | null },
+    /** D02: R = elevação (SRTM, NASA), G = máscara de água derivada da textura diurna. */
+    uSurfaceTexture: { value: createPlaceholderTexture(0, 0, 0) as THREE.Texture },
+    uSurfaceTexel: { value: new THREE.Vector2(1 / 2048, 1 / 1024) },
+    /** Intensidade do relevo (0 desliga). */
+    uReliefStrength: { value: 1.0 },
+    /** Reflexo do Sol nos oceanos (0 desliga). */
+    uOceanSpecular: { value: 1.0 },
+    /** 1 quando a casca de atmosfera (Atmosphere.tsx) está ligada: o brilho de borda daqui é reduzido. */
+    uAtmosphereShell: { value: 1.0 },
     uPaleoFactor: { value: 0.0 },
     uStudyLighting: { value: 0.0 },
     /** Intensidade das luzes urbanas (1 = normal; atenuada com a camada de queimadas — D05). */
@@ -43,6 +52,11 @@ export const EarthShader = {
     uniform sampler2D uDayTexture;
     uniform sampler2D uNightTexture;
     uniform sampler2D uPaleoTexture;
+    uniform sampler2D uSurfaceTexture;
+    uniform vec2 uSurfaceTexel;
+    uniform float uReliefStrength;
+    uniform float uOceanSpecular;
+    uniform float uAtmosphereShell;
     uniform float uPaleoFactor;
     uniform float uStudyLighting;
     uniform float uCityLights;
@@ -70,9 +84,39 @@ export const EarthShader = {
       vec3 nightColor = texture2D(uNightTexture, vUv).rgb;
       vec3 paleoColor = texture2D(uPaleoTexture, vUv).rgb;
 
+      // D02 — superfície: elevação (R) e água (G). Relevo e reflexo valem só para a geografia atual.
+      vec4 surface = texture2D(uSurfaceTexture, vUv);
+      float water = surface.g;
+      float modern = 1.0 - uPaleoFactor;
+
+      // Relevo: inclina a normal pelo gradiente da elevação (leste/norte no espaço mundial).
+      float hE = texture2D(uSurfaceTexture, vUv + vec2(uSurfaceTexel.x, 0.0)).r;
+      float hW = texture2D(uSurfaceTexture, vUv - vec2(uSurfaceTexel.x, 0.0)).r;
+      float hN = texture2D(uSurfaceTexture, vUv + vec2(0.0, uSurfaceTexel.y)).r;
+      float hS = texture2D(uSurfaceTexture, vUv - vec2(0.0, uSurfaceTexel.y)).r;
+      vec3 east = normalize(cross(vec3(0.0, 1.0, 0.0), normal) + vec3(1e-5, 0.0, 0.0));
+      vec3 north = normalize(cross(normal, east));
+      float relief = uReliefStrength * modern * (1.0 - water) * 7.0;
+      vec3 reliefNormal = normalize(normal - relief * ((hE - hW) * east + (hN - hS) * north));
+      // Sombreamento do relevo relativo à esfera lisa: realça cordilheiras sob luz rasante.
+      float reliefShade = clamp((dot(reliefNormal, sunDir) - nDotL) * 2.2, -0.45, 0.45) * (1.0 - uStudyLighting);
+
+      // Oceano levemente mais rico (a textura diurna tem o mar num azul-marinho uniforme).
+      vec3 baseDay = mix(dayColor, paleoColor, uPaleoFactor);
+      vec3 oceanTint = baseDay * vec3(0.85, 1.12, 1.3) + vec3(0.0, 0.012, 0.03);
+      baseDay = mix(baseDay, oceanTint, water * modern * 0.75);
+
       // Keep daylight bright at noon and use uniform diffuse lighting in study mode.
       float diffuse = mix(0.78 + max(nDotL, 0.0) * 0.37, 1.15, uStudyLighting);
-      vec3 dayComposite = mix(dayColor, paleoColor, uPaleoFactor) * diffuse;
+      vec3 dayComposite = baseDay * diffuse * (1.0 + reliefShade);
+
+      // Reflexo do Sol só na água (Blinn-Phong: brilho concentrado + halo largo).
+      vec3 halfDir = normalize(sunDir + viewDir);
+      float nDotH = max(dot(normal, halfDir), 0.0);
+      float glint = pow(nDotH, 180.0) * 1.1 + pow(nDotH, 18.0) * 0.07;
+      vec3 specular = vec3(1.0, 0.94, 0.84) * glint * water * modern * uOceanSpecular
+        * smoothstep(0.0, 0.12, nDotL) * (1.0 - uStudyLighting);
+      dayComposite += specular;
 
       // City texture contributes emission over the dark navy of the night side.
       vec3 nightBase = vec3(0.012, 0.022, 0.042);
@@ -92,7 +136,8 @@ export const EarthShader = {
       // Fresnel Atmospheric Glow on the silhouette
       float fresnel = pow(1.0 - max(0.0, dot(viewDir, normal)), uAtmospherePower);
       float dayRim = mix(clamp(nDotL * 0.5 + 0.5, 0.15, 1.0), 0.75, uStudyLighting);
-      vec3 atmosphereGlow = uAtmosphereColor * fresnel * 0.32 * dayRim;
+      // Com a casca de atmosfera ligada, ela faz o espalhamento; aqui fica só um toque de borda.
+      vec3 atmosphereGlow = uAtmosphereColor * fresnel * mix(0.32, 0.1, uAtmosphereShell) * dayRim;
 
       gl_FragColor = vec4(surfaceColor + atmosphereGlow, 1.0);
       #include <tonemapping_fragment>
@@ -104,11 +149,13 @@ export const EarthShader = {
 export function createEarthMaterial(
   dayTexture?: THREE.Texture | null,
   nightTexture?: THREE.Texture | null,
-  paleoTexture?: THREE.Texture | null
+  paleoTexture?: THREE.Texture | null,
+  surfaceTexture?: THREE.Texture | null
 ): THREE.ShaderMaterial {
   const uniforms = THREE.UniformsUtils.clone(EarthShader.uniforms);
   if (dayTexture) uniforms.uDayTexture.value = dayTexture;
   if (nightTexture) uniforms.uNightTexture.value = nightTexture;
+  if (surfaceTexture) uniforms.uSurfaceTexture.value = surfaceTexture;
   if (paleoTexture) {
     uniforms.uPaleoTexture.value = paleoTexture;
   } else if (!uniforms.uPaleoTexture.value) {
