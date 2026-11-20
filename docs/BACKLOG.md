@@ -33,7 +33,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 
 | Grupo | Escopo (arquivos/conceitos principais) | Tarefas |
 |---|---|---|
-| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15 |
+| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15 |
@@ -180,7 +180,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | TODO | — | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | TODO | — | — | G-SHELL, G-INFRA |
-| D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | TODO | — | D01 | G-GLOBO |
+| D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | IN_PROGRESS | claude | D01 | G-GLOBO, G-EPOCA |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | claude | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
@@ -1023,8 +1023,8 @@ O globo inteiro parece escuro e lavado. Causa principal (técnica): o `ShaderMat
 
 ### D02 · Oceanos, relevo, nuvens e atmosfera
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** D01 · **Grupos:** G-GLOBO
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d02-oceanos-atmosfera · **Worktree:** ../telluspedia-wt/claude-d02
+- **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** D01 · **Grupos:** G-GLOBO, G-EPOCA
 
 **Contexto / problema**
 Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna 2048×1024. Não há máscara de oceano, reflexo especular, normal/bump map, nuvens nem atmosfera com espalhamento — o oceano é apenas a cor da textura.
@@ -1047,6 +1047,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. G-EPOCA adicionado (nuvens/atmosfera montadas no `GlobeCanvas`). Nenhuma tarefa de G-GLOBO/G-EPOCA em andamento (T14 em REVIEW). D04 segue em TODO aguardando G-OBS (D07 do codex em andamento).
 
 ---
 
