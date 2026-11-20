@@ -11,7 +11,6 @@ import {
   calculateIssPosition,
   type AircraftState,
   type EonetEvent,
-  type FirmsHotspot,
   type IssTelemetryData,
   type MaritimeRoute,
 } from "./observatory-data";
@@ -22,6 +21,12 @@ import {
   type ObservatoryEnvelope,
 } from "./observatory-source";
 import { parseFirmsCsv } from "./firms-csv";
+import {
+  buildFirmsPayload,
+  type FirmsConfidenceFilter,
+  type FirmsPayload,
+  type FirmsWindowDays,
+} from "./firms-aggregate";
 
 async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
   const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
@@ -98,40 +103,59 @@ export const FIRMS_DATASETS = [
   { id: "MODIS_NRT", label: "MODIS Terra/Aqua" },
 ] as const;
 
-export const firmsSource = createObservatorySource<FirmsHotspot[]>({
-  name: "firms",
-  liveProvider: "NASA FIRMS",
-  liveTtlMs: 15 * 60 * 1000,
-  fallback: () => FALLBACK_FIRMS_HOTSPOTS,
-  fetchLive: async ({ setProvider }) => {
-    const apiKey = process.env.NASA_FIRMS_MAP_KEY;
-    if (!apiKey) throw new SourceUnavailableError("Chave NASA_FIRMS_MAP_KEY não configurada no servidor");
+function createFirmsSource(days: FirmsWindowDays, confidence: FirmsConfidenceFilter) {
+  return createObservatorySource<FirmsPayload>({
+    name: `firms-${days}d-${confidence}`,
+    liveProvider: "NASA FIRMS",
+    liveTtlMs: 15 * 60 * 1000,
+    fallback: () => buildFirmsPayload(FALLBACK_FIRMS_HOTSPOTS, days, confidence),
+    fetchLive: async ({ setProvider }) => {
+      const apiKey = process.env.NASA_FIRMS_MAP_KEY;
+      if (!apiKey) throw new SourceUnavailableError("Chave NASA_FIRMS_MAP_KEY não configurada no servidor");
 
-    for (const dataset of FIRMS_DATASETS) {
-      const res = await fetchWithTimeout(
-        `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/${dataset.id}/world/1`,
-        // O CSV mundial de 24 h tem dezenas de milhares de linhas (~2,5 MB).
-        8000
-      );
-      const csv = await res.text();
-      // Chave inválida ou limite excedido: a API responde 200 com uma mensagem em texto, não CSV.
-      // Vale para todos os satélites, então não adianta tentar os demais.
-      if (!/^\s*latitude,/i.test(csv)) {
-        throw new SourceUnavailableError(
-          `Resposta inesperada do FIRMS (verifique NASA_FIRMS_MAP_KEY): ${csv.trim().slice(0, 80)}`
+      for (const dataset of FIRMS_DATASETS) {
+        const res = await fetchWithTimeout(
+          `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/${dataset.id}/world/${days}`,
+          // 24 h ≈ 2,5 MB; 5 dias ≈ 16 MB (~190 mil linhas).
+          days === 1 ? 8000 : 20000
         );
+        const csv = await res.text();
+        // Chave inválida ou limite excedido: a API responde 200 com uma mensagem em texto, não CSV.
+        // Vale para todos os satélites, então não adianta tentar os demais.
+        if (!/^\s*latitude,/i.test(csv)) {
+          throw new SourceUnavailableError(
+            `Resposta inesperada do FIRMS (verifique NASA_FIRMS_MAP_KEY): ${csv.trim().slice(0, 80)}`
+          );
+        }
+        // Todas as linhas: a grade agrega a janela inteira; o corte de focos individuais vem depois.
+        const parsed = parseFirmsCsv(csv, { limit: Number.POSITIVE_INFINITY });
+        if (parsed.length > 0) {
+          setProvider(`NASA FIRMS (${dataset.label} NRT)`);
+          return buildFirmsPayload(parsed, days, confidence);
+        }
       }
-      const parsed = parseFirmsCsv(csv);
-      if (parsed.length > 0) {
-        setProvider(`NASA FIRMS (${dataset.label} NRT)`);
-        return parsed;
-      }
-    }
-    throw new SourceUnavailableError(
-      `Nenhum satélite retornou focos nas últimas 24 h (consultados: ${FIRMS_DATASETS.map((d) => d.label).join(", ")})`
-    );
-  },
-});
+      throw new SourceUnavailableError(
+        `Nenhum satélite retornou focos ${days === 1 ? "nas últimas 24 h" : `nos últimos ${days} dias`} (consultados: ${FIRMS_DATASETS.map((d) => d.label).join(", ")})`
+      );
+    },
+  });
+}
+
+const firmsSources = new Map<string, ReturnType<typeof createFirmsSource>>();
+
+/** Fonte do FIRMS por janela (1/2/5 dias) e filtro de confiança; cada combinação tem cache próprio. */
+export function getFirmsSource(days: FirmsWindowDays = 1, confidence: FirmsConfidenceFilter = "nominal") {
+  const key = `${days}:${confidence}`;
+  let source = firmsSources.get(key);
+  if (!source) {
+    source = createFirmsSource(days, confidence);
+    firmsSources.set(key, source);
+  }
+  return source;
+}
+
+/** Fonte padrão (24 h, sem focos de baixa confiança). */
+export const firmsSource = getFirmsSource(1, "nominal");
 
 // ---------------------------------------------------------------------------
 // ISS — telemetria (wheretheiss.at); sem provedor, usa o modelo orbital aproximado local
@@ -240,7 +264,7 @@ export interface TrafficPayload {
 
 export function resetObservatorySources() {
   eonetSource.reset();
-  firmsSource.reset();
+  for (const source of firmsSources.values()) source.reset();
   issSource.reset();
   aircraftSource.reset();
 }

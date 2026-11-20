@@ -18,6 +18,21 @@ import {
   initialLocalMeta,
   isObservatoryEnvelope,
 } from "@/lib/observatory-source";
+import {
+  aggregateFirmsGrid,
+  filterByConfidence,
+  type FirmsCell,
+  type FirmsConfidenceFilter,
+  type FirmsWindowDays,
+} from "@/lib/firms-aggregate";
+
+export interface FirmsWindow {
+  days: FirmsWindowDays;
+  confidence: FirmsConfidenceFilter;
+}
+
+const DEFAULT_FIRMS_WINDOW: FirmsWindow = { days: 1, confidence: "nominal" };
+const fallbackFirms = (w: FirmsWindow) => filterByConfidence(FALLBACK_FIRMS_HOTSPOTS, w.confidence);
 
 const ALL_LAYERS: ObservatoryLayerId[] = [
   "NASA_FIRMS",
@@ -44,6 +59,12 @@ interface ObservatoryState {
   selectedEntity: ObservatoryEntity | null;
 
   firmsHotspots: FirmsHotspot[];
+  /** Grade agregada (heatmap em zoom distante) de toda a janela. */
+  firmsCells: FirmsCell[];
+  /** Focos na janela após o filtro de confiança (pode ser maior que firmsHotspots.length). */
+  firmsTotal: number;
+  /** Janela temporal e filtro de confiança da camada de queimadas. */
+  firmsWindow: FirmsWindow;
   eonetEvents: EonetEvent[];
   issTelemetry: IssTelemetryData | null;
   aircraftFleet: AircraftState[];
@@ -63,6 +84,8 @@ interface ObservatoryState {
   setPanelOpen: (open: boolean) => void;
   togglePanel: () => void;
   setSelectedEntity: (entity: ObservatoryEntity | null) => void;
+  /** Muda janela/confiança das queimadas e recarrega a camada. */
+  setFirmsWindow: (window: Partial<FirmsWindow>) => void;
   loadLayerData: (layerId: ObservatoryLayerId) => Promise<void>;
   resetObservatory: () => void;
 }
@@ -79,7 +102,10 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   isPanelOpen: false,
   selectedEntity: null,
 
-  firmsHotspots: FALLBACK_FIRMS_HOTSPOTS,
+  firmsHotspots: fallbackFirms(DEFAULT_FIRMS_WINDOW),
+  firmsCells: aggregateFirmsGrid(fallbackFirms(DEFAULT_FIRMS_WINDOW)),
+  firmsTotal: fallbackFirms(DEFAULT_FIRMS_WINDOW).length,
+  firmsWindow: DEFAULT_FIRMS_WINDOW,
   eonetEvents: FALLBACK_EONET_EVENTS,
   issTelemetry: calculateIssPosition(),
   aircraftFleet: FALLBACK_AIRCRAFT_FLEET,
@@ -152,6 +178,14 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
 
   setSelectedEntity: (entity) => set({ selectedEntity: entity }),
 
+  setFirmsWindow: (window) => {
+    const next = { ...get().firmsWindow, ...window };
+    const cur = get().firmsWindow;
+    if (next.days === cur.days && next.confidence === cur.confidence) return;
+    set({ firmsWindow: next, selectedEntity: null });
+    void get().loadLayerData("NASA_FIRMS");
+  },
+
   loadLayerData: async (layerId) => {
     set((s) => ({
       isLoading: { ...s.isLoading, [layerId]: true },
@@ -171,9 +205,17 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
 
     try {
       if (layerId === "NASA_FIRMS") {
-        const body = await fetchEnvelope("/api/observatory/firms");
+        const { days, confidence } = get().firmsWindow;
+        const body = await fetchEnvelope(`/api/observatory/firms?days=${days}&confidence=${confidence}`);
         if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
-          set({ firmsHotspots: body.data as FirmsHotspot[] });
+          const hotspots = body.data as FirmsHotspot[];
+          const extra = body as unknown as { cells?: unknown; total?: unknown };
+          const cells = Array.isArray(extra.cells) ? (extra.cells as FirmsCell[]) : aggregateFirmsGrid(hotspots);
+          set({
+            firmsHotspots: hotspots,
+            firmsCells: cells,
+            firmsTotal: typeof extra.total === "number" ? extra.total : hotspots.length,
+          });
           applyMeta("NASA_FIRMS", body.meta);
         }
       } else if (layerId === "NASA_EONET") {

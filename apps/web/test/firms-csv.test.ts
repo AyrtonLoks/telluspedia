@@ -4,6 +4,8 @@ import { parseFirmsCsv } from "../src/lib/firms-csv";
 import { resetObservatorySources } from "../src/lib/observatory-sources";
 import { GET as firmsGET } from "../src/app/api/observatory/firms/route";
 
+const firmsReq = (query = "") => new Request(`http://localhost/api/observatory/firms${query}`);
+
 // Cabeçalhos reais da API "area" do FIRMS (VIIRS_SNPP_NRT e MODIS_NRT).
 const VIIRS_HEADER =
   "latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,satellite,instrument,confidence,version,bright_ti5,frp,daynight";
@@ -115,7 +117,7 @@ describe("T04: rota /api/observatory/firms com chave", () => {
 
   test("CSV válido → envelope live com FRP e confiança corretos", async () => {
     globalThis.fetch = (async () => new Response(VIIRS_CSV, { status: 200 })) as typeof fetch;
-    const body = await (await firmsGET()).json();
+    const body = await (await firmsGET(firmsReq("?confidence=all"))).json();
     assert.equal(body.meta.source, "live");
     assert.equal(body.data.length, 3);
     const top = body.data.find((h: { frp: number }) => h.frp === 48.9);
@@ -124,7 +126,7 @@ describe("T04: rota /api/observatory/firms com chave", () => {
 
   test("resposta em texto (chave inválida) → fallback com motivo indicando a chave", async () => {
     globalThis.fetch = (async () => new Response("Invalid MAP_KEY.", { status: 200 })) as typeof fetch;
-    const body = await (await firmsGET()).json();
+    const body = await (await firmsGET(firmsReq())).json();
     assert.equal(body.meta.source, "fallback");
     assert.match(body.meta.reason, /NASA_FIRMS_MAP_KEY/);
     assert.match(body.meta.reason, /Invalid MAP_KEY/);
@@ -162,7 +164,7 @@ describe("T04: FIRMS tenta os satélites em ordem até achar focos", () => {
 
   test("satélite sem dados (só cabeçalho) → usa o próximo e informa qual respondeu", async () => {
     mockFirms({ VIIRS_NOAA21_NRT: VIIRS_HEADER, VIIRS_NOAA20_NRT: VIIRS_CSV });
-    const body = await (await firmsGET()).json();
+    const body = await (await firmsGET(firmsReq("?confidence=all"))).json();
     assert.equal(body.meta.source, "live");
     assert.equal(body.data.length, 3);
     assert.match(body.meta.provider, /NOAA-20/);
@@ -171,14 +173,14 @@ describe("T04: FIRMS tenta os satélites em ordem até achar focos", () => {
 
   test("primeiro satélite com dados → não faz chamadas extras", async () => {
     mockFirms({ VIIRS_NOAA21_NRT: VIIRS_CSV });
-    const body = await (await firmsGET()).json();
+    const body = await (await firmsGET(firmsReq())).json();
     assert.match(body.meta.provider, /NOAA-21/);
     assert.deepEqual(requested, ["VIIRS_NOAA21_NRT"]);
   });
 
   test("todos sem dados → fallback listando os satélites consultados", async () => {
     mockFirms({});
-    const body = await (await firmsGET()).json();
+    const body = await (await firmsGET(firmsReq())).json();
     assert.equal(body.meta.source, "fallback");
     assert.match(body.meta.reason, /NOAA-21/);
     assert.match(body.meta.reason, /MODIS/);
@@ -191,7 +193,7 @@ describe("T04: FIRMS tenta os satélites em ordem até achar focos", () => {
       requested.push(String(input));
       return new Response("Invalid MAP_KEY.", { status: 200 });
     }) as typeof fetch;
-    const body = await (await firmsGET()).json();
+    const body = await (await firmsGET(firmsReq())).json();
     assert.equal(body.meta.source, "fallback");
     assert.equal(requested.length, 1);
   });
@@ -207,5 +209,119 @@ describe("T04: FIRMS tenta os satélites em ordem até achar focos", () => {
     const later = await firmsSource.get(t0 + 16 * 60 * 1000);
     assert.equal(later.envelope.meta.stale, true);
     assert.match(later.envelope.meta.provider, /NOAA-20/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// D05: agregação, janela temporal e filtro de confiança
+// ---------------------------------------------------------------------------
+import {
+  aggregateFirmsGrid,
+  buildFirmsPayload,
+  parseFirmsConfidence,
+  parseFirmsWindow,
+} from "../src/lib/firms-aggregate";
+import type { FirmsHotspot } from "../src/lib/observatory-data";
+
+const hs = (lat: number, lng: number, frp: number, confidence: FirmsHotspot["confidence"] = "nominal", acqDate = "2026-11-19"): FirmsHotspot => ({
+  id: `${lat}:${lng}:${frp}`,
+  lat,
+  lng,
+  frp,
+  confidence,
+  brightness: 330,
+  satellite: "VIIRS",
+  acqDate,
+});
+
+describe("D05: agregação dos focos", () => {
+  test("focos na mesma célula de 1° são somados; centro = centróide", () => {
+    const cells = aggregateFirmsGrid([hs(-9.2, -55.8, 10), hs(-9.8, -55.2, 30, "high", "2026-11-20"), hs(10.5, 20.5, 5)]);
+    assert.equal(cells.length, 2);
+    const amazon = cells.find((c) => c.count === 2)!;
+    assert.equal(amazon.frpSum, 40);
+    assert.equal(amazon.frpMax, 30);
+    assert.equal(amazon.lat, -9.5);
+    assert.equal(amazon.lng, -55.5);
+    assert.equal(amazon.latestDate, "2026-11-20");
+  });
+
+  test("bordas da grade: -180/180 e polos não estouram", () => {
+    const cells = aggregateFirmsGrid([hs(89.99, 179.99, 1), hs(-90, -180, 1)]);
+    assert.equal(cells.length, 2);
+  });
+
+  test("filtro padrão oculta baixa confiança na grade e nos focos", () => {
+    const p = buildFirmsPayload([hs(1, 1, 5, "low"), hs(1.2, 1.2, 7, "high")], 1, "nominal");
+    assert.equal(p.total, 1);
+    assert.equal(p.hotspots.length, 1);
+    assert.equal(p.cells[0].count, 1);
+    assert.equal(buildFirmsPayload([hs(1, 1, 5, "low")], 1, "all").total, 1);
+  });
+
+  test("acima do teto, ficam os focos de maior FRP; a grade conta todos", () => {
+    const all = Array.from({ length: 10 }, (_, i) => hs(i, i, i + 1));
+    const p = buildFirmsPayload(all, 2, "all", 3);
+    assert.deepEqual(p.hotspots.map((h) => h.frp), [10, 9, 8]);
+    assert.equal(p.total, 10);
+    assert.equal(p.cells.reduce((n, c) => n + c.count, 0), 10);
+  });
+
+  test("parâmetros: janelas aceitas pela API (1/2/5) e confiança", () => {
+    assert.equal(parseFirmsWindow("2"), 2);
+    assert.equal(parseFirmsWindow("5"), 5);
+    assert.equal(parseFirmsWindow("7"), 1, "a API do FIRMS recusa mais de 5 dias");
+    assert.equal(parseFirmsWindow(null), 1);
+    assert.equal(parseFirmsConfidence("all"), "all");
+    assert.equal(parseFirmsConfidence("qualquer"), "nominal");
+  });
+});
+
+describe("D05: rota com janela e confiança", () => {
+  const realFetch = globalThis.fetch;
+  const realWarn = console.warn;
+  let urls: string[] = [];
+
+  beforeEach(() => {
+    resetObservatorySources();
+    process.env.NASA_FIRMS_MAP_KEY = "test-key";
+    console.warn = () => {};
+    urls = [];
+    globalThis.fetch = (async (input: string | URL | Request) => {
+      urls.push(String(input));
+      return new Response(VIIRS_CSV, { status: 200 });
+    }) as typeof fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = realFetch;
+    console.warn = realWarn;
+    delete process.env.NASA_FIRMS_MAP_KEY;
+  });
+
+  test("padrão: 24 h, sem baixa confiança, com grade agregada", async () => {
+    const body = await (await firmsGET(firmsReq())).json();
+    assert.match(urls[0], /\/world\/1$/);
+    assert.equal(body.data.length, 2, "o foco de confiança 'l' fica de fora");
+    assert.equal(body.total, 2);
+    assert.ok(Array.isArray(body.cells) && body.cells.length === 2);
+    assert.deepEqual(body.window, { days: 1, confidence: "nominal" });
+  });
+
+  test("days=5 consulta a janela de 5 dias; cada combinação tem cache próprio", async () => {
+    await firmsGET(firmsReq("?days=5&confidence=all"));
+    await firmsGET(firmsReq("?days=5&confidence=all"));
+    await firmsGET(firmsReq("?days=2"));
+    assert.equal(urls.length, 2, "a segunda chamada de 5 dias vem do cache");
+    assert.match(urls[0], /\/world\/5$/);
+    assert.match(urls[1], /\/world\/2$/);
+  });
+
+  test("sem chave: fallback também é filtrado e agregado", async () => {
+    delete process.env.NASA_FIRMS_MAP_KEY;
+    const body = await (await firmsGET(firmsReq())).json();
+    assert.equal(body.meta.source, "fallback");
+    assert.ok(body.cells.length > 0);
+    assert.ok(body.data.every((h: FirmsHotspot) => h.confidence !== "low"));
   });
 });

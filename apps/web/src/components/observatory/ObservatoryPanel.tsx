@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
+import { FirmsLayerControls } from "./FirmsLayerControls";
 import { ObservatoryLayerId } from "@/lib/observatory-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Button } from "@/components/ui/Button";
@@ -39,10 +40,10 @@ const LAYER_OPTIONS: LayerOption[] = [
     id: "NASA_FIRMS",
     name: "Queimadas Ativas (FIRMS)",
     source: "NASA MODIS / VIIRS",
-    description: "Anomalias térmicas globais e focos de calor das últimas 24h.",
+    description: "Anomalias térmicas globais detectadas por satélite (VIIRS/MODIS): focos de calor ativos.",
     icon: Flame,
     tone: "layer-fires",
-    badgeText: (s) => `${s.firmsHotspots?.length || 0} focos ativos`,
+    badgeText: (s) => `${(s.firmsTotal ?? s.firmsHotspots?.length ?? 0).toLocaleString("pt-BR")} focos ativos`,
   },
   {
     id: "NASA_EONET",
@@ -190,6 +191,7 @@ export const ObservatoryPanel: React.FC = () => {
                       isOffline={storeState.layerError[layer.id]}
                     />
                   </div>
+                  {layer.id === "NASA_FIRMS" && <FirmsLayerControls />}
                   <StudyContext entityId={`observatory:${layer.id}`} />
                 </div>
               )}

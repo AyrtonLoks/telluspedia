@@ -13,6 +13,8 @@ import { resetObservatorySources } from "../src/lib/observatory-sources";
 import { FALLBACK_EONET_EVENTS, FALLBACK_FIRMS_HOTSPOTS } from "../src/lib/observatory-data";
 import { GET as eonetGET } from "../src/app/api/observatory/eonet/route";
 import { GET as firmsGET } from "../src/app/api/observatory/firms/route";
+
+const firmsReq = (query = "") => new Request(`http://localhost/api/observatory/firms${query}`);
 import { GET as issGET } from "../src/app/api/observatory/iss/route";
 import { GET as trafficGET } from "../src/app/api/observatory/traffic/route";
 import { useObservatoryStore } from "../src/stores/observatoryStore";
@@ -140,7 +142,7 @@ describe("T05: rotas do Observatório", () => {
   test("FIRMS sem chave → fallback explicando a chave ausente, sem chamar a rede", async () => {
     let called = false;
     mockFetch(() => { called = true; return json({}); });
-    const res = await firmsGET();
+    const res = await firmsGET(firmsReq());
     const body = await res.json();
     assert.equal(called, false);
     assert.equal(body.meta.source, "fallback");
