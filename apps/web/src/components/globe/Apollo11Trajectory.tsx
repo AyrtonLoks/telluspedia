@@ -40,11 +40,11 @@ export const Apollo11Trajectory: React.FC = () => {
     return () => unsub();
   }, []);
 
-  // When 1969 Apollo 11 activates, smoothly retreat camera to wide view (altitude 5.2)
+  // When 1969 Apollo 11 activates, smoothly frame Cape Canaveral and the real 1969-07-20 Moon
   useEffect(() => {
     if (!hasFlownToOrbit.current) {
       hasFlownToOrbit.current = true;
-      useGlobeStore.getState().flyTo(15, -20, 5.2);
+      useGlobeStore.getState().flyTo(12, -45, 5.4);
     }
   }, [selectedYear, selectedMilestoneId]);
 

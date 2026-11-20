@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { latLngToVector3 } from "./geo-spatial";
+import { APOLLO11_LANDING_DATE, getMoonScenePosition } from "./astronomy";
 
 /**
  * Apollo 11 Mission Reference Coordinates
@@ -21,7 +22,11 @@ export const TRANQUILITY_BASE_COORDS = {
 
 export const EARTH_RADIUS_UNITS = 1.0;
 export const LAUNCH_PAD_RADIUS_UNITS = 1.002;
-export const MOON_DEFAULT_POSITION = new THREE.Vector3(3.6, 0.4, 0);
+/**
+ * Astronomical Earth-fixed Moon position at Apollo 11 touchdown (1969-07-20 20:17:40 UTC),
+ * computed via Meeus Ch. 47 in compressed TellusPedia scene coordinates (~3.67 R⊕).
+ */
+export const MOON_DEFAULT_POSITION = getMoonScenePosition(APOLLO11_LANDING_DATE, "earth");
 export const MOON_RADIUS_UNITS = 0.27;
 
 export const APOLLO11_CONSTANTS = {
@@ -175,8 +180,28 @@ export function getMissionTelemetry(progress: number) {
 }
 
 /**
+ * Builds an orthonormal selenographic basis at `moonPos` where:
+ * - `nearDir` (0°, 0°) points strictly toward Earth (origin), reflecting tidal locking
+ * - `upDir` aligns with celestial/geographic north projected perpendicular to `nearDir`
+ * - `eastDir` points toward lunar east (Mare Crisium / Mare Tranquillitatis side)
+ */
+function buildSelenographicBasis(moonPos: THREE.Vector3) {
+  const nearDir = moonPos.clone().negate().normalize();
+  const worldNorth = new THREE.Vector3(0, 1, 0);
+  const upDir = worldNorth
+    .clone()
+    .addScaledVector(nearDir, -worldNorth.dot(nearDir));
+  if (upDir.lengthSq() < 1e-6) {
+    upDir.set(0, 0, 1);
+  }
+  upDir.normalize();
+  const eastDir = new THREE.Vector3().crossVectors(upDir, nearDir).normalize();
+  return { nearDir, upDir, eastDir };
+}
+
+/**
  * Converts Selenographic coordinates (Latitude, Longitude) to 3D Cartesian coordinates
- * on the Moon surface where the near side (0°, 0°) faces Earth (-X direction).
+ * on the Moon surface where the near side (0°, 0°) faces Earth (origin).
  */
 export function selenographicToVector3(
   lat: number,
@@ -187,11 +212,15 @@ export function selenographicToVector3(
   const latRad = (lat * Math.PI) / 180;
   const lngRad = (lng * Math.PI) / 180;
 
-  const offsetX = -radius * Math.cos(latRad) * Math.cos(lngRad);
-  const offsetY = radius * Math.sin(latRad);
-  const offsetZ = radius * Math.cos(latRad) * Math.sin(lngRad);
+  const { nearDir, upDir, eastDir } = buildSelenographicBasis(moonPos);
 
-  return moonPos.clone().add(new THREE.Vector3(offsetX, offsetY, offsetZ));
+  const cosLat = Math.cos(latRad);
+  const offset = new THREE.Vector3()
+    .addScaledVector(nearDir, radius * cosLat * Math.cos(lngRad))
+    .addScaledVector(upDir, radius * Math.sin(latRad))
+    .addScaledVector(eastDir, radius * cosLat * Math.sin(lngRad));
+
+  return moonPos.clone().add(offset);
 }
 
 /**
@@ -210,22 +239,46 @@ export function getApollo11ControlPoints(
     LAUNCH_PAD_RADIUS_UNITS
   );
 
-  // Point 1: Atmospheric ascent climbing east/southeast over the Atlantic
-  const p1 = latLngToVector3(26.5, -68.0, 1.06);
+  // Build cislunar frame oriented from Earth toward the real astronomical Moon position
+  const moonDist = moonPos.length();
+  const moonDir = moonPos.clone().divideScalar(moonDist || 1);
+  const { upDir, eastDir } = buildSelenographicBasis(moonPos);
+  // Lunar west direction (free-return approach side)
+  const westDir = eastDir.clone().negate();
 
-  // Point 2: Earth Parking Orbit (LEO) insertion over mid-Atlantic
-  const p2 = latLngToVector3(14.0, -28.0, 1.2);
+  // Point 1: Atmospheric ascent climbing east/southeast over the Atlantic
+  const p1 = latLngToVector3(26.5, -68.0, 1.08);
+
+  // Point 2: Earth Parking Orbit (LEO) insertion heading toward translunar plane
+  const p2Dir = p1
+    .clone()
+    .normalize()
+    .lerp(moonDir.clone().addScaledVector(westDir, 0.55).normalize(), 0.45)
+    .normalize();
+  const p2 = p2Dir.multiplyScalar(1.24);
 
   // Point 3: Translunar Injection (TLI) expanding burn arc
-  const p3 = new THREE.Vector3(1.15, 0.35, 1.25);
+  const p3 = moonDir
+    .clone()
+    .multiplyScalar(moonDist * 0.42)
+    .addScaledVector(westDir, 0.78)
+    .addScaledVector(upDir, 0.28);
 
-  // Point 4: Midcourse translunar coast (distance from Earth ~ 2.3)
-  const p4 = new THREE.Vector3(2.15, 0.38, 0.82);
+  // Point 4: Midcourse translunar coast
+  const p4 = moonDir
+    .clone()
+    .multiplyScalar(moonDist * 0.64)
+    .addScaledVector(westDir, 0.64)
+    .addScaledVector(upDir, 0.22);
 
   // Point 5: Translunar approach to Lunar Sphere of Influence (SOI)
-  const p5 = new THREE.Vector3(2.95, 0.44, 0.42);
+  const p5 = moonDir
+    .clone()
+    .multiplyScalar(moonDist * 0.84)
+    .addScaledVector(westDir, 0.48)
+    .addScaledVector(upDir, 0.14);
 
-  // Point 6: Lunar Orbit Insertion (LOI entry) approaching lunar limb from cislunar space
+  // Point 6: Lunar Orbit Insertion (LOI entry) approaching lunar west limb from cislunar space
   const pLoiEntry = selenographicToVector3(15, -120, 0.44, moonPos);
 
   // Point 7: Behind the Moon (far side loop in radio shadow)
@@ -238,7 +291,7 @@ export function getApollo11ControlPoints(
   const pPdi = selenographicToVector3(2, 50, 0.33, moonPos);
 
   // Point 10: Final powered approach descending directly toward Mare Tranquillitatis
-  const pApproach = selenographicToVector3(1, 28, 0.29, moonPos);
+  const pApproach = selenographicToVector3(1, 28, 0.295, moonPos);
 
   // Point 11: Touchdown at Tranquility Base on lunar surface (radius 0.27) facing Earth
   const pLanding = selenographicToVector3(
