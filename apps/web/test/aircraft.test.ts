@@ -99,7 +99,7 @@ test("Traffic route requests global authenticated states and refreshes an expire
     resetObservatorySources();
     for (const [key, previous] of [
       ["OPENSKY_CLIENT_ID", previousId], ["OPENSKY_CLIENT_SECRET", previousSecret], ["OPENSKY_AIRCRAFT_LIMIT", previousLimit],
-    ]) {
+    ] as const) {
       if (previous === undefined) delete process.env[key];
       else process.env[key] = previous;
     }
