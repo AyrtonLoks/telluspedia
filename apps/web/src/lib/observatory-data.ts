@@ -1,3 +1,4 @@
+import type { AisVessel } from "./ais-data";
 import { geoCentroid } from "d3-geo";
 import { latLngToVector3 } from "./geo-spatial";
 import type { ObservatoryMeta } from "./observatory-source";
@@ -134,7 +135,7 @@ export interface MaritimeRoute {
   category: "CANAL" | "STRAIT" | "OCEAN_CORRIDOR";
   chokePoint?: string;
   coordinates: [number, number][]; // [lat, lng][]
-  dailyTonnageTeuApprox: number;
+  dailyTonnageTeuApprox?: number;
 }
 
 export type ObservatoryEntity =
@@ -144,7 +145,8 @@ export type ObservatoryEntity =
   | { type: "EONET"; data: EonetEvent; observationIndex?: number }
   | { type: "EONET_CLUSTER"; data: { lat: number; lng: number; events: EonetEvent[] } }
   | { type: "AIRCRAFT"; data: AircraftState; estimatedPosition?: { lat: number; lng: number }; meta?: ObservatoryMeta }
-  | { type: "MARITIME"; data: MaritimeRoute };
+  | { type: "MARITIME"; data: MaritimeRoute }
+  | { type: "VESSEL"; data: AisVessel; meta: ObservatoryMeta };
 
 /**
  * Posição da ISS por SGP4 a partir do TLE de referência (lib/satellites.ts). Usada só como fallback
@@ -391,6 +393,13 @@ export const FALLBACK_MARITIME_ROUTES: MaritimeRoute[] = [
       [12.6, 43.3],
       [11.8, 44.5],
     ],
+  },
+  {
+    id: "route-english-channel",
+    name: "Canal da Mancha",
+    category: "STRAIT",
+    chokePoint: "Estreito de Dover",
+    coordinates: [[49.03, -5.6], [49.73, -3.22], [50.16, -1.38], [50.68, 0.94], [51.15, 1.68]],
   },
   {
     id: "route-panama",

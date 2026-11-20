@@ -226,7 +226,7 @@ export const aircraftSource = createObservatorySource<AircraftState[]>({
 });
 
 // ---------------------------------------------------------------------------
-// Rotas marítimas — referência estática (não há feed AIS; ver tarefa D08)
+// Rotas marítimas — referência estática. A frota AIS tem endpoint próprio.
 // ---------------------------------------------------------------------------
 export function maritimeRoutesEnvelope(now: number = Date.now()): ObservatoryEnvelope<MaritimeRoute[]> {
   return {
@@ -236,7 +236,7 @@ export function maritimeRoutesEnvelope(now: number = Date.now()): ObservatoryEnv
       provider: LOCAL_DATASET_PROVIDER,
       fetchedAt: new Date(now).toISOString(),
       stale: false,
-      reason: "Rotas de referência estáticas: ainda não há feed AIS de embarcações",
+      reason: "Rotas de referência estáticas. Embarcações AIS disponíveis no endpoint /api/observatory/ais",
     },
   };
 }

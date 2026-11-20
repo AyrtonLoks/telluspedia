@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { simulatedAisSnapshot, type AisSnapshot } from "@/lib/ais-data";
 import {
   ObservatoryLayerId,
   FirmsHotspot,
@@ -101,6 +102,7 @@ interface ObservatoryState {
   showIssGroundTrack: boolean;
   aircraftFleet: AircraftState[];
   maritimeRoutes: MaritimeRoute[];
+  ais: AisSnapshot;
 
   isLoading: Record<ObservatoryLayerId, boolean>;
   hasLoaded: Record<ObservatoryLayerId, boolean>;
@@ -151,6 +153,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   showIssGroundTrack: false,
   aircraftFleet: FALLBACK_AIRCRAFT_FLEET,
   maritimeRoutes: FALLBACK_MARITIME_ROUTES,
+  ais: simulatedAisSnapshot(),
 
   isLoading: {
     NASA_FIRMS: false,
@@ -248,15 +251,10 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
 
 
   loadLayerData: async (layerId) => {
+    if (layerId === "MARITIME_ROUTES" && get().isLoading[layerId]) return;
     set((s) => ({
       isLoading: { ...s.isLoading, [layerId]: true },
     }));
-
-    // Camadas atualizadas por esta carga (tráfego traz aviões e rotas marítimas juntos).
-    const affected: ObservatoryLayerId[] =
-      layerId === "FLIGHTS_OPENSKY" || layerId === "MARITIME_ROUTES"
-        ? ["FLIGHTS_OPENSKY", "MARITIME_ROUTES"]
-        : [layerId];
 
     const applyMeta = (id: ObservatoryLayerId, meta: ObservatoryMeta) =>
       set((s) => ({
@@ -296,44 +294,42 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           get().refreshIssTelemetry();
           applyMeta("ISS_SATELLITES", body.meta);
         }
+      } else if (layerId === "MARITIME_ROUTES") {
+        const body = await fetchEnvelope("/api/observatory/ais");
+        if (!isObservatoryEnvelope(body)) throw new Error("Resposta AIS inválida");
+        const data = body.data as AisSnapshot;
+        if (!Array.isArray(data?.vessels) || !data.corridorCounts) throw new Error("Amostra AIS inválida");
+        set((s) => ({
+          ais: data,
+          layerMeta: { ...s.layerMeta, [layerId]: body.meta },
+          layerError: { ...s.layerError, [layerId]: false },
+        }));
       } else {
         const body = await fetchEnvelope("/api/observatory/traffic");
         if (isObservatoryEnvelope(body?.aircraft) && Array.isArray(body.aircraft.data)) {
           set({ aircraftFleet: body.aircraft.data as AircraftState[] });
           applyMeta("FLIGHTS_OPENSKY", body.aircraft.meta);
         }
-        if (isObservatoryEnvelope(body?.maritimeRoutes) && Array.isArray(body.maritimeRoutes.data)) {
-          set({ maritimeRoutes: body.maritimeRoutes.data as MaritimeRoute[] });
-          applyMeta("MARITIME_ROUTES", body.maritimeRoutes.meta);
-        }
       }
     } catch {
-      // Servidor do TellusPedia inacessível: mantém os dados locais e sinaliza "Offline".
-      set((s) => {
-        const layerError = { ...s.layerError };
-        const layerMeta = { ...s.layerMeta };
-        for (const id of affected) {
-          layerError[id] = true;
-          layerMeta[id] = {
+      set((s) => ({
+        ais: layerId === "MARITIME_ROUTES" ? simulatedAisSnapshot() : s.ais,
+        layerError: { ...s.layerError, [layerId]: true },
+        layerMeta: {
+          ...s.layerMeta,
+          [layerId]: {
             ...initialLocalMeta(),
             fetchedAt: new Date().toISOString(),
             reason: "Servidor do TellusPedia indisponível; exibindo dados locais de referência",
-          };
-        }
-        return { layerError, layerMeta };
-      });
+          },
+        },
+      }));
       if (layerId === "ISS_SATELLITES") set({ issTelemetry: calculateIssPosition() });
     } finally {
-      set((s) => {
-        const isLoading = { ...s.isLoading };
-        const hasLoaded = { ...s.hasLoaded };
-        for (const id of affected) {
-          isLoading[id] = false;
-          hasLoaded[id] = true;
-        }
-        isLoading[layerId] = false;
-        return { isLoading, hasLoaded };
-      });
+      set((s) => ({
+        isLoading: { ...s.isLoading, [layerId]: false },
+        hasLoaded: { ...s.hasLoaded, [layerId]: true },
+      }));
     }
   },
 

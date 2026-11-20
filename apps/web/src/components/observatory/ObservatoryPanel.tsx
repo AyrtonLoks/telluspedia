@@ -83,12 +83,12 @@ const LAYER_OPTIONS: LayerOption[] = [
   },
   {
     id: "MARITIME_ROUTES",
-    name: "Rotas Marítimas Globais",
-    source: "AIS / Corredores Mercantes",
-    description: "Grandes estreitos, canais e rotas de navegação transoceânicas.",
+    name: "Tráfego Marítimo",
+    source: "AIS Stream",
+    description: "Embarcações em Malaca, Suez e no Canal da Mancha. Selecione uma no globo para ver sua última leitura.",
     icon: Anchor,
     tone: "layer-maritime",
-    badgeText: (s) => `${s.maritimeRoutes?.length || 0} corredores mercantes`,
+    badgeText: (s) => `${s.ais.vessels.length} embarcações na amostra`,
   },
 ];
 
@@ -189,8 +189,8 @@ export const ObservatoryPanel: React.FC = () => {
                     <DataSourceBadge
                       testId={`layer-source-${layer.id}`}
                       meta={storeState.layerMeta[layer.id]}
-                      isLoading={storeState.isLoading[layer.id]}
-                      isOffline={storeState.layerError[layer.id]}
+                      isLoading={storeState.isLoading[layer.id] && (layer.id !== "MARITIME_ROUTES" || !storeState.hasLoaded[layer.id])}
+                      isOffline={storeState.layerError[layer.id] && layer.id !== "MARITIME_ROUTES"}
                     />
                   </div>
                   {layer.id === "NASA_EONET" && <EonetLayerControls />}

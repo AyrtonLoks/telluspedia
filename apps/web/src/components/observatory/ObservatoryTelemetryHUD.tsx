@@ -13,6 +13,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { TONES, type Tone } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
+import { VESSEL_LABEL } from "@/lib/ais-data";
 import { DataSourceBadge } from "./DataSourceBadge";
 
 const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone; icon: React.ReactNode }> = {
@@ -22,6 +23,7 @@ const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone
   EONET: { title: "Evento Severo NASA", tone: "layer-events", icon: <Activity /> },
   EONET_CLUSTER: { title: "Eventos próximos", tone: "layer-events", icon: <Activity /> },
   AIRCRAFT: { title: "Aeronave rastreada", tone: "layer-aircraft", icon: <Plane /> },
+  VESSEL: { title: "Embarcação", tone: "layer-maritime", icon: <Anchor /> },
   MARITIME: { title: "Corredor Mercante", tone: "layer-maritime", icon: <Anchor /> },
 };
 
@@ -266,12 +268,47 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
           </>
         )}
 
+        {selectedEntity.type === "VESSEL" && (() => {
+          const { data, meta } = selectedEntity;
+          return (
+            <>
+              <div data-testid="vessel-telemetry" className="space-y-1">
+                <div className="text-label font-medium text-fg">{data.name ?? "Nome não informado"}</div>
+                <DataSourceBadge meta={meta} />
+                <p className="text-caption text-fg-muted">
+                  {meta.source === "live" ? (
+                    <a href="https://aisstream.io/documentation" target="_blank" rel="noreferrer" className="underline">
+                      {meta.provider}
+                    </a>
+                  ) : meta.provider}
+                  {data.mmsi && ` · MMSI ${data.mmsi}`}
+                </p>
+              </div>
+              <div className={FIELD_GRID}>
+                <Field label="Tipo" mono={false}>{VESSEL_LABEL[data.kind]}</Field>
+                <Field label="Bandeira (MID)" mono={false}>{data.flag ?? "Indisponível"}</Field>
+                <Field label="Destino informado" mono={false}>{data.destination ?? "Indisponível"}</Field>
+                <Field label="Velocidade">{data.speedKnots == null ? "Indisponível" : `${data.speedKnots.toLocaleString("pt-BR")} nós`}</Field>
+              </div>
+              {data.observedAt > 0 && (
+                <p className="text-caption text-fg-muted">
+                  Posição recebida · {new Date(data.observedAt).toLocaleString("pt-BR", { timeZone: "UTC" })} UTC
+                </p>
+              )}
+              <Button variant="primary" size="sm" className="w-full" onClick={() => handleFocus(data.lat, data.lng, 1.6)}>
+                <Crosshair aria-hidden="true" className="h-4 w-4" />
+                Focar última posição
+              </Button>
+            </>
+          );
+        })()}
+
         {selectedEntity.type === "MARITIME" && (
           <>
             <div className="space-y-0.5">
               <div className="text-label font-medium text-fg">{selectedEntity.data.name}</div>
               <span className="text-caption text-fg-muted">
-                {selectedEntity.data.category === "CANAL" ? "Canal Interoceânico" : "Estreito Estratégico"}
+                {{ CANAL: "Canal", STRAIT: "Estreito", OCEAN_CORRIDOR: "Corredor oceânico" }[selectedEntity.data.category]}
               </span>
             </div>
 
@@ -279,9 +316,11 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
               <Field label="Ponto crítico" mono={false}>
                 {selectedEntity.data.chokePoint || "Corredor Mercante Principal"}
               </Field>
-              <Field label="Volume diário estimado">
-                ~{selectedEntity.data.dailyTonnageTeuApprox.toLocaleString("pt-BR")} TEU/dia
-              </Field>
+              {selectedEntity.data.dailyTonnageTeuApprox != null && (
+                <Field label="Volume diário de referência">
+                  ~{selectedEntity.data.dailyTonnageTeuApprox.toLocaleString("pt-BR")} TEU/dia
+                </Field>
+              )}
             </div>
 
             <Button

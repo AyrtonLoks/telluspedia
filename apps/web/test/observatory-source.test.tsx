@@ -194,9 +194,15 @@ describe("T05: store e badge", () => {
     await useObservatoryStore.getState().loadLayerData("FLIGHTS_OPENSKY");
     const s = useObservatoryStore.getState();
     assert.equal(s.layerError.FLIGHTS_OPENSKY, true);
-    assert.equal(s.layerError.MARITIME_ROUTES, true);
+    assert.equal(s.layerError.MARITIME_ROUTES, false);
     assert.equal(s.layerMeta.FLIGHTS_OPENSKY.source, "fallback");
     assert.ok(s.aircraftFleet.length > 0);
+
+    await s.loadLayerData("MARITIME_ROUTES");
+    const maritime = useObservatoryStore.getState();
+    assert.equal(maritime.layerError.MARITIME_ROUTES, true);
+    assert.equal(maritime.layerMeta.MARITIME_ROUTES.source, "fallback");
+    assert.ok(maritime.ais.vessels.length > 0);
   });
 
   test("badge: fallback mostra 'Simulado' e nunca 'Ao vivo'", () => {
