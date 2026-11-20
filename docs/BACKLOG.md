@@ -158,7 +158,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D01 | Globo escuro: color space + tone mapping | 3D | P0 | P | REVIEW | codex | — | G-GLOBO |
 | T03 | Remover dados e citações inventados | Dados | P0 | G | IN_PROGRESS | antigravity | — | G-PAIS |
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | TODO | — | — | G-OBS |
-| T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | IN_PROGRESS | claude | — | G-OBS |
+| T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | REVIEW | claude | — | G-OBS |
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | IN_PROGRESS | codex | — | G-PIPELINE |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | TODO | — | — | G-ESTUDOS |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
@@ -359,7 +359,7 @@ Só ~30 países têm dados reais em `apps/web/src/lib/country-data.ts` (`PILOT_C
 
 ### T05 · Sinalizar dados ao vivo vs fallback
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t05-fonte-dados · **Worktree:** ../telluspedia-wt/claude-t05
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/t05-fonte-dados · **Worktree:** ../telluspedia-wt/claude-t05
 - **Prioridade:** P0 · **Área:** Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -378,15 +378,16 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 6. Atualizar testes.
 
 **Critérios de aceite**
-- [ ] Todas as rotas do observatório retornam `meta.source`.
-- [ ] Desligando a rede (ou sem chave), a UI mostra "Simulado" e não "Ao vivo".
-- [ ] Fallback não fica cacheado por 15 min.
+- [x] Todas as rotas do observatório retornam `meta.source`.
+- [x] Desligando a rede (ou sem chave), a UI mostra "Simulado" e não "Ao vivo".
+- [x] Fallback não fica cacheado por 15 min.
 
 **Como verificar**: testes; manualmente, bloquear domínios externos (DevTools não ajuda, é server-side — usar variável de ambiente para forçar falha ou desconectar a rede).
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master (db22230).
+- 2026-11-20 · claude · REVIEW · Commit `4bd31fe`. **Servidor:** novo `lib/observatory-source.ts` (envelope `{ data, meta }` com `meta.source` = `live` | `computed` | `fallback`, `provider`, `fetchedAt`, `stale`, `reason`; cache com TTL live normal e no máximo 60 s para falhas; reaproveita a última leitura live válida por até 6 h marcada `stale: true`; `console.warn` com o motivo da falha). Novo `lib/observatory-sources.ts` com as fontes EONET, FIRMS, ISS e aviões (lógica de busca movida sem alteração; o parse do FIRMS continua o antigo de propósito — é escopo da T04). As rotas `/api/observatory/{eonet,firms,iss,traffic}` viraram adaptadores finos. **Exceção ao envelope único:** `/traffic` responde `{ aircraft: Envelope, maritimeRoutes: Envelope }`, porque os dois conjuntos têm procedências diferentes (rotas marítimas são sempre referência estática, motivo "sem feed AIS", ver D08). ISS sem provedor = `fallback` com provider "modelo orbital aproximado" (não `computed`, porque o modelo é impreciso — D04). `/cosmos` não foi alterada (não é consumida pelo store; validação dela é a T09). **Cliente:** `observatoryStore` ganhou `layerMeta` e `layerError` por camada (servidor inacessível → "Offline" com dados locais). `ObservatoryPanel`: o "Ao Vivo (SWR)" fixo virou `DataSourceBadge` com estados Ao vivo (verde), Ao vivo · desatualizado (âmbar), Calculado, Simulado (âmbar), Offline (cinza) e Carregando; tooltip com fonte, horário e motivo. Descrição da ISS deixou de dizer "tempo real". **Testes:** `apps/web/test/observatory-source.test.tsx` (14 casos: cache, TTL de fallback, stale, rotas com fetch mockado — live, rede fora, HTTP 503, FIRMS sem chave, ISS, tráfego —, store e badge). **Validação após rebase sobre D01/T02:** typecheck ok, lint ok, 221/221 testes, build ok. **Para conferir visualmente:** sem `NASA_FIRMS_MAP_KEY` no `.env`, ligar Queimadas deve mostrar "Simulado" com o motivo no tooltip; Rotas Marítimas sempre "Simulado". **Desbloqueia:** D05 (com T04), D06, D07, D08 e D16. **Observação:** com a máquina carregada pelos builds paralelos, o `next build` levou mais de 8 min; usar timeout ≥ 20 min.
 
 ---
 
