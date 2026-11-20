@@ -20,6 +20,7 @@ import {
   createObservatorySource,
   type ObservatoryEnvelope,
 } from "./observatory-source";
+import { normalizeEonetEvents } from "./eonet-data";
 import { parseFirmsCsv } from "./firms-csv";
 import { createCountryLookup } from "./firms-country";
 import {
@@ -53,44 +54,9 @@ export const eonetSource = createObservatorySource<EonetEvent[]>({
   liveTtlMs: 15 * 60 * 1000,
   fallback: () => FALLBACK_EONET_EVENTS,
   fetchLive: async () => {
-    const res = await fetchWithTimeout("https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=30", 3500);
-    const json = await res.json();
-    if (!Array.isArray(json?.events) || json.events.length === 0) {
-      throw new SourceUnavailableError("Provedor não retornou eventos");
-    }
-
-    const events: EonetEvent[] = [];
-    for (const item of json.events) {
-      const geometry = item.geometry?.[item.geometry.length - 1];
-      if (geometry?.coordinates && geometry.coordinates.length >= 2) {
-        const lng = geometry.coordinates[0];
-        const lat = geometry.coordinates[1];
-        const catId = item.categories?.[0]?.id || "wildfires";
-
-        let normalizedCategory: EonetEvent["category"] = "wildfires";
-        if (catId.toLowerCase().includes("storm")) normalizedCategory = "severeStorms";
-        else if (catId.toLowerCase().includes("volcano")) normalizedCategory = "volcanoes";
-        else if (catId.toLowerCase().includes("flood")) normalizedCategory = "floods";
-        else if (catId.toLowerCase().includes("ice")) normalizedCategory = "seaLakeIce";
-
-        events.push({
-          id: item.id || `eonet-${Math.random().toString(36).substring(2, 7)}`,
-          title: item.title,
-          category: normalizedCategory,
-          lat,
-          lng,
-          date: geometry.date || item.geometry?.[0]?.date || new Date().toISOString(),
-          magnitudeValue: geometry.magnitudeValue,
-          magnitudeUnit: geometry.magnitudeUnit,
-          sources: (item.sources || []).map((s: { id: string; url: string }) => ({
-            id: s.id,
-            url: s.url,
-          })),
-        });
-      }
-    }
-
-    if (events.length === 0) throw new SourceUnavailableError("Provedor não retornou eventos com coordenadas");
+    const res = await fetchWithTimeout("https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=100", 3500);
+    const events = normalizeEonetEvents(await res.json());
+    if (!events.length) throw new SourceUnavailableError("Provedor não retornou eventos com coordenadas");
     return events;
   },
 });

@@ -3,6 +3,7 @@ import {
   ObservatoryLayerId,
   FirmsHotspot,
   EonetEvent,
+  EonetCategoryFilter,
   IssTelemetryData,
   AircraftState,
   MaritimeRoute,
@@ -48,6 +49,10 @@ function cachedSatrec(tle: SatelliteTle): SatRec | null {
   return satrecCache.get(key) ?? null;
 }
 
+function isEonetSelection(entity: ObservatoryEntity | null) {
+  return entity?.type === "EONET" || entity?.type === "EONET_CLUSTER";
+}
+
 const DEFAULT_FIRMS_WINDOW: FirmsWindow = { days: 1, confidence: "nominal" };
 const fallbackFirms = (w: FirmsWindow) => filterByConfidence(FALLBACK_FIRMS_HOTSPOTS, w.confidence);
 
@@ -86,6 +91,7 @@ interface ObservatoryState {
    */
   firmsByCountry: Record<string, FirmsCountryStats> | null;
   eonetEvents: EonetEvent[];
+  eonetCategory: EonetCategoryFilter;
   issTelemetry: IssTelemetryData | null;
   /** TLEs (CelesTrak) propagados com SGP4 no cliente (D04). */
   satellites: SatelliteTle[];
@@ -107,6 +113,7 @@ interface ObservatoryState {
   setLayerOpacity: (layerId: ObservatoryLayerId, opacity: number) => void;
   setPanelOpen: (open: boolean) => void;
   togglePanel: () => void;
+  setEonetCategory: (category: EonetCategoryFilter) => void;
   setSelectedEntity: (entity: ObservatoryEntity | null) => void;
   /** Muda janela/confiança das queimadas e recarrega a camada. */
   setFirmsWindow: (window: Partial<FirmsWindow>) => void;
@@ -134,6 +141,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   firmsWindow: DEFAULT_FIRMS_WINDOW,
   firmsByCountry: null,
   eonetEvents: FALLBACK_EONET_EVENTS,
+  eonetCategory: "all",
   issTelemetry: calculateIssPosition(),
   satellites: [],
   satelliteCategories: ["station", "visual"],
@@ -157,18 +165,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   layerMeta: perLayer(initialLocalMeta),
   layerError: perLayer(() => false),
 
-  toggleLayer: (layerId) => {
-    const { activeLayers, loadLayerData, hasLoaded } = get();
-    const isActive = activeLayers.includes(layerId);
-    if (isActive) {
-      set({ activeLayers: activeLayers.filter((id) => id !== layerId) });
-    } else {
-      set({ activeLayers: [...activeLayers, layerId] });
-      if (!hasLoaded[layerId]) {
-        loadLayerData(layerId).catch(() => {});
-      }
-    }
-  },
+  toggleLayer: (layerId) => get().setLayerActive(layerId, !get().activeLayers.includes(layerId)),
 
   setLayerActive: (layerId, active) => {
     const { activeLayers, loadLayerData, hasLoaded } = get();
@@ -179,12 +176,19 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         loadLayerData(layerId).catch(() => {});
       }
     } else if (!active && isCurrentlyActive) {
-      set({ activeLayers: activeLayers.filter((id) => id !== layerId) });
+      set((state) => ({
+        activeLayers: activeLayers.filter((id) => id !== layerId),
+        selectedEntity: layerId === "NASA_EONET" && isEonetSelection(state.selectedEntity) ? null : state.selectedEntity,
+      }));
     }
   },
 
   setAllLayers: (layers) => {
-    set({ activeLayers: layers });
+    set((state) => ({
+      activeLayers: layers,
+      selectedEntity: !layers.includes("NASA_EONET") && isEonetSelection(state.selectedEntity)
+        ? null : state.selectedEntity,
+    }));
     const { hasLoaded, loadLayerData } = get();
     for (const layer of layers) {
       if (!hasLoaded[layer]) {
@@ -206,6 +210,13 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   togglePanel: () => set((s) => ({ isPanelOpen: !s.isPanelOpen })),
 
   setSelectedEntity: (entity) => set({ selectedEntity: entity }),
+
+  setEonetCategory: (category) => set((state) => {
+    const selected = state.selectedEntity;
+    const dismissSelection = selected?.type === "EONET_CLUSTER" ||
+      (selected?.type === "EONET" && category !== "all" && selected.data.category !== category);
+    return { eonetCategory: category, selectedEntity: dismissSelection ? null : selected };
+  }),
 
   refreshIssTelemetry: (now = Date.now()) => {
     const iss = get().satellites.find((t) => t.noradId === ISS_NORAD_ID);
@@ -325,5 +336,6 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       activeLayers: [],
       selectedEntity: null,
       isPanelOpen: false,
+      eonetCategory: "all",
     }),
 }));

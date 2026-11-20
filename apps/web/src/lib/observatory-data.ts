@@ -1,3 +1,4 @@
+import { geoCentroid } from "d3-geo";
 import { latLngToVector3 } from "./geo-spatial";
 import { referenceIssTelemetry } from "./satellites";
 
@@ -23,15 +24,67 @@ export interface FirmsHotspot {
   daynight?: "D" | "N";
 }
 
+export const EONET_CATEGORIES = {
+  severeStorms: "Tempestades severas",
+  volcanoes: "Vulcões",
+  floods: "Enchentes",
+  seaLakeIce: "Gelo em mares e lagos",
+  drought: "Secas",
+  wildfires: "Incêndios",
+  dustHaze: "Poeira e névoa",
+  earthquakes: "Terremotos",
+  landslides: "Deslizamentos",
+  manmade: "Eventos de origem humana",
+  snow: "Neve",
+  tempExtremes: "Temperaturas extremas",
+  waterColor: "Alterações na cor da água",
+  other: "Outros eventos",
+} as const;
+
+export type EonetCategory = keyof typeof EONET_CATEGORIES;
+export type EonetCategoryFilter = EonetCategory | "all";
+
+type EonetCoordinates = [lng: number, lat: number, ...extra: number[]];
+export type EonetObservation = {
+  date: string;
+  magnitudeValue?: number;
+  magnitudeUnit?: string;
+  magnitudeDescription?: string;
+} & (
+  | { type: "Point"; coordinates: EonetCoordinates }
+  | { type: "Polygon"; coordinates: EonetCoordinates[][] }
+);
+
+export function observationLocation(observation: EonetObservation) {
+  if (observation.type === "Point") {
+    const [lng, lat] = observation.coordinates;
+    return { lng, lat };
+  }
+  const [exterior] = observation.coordinates;
+  const [lng, lat] = geoCentroid({ type: "MultiPoint", coordinates: exterior.slice(0, -1) });
+  return { lng, lat };
+}
+
+const dateFormat = new Intl.DateTimeFormat("pt-BR", {
+  dateStyle: "short", timeStyle: "short", timeZone: "UTC",
+});
+
+export function formatEonetDate(date: string) {
+  const timestamp = Date.parse(date);
+  return Number.isFinite(timestamp) ? `${dateFormat.format(timestamp)} UTC` : "Data indisponível";
+}
+
 export interface EonetEvent {
   id: string;
   title: string;
-  category: "severeStorms" | "volcanoes" | "wildfires" | "floods" | "seaLakeIce";
+  category: EonetCategory;
   lat: number;
   lng: number;
   date: string;
   magnitudeValue?: number;
   magnitudeUnit?: string;
+  magnitudeDescription?: string;
+  geometry?: EonetObservation[];
   sources: { id: string; url: string }[];
 }
 
@@ -85,7 +138,8 @@ export type ObservatoryEntity =
   | { type: "FIRMS"; data: FirmsHotspot }
   | { type: "ISS"; data: IssTelemetryData }
   | { type: "SATELLITE"; data: SatelliteSnapshot }
-  | { type: "EONET"; data: EonetEvent }
+  | { type: "EONET"; data: EonetEvent; observationIndex?: number }
+  | { type: "EONET_CLUSTER"; data: { lat: number; lng: number; events: EonetEvent[] } }
   | { type: "AIRCRAFT"; data: AircraftState }
   | { type: "MARITIME"; data: MaritimeRoute };
 

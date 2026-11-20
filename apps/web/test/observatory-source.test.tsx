@@ -115,13 +115,15 @@ describe("T05: rotas do Observatório", () => {
   test("EONET com provedor respondendo → envelope live", async () => {
     mockFetch(() =>
       json({ events: [{ id: "EONET_1", title: "Incêndio X", categories: [{ id: "wildfires" }],
-        geometry: [{ date: "2026-11-19T00:00:00Z", coordinates: [-60, -10] }], sources: [] }] })
+        geometry: [{ date: "2026-11-19T00:00:00Z", coordinates: [-60, -10] },
+          { date: "2026-11-18T00:00:00Z", coordinates: [-61, -10] }], sources: [] }] })
     );
     const res = await eonetGET();
     const body = await res.json();
     assert.ok(isObservatoryEnvelope(body));
     assert.equal(body.meta.source, "live");
     assert.equal((body.data as { id: string }[])[0].id, "EONET_1");
+    assert.deepEqual(body.data[0].geometry.map((point: { coordinates: number[] }) => point.coordinates), [[-61, -10], [-60, -10]]);
     assert.equal(res.headers.get("X-Cache"), "MISS");
   });
 

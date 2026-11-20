@@ -5,7 +5,7 @@ import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame } fro
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
-import { type ObservatoryEntity } from "@/lib/observatory-data";
+import { EONET_CATEGORIES, formatEonetDate, observationLocation, type ObservatoryEntity } from "@/lib/observatory-data";
 import { firmsMapUrl, formatAcqTime, FIRMS_CONFIDENCE_LABEL } from "@/lib/firms-display";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Button, buttonClasses } from "@/components/ui/Button";
@@ -19,6 +19,7 @@ const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone
   ISS: { title: "Telemetria Orbital ISS", tone: "layer-satellites", icon: <Radio /> },
   SATELLITE: { title: "Satélite Artificial", tone: "layer-satellites", icon: <Radio /> },
   EONET: { title: "Evento Severo NASA", tone: "layer-events", icon: <Activity /> },
+  EONET_CLUSTER: { title: "Eventos próximos", tone: "layer-events", icon: <Activity /> },
   AIRCRAFT: { title: "Aeronave Comercial", tone: "layer-aircraft", icon: <Plane /> },
   MARITIME: { title: "Corredor Mercante", tone: "layer-maritime", icon: <Anchor /> },
 };
@@ -191,41 +192,35 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
         )}
 
         {selectedEntity.type === "EONET" && (
+          <EonetDetails entity={selectedEntity} onFocus={handleFocus} onSelect={setSelectedEntity} />
+        )}
+
+        {selectedEntity.type === "EONET_CLUSTER" && (
           <>
-            <div className="space-y-0.5">
-              <div className="text-label font-medium text-fg">{selectedEntity.data.title}</div>
-              <span className="text-caption text-fg-muted">
-                Categoria: {selectedEntity.data.category} · {new Date(selectedEntity.data.date).toLocaleDateString("pt-BR")}
-              </span>
-            </div>
-
-            {selectedEntity.data.magnitudeValue && (
-              <div className={cn(FIELD_GRID, "grid-cols-1")}>
-                <Field label="Magnitude observada">
-                  {selectedEntity.data.magnitudeValue} {selectedEntity.data.magnitudeUnit || ""}
-                </Field>
-              </div>
-            )}
-
-            <div className="flex items-center gap-2">
-              <Button variant="primary" size="sm" className="flex-1" onClick={() => handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.8)}>
-                <Crosshair aria-hidden="true" className="h-4 w-4" />
-                Focar Evento
-              </Button>
-
-              {selectedEntity.data.sources?.[0]?.url && (
-                <a
-                  href={selectedEntity.data.sources[0].url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Abrir relatório científico primário"
-                  title="Abrir relatório científico primário"
-                  className={buttonClasses("secondary", "sm", "w-8 px-0")}
-                >
-                  <ExternalLink aria-hidden="true" className="h-4 w-4" />
-                </a>
-              )}
-            </div>
+            <p className="text-caption text-fg-muted">{selectedEntity.data.events.length} eventos EONET</p>
+            <ul className="max-h-48 space-y-1 overflow-auto">
+              {selectedEntity.data.events.map((event) => (
+                <li key={event.id}>
+                  <button
+                    type="button"
+                    className="w-full rounded-control border border-line px-2 py-1 text-left text-label text-fg hover:bg-surface-raised"
+                    onClick={() => setSelectedEntity({ type: "EONET", data: event })}
+                  >
+                    {event.title}
+                    <span className="block text-caption text-fg-muted">{EONET_CATEGORIES[event.category]}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="w-full"
+              onClick={() => handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.5)}
+            >
+              <Crosshair aria-hidden="true" className="h-4 w-4" />
+              Aproximar grupo
+            </Button>
           </>
         )}
 
@@ -290,3 +285,65 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
     </Panel>
   );
 };
+
+function EonetDetails({ entity, onFocus, onSelect }: {
+  entity: Extract<ObservatoryEntity, { type: "EONET" }>;
+  onFocus: (lat: number, lng: number, altitude?: number) => void;
+  onSelect: (entity: ObservatoryEntity) => void;
+}) {
+  const { data, observationIndex } = entity;
+  const geometry = data.geometry ?? [];
+  const observation = geometry[observationIndex ?? geometry.length - 1];
+  const { lat, lng } = observation ? observationLocation(observation) : data;
+  const { date, magnitudeValue, magnitudeUnit, magnitudeDescription } = observation ?? data;
+  const showTrack = data.category === "severeStorms" && geometry.length > 1;
+  return (
+    <>
+      <div className="space-y-0.5">
+        <div className="text-label font-medium text-fg">{data.title}</div>
+        <p className="text-caption text-fg-muted">{EONET_CATEGORIES[data.category]} · {formatEonetDate(date)}</p>
+      </div>
+      <div className={cn(FIELD_GRID, "grid-cols-1")}>
+        <Field label="Magnitude observada">
+          {magnitudeValue == null ? "Indisponível" : `${magnitudeValue.toLocaleString("pt-BR")} ${magnitudeUnit ?? ""}`}
+        </Field>
+        {magnitudeDescription && <span className="text-caption text-fg-muted">{magnitudeDescription}</span>}
+      </div>
+      {showTrack && (
+        <div className="space-y-1">
+          <p className="text-caption font-medium text-fg">Observações da trajetória</p>
+          <ul className="flex max-h-24 flex-wrap gap-1 overflow-auto" aria-label="Observações da trajetória">
+            {geometry.map((point, index) => (
+              <li key={`${point.date}-${index}`}>
+                <button
+                  type="button"
+                  aria-pressed={point === observation}
+                  className="rounded-control border border-line px-2 py-1 text-caption text-fg-secondary aria-pressed:bg-surface-raised aria-pressed:text-fg"
+                  onClick={() => onSelect({ type: "EONET", data, observationIndex: index })}
+                >
+                  {formatEonetDate(point.date)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <Button variant="primary" size="sm" className="w-full" onClick={() => onFocus(lat, lng, 1.8)}>
+        <Crosshair aria-hidden="true" className="h-4 w-4" />
+        Focar Evento
+      </Button>
+      {data.sources.length > 0 && (
+        <ul aria-label="Fontes do evento" className="flex flex-wrap gap-1">
+          {data.sources.map(({ id, url }, index) => (
+            <li key={`${url}-${index}`}>
+              <a href={url} target="_blank" rel="noopener noreferrer" className={buttonClasses("secondary", "sm")}>
+                {id}
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}

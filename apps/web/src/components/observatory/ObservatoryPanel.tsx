@@ -1,5 +1,6 @@
 "use client";
 
+import { EonetLayerControls } from "./EonetLayerControls";
 import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React from "react";
 import {
@@ -55,7 +56,12 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Monitoramento de tempestades, vulcões, secas e eventos naturais.",
     icon: Activity,
     tone: "layer-events",
-    badgeText: (s) => `${s.eonetEvents?.length || 0} eventos severos`,
+    badgeText: (s: ReturnType<typeof useObservatoryStore.getState>) => {
+      const count = s.eonetCategory === "all"
+        ? s.eonetEvents.length
+        : s.eonetEvents.filter((event) => event.category === s.eonetCategory).length;
+      return `${count.toLocaleString("pt-BR")} eventos`;
+    },
   },
   {
     id: "ISS_SATELLITES",
@@ -187,6 +193,7 @@ export const ObservatoryPanel: React.FC = () => {
                       isOffline={storeState.layerError[layer.id]}
                     />
                   </div>
+                  {layer.id === "NASA_EONET" && <EonetLayerControls />}
                   {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>

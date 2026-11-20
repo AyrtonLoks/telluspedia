@@ -1,115 +1,216 @@
 "use client";
 
-import React, { useMemo, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { latLngToVector3 } from "@/lib/geo-spatial";
+import { latLngToVector3, slerpVectors } from "@/lib/geo-spatial";
 import { useObservatoryStore } from "@/stores/observatoryStore";
-import { EonetEvent } from "@/lib/observatory-data";
+import { createEonetIndex, getEonetMarkers, type EonetMarker } from "@/lib/eonet-clusters";
+import type { EonetCategory, EonetEvent } from "@/lib/observatory-data";
+import { createEonetIcon } from "./eonet-icons";
 
-function getCategoryColor(category: EonetEvent["category"]): string {
-  switch (category) {
-    case "severeStorms":
-      return "#38bdf8"; // Ciano / Azul Elétrico
-    case "volcanoes":
-      return "#f87171"; // Vermelho / Magma
-    case "wildfires":
-      return "#fb923c"; // Laranja / Fogo
-    case "floods":
-      return "#60a5fa"; // Azul Celeste
-    case "seaLakeIce":
-      return "#2dd4bf"; // Turquesa Glacial
-    default:
-      return "#e2e8f0";
-  }
+const MARKER_RADIUS = 1.012;
+const EVENT_SIZE = 27;
+const CLUSTER_SIZE = 36;
+const ignoreRaycast = () => null;
+type Icon = EonetCategory | "track" | number;
+
+interface VisibleMarker extends EonetMarker {
+  position: THREE.Vector3;
+  key: string;
 }
 
-export const NasaEonetLayer: React.FC = () => {
-  const events = useObservatoryStore((s) => s.eonetEvents);
-  const opacity = useObservatoryStore((s) => s.layerOpacity.NASA_EONET ?? 1.0);
-  const setSelectedEntity = useObservatoryStore((s) => s.setSelectedEntity);
+function projectMarkers(markers: EonetMarker[], group: THREE.Group, camera: THREE.Camera, width: number, height: number) {
+  group.updateWorldMatrix(true, false);
+  const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
+  const center = group.getWorldPosition(new THREE.Vector3());
+  const observer = cameraPosition.sub(center);
+  const visible: (VisibleMarker & { x: number; y: number })[] = [];
+  const projected = new THREE.Vector3();
 
-  const markerGeometry = useMemo(() => new THREE.SphereGeometry(0.012, 12, 12), []);
-  const ringGeometry = useMemo(() => new THREE.RingGeometry(0.016, 0.024, 24), []);
+  for (const marker of markers.sort((a, b) => b.events.length - a.events.length)) {
+    const position = latLngToVector3(marker.lat, marker.lng, MARKER_RADIUS);
+    if (position.dot(observer) <= MARKER_RADIUS ** 2) continue;
+    projected.copy(position).applyMatrix4(group.matrixWorld).project(camera);
+    if (Math.abs(projected.x) > 1 || Math.abs(projected.y) > 1 || Math.abs(projected.z) > 1) continue;
+    const x = projected.x * width / 2;
+    const y = projected.y * height / 2;
 
-  // Materiais compartilhados por categoria
-  const materials = useMemo(() => {
-    const categories: EonetEvent["category"][] = [
-      "severeStorms",
-      "volcanoes",
-      "wildfires",
-      "floods",
-      "seaLakeIce",
-    ];
-
-    const map: Record<string, { core: THREE.MeshBasicMaterial; ring: THREE.MeshBasicMaterial }> = {};
-
-    for (const cat of categories) {
-      const hex = getCategoryColor(cat);
-      map[cat] = {
-        core: new THREE.MeshBasicMaterial({
-          color: hex,
-          transparent: true,
-          opacity: Math.max(0.2, opacity * 0.95),
-        }),
-        ring: new THREE.MeshBasicMaterial({
-          color: hex,
-          transparent: true,
-          opacity: Math.max(0.15, opacity * 0.65),
-          side: THREE.DoubleSide,
-        }),
-      };
+    // Geographic clusters can still project close together at the limb or longitude seam.
+    const neighbour = visible.find((other) => Math.hypot(x - other.x, y - other.y) < CLUSTER_SIZE + 2);
+    if (neighbour) {
+      neighbour.events.push(...marker.events);
+    } else {
+      visible.push({ ...marker, events: [...marker.events], position, key: "", x, y });
     }
-    return map;
-  }, [opacity]);
+  }
+  for (const marker of visible) marker.key = marker.events.map((event) => event.id).sort().join("|");
+  return visible;
+}
 
-  // Descarte estrito de geometrias e materiais na desmontagem (RN21)
-  useEffect(() => {
-    return () => {
-      markerGeometry.dispose();
-      ringGeometry.dispose();
-      Object.values(materials).forEach(({ core, ring }) => {
-        core.dispose();
-        ring.dispose();
-      });
-    };
-  }, [markerGeometry, ringGeometry, materials]);
-
-  const items = useMemo(() => {
-    return events.map((event) => {
-      const pos = latLngToVector3(event.lat, event.lng, 1.006);
-      const normal = pos.clone().normalize();
-      const quaternion = new THREE.Quaternion().setFromUnitVectors(
-        new THREE.Vector3(0, 0, 1),
-        normal
-      );
-      return { event, pos, quaternion };
-    });
-  }, [events]);
-
-  if (events.length === 0) return null;
+function MarkerSprite({ position, texture, px, opacity, label, spin, onSelect }: {
+  position: THREE.Vector3;
+  texture: THREE.Texture;
+  px: number;
+  opacity: number;
+  label: string;
+  spin?: boolean;
+  onSelect: () => void;
+}) {
+  const material = useRef<THREE.SpriteMaterial>(null);
+  const height = useThree((state) => state.size.height);
+  const camera = useThree((state) => state.camera);
+  const scale = 2 * px / (Math.max(1, height) * camera.projectionMatrix.elements[5]);
+  useFrame((_, delta) => {
+    if (spin && material.current) material.current.rotation += Math.min(delta, 0.1) * 0.5;
+  });
 
   return (
-    <group>
-      {items.map(({ event, pos, quaternion }) => {
-        const mat = materials[event.category] || materials.wildfires;
-        return (
-          <group
-            key={event.id}
-            position={pos}
-            quaternion={quaternion}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedEntity({ type: "EONET", data: event });
-            }}
-          >
-            {/* Esfera central do evento */}
-            <mesh geometry={markerGeometry} material={mat.core} />
+    <sprite
+      name={label}
+      position={position}
+      scale={[scale, scale, 1]}
+      visible={opacity > 0}
+      onClick={(event) => {
+        if (opacity <= 0) return;
+        event.stopPropagation();
+        onSelect();
+      }}
+    >
+      <spriteMaterial
+        ref={material}
+        map={texture}
+        transparent
+        depthWrite={false}
+        opacity={opacity}
+        toneMapped={false}
+        sizeAttenuation={false}
+        alphaTest={0.08}
+      />
+    </sprite>
+  );
+}
 
-            {/* Anel concêntrico plano alinhado à superfície */}
-            <mesh geometry={ringGeometry} material={mat.ring} />
-          </group>
-        );
-      })}
+function StormTrack({ event, icon, opacity, onSelect }: {
+  event: EonetEvent;
+  icon: THREE.Texture;
+  opacity: number;
+  onSelect: (index: number) => void;
+}) {
+  const observations = useMemo(() => (event.geometry ?? []).flatMap((observation, index) =>
+    observation.type === "Point" ? [{
+      date: observation.date, index,
+      position: latLngToVector3(observation.coordinates[1], observation.coordinates[0], 1.009),
+    }] : []
+  ), [event]);
+  const geometry = useMemo(() => {
+    const points: THREE.Vector3[] = [];
+    for (let i = 1; i < observations.length; i++) {
+      const a = observations[i - 1].position;
+      const b = observations[i].position;
+      const segments = Math.max(1, Math.ceil(a.angleTo(b) / (Math.PI / 60)));
+      if (!points.length) points.push(a);
+      for (let step = 1; step <= segments; step++) points.push(slerpVectors(a, b, step / segments));
+    }
+    return new THREE.BufferGeometry().setFromPoints(points);
+  }, [observations]);
+  const line = useMemo(() => new THREE.Line(), []);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  if (observations.length < 2) return null;
+
+  return (
+    <group name="eonet-storm-track">
+      <primitive object={line} geometry={geometry} raycast={ignoreRaycast}>
+        <lineBasicMaterial color="#8adaff" transparent opacity={0.8 * opacity} depthWrite={false} />
+      </primitive>
+      {observations.filter(({ index }) => index !== (event.geometry?.length ?? 0) - 1).map(({ position, date, index }) => (
+        <MarkerSprite
+          key={index}
+          position={position}
+          texture={icon}
+          px={14}
+          opacity={opacity}
+          label={date}
+          onSelect={() => onSelect(index)}
+        />
+      ))}
     </group>
   );
-};
+}
+
+export function NasaEonetLayer() {
+  const events = useObservatoryStore((state) => state.eonetEvents);
+  const category = useObservatoryStore((state) => state.eonetCategory);
+  const opacity = useObservatoryStore((state) => state.layerOpacity.NASA_EONET ?? 1);
+  const selected = useObservatoryStore((state) => state.selectedEntity);
+  const setSelected = useObservatoryStore((state) => state.setSelectedEntity);
+  const liveEvents = useMemo(
+    () => category === "all" ? events : events.filter((event) => event.category === category),
+    [events, category]
+  );
+  const index = useMemo(() => createEonetIndex(liveEvents), [liveEvents]);
+  const group = useRef<THREE.Group>(null);
+  const lastUpdate = useRef({ time: -1, key: "", index });
+  const textures = useMemo(() => new Map<Icon, THREE.Texture>(), []);
+  const [markers, setMarkers] = useState<VisibleMarker[]>([]);
+
+  function icon(kind: Icon) {
+    const previous = textures.get(kind);
+    if (previous) return previous;
+    const texture = createEonetIcon(kind);
+    textures.set(kind, texture);
+    return texture;
+  }
+
+  useEffect(() => () => {
+    for (const texture of textures.values()) texture.dispose();
+    textures.clear();
+  }, [textures]);
+
+  useFrame(({ camera, size, clock }) => {
+    if (!group.current || !size.height) return;
+    const time = clock.getElapsedTime();
+    const previous = lastUpdate.current;
+    const indexChanged = previous.index !== index;
+    if (!indexChanged && time - previous.time < 0.1) return;
+    camera.updateMatrixWorld();
+    const distance = camera.position.distanceTo(group.current.getWorldPosition(new THREE.Vector3()));
+    const diameter = size.height * camera.projectionMatrix.elements[5] / Math.sqrt(Math.max(0.05, distance ** 2 - 1));
+    const next = projectMarkers(getEonetMarkers(index, diameter), group.current, camera, size.width, size.height);
+    const key = next.map((marker) => `${marker.key}:${marker.lat.toFixed(3)}:${marker.lng.toFixed(3)}`).join(";");
+    lastUpdate.current = { time, key, index };
+    if (key !== previous.key || indexChanged) setMarkers(next);
+  });
+
+  const selectedStorm = selected?.type === "EONET" && selected.data.category === "severeStorms"
+    ? selected.data : null;
+
+  return (
+    <group ref={group} name="eonet-markers">
+      {markers.map((marker) => {
+        const event = marker.events[0];
+        const cluster = marker.events.length > 1;
+        return (
+          <MarkerSprite
+            key={marker.key}
+            position={marker.position}
+            texture={icon(cluster ? marker.events.length : event.category)}
+            px={cluster ? CLUSTER_SIZE : EVENT_SIZE}
+            opacity={opacity}
+            label={cluster ? `${marker.events.length} eventos EONET` : event.title}
+            spin={!cluster && event.category === "severeStorms"}
+            onSelect={() => setSelected(cluster ? { type: "EONET_CLUSTER", data: { lat: marker.lat, lng: marker.lng, events: marker.events } } : { type: "EONET", data: event })}
+          />
+        );
+      })}
+      {selectedStorm && (
+        <StormTrack
+          event={selectedStorm}
+          icon={icon("track")}
+          opacity={opacity}
+          onSelect={(observationIndex) => setSelected({ type: "EONET", data: selectedStorm, observationIndex })}
+        />
+      )}
+    </group>
+  );
+}
