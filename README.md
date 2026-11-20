@@ -1,5 +1,7 @@
 # 🌍 TellusPedia
 
+[![CI](https://github.com/AyrtonLoks/telluspedia/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AyrtonLoks/telluspedia/actions/workflows/ci.yml)
+
 > **Enciclopédia Geopolítica, Histórica e Observatório Planetário/Cósmico em Tempo Real**
 
 O **TellusPedia** unifica enciclopédias acadêmicas tradicionais, globos 3D espaciais, dados geofísicos da NASA e indicadores socioeconômicos globais em uma única experiência contínua e interativa. A plataforma combina um **Globo Terrestre 3D** acoplado a uma **Linha do Tempo deslizável de 50 anos**, uma interface de leitura em duas densidades (**Inspector HUD** e **Modo Leitura Profunda** com citações acadêmicas **ABNT/APA/MLA/BibTeX**), um **Comparador de até 4 países** e um sistema de **Estudos Imutáveis com suporte a Forks**.
