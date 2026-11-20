@@ -55,10 +55,11 @@ def test_weather_endpoint_preserves_missing_measurements(monkeypatch):
         assert url == "https://api.open-meteo.com/v1/forecast"
         assert params["latitude"] == 0
         assert params["longitude"] == -47.88
+        assert params["timeformat"] == "unixtime"
         return httpx.Response(
             200,
             request=httpx.Request("GET", url, params=params),
-            json={"current": {"temperature_2m": None, "precipitation": 0, "wind_speed_10m": 12}},
+            json={"current": {"temperature_2m": None, "precipitation": 0, "wind_speed_10m": 12, "time": 1795186800}},
         )
 
     monkeypatch.setattr(httpx.AsyncClient, "get", upstream)
@@ -72,9 +73,10 @@ def test_weather_endpoint_preserves_missing_measurements(monkeypatch):
         "precipitation": 0,
         "weather_code": None,
         "wind_speed": 12,
+        "reference_time": 1795186800,
     }
-    redis.get.assert_awaited_once_with("weather:v2:0.0:-47.88")
-    assert redis.setex.await_args.args[0] == "weather:v2:0.0:-47.88"
+    redis.get.assert_awaited_once_with("weather:v3:0.0:-47.88")
+    assert redis.setex.await_args.args[0] == "weather:v3:0.0:-47.88"
 
 
 def test_weather_endpoint_hides_upstream_error(monkeypatch):

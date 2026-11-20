@@ -66,6 +66,7 @@ export interface WeatherData {
   precipitation: number | null;
   weather_code: number | null;
   wind_speed: number | null;
+  reference_time?: number | null;
   cached?: boolean;
 }
 

@@ -7,8 +7,8 @@ from app.domain.models.weather import WeatherResponse, CurrentWeather
 class WeatherProxyService:
     @staticmethod
     async def get_current_weather(lat: float, lng: float) -> WeatherResponse:
-        # Older entries may contain default values for missing observations.
-        cache_key = f"weather:v2:{round(lat, 2)}:{round(lng, 2)}"
+        # Refresh entries from before the provider timestamp was stored.
+        cache_key = f"weather:v3:{round(lat, 2)}:{round(lng, 2)}"
         redis = await get_redis()
 
         if redis:
@@ -24,6 +24,7 @@ class WeatherProxyService:
         params = {
             "latitude": lat,
             "longitude": lng,
+            "timeformat": "unixtime",
             "current": (
                 "temperature_2m,relative_humidity_2m,apparent_temperature,"
                 "precipitation,weather_code,wind_speed_10m"
@@ -46,6 +47,7 @@ class WeatherProxyService:
                 precipitation=current_raw.get("precipitation"),
                 weather_code=current_raw.get("weather_code"),
                 wind_speed=current_raw.get("wind_speed_10m"),
+                reference_time=current_raw.get("time"),
             ),
             cached=False,
         )

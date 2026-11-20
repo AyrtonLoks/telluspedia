@@ -7,6 +7,7 @@ class CurrentWeather(BaseModel):
     precipitation: float | None = None
     weather_code: int | None = None
     wind_speed: float | None = None
+    reference_time: int | None = None
 
 class WeatherResponse(BaseModel):
     latitude: float

@@ -36,7 +36,7 @@ test("weather forwards valid coordinates and preserves zeros from the pipeline",
     assert.equal(url.pathname, "/api/v1/weather");
     assert.deepEqual([...url.searchParams], [["lat", "-90"], ["lng", "180"]]);
     return Response.json({
-      current: { temperature: 0, weather_code: 0, relative_humidity: null },
+      current: { temperature: 0, weather_code: 0, relative_humidity: null, reference_time: 1795186800 },
       cached: true,
     });
   });
@@ -50,6 +50,7 @@ test("weather forwards valid coordinates and preserves zeros from the pipeline",
     precipitation: null,
     weather_code: 0,
     wind_speed: null,
+    reference_time: 1795186800,
     cached: true,
   });
   assert.equal(fetchMock.mock.callCount(), 1);
@@ -63,8 +64,9 @@ test("weather falls back to Open-Meteo and keeps partial observations", async (t
     assert.equal(url.searchParams.get("latitude"), "0");
     assert.equal(url.searchParams.get("longitude"), "-47.88");
     assert(url.searchParams.get("current")?.includes("temperature_2m"));
+    assert.equal(url.searchParams.get("timeformat"), "unixtime");
     return Response.json({
-      current: { temperature_2m: null, precipitation: 0, wind_speed_10m: 12 },
+      current: { temperature_2m: null, precipitation: 0, wind_speed_10m: 12, time: 1795186800 },
     });
   });
 
@@ -77,6 +79,7 @@ test("weather falls back to Open-Meteo and keeps partial observations", async (t
     precipitation: 0,
     weather_code: null,
     wind_speed: 12,
+    reference_time: 1795186800,
   });
   assert.equal(fetchMock.mock.callCount(), 2);
 });

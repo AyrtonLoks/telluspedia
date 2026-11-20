@@ -2368,7 +2368,9 @@ describe("Componente 2 e 3: Three.js Historical Cartography, Raycasting Picking 
 
     assert.ok(html.includes("Brasil"), "Must display Brasil");
     assert.ok(html.includes("BRA"), "Must display BRA");
-    assert.ok(html.includes("Clima local"), "Must render live weather widget for contemporary nation");
+    assert.ok(html.includes("Clima local · Brasília"), "Must name the weather reference point for Brazil");
+    assert.ok(html.includes("-15.7939, -47.8828"), "Must identify the coordinates queried for weather");
+    assert.ok(html.includes("https://open-meteo.com/en/docs"), "Must link to the source of weather estimates");
     assert.ok(!html.includes("data-historical-context=\"true\""), "Must not render historical context for modern Brazil");
 
     // Cleanup

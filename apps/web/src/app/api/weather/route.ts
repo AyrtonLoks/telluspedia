@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
         precipitation: numberOrNull(current.precipitation),
         weather_code: numberOrNull(current.weather_code),
         wind_speed: numberOrNull(current.wind_speed),
+        reference_time: numberOrNull(current.reference_time),
         cached: typeof data.cached === "boolean" ? data.cached : undefined,
       } satisfies WeatherData);
     }
@@ -56,6 +57,7 @@ export async function GET(req: NextRequest) {
       latitude: String(lat),
       longitude: String(lng),
       current: CURRENT_FIELDS,
+      timeformat: "unixtime",
     });
     const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, {
       signal: AbortSignal.timeout(5000),
@@ -70,6 +72,7 @@ export async function GET(req: NextRequest) {
       precipitation: numberOrNull(current.precipitation),
       weather_code: numberOrNull(current.weather_code),
       wind_speed: numberOrNull(current.wind_speed_10m),
+      reference_time: numberOrNull(current.time),
     } satisfies WeatherData);
   } catch {
     return NextResponse.json({ error: "Weather fetch failed" }, { status: 502 });

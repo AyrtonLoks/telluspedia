@@ -194,8 +194,10 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         <div className="grid grid-cols-2 gap-2 my-3">
           <LocalClockWidget timezone={currentCountry.timezone} />
           <LiveWeatherWidget
+            key={currentCountry.isoCode}
             lat={currentCountry.latitude}
             lng={currentCountry.longitude}
+            referenceName={currentCountry.completeness === "full" ? currentCountry.capital : null}
           />
         </div>
       )}
