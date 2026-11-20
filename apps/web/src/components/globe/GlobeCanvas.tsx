@@ -29,7 +29,11 @@ import { CometHalleyTrajectory } from "./CometHalleyTrajectory";
 import { MeteorShowersLayer } from "./MeteorShowersLayer";
 
 import { useGlobeStore, MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "@/stores/globeStore";
-import { calculateSubsolarPoint, getSunDirectionVector } from "@/lib/astronomy";
+import {
+  calculateSubsolarPoint,
+  getSunDirectionVector,
+  resolveAstronomicalDate,
+} from "@/lib/astronomy";
 import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
 
 import { useTimelineStore } from "@/stores/timelineStore";
@@ -62,27 +66,18 @@ export const GlobeCanvas: React.FC = () => {
 
   // Compute primary solar light position synchronized with active date
   const sunPosition = useMemo(() => {
-    let targetDate = new Date();
-
-    if (selectedMilestoneId) {
-      const milestone = findMilestoneById(selectedMilestoneId);
-      if (milestone) {
-        if (milestone.exactDate) {
-          targetDate = milestone.exactDate.includes("T")
-            ? new Date(milestone.exactDate)
-            : new Date(`${milestone.exactDate}T12:00:00Z`);
-        } else if (milestone.year) {
-          targetDate = new Date(Date.UTC(milestone.year, 5, 21, 12, 0, 0));
-        }
-      }
-    } else if (selectedYear && selectedYear !== new Date().getFullYear()) {
-      targetDate = new Date(Date.UTC(selectedYear, 5, 21, 12, 0, 0));
-    }
+    const milestone = selectedMilestoneId ? findMilestoneById(selectedMilestoneId) : undefined;
+    const targetDate = resolveAstronomicalDate({
+      selectedYear,
+      selectedMilestoneExactDate: milestone?.exactDate ?? null,
+      selectedMilestoneYear: milestone?.year ?? null,
+      activeScene,
+    });
 
     const subsolar = calculateSubsolarPoint(targetDate);
     const dir = getSunDirectionVector(subsolar.latitude, subsolar.longitude);
     return [dir.x * 10, dir.y * 10, dir.z * 10] as [number, number, number];
-  }, [selectedYear, selectedMilestoneId]);
+  }, [selectedYear, selectedMilestoneId, activeScene]);
 
   // Click-outside handler on celestial vault to deselect active selection
   const handlePointerMissed = (event: MouseEvent) => {

@@ -16,13 +16,21 @@ import {
 } from "../src/lib/astronomy";
 import { calculatePlanetaryPosition } from "../src/lib/astronomy-planets";
 import {
+  APOLLO11_MOON_CAMERA,
+  APOLLO11_WIDE_CAMERA,
+  CAPE_CANAVERAL_COORDS,
   MOON_DEFAULT_POSITION,
   MOON_RADIUS_UNITS,
   createApollo11TrajectoryCurve,
   selenographicToVector3,
   TRANQUILITY_BASE_COORDS,
 } from "../src/lib/apollo11";
-import { computeTidalLockQuaternion } from "../src/components/globe/OrbitingMoon";
+import { latLngToVector3 } from "../src/lib/geo-spatial";
+import { MAX_CAMERA_ALTITUDE } from "../src/stores/globeStore";
+import {
+  computeTidalLockQuaternion,
+  stepOrbitalPosition,
+} from "../src/components/globe/OrbitingMoon";
 
 function angularSeparationDeg(lon1Deg: number, lat1Deg: number, lon2Deg: number, lat2Deg: number): number {
   const toRad = Math.PI / 180;
@@ -37,13 +45,12 @@ function angularSeparationDeg(lon1Deg: number, lat1Deg: number, lon2Deg: number,
   return (Math.acos(cosSep) * 180) / Math.PI;
 }
 
-describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar e Apollo 11)", () => {
-  test("1. Direção geocêntrica da Lua dentro de 1° da referência JPL/Meeus em 3+ datas", () => {
+describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, SLERP orbital suave e Apollo 11)", () => {
+  test("1. Direção geocêntrica da Lua dentro de 1° da referência JPL/Meeus em 4 datas", () => {
     const references = [
       {
         label: "Meeus Ex. 47.a (1992-04-12 00:00 UTC)",
         date: new Date("1992-04-12T00:00:00Z"),
-        // Meeus Astronomical Algorithms 2nd ed., Ch. 47 Example 47.a
         expectedLonDeg: 133.1627,
         expectedLatDeg: -3.2291,
         expectedRaDeg: 134.6885,
@@ -53,7 +60,6 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
       {
         label: "Lua Cheia (2024-01-25 17:54 UTC)",
         date: new Date("2024-01-25T17:54:00Z"),
-        // JPL Horizons geocentric ecliptic/equatorial reference
         expectedLonDeg: 125.24,
         expectedLatDeg: 4.8,
         expectedRaDeg: 128.86,
@@ -63,7 +69,6 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
       {
         label: "Eclipse Solar Total / Lua Nova (2024-04-08 18:18 UTC)",
         date: new Date("2024-04-08T18:18:00Z"),
-        // JPL Horizons geocentric reference at maximum eclipse conjunction
         expectedLonDeg: 19.36,
         expectedLatDeg: 0.35,
         expectedRaDeg: 17.74,
@@ -73,7 +78,6 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
       {
         label: "Pouso Apollo 11 (1969-07-20 20:17:40 UTC)",
         date: APOLLO11_LANDING_DATE,
-        // JPL Horizons geocentric reference at Eagle touchdown
         expectedLonDeg: 187.87,
         expectedLatDeg: -1.37,
         expectedRaDeg: 186.69,
@@ -97,14 +101,8 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
         ref.expectedDecDeg
       );
 
-      assert.ok(
-        eclSep < 1.0,
-        `${ref.label}: erro eclíptico ${eclSep.toFixed(4)}° excede 1°`
-      );
-      assert.ok(
-        eqSep < 1.0,
-        `${ref.label}: erro equatorial ${eqSep.toFixed(4)}° excede 1°`
-      );
+      assert.ok(eclSep < 1.0, `${ref.label}: erro eclíptico ${eclSep.toFixed(4)}° excede 1°`);
+      assert.ok(eqSep < 1.0, `${ref.label}: erro equatorial ${eqSep.toFixed(4)}° excede 1°`);
       assert.ok(
         Math.abs(lunar.distanceKm - ref.expectedDistKm) < 500,
         `${ref.label}: distância ${lunar.distanceKm} km difere de ${ref.expectedDistKm} km`
@@ -113,7 +111,6 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
   });
 
   test("2. Fase lunar visível compatível com a direção solar na data (Lua Cheia 2024-01-25 e Lua Nova 2024-04-08)", () => {
-    // Lua Cheia: 2024-01-25 17:54 UTC -> Lua oposta ao Sol (dot ~ -1)
     const fullMoonDate = new Date("2024-01-25T17:54:00Z");
     const fullMoon = calculateLunarPosition(fullMoonDate);
     const fullSunSub = calculateSubsolarPoint(fullMoonDate);
@@ -121,23 +118,14 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
     const fullDot = fullMoon.earthFixedDirection.dot(fullSunDir);
     const fullPhase = getLunarPhase(fullMoonDate);
 
-    assert.equal(fullPhase.phaseName, "Lua Cheia", `Esperava Lua Cheia, obteve ${fullPhase.phaseName}`);
-    assert.ok(fullPhase.illumination >= 0.99, `Iluminação na Lua Cheia deve ser ~100% (obteve ${fullPhase.illumination})`);
-    assert.ok(
-      fullDot < -0.98,
-      `Na Lua Cheia a Lua deve estar oposta ao Sol em 3D (dot=${fullDot.toFixed(4)})`
-    );
+    assert.equal(fullPhase.phaseName, "Lua Cheia");
+    assert.ok(fullPhase.illumination >= 0.99);
+    assert.ok(fullDot < -0.98, `Na Lua Cheia a Lua deve estar oposta ao Sol em 3D (dot=${fullDot.toFixed(4)})`);
 
-    // No modo Cósmico, na Lua Cheia a direção eclíptica geocêntrica da Lua aponta para fora do Sol (mesmo lado da Terra)
     const earthJan2024 = calculatePlanetaryPosition("EARTH", fullMoonDate);
     const earthOutward = earthJan2024.scenePosition.clone().normalize();
-    const cosmicFullDot = fullMoon.eclipticDirection.dot(earthOutward);
-    assert.ok(
-      cosmicFullDot > 0.98,
-      `No modo Cósmico, Lua Cheia deve ficar no lado oposto ao Sol em relação à Terra (dot=${cosmicFullDot.toFixed(4)})`
-    );
+    assert.ok(fullMoon.eclipticDirection.dot(earthOutward) > 0.98);
 
-    // Lua Nova / Eclipse: 2024-04-08 18:18 UTC -> Lua alinhada com o Sol (dot ~ +1)
     const newMoonDate = new Date("2024-04-08T18:18:00Z");
     const newMoon = calculateLunarPosition(newMoonDate);
     const newSunSub = calculateSubsolarPoint(newMoonDate);
@@ -145,12 +133,9 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
     const newDot = newMoon.earthFixedDirection.dot(newSunDir);
     const newPhase = getLunarPhase(newMoonDate);
 
-    assert.equal(newPhase.phaseName, "Lua Nova", `Esperava Lua Nova, obteve ${newPhase.phaseName}`);
-    assert.ok(newPhase.illumination <= 0.01, `Iluminação na Lua Nova deve ser ~0% (obteve ${newPhase.illumination})`);
-    assert.ok(
-      newDot > 0.99,
-      `Na Lua Nova a Lua deve alinhar-se na direção do Sol em 3D (dot=${newDot.toFixed(4)})`
-    );
+    assert.equal(newPhase.phaseName, "Lua Nova");
+    assert.ok(newPhase.illumination <= 0.01);
+    assert.ok(newDot > 0.99, `Na Lua Nova a Lua deve alinhar-se com o Sol em 3D (dot=${newDot.toFixed(4)})`);
   });
 
   test("3. Escala comprimida documentada preservando direção real e excentricidade perigeu/apogeu", () => {
@@ -160,30 +145,28 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
     const rPerigee = perigee.scenePosition.length();
     const rApogee = apogee.scenePosition.length();
 
-    assert.ok(rPerigee >= 3.3 && rPerigee < MOON_SCENE_ORBIT_RADIUS, `Perigeu comprimido fora do esperado: ${rPerigee}`);
-    assert.ok(rApogee > MOON_SCENE_ORBIT_RADIUS && rApogee <= 3.9, `Apogeu comprimido fora do esperado: ${rApogee}`);
-    assert.ok(
-      perigee.scenePosition.clone().normalize().distanceTo(perigee.earthFixedDirection) < 1e-6,
-      "Posição comprimida deve preservar exatamente a direção astronômica"
-    );
+    assert.ok(rPerigee >= 3.3 && rPerigee < MOON_SCENE_ORBIT_RADIUS);
+    assert.ok(rApogee > MOON_SCENE_ORBIT_RADIUS && rApogee <= 3.9);
+    assert.ok(perigee.scenePosition.clone().normalize().distanceTo(perigee.earthFixedDirection) < 1e-6);
   });
 
-  test("4. Apollo 11 deriva a posição da Lua da data histórica (20/07/1969) sem valor fixo", () => {
-    const expectedApolloPos = getMoonScenePosition(APOLLO11_LANDING_DATE, "earth");
+  test("4. Apollo 11: OrbitingMoon e Apollo11Trajectory coincidem exatamente em 1969-07-20T20:17:40Z (mesmo com exactDate sem hora) e câmeras enquadram Lua + Terra", () => {
+    // Regressão crítica: o marco usa-1969 tem exactDate: "1969-07-20" (sem hora).
+    // activeScene: "APOLLO11" DEVE prevalecer para não deslocar a Lua em 124°!
+    const resolvedWithDateOnlyMilestone = resolveAstronomicalDate({
+      selectedYear: 1969,
+      selectedMilestoneExactDate: "1969-07-20",
+      selectedMilestoneYear: 1969,
+      activeScene: "APOLLO11",
+    });
+    assert.equal(resolvedWithDateOnlyMilestone.toISOString(), "1969-07-20T20:17:40.000Z");
+
+    const orbitMoonPos = getMoonScenePosition(resolvedWithDateOnlyMilestone, "earth");
     assert.ok(
-      MOON_DEFAULT_POSITION.distanceTo(expectedApolloPos) < 1e-6,
-      "MOON_DEFAULT_POSITION deve derivar de getMoonScenePosition(APOLLO11_LANDING_DATE)"
-    );
-    // Não pode mais ser o valor fixo antigo (3.6, 0.4, 0)
-    assert.ok(
-      MOON_DEFAULT_POSITION.distanceTo(new THREE.Vector3(3.6, 0.4, 0)) > 1.0,
-      "Posição da Lua na Apollo 11 não deve usar o vetor fixo antigo (3.6, 0.4, 0)"
+      orbitMoonPos.distanceTo(MOON_DEFAULT_POSITION) < 1e-6,
+      "OrbitingMoon e Apollo11Trajectory devem convergir no mesmo ponto exato da Lua"
     );
 
-    const resolvedApolloDate = resolveAstronomicalDate({ activeScene: "APOLLO11" });
-    assert.equal(resolvedApolloDate.toISOString(), "1969-07-20T20:17:40.000Z");
-
-    // Curva Apollo 11 continua conectando Cabo Canaveral ao Mar da Tranquilidade sem penetrar a Lua
     const curve = createApollo11TrajectoryCurve(MOON_DEFAULT_POSITION);
     const landing = curve.getPoint(1);
     const expectedLanding = selenographicToVector3(
@@ -193,15 +176,94 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
       MOON_DEFAULT_POSITION
     );
     assert.ok(landing.distanceTo(expectedLanding) < 1e-4);
+    assert.ok(landing.length() < MOON_DEFAULT_POSITION.length());
 
-    // Base da Tranquilidade deve estar na face voltada para a Terra (distância à Terra < distância do centro da Lua)
+    // Câmera Orbital Ampla dentro de MAX_CAMERA_ALTITUDE e enquadrando Terra, Cabo Canaveral e Lua na tela
+    assert.ok(APOLLO11_WIDE_CAMERA.altitude <= MAX_CAMERA_ALTITUDE);
+    const wideCam = new THREE.PerspectiveCamera(45, 16 / 9, 0.1, 1000);
+    wideCam.position.copy(
+      latLngToVector3(APOLLO11_WIDE_CAMERA.lat, APOLLO11_WIDE_CAMERA.lng, APOLLO11_WIDE_CAMERA.altitude)
+    );
+    wideCam.lookAt(0, 0, 0);
+    wideCam.updateMatrixWorld();
+
+    const moonNdc = MOON_DEFAULT_POSITION.clone().project(wideCam);
+    const capeNdc = latLngToVector3(CAPE_CANAVERAL_COORDS.lat, CAPE_CANAVERAL_COORDS.lng, 1.002).project(wideCam);
+    assert.ok(Math.abs(moonNdc.x) < 0.9 && Math.abs(moonNdc.y) < 0.5, `Lua fora do enquadramento amplo: (${moonNdc.x}, ${moonNdc.y})`);
+    assert.ok(Math.abs(capeNdc.x) < 0.5 && Math.abs(capeNdc.y) < 0.5, `Cabo Canaveral fora do enquadramento amplo: (${capeNdc.x}, ${capeNdc.y})`);
+
+    // Câmera Lua aproxima-se da Lua real de 1969-07-20 (< 1.5 unidades)
+    const moonCamPos = latLngToVector3(
+      APOLLO11_MOON_CAMERA.lat,
+      APOLLO11_MOON_CAMERA.lng,
+      APOLLO11_MOON_CAMERA.altitude
+    );
     assert.ok(
-      landing.length() < MOON_DEFAULT_POSITION.length(),
-      "Base da Tranquilidade deve ficar na face visível da Lua voltada para a Terra"
+      moonCamPos.distanceTo(MOON_DEFAULT_POSITION) < 1.5,
+      `Câmera da Lua deve ficar próxima à Lua de 1969-07-20 (dist=${moonCamPos.distanceTo(MOON_DEFAULT_POSITION)})`
     );
   });
 
-  test("5. Acoplamento de maré (computeTidalLockQuaternion) mantém a face visível voltada para a Terra", () => {
+  test("5. Movimento suavizado SLERP: sem teletransporte durante playback da timeline e convergência exata ao pausar", () => {
+    // 5a. Durante playback (mudando de ano a cada 20 frames -> saltos de ~132°), a Lua gira suavemente sem teletransportar
+    let pos = getMoonScenePosition(new Date("1960-06-21T12:00:00Z"), "earth");
+    const yearlyTargets = [1961, 1962, 1963].map((y) =>
+      getMoonScenePosition(new Date(Date.UTC(y, 5, 21, 12, 0, 0)), "earth")
+    );
+
+    for (let frame = 0; frame < 60; frame++) {
+      const target = yearlyTargets[Math.floor(frame / 20)];
+      const next = stepOrbitalPosition(pos, target, 1 / 60, {
+        isPlaying: true,
+        playbackSpeed: 30,
+        isApolloScene: false,
+      });
+      const stepAngle = Math.acos(
+        Math.max(-1, Math.min(1, pos.clone().normalize().dot(next.clone().normalize())))
+      );
+      assert.ok(stepAngle < 0.06, `Salto brusco durante playback no frame ${frame}: ${stepAngle} rad`);
+      assert.ok(next.length() >= 3.3 && next.length() <= 3.9, `Raio orbital inválido durante playback: ${next.length()}`);
+      pos = next;
+    }
+
+    // 5b. Ao pausar em um alvo distante (~150°), desliza suavemente pela casca esférica até travar no alvo exato
+    const finalTarget = getMoonScenePosition(new Date("2024-01-25T17:54:00Z"), "earth");
+    let glidePos = finalTarget.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), 2.6);
+    for (let frame = 0; frame < 240; frame++) {
+      const next = stepOrbitalPosition(glidePos, finalTarget, 1 / 60, {
+        isPlaying: false,
+        playbackSpeed: 1,
+        isApolloScene: false,
+      });
+      const stepAngle = Math.acos(
+        Math.max(-1, Math.min(1, glidePos.clone().normalize().dot(next.clone().normalize())))
+      );
+      assert.ok(stepAngle < 0.06, `Salto brusco durante SLERP no frame ${frame}: ${stepAngle} rad`);
+      assert.ok(next.length() >= 3.3, `SLERP não pode cortar por dentro da Terra (r=${next.length()})`);
+      glidePos = next;
+    }
+    assert.ok(
+      glidePos.distanceTo(finalTarget) < 1e-3,
+      `Após pausa, Lua deve convergir exatamente para Meeus Cap. 47 (erro=${glidePos.distanceTo(finalTarget)})`
+    );
+
+    // 5c. Entrada na cena Apollo 11 converge rapidamente e sem corte na Terra para MOON_DEFAULT_POSITION
+    let apolloPos = MOON_DEFAULT_POSITION.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), 2.1);
+    for (let frame = 0; frame < 90; frame++) {
+      apolloPos = stepOrbitalPosition(apolloPos, MOON_DEFAULT_POSITION, 1 / 60, {
+        isPlaying: false,
+        playbackSpeed: 1,
+        isApolloScene: true,
+      });
+      assert.ok(apolloPos.length() >= 3.3);
+    }
+    assert.ok(
+      apolloPos.distanceTo(MOON_DEFAULT_POSITION) < 1e-2,
+      `Apollo 11 deve acoplar a Lua na ponta da trajetória (erro=${apolloPos.distanceTo(MOON_DEFAULT_POSITION)})`
+    );
+  });
+
+  test("6. Acoplamento de maré (computeTidalLockQuaternion) mantém a face visível voltada para a Terra", () => {
     const positions = [
       getMoonScenePosition(new Date("2024-01-25T17:54:00Z"), "earth"),
       getMoonScenePosition(new Date("2024-04-08T18:18:00Z"), "earth"),
@@ -212,20 +274,18 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, fase solar 
       const quat = computeTidalLockQuaternion(pos);
       const nearSideNormal = new THREE.Vector3(1, 0, 0).applyQuaternion(quat).normalize();
       const towardEarth = pos.clone().negate().normalize();
-      const dot = nearSideNormal.dot(towardEarth);
-      assert.ok(
-        dot > 0.9999,
-        `Face visível da Lua deve apontar estritamente para a Terra (dot=${dot})`
-      );
+      assert.ok(nearSideNormal.dot(towardEarth) > 0.9999);
     }
   });
 
-  test("6. Guardrails de OrbitingMoon.tsx: sem rotação constante 0.04, shader world-space e dispose WebGL", () => {
+  test("7. Guardrails de OrbitingMoon.tsx: SLERP imperativo sem snap em re-render, shader world-space e dispose WebGL", () => {
     const src = fs.readFileSync(
       path.resolve(__dirname, "../src/components/globe/OrbitingMoon.tsx"),
       "utf-8"
     );
-    assert.doesNotMatch(src, /delta\s*\*\s*0\.04/, "OrbitingMoon não pode mais girar a 0.04 rad/s constante");
+    assert.doesNotMatch(src, /delta\s*\*\s*0\.04/, "OrbitingMoon não pode girar a 0.04 rad/s fixo sem efeméride");
+    assert.doesNotMatch(src, /position=\{targetLocalPos\}/, "Grupo da Lua não deve receber position={targetLocalPos} no JSX (causaria snap em re-renders)");
+    assert.match(src, /stepOrbitalPosition/, "OrbitingMoon deve interpolar suavemente via stepOrbitalPosition");
     assert.match(src, /calculateLunarPosition/, "OrbitingMoon deve usar calculateLunarPosition");
     assert.match(src, /resolveAstronomicalDate/, "OrbitingMoon deve resolver a data astronômica da época ativa");
     assert.match(src, /currentMoonWorldPos/, "OrbitingMoon deve manter currentMoonWorldPos atualizado");

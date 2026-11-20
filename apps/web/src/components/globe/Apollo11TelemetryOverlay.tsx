@@ -17,7 +17,12 @@ import {
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useApollo11Store } from "@/stores/apollo11Store";
-import { getMissionTelemetry, APOLLO11_PHASES } from "@/lib/apollo11";
+import {
+  APOLLO11_MOON_CAMERA,
+  APOLLO11_PHASES,
+  APOLLO11_WIDE_CAMERA,
+  getMissionTelemetry,
+} from "@/lib/apollo11";
 
 export interface Apollo11TelemetryOverlayProps {
   forceActive?: boolean;
@@ -71,7 +76,7 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
   if (!isVisible) return null;
 
   const handleWideView = () => {
-    flyTo(15, -20, 5.2);
+    flyTo(APOLLO11_WIDE_CAMERA.lat, APOLLO11_WIDE_CAMERA.lng, APOLLO11_WIDE_CAMERA.altitude);
   };
 
   const handleCanaveralView = () => {
@@ -79,8 +84,8 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
   };
 
   const handleMoonView = () => {
-    // Focus camera directly on the Moon (3.6, 0.4, 0) and Tranquility Base from lunar perspective
-    flyTo(6.34, 0, 4.8);
+    // Focus camera on the real 1969-07-20 Moon and Tranquility Base from lunar perspective
+    flyTo(APOLLO11_MOON_CAMERA.lat, APOLLO11_MOON_CAMERA.lng, APOLLO11_MOON_CAMERA.altitude);
   };
 
   return (

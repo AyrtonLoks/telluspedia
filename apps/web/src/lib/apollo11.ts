@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { latLngToVector3 } from "./geo-spatial";
-import { APOLLO11_LANDING_DATE, getMoonScenePosition } from "./astronomy";
+import { APOLLO11_LANDING_DATE, calculateLunarPosition, getMoonScenePosition } from "./astronomy";
 
 /**
  * Apollo 11 Mission Reference Coordinates
@@ -26,8 +26,29 @@ export const LAUNCH_PAD_RADIUS_UNITS = 1.002;
  * Astronomical Earth-fixed Moon position at Apollo 11 touchdown (1969-07-20 20:17:40 UTC),
  * computed via Meeus Ch. 47 in compressed TellusPedia scene coordinates (~3.67 R⊕).
  */
+export const APOLLO11_LUNAR_EPHEMERIS = calculateLunarPosition(APOLLO11_LANDING_DATE);
 export const MOON_DEFAULT_POSITION = getMoonScenePosition(APOLLO11_LANDING_DATE, "earth");
 export const MOON_RADIUS_UNITS = 0.27;
+
+/**
+ * Calibrated side-profile camera framing Earth, Cape Canaveral, the full translunar arc,
+ * and the real 1969-07-20 Moon cleanly inside the viewport (altitude <= MAX_CAMERA_ALTITUDE 6.0).
+ */
+export const APOLLO11_WIDE_CAMERA = {
+  lat: 12,
+  lng: -148,
+  altitude: 6.0,
+} as const;
+
+/**
+ * Calibrated lunar-perspective camera derived from the real 1969-07-20 Moon coordinates,
+ * framing Tranquility Base and the Moon in the foreground with Earth behind.
+ */
+export const APOLLO11_MOON_CAMERA = {
+  lat: Number((APOLLO11_LUNAR_EPHEMERIS.sublunarLatitude + 2).toFixed(2)),
+  lng: Number((APOLLO11_LUNAR_EPHEMERIS.sublunarLongitude - 3).toFixed(2)),
+  altitude: 4.8,
+} as const;
 
 export const APOLLO11_CONSTANTS = {
   REAL_EARTH_MOON_DISTANCE_KM: 384400,

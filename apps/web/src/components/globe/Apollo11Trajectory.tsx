@@ -4,6 +4,7 @@ import React, { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import {
+  APOLLO11_WIDE_CAMERA,
   createApollo11TrajectoryCurve,
   getApollo11ControlPoints,
   MOON_DEFAULT_POSITION,
@@ -44,7 +45,9 @@ export const Apollo11Trajectory: React.FC = () => {
   useEffect(() => {
     if (!hasFlownToOrbit.current) {
       hasFlownToOrbit.current = true;
-      useGlobeStore.getState().flyTo(12, -45, 5.4);
+      useGlobeStore
+        .getState()
+        .flyTo(APOLLO11_WIDE_CAMERA.lat, APOLLO11_WIDE_CAMERA.lng, APOLLO11_WIDE_CAMERA.altitude);
     }
   }, [selectedYear, selectedMilestoneId]);
 

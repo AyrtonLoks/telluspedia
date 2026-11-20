@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useRef, useMemo, useEffect } from "react";
-import { focusCelestialBody } from "@/stores/actions";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useCosmicStore } from "@/stores/cosmicStore";
-import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
+import { focusCelestialBody } from "@/stores/actions";
 import { findMilestoneById } from "@/lib/country-data";
+import { slerpVectors } from "@/lib/geo-spatial";
 import {
   calculateLunarPosition,
   calculateSubsolarPoint,
@@ -101,18 +101,72 @@ export function computeTidalLockQuaternion(moonLocalPos: THREE.Vector3): THREE.Q
   return new THREE.Quaternion().setFromRotationMatrix(rotMat);
 }
 
+/**
+ * Advances the Moon smoothly along its spherical orbit around Earth without ever
+ * teleporting or cutting through the planet:
+ * - During rapid multi-year timeline playback (`isPlaying && !isApolloScene`), revolves
+ *   smoothly prograde along the orbital sphere so discrete yearly ticks never strobe.
+ * - When static, scrubbing, paused, or entering Apollo 11, glides smoothly via SLERP
+ *   along the great-circle orbital arc to settle onto the exact Meeus Ch. 47 position.
+ */
+export function stepOrbitalPosition(
+  current: THREE.Vector3,
+  target: THREE.Vector3,
+  delta: number,
+  options: { isPlaying: boolean; playbackSpeed: number; isApolloScene: boolean }
+): THREE.Vector3 {
+  const safeDelta = Math.min(Math.max(delta, 0), 0.1);
+  if (safeDelta <= 0) return current.clone();
+
+  if (options.isPlaying && !options.isApolloScene) {
+    const speedFactor = Math.max(
+      0.5,
+      Math.min(2.2, 0.55 + Math.log10(Math.max(1, options.playbackSpeed)) * 0.65)
+    );
+    const angularStep = speedFactor * safeDelta;
+    const next = current.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angularStep);
+    const nextR = THREE.MathUtils.damp(current.length(), target.length(), 3.0, safeDelta);
+    next.y = THREE.MathUtils.damp(next.y, target.y * 0.65, 1.5, safeDelta);
+    return next.normalize().multiplyScalar(nextR);
+  }
+
+  const cDir = current.clone().normalize();
+  const tDir = target.clone().normalize();
+  const dot = Math.max(-1, Math.min(1, cDir.dot(tDir)));
+  const angle = Math.acos(dot);
+  const radiusDelta = Math.abs(current.length() - target.length());
+
+  if (angle < 1e-4 && radiusDelta < 1e-4) {
+    return target.clone();
+  }
+
+  const dampRate = options.isApolloScene ? 9.0 : 5.0;
+  const maxAngularSpeed = options.isApolloScene ? 6.5 : 2.2;
+  const desiredStep = angle * (1 - Math.exp(-dampRate * safeDelta));
+  const clampedStep = Math.min(angle, Math.min(desiredStep, maxAngularSpeed * safeDelta));
+  const t =
+    angle > 1e-5
+      ? Math.min(1, clampedStep / angle)
+      : 1 - Math.exp(-dampRate * safeDelta);
+
+  return slerpVectors(current, target, t);
+}
+
 export const OrbitingMoon: React.FC = () => {
+  const moonGroupRef = useRef<THREE.Group>(null);
   const moonRef = useRef<THREE.Mesh>(null);
   const { invalidate } = useThree();
 
   const epoch = useEpochState();
+  const isApolloScene = epoch.activeScene === "APOLLO11";
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  const isPlaying = useCosmicStore((s) => s.isPlaying);
+  const playbackSpeed = useCosmicStore((s) => s.playbackSpeed);
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const hoveredBodyId = useCosmicStore((s) => s.hoveredBodyId);
-  const focusBody = useCosmicStore((s) => s.focusBody);
   const setHoveredBody = useCosmicStore((s) => s.setHoveredBody);
 
   const isFocused = focusedBodyId === "MOON";
@@ -130,20 +184,23 @@ export const OrbitingMoon: React.FC = () => {
   }, [selectedYear, selectedMilestoneId, epoch.activeScene]);
 
   // Real geocentric lunar ephemeris (Meeus Ch. 47) & matching Earth-mode solar direction
-  const { targetLocalPos, tidalLockQuat, earthModeSunDir } = useMemo(() => {
+  const { targetLocalPos, earthModeSunDir } = useMemo(() => {
     const lunar = calculateLunarPosition(activeDate);
     const localPos = isCosmicMode ? lunar.cosmicRelativePosition : lunar.scenePosition;
-    const quat = computeTidalLockQuaternion(localPos);
-
     const subsolar = calculateSubsolarPoint(activeDate);
     const sunDir = getSunDirectionVector(subsolar.latitude, subsolar.longitude);
 
     return {
       targetLocalPos: localPos,
-      tidalLockQuat: quat,
       earthModeSunDir: sunDir,
     };
   }, [activeDate, isCosmicMode]);
+
+  // Imperative animated position state (prevents React re-render 1-frame snap flashes)
+  const initializedRef = useRef<boolean>(false);
+  const prevCosmicModeRef = useRef<boolean>(isCosmicMode);
+  const currentLocalPosRef = useRef<THREE.Vector3>(targetLocalPos.clone());
+  const currentSunDirRef = useRef<THREE.Vector3>(earthModeSunDir.clone());
 
   // GPU resources (geometry, world-space lunar phase shader, selection ring, placeholder texture)
   const { moonGeo, moonMat, placeholderTex, ringGeo, ringMat } = useMemo(() => {
@@ -209,24 +266,40 @@ export const OrbitingMoon: React.FC = () => {
     };
   }, [moonGeo, moonMat, placeholderTex, ringGeo, ringMat]);
 
-  // Sync shader highlight uniforms and initial currentMoonWorldPos immediately on epoch/mode changes
+  // Place Moon at exact astronomical position on initial mount or coordinate-frame switch
   useEffect(() => {
-    moonMat.uniforms.uHighlightColor.value.set(isFocused ? "#38bdf8" : "#93c5fd");
-    moonMat.uniforms.uHighlightStrength.value = isFocused ? 0.85 : isHovered ? 0.45 : 0.0;
+    const modeChanged = prevCosmicModeRef.current !== isCosmicMode;
+    prevCosmicModeRef.current = isCosmicMode;
 
-    if (!isCosmicMode) {
-      moonMat.uniforms.uSunDirection.value.copy(earthModeSunDir);
-      currentMoonWorldPos.copy(targetLocalPos);
-    } else {
-      const earthPos = calculatePlanetaryPosition(
-        "EARTH",
-        selectedYear || new Date().getUTCFullYear()
-      ).scenePosition;
-      currentMoonWorldPos.copy(earthPos).add(targetLocalPos);
-      if (currentMoonWorldPos.lengthSq() > 1e-6) {
-        moonMat.uniforms.uSunDirection.value.copy(currentMoonWorldPos).negate().normalize();
+    if (!initializedRef.current || modeChanged) {
+      initializedRef.current = true;
+      currentLocalPosRef.current.copy(targetLocalPos);
+      currentSunDirRef.current.copy(earthModeSunDir);
+
+      if (moonGroupRef.current) {
+        moonGroupRef.current.position.copy(targetLocalPos);
+      }
+      if (moonRef.current) {
+        moonRef.current.quaternion.copy(computeTidalLockQuaternion(targetLocalPos));
+      }
+
+      if (!isCosmicMode) {
+        moonMat.uniforms.uSunDirection.value.copy(earthModeSunDir);
+        currentMoonWorldPos.copy(targetLocalPos);
+      } else {
+        const earthPos = calculatePlanetaryPosition(
+          "EARTH",
+          selectedYear || new Date().getUTCFullYear()
+        ).scenePosition;
+        currentMoonWorldPos.copy(earthPos).add(targetLocalPos);
+        if (currentMoonWorldPos.lengthSq() > 1e-6) {
+          moonMat.uniforms.uSunDirection.value.copy(currentMoonWorldPos).negate().normalize();
+        }
       }
     }
+
+    moonMat.uniforms.uHighlightColor.value.set(isFocused ? "#38bdf8" : "#93c5fd");
+    moonMat.uniforms.uHighlightStrength.value = isFocused ? 0.85 : isHovered ? 0.45 : 0.0;
     invalidate();
   }, [
     moonMat,
@@ -239,30 +312,39 @@ export const OrbitingMoon: React.FC = () => {
     invalidate,
   ]);
 
-  // Keep world position and Cosmic solar vector updated every frame (handles camera handover safely)
-  useFrame(() => {
-    if (!moonRef.current) return;
+  // Smooth orbital SLERP / playback revolution + tidal lock + world-space solar phase every frame
+  useFrame((_, delta) => {
+    if (!moonGroupRef.current || !moonRef.current) return;
 
+    const nextLocalPos = stepOrbitalPosition(currentLocalPosRef.current, targetLocalPos, delta, {
+      isPlaying,
+      playbackSpeed,
+      isApolloScene,
+    });
+    currentLocalPosRef.current.copy(nextLocalPos);
+
+    moonGroupRef.current.position.copy(nextLocalPos);
+    moonRef.current.quaternion.copy(computeTidalLockQuaternion(nextLocalPos));
     moonRef.current.getWorldPosition(currentMoonWorldPos);
 
     if (isCosmicMode && currentMoonWorldPos.lengthSq() > 1e-6) {
       moonMat.uniforms.uSunDirection.value.copy(currentMoonWorldPos).negate().normalize();
     } else {
-      moonMat.uniforms.uSunDirection.value.copy(earthModeSunDir);
+      const sunStep = 1 - Math.exp(-Math.min(delta, 0.1) * 6.0);
+      currentSunDirRef.current.lerp(earthModeSunDir, sunStep).normalize();
+      moonMat.uniforms.uSunDirection.value.copy(currentSunDirRef.current);
     }
   });
 
   return (
-    <group name="orbiting-moon-group" position={targetLocalPos}>
+    <group ref={moonGroupRef} name="orbiting-moon-group">
       <mesh
         ref={moonRef}
         name="orbiting-moon"
         geometry={moonGeo}
         material={moonMat}
-        quaternion={tidalLockQuat}
         onClick={(e) => {
           e.stopPropagation();
-          // D15: focar a Lua não descarta o país selecionado (ele continua numa aba do dock).
           focusCelestialBody("MOON");
         }}
         onPointerOver={(e) => {

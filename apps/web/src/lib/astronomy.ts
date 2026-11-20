@@ -377,7 +377,7 @@ export function getLunarPhase(date: Date = new Date()) {
 
 /**
  * Resolves the canonical UTC astronomical Date from the active TellusPedia epoch state
- * (milestone exactDate > Apollo 11 historical landing > milestone year > selectedYear > now).
+ * (Apollo 11 historical landing > milestone exactDate > milestone year > selectedYear > now).
  */
 export function resolveAstronomicalDate(input: {
   selectedYear?: number | null;
@@ -388,14 +388,16 @@ export function resolveAstronomicalDate(input: {
 }): Date {
   const now = input.now ?? new Date();
 
+  // Explicit Apollo 11 scene always locks to the exact touchdown timestamp (1969-07-20T20:17:40Z)
+  // so OrbitingMoon and Apollo11Trajectory stay 100% synchronized (never diverging by date-only 12:00Z).
+  if (input.activeScene === "APOLLO11") {
+    return new Date(APOLLO11_LANDING_DATE.getTime());
+  }
+
   if (input.selectedMilestoneExactDate) {
     const raw = input.selectedMilestoneExactDate;
     const parsed = new Date(raw.includes("T") ? raw : `${raw}T12:00:00Z`);
     if (!Number.isNaN(parsed.getTime())) return parsed;
-  }
-
-  if (input.activeScene === "APOLLO11") {
-    return new Date(APOLLO11_LANDING_DATE.getTime());
   }
 
   if (typeof input.selectedMilestoneYear === "number" && Number.isFinite(input.selectedMilestoneYear)) {
