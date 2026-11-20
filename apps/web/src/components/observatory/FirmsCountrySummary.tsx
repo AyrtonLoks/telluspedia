@@ -18,8 +18,10 @@ export const FirmsCountrySummary: React.FC<{ iso: string }> = ({ iso }) => {
   const byCountry = isServer ? useObservatoryStore.getState().firmsByCountry : storeByCountry;
   const firmsWindow = isServer ? useObservatoryStore.getState().firmsWindow : storeWindow;
 
+  const isLoading = useObservatoryStore((s) => s.isLoading.NASA_FIRMS);
   const name = getCountryData(iso)?.nameCommon ?? iso;
-  const stats = byCountry[iso];
+  // null = contagem indisponível (não confundir com zero focos).
+  const stats = byCountry ? byCountry[iso] : undefined;
   const period = WINDOW_TEXT[firmsWindow.days] ?? "";
 
   return (
@@ -30,7 +32,11 @@ export const FirmsCountrySummary: React.FC<{ iso: string }> = ({ iso }) => {
           {name} · {period}
         </span>
       </div>
-      {stats && stats.count > 0 ? (
+      {byCountry === null ? (
+        <p className="text-label text-fg-secondary">
+          {isLoading ? "Contando focos no território…" : "Contagem por país indisponível no momento."}
+        </p>
+      ) : stats && stats.count > 0 ? (
         <div className="grid grid-cols-3 gap-2">
           <div className="flex flex-col">
             <span className="font-mono text-body font-medium tabular-nums text-fg">{stats.count.toLocaleString("pt-BR")}</span>

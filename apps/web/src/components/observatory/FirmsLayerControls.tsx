@@ -60,7 +60,8 @@ export const FirmsLayerControls: React.FC = () => {
           <span>300+ MW</span>
         </div>
         <p className="text-caption text-fg-muted">
-          Cor e tamanho = potência radiativa do fogo (FRP). De longe, as manchas mostram a densidade de focos.
+          Cada marcador é um foco de calor detectado por satélite; cor e tamanho indicam a potência radiativa
+          (FRP). Enquanto esta camada está ligada, as luzes das cidades no lado noturno ficam atenuadas.
         </p>
       </div>
     </div>

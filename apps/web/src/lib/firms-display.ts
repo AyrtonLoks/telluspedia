@@ -6,13 +6,14 @@ import type { FirmsHotspot } from "./observatory-data";
 
 /**
  * Paradas da escala de cor por Fire Radiative Power (MW). RGB 0–1 (para o shader) e hex (UI).
- * Amarelo pálido (fraco) → laranja → vermelho → magenta (muito intenso).
+ * Laranja (fraco) → vermelho-alaranjado → vermelho → magenta (muito intenso). Sem amarelo-claro:
+ * é a cor das luzes urbanas da textura noturna, e os focos não podem ser confundidos com elas.
  */
 export const FIRMS_FRP_STOPS = [
-  { frp: 0, rgb: [1.0, 0.86, 0.45], hex: "#FFDB73" },
-  { frp: 20, rgb: [1.0, 0.62, 0.2], hex: "#FF9E33" },
-  { frp: 80, rgb: [0.98, 0.3, 0.12], hex: "#FA4D1F" },
-  { frp: 300, rgb: [0.85, 0.12, 0.35], hex: "#D91F59" },
+  { frp: 0, rgb: [1.0, 0.55, 0.17], hex: "#FF8C2B" },
+  { frp: 20, rgb: [1.0, 0.35, 0.12], hex: "#FF591F" },
+  { frp: 80, rgb: [0.91, 0.13, 0.16], hex: "#E8212A" },
+  { frp: 300, rgb: [0.76, 0.09, 0.48], hex: "#C2177A" },
 ] as const;
 
 /** Cor (RGB 0–1) interpolada para um FRP. */

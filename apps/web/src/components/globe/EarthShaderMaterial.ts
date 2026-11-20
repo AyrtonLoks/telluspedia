@@ -16,6 +16,8 @@ export const EarthShader = {
     uPaleoTexture: { value: null as THREE.Texture | null },
     uPaleoFactor: { value: 0.0 },
     uStudyLighting: { value: 0.0 },
+    /** Intensidade das luzes urbanas (1 = normal; atenuada com a camada de queimadas — D05). */
+    uCityLights: { value: 1.0 },
     uAtmosphereColor: { value: new THREE.Color("#00d4ff") },
     uAtmospherePower: { value: 3.2 },
     uTime: { value: 0 },
@@ -43,6 +45,7 @@ export const EarthShader = {
     uniform sampler2D uPaleoTexture;
     uniform float uPaleoFactor;
     uniform float uStudyLighting;
+    uniform float uCityLights;
     uniform vec3 uAtmosphereColor;
     uniform float uAtmospherePower;
     uniform float uTime;
@@ -73,7 +76,7 @@ export const EarthShader = {
 
       // City texture contributes emission over the dark navy of the night side.
       vec3 nightBase = vec3(0.012, 0.022, 0.042);
-      vec3 nightComposite = nightColor * 1.05 + nightBase;
+      vec3 nightComposite = nightColor * 1.05 * uCityLights + nightBase;
 
       // Mandatory Invariant: Suppression of urban city lights in prehistoric eras (> 0.3 Ma)
       // When uPaleoFactor > 0.0, attenuate artificial city lights to 0.0, leaving only primordial navy night

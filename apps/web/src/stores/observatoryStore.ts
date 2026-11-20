@@ -19,10 +19,9 @@ import {
   isObservatoryEnvelope,
 } from "@/lib/observatory-source";
 import {
-  aggregateFirmsGrid,
+  FIRMS_SCHEMA,
+  decodeFirmsColumns,
   filterByConfidence,
-  type FirmsBbox,
-  type FirmsCell,
   type FirmsCountryStats,
   type FirmsConfidenceFilter,
   type FirmsWindowDays,
@@ -34,8 +33,6 @@ export interface FirmsWindow {
 }
 
 const DEFAULT_FIRMS_WINDOW: FirmsWindow = { days: 1, confidence: "nominal" };
-/** Recorte de detalhe em voo (descarta respostas fora de ordem). */
-let pendingFirmsDetailKey: string | null = null;
 const fallbackFirms = (w: FirmsWindow) => filterByConfidence(FALLBACK_FIRMS_HOTSPOTS, w.confidence);
 
 const ALL_LAYERS: ObservatoryLayerId[] = [
@@ -60,19 +57,20 @@ interface ObservatoryState {
   activeLayers: ObservatoryLayerId[];
   layerOpacity: Record<ObservatoryLayerId, number>;
   isPanelOpen: boolean;
+  /** Painel recolhido numa barra compacta (abre automaticamente ao selecionar um país). */
+  isPanelMinimized: boolean;
   selectedEntity: ObservatoryEntity | null;
 
   firmsHotspots: FirmsHotspot[];
-  /** Grade agregada (heatmap em zoom distante) de toda a janela. */
-  firmsCells: FirmsCell[];
   /** Focos na janela após o filtro de confiança (pode ser maior que firmsHotspots.length). */
   firmsTotal: number;
   /** Janela temporal e filtro de confiança da camada de queimadas. */
   firmsWindow: FirmsWindow;
-  /** Focos por país (ISO alfa-3) na janela, contando todos os focos (não só os enviados). */
-  firmsByCountry: Record<string, FirmsCountryStats>;
-  /** Todos os focos da área visível (zoom próximo); null enquanto não carregado. */
-  firmsDetail: { key: string; hotspots: FirmsHotspot[]; total: number } | null;
+  /**
+   * Focos por país (ISO alfa-3) na janela. null = contagem indisponível (sem resposta do servidor
+   * ou resposta sem o campo) — a UI não pode afirmar "nenhum foco" nesse caso.
+   */
+  firmsByCountry: Record<string, FirmsCountryStats> | null;
   eonetEvents: EonetEvent[];
   issTelemetry: IssTelemetryData | null;
   aircraftFleet: AircraftState[];
@@ -90,13 +88,11 @@ interface ObservatoryState {
   setAllLayers: (layers: ObservatoryLayerId[]) => void;
   setLayerOpacity: (layerId: ObservatoryLayerId, opacity: number) => void;
   setPanelOpen: (open: boolean) => void;
+  setPanelMinimized: (minimized: boolean) => void;
   togglePanel: () => void;
   setSelectedEntity: (entity: ObservatoryEntity | null) => void;
   /** Muda janela/confiança das queimadas e recarrega a camada. */
   setFirmsWindow: (window: Partial<FirmsWindow>) => void;
-  /** Carrega todos os focos de um recorte (área visível do globo). Ignora respostas atrasadas. */
-  loadFirmsDetail: (bbox: FirmsBbox) => Promise<void>;
-  clearFirmsDetail: () => void;
   loadLayerData: (layerId: ObservatoryLayerId) => Promise<void>;
   resetObservatory: () => void;
 }
@@ -111,14 +107,13 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     MARITIME_ROUTES: 1.0,
   },
   isPanelOpen: false,
+  isPanelMinimized: false,
   selectedEntity: null,
 
   firmsHotspots: fallbackFirms(DEFAULT_FIRMS_WINDOW),
-  firmsCells: aggregateFirmsGrid(fallbackFirms(DEFAULT_FIRMS_WINDOW)),
   firmsTotal: fallbackFirms(DEFAULT_FIRMS_WINDOW).length,
   firmsWindow: DEFAULT_FIRMS_WINDOW,
-  firmsByCountry: {},
-  firmsDetail: null,
+  firmsByCountry: null,
   eonetEvents: FALLBACK_EONET_EVENTS,
   issTelemetry: calculateIssPosition(),
   aircraftFleet: FALLBACK_AIRCRAFT_FLEET,
@@ -186,8 +181,15 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     }));
   },
 
-  setPanelOpen: (open) => set({ isPanelOpen: open }),
-  togglePanel: () => set((s) => ({ isPanelOpen: !s.isPanelOpen })),
+  setPanelOpen: (open) => set({ isPanelOpen: open, isPanelMinimized: false }),
+  setPanelMinimized: (minimized) => set({ isPanelMinimized: minimized }),
+  // Pela navbar: recolhido → expande; aberto → fecha; fechado → abre expandido.
+  togglePanel: () =>
+    set((s) =>
+      s.isPanelOpen && s.isPanelMinimized
+        ? { isPanelMinimized: false }
+        : { isPanelOpen: !s.isPanelOpen, isPanelMinimized: false }
+    ),
 
   setSelectedEntity: (entity) => set({ selectedEntity: entity }),
 
@@ -195,39 +197,10 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     const next = { ...get().firmsWindow, ...window };
     const cur = get().firmsWindow;
     if (next.days === cur.days && next.confidence === cur.confidence) return;
-    set({ firmsWindow: next, selectedEntity: null, firmsDetail: null });
+    set({ firmsWindow: next, selectedEntity: null });
     void get().loadLayerData("NASA_FIRMS");
   },
 
-  loadFirmsDetail: async (bbox) => {
-    const { days, confidence } = get().firmsWindow;
-    const bboxParam = [bbox.minLng, bbox.minLat, bbox.maxLng, bbox.maxLat].map((n) => Number(n.toFixed(2))).join(",");
-    const key = `${days}:${confidence}:${bboxParam}`;
-    if (get().firmsDetail?.key === key || pendingFirmsDetailKey === key) return;
-    pendingFirmsDetailKey = key;
-    try {
-      const body = await fetchEnvelope(`/api/observatory/firms?days=${days}&confidence=${confidence}&bbox=${bboxParam}`);
-      // Só aplica se ainda for o recorte mais recente pedido.
-      if (pendingFirmsDetailKey !== key || !isObservatoryEnvelope(body) || !Array.isArray(body.data)) return;
-      const extra = body as unknown as { total?: unknown };
-      set({
-        firmsDetail: {
-          key,
-          hotspots: body.data as FirmsHotspot[],
-          total: typeof extra.total === "number" ? extra.total : body.data.length,
-        },
-      });
-    } catch {
-      // Sem detalhe: a camada continua com a visão global.
-    } finally {
-      if (pendingFirmsDetailKey === key) pendingFirmsDetailKey = null;
-    }
-  },
-
-  clearFirmsDetail: () => {
-    pendingFirmsDetailKey = null;
-    if (get().firmsDetail) set({ firmsDetail: null });
-  },
 
   loadLayerData: async (layerId) => {
     set((s) => ({
@@ -249,20 +222,19 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     try {
       if (layerId === "NASA_FIRMS") {
         const { days, confidence } = get().firmsWindow;
-        const body = await fetchEnvelope(`/api/observatory/firms?days=${days}&confidence=${confidence}`);
-        if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
-          const hotspots = body.data as FirmsHotspot[];
-          const extra = body as unknown as { cells?: unknown; total?: unknown; byCountry?: unknown };
-          const cells = Array.isArray(extra.cells) ? (extra.cells as FirmsCell[]) : aggregateFirmsGrid(hotspots);
+        const body = await fetchEnvelope(
+          `/api/observatory/firms?days=${days}&confidence=${confidence}&schema=${FIRMS_SCHEMA}`
+        );
+        const hotspots = isObservatoryEnvelope(body) ? decodeFirmsColumns(body.data) : null;
+        if (isObservatoryEnvelope(body) && hotspots) {
+          const extra = body as unknown as { total?: unknown; byCountry?: unknown };
           set({
             firmsHotspots: hotspots,
-            firmsCells: cells,
             firmsTotal: typeof extra.total === "number" ? extra.total : hotspots.length,
             firmsByCountry:
               extra.byCountry && typeof extra.byCountry === "object"
                 ? (extra.byCountry as Record<string, FirmsCountryStats>)
-                : {},
-            firmsDetail: null,
+                : null,
           });
           applyMeta("NASA_FIRMS", body.meta);
         }
@@ -325,5 +297,6 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       activeLayers: [],
       selectedEntity: null,
       isPanelOpen: false,
+      isPanelMinimized: false,
     }),
 }));

@@ -119,8 +119,9 @@ describe("T04: rota /api/observatory/firms com chave", () => {
     globalThis.fetch = (async () => new Response(VIIRS_CSV, { status: 200 })) as typeof fetch;
     const body = await (await firmsGET(firmsReq("?confidence=all"))).json();
     assert.equal(body.meta.source, "live");
-    assert.equal(body.data.length, 3);
-    const top = body.data.find((h: { frp: number }) => h.frp === 48.9);
+    const fires = decodeFirmsColumns(body.data)!;
+    assert.equal(fires.length, 3);
+    const top = fires.find((h) => h.frp === 48.9)!;
     assert.equal(top.confidence, "high");
   });
 
@@ -166,7 +167,7 @@ describe("T04: FIRMS tenta os satélites em ordem até achar focos", () => {
     mockFirms({ VIIRS_NOAA21_NRT: VIIRS_HEADER, VIIRS_NOAA20_NRT: VIIRS_CSV });
     const body = await (await firmsGET(firmsReq("?confidence=all"))).json();
     assert.equal(body.meta.source, "live");
-    assert.equal(body.data.length, 3);
+    assert.equal(body.data.count, 3);
     assert.match(body.meta.provider, /NOAA-20/);
     assert.deepEqual(requested, ["VIIRS_NOAA21_NRT", "VIIRS_NOAA20_NRT"]);
   });
@@ -213,14 +214,18 @@ describe("T04: FIRMS tenta os satélites em ordem até achar focos", () => {
 });
 
 // ---------------------------------------------------------------------------
-// D05: agregação, janela temporal e filtro de confiança
+// D05: todos os focos (formato colunar), janela, confiança e contagem por país
 // ---------------------------------------------------------------------------
 import {
-  aggregateFirmsGrid,
+  FIRMS_SCHEMA,
+  aggregateByCountry,
   buildFirmsPayload,
+  decodeFirmsColumns,
+  encodeFirmsColumns,
   parseFirmsConfidence,
   parseFirmsWindow,
 } from "../src/lib/firms-aggregate";
+import { createCountryLookup } from "../src/lib/firms-country";
 import type { FirmsHotspot } from "../src/lib/observatory-data";
 
 const hs = (lat: number, lng: number, frp: number, confidence: FirmsHotspot["confidence"] = "nominal", acqDate = "2026-11-19"): FirmsHotspot => ({
@@ -229,42 +234,45 @@ const hs = (lat: number, lng: number, frp: number, confidence: FirmsHotspot["con
   lng,
   frp,
   confidence,
-  brightness: 330,
+  brightness: 330.4,
   satellite: "VIIRS",
   acqDate,
 });
 
-describe("D05: agregação dos focos", () => {
-  test("focos na mesma célula de 1° são somados; centro = centróide", () => {
-    const cells = aggregateFirmsGrid([hs(-9.2, -55.8, 10), hs(-9.8, -55.2, 30, "high", "2026-11-20"), hs(10.5, 20.5, 5)]);
-    assert.equal(cells.length, 2);
-    const amazon = cells.find((c) => c.count === 2)!;
-    assert.equal(amazon.frpSum, 40);
-    assert.equal(amazon.frpMax, 30);
-    assert.equal(amazon.lat, -9.5);
-    assert.equal(amazon.lng, -55.5);
-    assert.equal(amazon.latestDate, "2026-11-20");
+describe("D05: formato colunar", () => {
+  test("ida e volta preserva os campos do card (3 casas nas coordenadas)", () => {
+    const src: FirmsHotspot[] = [
+      { ...hs(-9.88123, 33.12456, 12.74, "high", "2026-11-19"), acqTime: "0142", daynight: "N" },
+      { ...hs(10.5, -20.25, 3.1, "low", "2026-11-20"), satellite: "MODIS" },
+    ];
+    const cols = encodeFirmsColumns(src);
+    assert.equal(cols.count, 2);
+    assert.deepEqual(cols.dates, ["2026-11-19", "2026-11-20"]);
+    const back = decodeFirmsColumns(JSON.parse(JSON.stringify(cols)))!;
+    assert.equal(back[0].lat, -9.881);
+    assert.equal(back[0].lng, 33.125);
+    assert.equal(back[0].frp, 12.7);
+    assert.equal(back[0].brightness, 330);
+    assert.equal(back[0].confidence, "high");
+    assert.equal(back[0].acqTime, "0142");
+    assert.equal(back[0].daynight, "N");
+    assert.equal(back[1].satellite, "MODIS");
+    assert.equal(back[1].acqTime, undefined);
+    assert.equal(back[1].daynight, undefined);
+    assert.notEqual(back[0].id, back[1].id);
   });
 
-  test("bordas da grade: -180/180 e polos não estouram", () => {
-    const cells = aggregateFirmsGrid([hs(89.99, 179.99, 1), hs(-90, -180, 1)]);
-    assert.equal(cells.length, 2);
+  test("estrutura inválida ou resposta antiga (lista de objetos) → null", () => {
+    assert.equal(decodeFirmsColumns([{ lat: 1 }]), null);
+    assert.equal(decodeFirmsColumns({ format: "firms-columns-v1", count: 2, lat: [1] }), null);
+    assert.equal(decodeFirmsColumns(null), null);
   });
 
-  test("filtro padrão oculta baixa confiança na grade e nos focos", () => {
+  test("filtro padrão oculta baixa confiança; total = todos os focos enviados", () => {
     const p = buildFirmsPayload([hs(1, 1, 5, "low"), hs(1.2, 1.2, 7, "high")], 1, "nominal");
     assert.equal(p.total, 1);
     assert.equal(p.hotspots.length, 1);
-    assert.equal(p.cells[0].count, 1);
     assert.equal(buildFirmsPayload([hs(1, 1, 5, "low")], 1, "all").total, 1);
-  });
-
-  test("acima do teto, ficam os focos de maior FRP; a grade conta todos", () => {
-    const all = Array.from({ length: 10 }, (_, i) => hs(i, i, i + 1));
-    const p = buildFirmsPayload(all, 2, "all", { maxPoints: 3 });
-    assert.deepEqual(p.hotspots.map((h) => h.frp), [10, 9, 8]);
-    assert.equal(p.total, 10);
-    assert.equal(p.cells.reduce((n, c) => n + c.count, 0), 10);
   });
 
   test("parâmetros: janelas aceitas pela API (1/2/5) e confiança", () => {
@@ -277,7 +285,25 @@ describe("D05: agregação dos focos", () => {
   });
 });
 
-describe("D05: rota com janela e confiança", () => {
+describe("D05: focos por país", () => {
+  test("lookup de país usa o índice do picking (Natural Earth, zero-padding)", () => {
+    const countryOf = createCountryLookup();
+    assert.equal(countryOf(-9.5, -55.5), "BRA");
+    assert.equal(countryOf(-22.5, -47.5), "BRA", "Sudeste do Brasil");
+    assert.equal(countryOf(-2.34, 112.56), "IDN");
+    assert.equal(countryOf(39.85, -121.45), "USA");
+    assert.equal(countryOf(-30, -30), null, "oceano não tem país");
+  });
+
+  test("aggregateByCountry soma contagem, FRP total e máximo por ISO", () => {
+    const stats = aggregateByCountry([hs(-9.5, -55.5, 10), hs(-10, -52, 30), hs(39.85, -121.45, 5), hs(-30, -30, 99)], createCountryLookup());
+    assert.deepEqual(stats.BRA, { count: 2, frpSum: 40, frpMax: 30 });
+    assert.equal(stats.USA.count, 1);
+    assert.equal(Object.keys(stats).length, 2);
+  });
+});
+
+describe("D05: rota", () => {
   const realFetch = globalThis.fetch;
   const realWarn = console.warn;
   let urls: string[] = [];
@@ -299,13 +325,16 @@ describe("D05: rota com janela e confiança", () => {
     delete process.env.NASA_FIRMS_MAP_KEY;
   });
 
-  test("padrão: 24 h, sem baixa confiança, com grade agregada", async () => {
+  test("padrão: 24 h, sem baixa confiança, todos os focos em colunas, byCountry e schema", async () => {
     const body = await (await firmsGET(firmsReq())).json();
     assert.match(urls[0], /\/world\/1$/);
-    assert.equal(body.data.length, 2, "o foco de confiança 'l' fica de fora");
+    assert.equal(body.data.format, "firms-columns-v1");
+    assert.equal(body.data.count, 2, "o foco de confiança 'l' fica de fora");
     assert.equal(body.total, 2);
-    assert.ok(Array.isArray(body.cells) && body.cells.length === 2);
+    assert.equal(body.byCountry.IDN.count, 1);
+    assert.equal(body.schema, FIRMS_SCHEMA);
     assert.deepEqual(body.window, { days: 1, confidence: "nominal" });
+    assert.equal(body.cells, undefined, "sem manchas sintéticas");
   });
 
   test("days=5 consulta a janela de 5 dias; cada combinação tem cache próprio", async () => {
@@ -317,88 +346,13 @@ describe("D05: rota com janela e confiança", () => {
     assert.match(urls[1], /\/world\/2$/);
   });
 
-  test("sem chave: fallback também é filtrado e agregado", async () => {
+  test("sem chave: fallback também é filtrado e contado por país", async () => {
     delete process.env.NASA_FIRMS_MAP_KEY;
     const body = await (await firmsGET(firmsReq())).json();
     assert.equal(body.meta.source, "fallback");
-    assert.ok(body.cells.length > 0);
-    assert.ok(body.data.every((h: FirmsHotspot) => h.confidence !== "low"));
-  });
-});
-
-// ---------------------------------------------------------------------------
-// D05 (reabertura): contagem por país e detalhe por área visível
-// ---------------------------------------------------------------------------
-import { aggregateByCountry, inFirmsBbox, parseFirmsBbox, selectFirmsInBbox } from "../src/lib/firms-aggregate";
-import { createCountryLookup } from "../src/lib/firms-country";
-
-describe("D05: focos por país e por área visível", () => {
-  test("lookup de país usa o índice do picking (Natural Earth, zero-padding)", () => {
-    const countryOf = createCountryLookup();
-    assert.equal(countryOf(-9.5, -55.5), "BRA");
-    assert.equal(countryOf(-2.34, 112.56), "IDN");
-    assert.equal(countryOf(39.85, -121.45), "USA");
-    assert.equal(countryOf(-30, -30), null, "oceano não tem país");
-  });
-
-  test("aggregateByCountry soma contagem, FRP total e máximo por ISO", () => {
-    const stats = aggregateByCountry([hs(-9.5, -55.5, 10), hs(-10, -52, 30), hs(39.85, -121.45, 5), hs(-30, -30, 99)], createCountryLookup());
-    assert.deepEqual(stats.BRA, { count: 2, frpSum: 40, frpMax: 30 });
-    assert.equal(stats.USA.count, 1);
-    assert.equal(Object.keys(stats).length, 2);
-  });
-
-  test("bbox: parse, antimeridiano e teto pelos maiores FRP", () => {
-    assert.deepEqual(parseFirmsBbox("-60,-20,-40,0"), { minLng: -60, minLat: -20, maxLng: -40, maxLat: 0 });
-    assert.equal(parseFirmsBbox("-60,-20,-40"), null);
-    assert.equal(parseFirmsBbox("-60,10,-40,0"), null, "minLat > maxLat");
-    assert.equal(parseFirmsBbox("a,b,c,d"), null);
-    const wrap = { minLng: 170, minLat: -10, maxLng: -170, maxLat: 10 };
-    assert.ok(inFirmsBbox(0, 175, wrap));
-    assert.ok(inFirmsBbox(0, -175, wrap));
-    assert.ok(!inFirmsBbox(0, 0, wrap));
-    const all = [hs(-5, -50, 1), hs(-6, -51, 9), hs(-7, -52, 5), hs(30, 30, 100)];
-    const r = selectFirmsInBbox(all, { minLng: -60, minLat: -20, maxLng: -40, maxLat: 0 }, 2);
-    assert.equal(r.total, 3);
-    assert.deepEqual(r.hotspots.map((h) => h.frp), [9, 5]);
-  });
-});
-
-describe("D05: rota — byCountry e bbox", () => {
-  const realFetch = globalThis.fetch;
-  const realWarn = console.warn;
-
-  beforeEach(() => {
-    resetObservatorySources();
-    process.env.NASA_FIRMS_MAP_KEY = "test-key";
-    console.warn = () => {};
-    globalThis.fetch = (async () => new Response(VIIRS_CSV, { status: 200 })) as typeof fetch;
-  });
-
-  afterEach(() => {
-    globalThis.fetch = realFetch;
-    console.warn = realWarn;
-    delete process.env.NASA_FIRMS_MAP_KEY;
-  });
-
-  test("visão global traz byCountry e não vaza a lista completa", async () => {
-    const body = await (await firmsGET(firmsReq("?confidence=all"))).json();
-    assert.equal(body.byCountry.IDN.count, 1);
-    assert.equal(body.byCountry.USA.count, 1);
-    assert.equal(body.all, undefined);
-  });
-
-  test("bbox devolve todos os focos do recorte, sem células", async () => {
-    const body = await (await firmsGET(firmsReq("?confidence=all&bbox=100,-10,120,5"))).json();
-    assert.equal(body.data.length, 1);
-    assert.equal(body.data[0].frp, 48.9);
-    assert.equal(body.total, 1);
-    assert.equal(body.cells, undefined);
-    assert.deepEqual(body.bbox, { minLng: 100, minLat: -10, maxLng: 120, maxLat: 5 });
-  });
-
-  test("bbox inválido → 400", async () => {
-    const res = await firmsGET(firmsReq("?bbox=1,2,3"));
-    assert.equal(res.status, 400);
+    const fires = decodeFirmsColumns(body.data)!;
+    assert.ok(fires.length > 0);
+    assert.ok(fires.every((h) => h.confidence !== "low"));
+    assert.ok(body.byCountry.BRA.count > 0);
   });
 });

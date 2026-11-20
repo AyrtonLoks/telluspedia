@@ -1,7 +1,9 @@
 /**
- * Agregação dos focos do FIRMS para o globo (D05) — funções puras.
- * O CSV mundial de 5 dias tem ~190 mil linhas: o servidor filtra por confiança, agrega tudo
- * numa grade regular (heatmap em zoom distante) e manda ao cliente só os focos mais intensos.
+ * Focos do FIRMS para o globo (D05) — funções puras.
+ *
+ * Princípio: cada ponto desenhado é um foco detectado (nada de manchas sintéticas que “somem” ao
+ * aproximar). O servidor filtra por confiança, conta por país e envia TODOS os focos da janela
+ * num formato colunar compacto (`FirmsColumns`); o cliente decodifica.
  */
 import type { FirmsHotspot } from "./observatory-data";
 
@@ -12,21 +14,8 @@ export type FirmsWindowDays = (typeof FIRMS_WINDOWS)[number];
 /** "nominal" oculta focos de baixa confiança (padrão); "all" mostra todos. */
 export type FirmsConfidenceFilter = "nominal" | "all";
 
-/** Lado da célula da grade de agregação, em graus. */
-export const FIRMS_CELL_DEG = 1;
-/** Quantos focos individuais (os de maior FRP) vão para o cliente. */
-export const FIRMS_MAX_POINTS = 5000;
-
-export interface FirmsCell {
-  /** Centro da célula. */
-  lat: number;
-  lng: number;
-  count: number;
-  frpSum: number;
-  frpMax: number;
-  /** Data (AAAA-MM-DD) do foco mais recente na célula. */
-  latestDate: string;
-}
+/** Versão do formato da resposta; vai na URL para não reaproveitar respostas antigas do cache HTTP. */
+export const FIRMS_SCHEMA = 3;
 
 export interface FirmsCountryStats {
   count: number;
@@ -35,28 +24,35 @@ export interface FirmsCountryStats {
 }
 
 export interface FirmsPayload {
+  /** Todos os focos da janela após o filtro de confiança. */
   hotspots: FirmsHotspot[];
-  cells: FirmsCell[];
-  /** Focos após o filtro de confiança (antes do corte de FIRMS_MAX_POINTS). */
   total: number;
   /** Estatísticas por país (ISO 3166-1 alfa-3), contando todos os focos da janela. */
   byCountry: Record<string, FirmsCountryStats>;
   days: FirmsWindowDays;
   confidence: FirmsConfidenceFilter;
-  /** Lista completa filtrada — fica só no servidor (recortes por área visível); não é serializada. */
-  all: FirmsHotspot[];
 }
 
-/** Recorte geográfico: minLng,minLat,maxLng,maxLat. minLng > maxLng = atravessa o antimeridiano. */
-export interface FirmsBbox {
-  minLng: number;
-  minLat: number;
-  maxLng: number;
-  maxLat: number;
+/**
+ * Formato colunar (≈30 bytes por foco em JSON). Coordenadas com 3 casas (~110 m, abaixo do pixel
+ * de 375 m do VIIRS); datas indexadas em `dates`; confiança 0 = baixa, 1 = nominal, 2 = alta;
+ * dayNight 0 = noite, 1 = dia, -1 = desconhecido; hora HHMM como número (-1 = desconhecida).
+ */
+export interface FirmsColumns {
+  format: "firms-columns-v1";
+  count: number;
+  lat: number[];
+  lng: number[];
+  frp: number[];
+  brightness: number[];
+  confidence: number[];
+  dateIndex: number[];
+  dates: string[];
+  time: number[];
+  dayNight: number[];
+  satellite: number[];
+  satellites: FirmsHotspot["satellite"][];
 }
-
-/** Teto de focos devolvidos num recorte de área visível (os de maior FRP). */
-export const FIRMS_MAX_BBOX_POINTS = 12000;
 
 export function parseFirmsWindow(value: string | null | undefined): FirmsWindowDays {
   const n = Number(value);
@@ -69,42 +65,6 @@ export function parseFirmsConfidence(value: string | null | undefined): FirmsCon
 
 export function filterByConfidence(hotspots: FirmsHotspot[], filter: FirmsConfidenceFilter): FirmsHotspot[] {
   return filter === "all" ? hotspots : hotspots.filter((h) => h.confidence !== "low");
-}
-
-export function aggregateFirmsGrid(hotspots: FirmsHotspot[], cellDeg: number = FIRMS_CELL_DEG): FirmsCell[] {
-  const cells = new Map<string, FirmsCell & { latSum: number; lngSum: number }>();
-  for (const h of hotspots) {
-    const row = Math.floor((h.lat + 90) / cellDeg);
-    const col = Math.floor((h.lng + 180) / cellDeg);
-    const key = `${row}:${col}`;
-    const c = cells.get(key);
-    if (c) {
-      c.count += 1;
-      c.frpSum += h.frp;
-      c.frpMax = Math.max(c.frpMax, h.frp);
-      c.latSum += h.lat;
-      c.lngSum += h.lng;
-      if (h.acqDate > c.latestDate) c.latestDate = h.acqDate;
-    } else {
-      cells.set(key, {
-        lat: 0,
-        lng: 0,
-        count: 1,
-        frpSum: h.frp,
-        frpMax: h.frp,
-        latestDate: h.acqDate,
-        latSum: h.lat,
-        lngSum: h.lng,
-      });
-    }
-  }
-  // Posição = centróide dos focos da célula (o mancha fica onde o fogo está, não no canto da grade).
-  return [...cells.values()].map(({ latSum, lngSum, ...c }) => ({
-    ...c,
-    lat: round(latSum / c.count, 3),
-    lng: round(lngSum / c.count, 3),
-    frpSum: round(c.frpSum, 1),
-  }));
 }
 
 export function aggregateByCountry(
@@ -124,49 +84,97 @@ export function aggregateByCountry(
   return out;
 }
 
-const topByFrp = (list: FirmsHotspot[], n: number) =>
-  list.length > n ? [...list].sort((a, b) => b.frp - a.frp).slice(0, n) : list;
-
 export function buildFirmsPayload(
   all: FirmsHotspot[],
   days: FirmsWindowDays,
   confidence: FirmsConfidenceFilter,
-  options: { maxPoints?: number; countryOf?: (lat: number, lng: number) => string | null } = {}
+  options: { countryOf?: (lat: number, lng: number) => string | null } = {}
 ): FirmsPayload {
   const filtered = filterByConfidence(all, confidence);
   return {
-    hotspots: topByFrp(filtered, options.maxPoints ?? FIRMS_MAX_POINTS),
-    cells: aggregateFirmsGrid(filtered),
+    hotspots: filtered,
     total: filtered.length,
     byCountry: options.countryOf ? aggregateByCountry(filtered, options.countryOf) : {},
     days,
     confidence,
-    all: filtered,
   };
 }
 
-export function parseFirmsBbox(value: string | null | undefined): FirmsBbox | null {
-  if (!value) return null;
-  const parts = value.split(",").map(Number);
-  if (parts.length !== 4 || parts.some((n) => !Number.isFinite(n))) return null;
-  const [minLng, minLat, maxLng, maxLat] = parts;
-  if (minLat > maxLat || minLat < -90 || maxLat > 90 || Math.abs(minLng) > 180 || Math.abs(maxLng) > 180) return null;
-  return { minLng, minLat, maxLng, maxLat };
+const CONFIDENCE_CODE: Record<FirmsHotspot["confidence"], number> = { low: 0, nominal: 1, high: 2 };
+const CONFIDENCE_FROM_CODE: FirmsHotspot["confidence"][] = ["low", "nominal", "high"];
+
+export function encodeFirmsColumns(hotspots: FirmsHotspot[]): FirmsColumns {
+  const dates: string[] = [];
+  const dateIdx = new Map<string, number>();
+  const satellites: FirmsHotspot["satellite"][] = [];
+  const out: FirmsColumns = {
+    format: "firms-columns-v1",
+    count: hotspots.length,
+    lat: [],
+    lng: [],
+    frp: [],
+    brightness: [],
+    confidence: [],
+    dateIndex: [],
+    dates,
+    time: [],
+    dayNight: [],
+    satellite: [],
+    satellites,
+  };
+  for (const h of hotspots) {
+    let d = dateIdx.get(h.acqDate);
+    if (d === undefined) {
+      d = dates.length;
+      dates.push(h.acqDate);
+      dateIdx.set(h.acqDate, d);
+    }
+    let s = satellites.indexOf(h.satellite);
+    if (s < 0) s = satellites.push(h.satellite) - 1;
+    out.lat.push(round(h.lat, 3));
+    out.lng.push(round(h.lng, 3));
+    out.frp.push(round(h.frp, 1));
+    out.brightness.push(Math.round(h.brightness));
+    out.confidence.push(CONFIDENCE_CODE[h.confidence]);
+    out.dateIndex.push(d);
+    out.time.push(h.acqTime ? Number(h.acqTime) : -1);
+    out.dayNight.push(h.daynight === "D" ? 1 : h.daynight === "N" ? 0 : -1);
+    out.satellite.push(s);
+  }
+  return out;
 }
 
-export function inFirmsBbox(lat: number, lng: number, b: FirmsBbox): boolean {
-  if (lat < b.minLat || lat > b.maxLat) return false;
-  return b.minLng <= b.maxLng ? lng >= b.minLng && lng <= b.maxLng : lng >= b.minLng || lng <= b.maxLng;
+function isNumberArray(v: unknown, n: number): v is number[] {
+  return Array.isArray(v) && v.length === n;
 }
 
-/** Todos os focos dentro do recorte (até o teto, mantendo os de maior FRP). */
-export function selectFirmsInBbox(
-  all: FirmsHotspot[],
-  bbox: FirmsBbox,
-  max: number = FIRMS_MAX_BBOX_POINTS
-): { hotspots: FirmsHotspot[]; total: number } {
-  const inside = all.filter((h) => inFirmsBbox(h.lat, h.lng, bbox));
-  return { hotspots: topByFrp(inside, max), total: inside.length };
+/** Decodifica o formato colunar; devolve null se a estrutura não bater (resposta antiga/corrompida). */
+export function decodeFirmsColumns(cols: unknown): FirmsHotspot[] | null {
+  const c = cols as Partial<FirmsColumns> | null;
+  if (!c || c.format !== "firms-columns-v1" || typeof c.count !== "number") return null;
+  const n = c.count;
+  const keys = ["lat", "lng", "frp", "brightness", "confidence", "dateIndex", "time", "dayNight", "satellite"] as const;
+  if (!keys.every((k) => isNumberArray(c[k], n)) || !Array.isArray(c.dates) || !Array.isArray(c.satellites)) return null;
+  const out: FirmsHotspot[] = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const acqDate = c.dates[c.dateIndex![i]] ?? "";
+    const t = c.time![i];
+    const acqTime = t >= 0 ? String(t).padStart(4, "0") : undefined;
+    const dn = c.dayNight![i];
+    out[i] = {
+      id: `firms-${acqDate}-${acqTime ?? "----"}-${c.lat![i]}-${c.lng![i]}-${i}`,
+      lat: c.lat![i],
+      lng: c.lng![i],
+      frp: c.frp![i],
+      brightness: c.brightness![i],
+      confidence: CONFIDENCE_FROM_CODE[c.confidence![i]] ?? "nominal",
+      satellite: c.satellites[c.satellite![i]] ?? "VIIRS",
+      acqDate,
+      ...(acqTime ? { acqTime } : {}),
+      ...(dn === 1 ? { daynight: "D" as const } : dn === 0 ? { daynight: "N" as const } : {}),
+    };
+  }
+  return out;
 }
 
 function round(v: number, digits: number): number {

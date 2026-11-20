@@ -13,6 +13,7 @@ import { resetObservatorySources } from "../src/lib/observatory-sources";
 import { FALLBACK_EONET_EVENTS, FALLBACK_FIRMS_HOTSPOTS } from "../src/lib/observatory-data";
 import { GET as eonetGET } from "../src/app/api/observatory/eonet/route";
 import { GET as firmsGET } from "../src/app/api/observatory/firms/route";
+import { encodeFirmsColumns } from "../src/lib/firms-aggregate";
 
 const firmsReq = (query = "") => new Request(`http://localhost/api/observatory/firms${query}`);
 import { GET as issGET } from "../src/app/api/observatory/iss/route";
@@ -147,7 +148,7 @@ describe("T05: rotas do Observatório", () => {
     assert.equal(called, false);
     assert.equal(body.meta.source, "fallback");
     assert.match(body.meta.reason, /NASA_FIRMS_MAP_KEY/);
-    assert.equal(body.data.length, FALLBACK_FIRMS_HOTSPOTS.length);
+    assert.equal(body.data.count, FALLBACK_FIRMS_HOTSPOTS.length);
     assert.match(res.headers.get("Cache-Control") ?? "", /s-maxage=60\b/);
   });
 
@@ -173,14 +174,16 @@ describe("T05: rotas do Observatório", () => {
 describe("T05: store e badge", () => {
   test("store registra a procedência recebida da rota", async () => {
     mockFetch(() =>
-      json({ data: [{ id: "f1", lat: 1, lng: 2, brightness: 300, frp: 10, confidence: "high", satellite: "VIIRS", acqDate: "2026-11-19" }],
+      json({ data: encodeFirmsColumns([{ id: "f1", lat: 1, lng: 2, brightness: 300, frp: 10, confidence: "high", satellite: "VIIRS", acqDate: "2026-11-19" }]),
         meta: { source: "live", provider: "NASA FIRMS", fetchedAt: "2026-11-19T00:00:00.000Z", stale: false } })
     );
     await useObservatoryStore.getState().loadLayerData("NASA_FIRMS");
     const s = useObservatoryStore.getState();
     assert.equal(s.layerMeta.NASA_FIRMS.source, "live");
     assert.equal(s.layerError.NASA_FIRMS, false);
-    assert.equal(s.firmsHotspots[0].id, "f1");
+    assert.equal(s.firmsHotspots.length, 1);
+    assert.equal(s.firmsHotspots[0].frp, 10);
+    assert.equal(s.firmsHotspots[0].confidence, "high");
   });
 
   test("servidor inacessível → camada marcada offline com dados locais", async () => {

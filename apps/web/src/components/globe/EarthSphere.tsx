@@ -22,6 +22,7 @@ import {
   HISTORICAL_ERAS,
 } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";
+import { useObservatoryStore } from "@/stores/observatoryStore";
 import {
   loadHistoricalTopology,
   getHistoricalTopologySync,
@@ -137,6 +138,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   // Época ativa: fonte única (T12)
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
   const epoch = useEpochState();
+  const isFirmsLayerActive = useObservatoryStore((s) => s.activeLayers.includes("NASA_FIRMS"));
   const isGeological = epoch.mode === "GEOLOGICAL";
   const effectiveGeologicalMa = epoch.geologicalMa;
   const effectiveYear = epoch.effectiveYear;
@@ -297,6 +299,19 @@ export const EarthSphere: React.FC<{ studyLighting: boolean }> = ({ studyLightin
   // Update shader animation frame & smooth 60 FPS lerp for paleogeographic cross-fade
   useFrame((_, delta) => {
     earthMaterial.uniforms.uTime.value += delta;
+
+    // Com a camada de queimadas ligada, as luzes urbanas são atenuadas para não serem
+    // confundidas com focos de calor (D05).
+    const targetCityLights = isFirmsLayerActive ? 0.3 : 1.0;
+    const currentCityLights = earthMaterial.uniforms.uCityLights.value;
+    if (Math.abs(currentCityLights - targetCityLights) > 0.001) {
+      earthMaterial.uniforms.uCityLights.value = THREE.MathUtils.lerp(
+        currentCityLights,
+        targetCityLights,
+        Math.min(delta * 3.5, 1.0)
+      );
+      invalidate();
+    }
 
     const targetPaleoFactor = isGeological ? 1.0 : 0.0;
     const currentPaleoFactor = earthMaterial.uniforms.uPaleoFactor.value;
