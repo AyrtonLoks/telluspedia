@@ -33,7 +33,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 
 | Grupo | Escopo (arquivos/conceitos principais) | Tarefas |
 |---|---|---|
-| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12 |
+| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15 |
@@ -193,7 +193,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
-| D15 | Gerenciador de layout de painéis | Design | P1 | M | IN_PROGRESS | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE |
+| D15 | Gerenciador de layout de painéis | Design | P1 | M | IN_PROGRESS | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
@@ -1393,7 +1393,7 @@ Cada componente define cores, tamanhos de fonte (`text-[9px]`, `[10px]`, `[11px]
 ### D15 · Gerenciador de layout de painéis
 
 - **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d15-layout-paineis · **Worktree:** ../telluspedia-wt/claude-d15
-- **Prioridade:** P1 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE
+- **Prioridade:** P1 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA
 
 **Contexto / problema**
 O Inspector do país (ex.: COD) e o painel do Observatório abrem na mesma coluna direita e se sobrepõem; a timeline passa por baixo do painel; o Cosmic Inspector disputa o mesmo espaço. Cada painel posiciona-se com classes fixas independentes.
@@ -1413,6 +1413,7 @@ O Inspector do país (ex.: COD) e o painel do Observatório abrem na mesma colun
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada; worktree a partir de origin/master. Grupos G-PAIS (InspectorHUD), G-COSMOS (CosmicInspectorHUD), G-OBS (ObservatoryPanel/telemetria) e G-TIMELINE (TimelineBar) adicionados: os painéis passam a ser renderizados pelo slot do layout. Nenhuma tarefa desses grupos em andamento.
+- 2026-11-20 · claude · IN_PROGRESS · G-EPOCA adicionado: os overlays da esquerda (Apollo 11 e rota de Magalhães) se sobrepõem ao botão “Iluminação de estudo” e entram no slot `leftOverlay`. Nenhuma tarefa de G-EPOCA em andamento.
 
 ---
 
