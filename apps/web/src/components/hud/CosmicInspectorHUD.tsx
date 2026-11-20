@@ -26,7 +26,8 @@ import {
   CelestialBodyId,
   HalleyPosition,
 } from "@/lib/astronomy-planets";
-import { cn } from "@/components/ui";
+import { cn } from "@/components/ui/cn";
+import { useRightDock } from "@/components/layout/useRightDock";
 
 const HALLEY_EPOCH_PRESETS = [
   { id: "perihelion-1986", label: "Periélio 1986", sublabel: "0,59 UA · cauda máx.", year: 1986.1081 },
@@ -46,7 +47,16 @@ function formatCosmicEpoch(decimalYear: number): string {
   return `${dd}/${mm}/${date.getUTCFullYear()}`;
 }
 
-export const CosmicInspectorHUD: React.FC = () => {
+export interface CosmicInspectorHUDProps {
+  /**
+   * D15: "dock" = só o painel do corpo focado (renderizado pelo RightDock); "floating" = só o botão
+   * flutuante de camadas (quando nenhum corpo está focado). Sem valor: os dois, como antes.
+   */
+  placement?: "dock" | "floating";
+}
+
+export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placement }) => {
+  const isDockVisible = useRightDock().visible;
   const storeIsCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const isCosmicMode =
     typeof window === "undefined"
@@ -89,9 +99,10 @@ export const CosmicInspectorHUD: React.FC = () => {
 
   if (!isCosmicMode && !isNormalModeMoon) return null;
   if (!isInspectorOpen || !focusedBodyId) {
+    if (placement === "dock") return null;
     // Floating mini button to toggle layer drawer or inspect when no body is focused
     return (
-      <aside className="fixed top-20 right-6 z-20 flex flex-col gap-2">
+      <aside className={`fixed top-20 z-20 flex flex-col gap-2 ${isDockVisible ? "right-6 lg:right-[26.5rem]" : "right-6"}`}>
         <button
           onClick={() => setShowLayerPanel(!showLayerPanel)}
           data-testid="cosmic-layers-toggle"
@@ -182,6 +193,8 @@ export const CosmicInspectorHUD: React.FC = () => {
     }
   }
 
+  if (placement === "floating") return null;
+
   const handleCopyCitation = () => {
     const citation = `NASA / JPL (2026). ${meta.name} Fact Sheet. Consultado em TellusPedia em ${new Date().toLocaleDateString("pt-BR")}. Disponível em: <${meta.citationUrl}>.`;
     navigator.clipboard?.writeText(citation);
@@ -192,7 +205,8 @@ export const CosmicInspectorHUD: React.FC = () => {
   return (
     <aside
       data-testid="cosmic-inspector-hud"
-      className="fixed top-20 right-6 z-20 w-80 md:w-96 max-h-[calc(100vh-10rem)] glass-panel rounded-3xl p-5 shadow-2xl flex flex-col gap-4 overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-500/20"
+      // Posicionamento e convivência com outros painéis: RightDock (D15). Aqui o painel só preenche o dock.
+      className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5"
     >
       {/* Header */}
       <div className="flex items-start justify-between border-b border-slate-700/40 pb-3">

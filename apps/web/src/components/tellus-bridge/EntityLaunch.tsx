@@ -89,7 +89,7 @@ export function EntityLaunch() {
 
   if (!launch?.origin || !entity || isReaderOpen) return null;
   return (
-    <nav aria-label="Origem do estudo" className="fixed left-6 top-20 z-30 rounded-lg border border-slate-700 bg-slate-950/95 px-3 py-2 text-xs text-cyan-300">
+    <nav aria-label="Origem do estudo" className="fixed left-6 top-[7.5rem] z-30 rounded-lg border border-slate-700 bg-slate-950/95 px-3 py-2 text-xs text-cyan-300">
       <a href={studyUrl(launch.origin.slug, launch.origin.nodeId, entity.entityId)} className="hover:underline">
         ← Retornar ao nó {launch.origin.nodeId}
       </a>

@@ -36,7 +36,6 @@ export interface InspectorHUDProps {
 export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
   const storeIsReaderOpen = useGlobeStore((s) => s.isReaderOpen);
-  const storeIsTimelineExpanded = useTimelineStore((s) => s.isExpanded);
 
   const selectedIso =
     props.selectedIso !== undefined
@@ -50,10 +49,6 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
       ? useGlobeStore.getState().isReaderOpen
       : storeIsReaderOpen;
 
-  const isTimelineExpanded =
-    typeof window === "undefined"
-      ? useTimelineStore.getState().isExpanded
-      : storeIsTimelineExpanded;
 
   const setReaderOpen = useGlobeStore((s) => s.setReaderOpen);
 
@@ -135,10 +130,6 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
     setShareModalOpen(true);
   };
 
-  const maxHeightClass = isTimelineExpanded
-    ? "max-h-[calc(100vh-13rem)]"
-    : "max-h-[calc(100vh-5.5rem)]";
-
   const primarySourceName =
     currentCountry.indicators?.[0]?.sourcePrimary ||
     (currentCountry.isHistoricalEntity
@@ -151,7 +142,8 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
     <aside
       data-inspector-hud="true"
       data-completeness={currentCountry.completeness}
-      className={cn("fixed right-5 top-5 z-20 w-96 max-w-[calc(100vw-2.5rem)] overflow-y-auto rounded-panel border border-line bg-surface/86 p-4 shadow-e2 backdrop-blur-md transition-[max-height] duration-slow ease-out", maxHeightClass)}
+      // Posicionamento e convivência com outros painéis: RightDock (D15). Aqui o painel só preenche o dock.
+      className="min-h-0 flex-1 overflow-y-auto p-4"
     >
       {/* Country Identification Header */}
       <CountryHeader

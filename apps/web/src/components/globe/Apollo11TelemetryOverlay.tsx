@@ -86,7 +86,7 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
   return (
     <div
       data-apollo-telemetry-overlay="true"
-      className="fixed top-20 left-6 z-20 w-88 max-w-[calc(100vw-3rem)] glass-panel rounded-2xl p-4 shadow-2xl border border-cyan-500/30 transition-all duration-300 animate-in fade-in slide-in-from-left-4 text-slate-100 select-none"
+      className="fixed top-[7.5rem] left-6 z-20 w-88 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-18.5rem)] overflow-y-auto glass-panel rounded-2xl p-4 shadow-2xl border border-cyan-500/30 transition-all duration-300 animate-in fade-in slide-in-from-left-4 text-slate-100 select-none"
     >
       {/* 1. Header Bar */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-800">

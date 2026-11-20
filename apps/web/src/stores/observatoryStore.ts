@@ -57,8 +57,6 @@ interface ObservatoryState {
   activeLayers: ObservatoryLayerId[];
   layerOpacity: Record<ObservatoryLayerId, number>;
   isPanelOpen: boolean;
-  /** Painel recolhido numa barra compacta (abre automaticamente ao selecionar um país). */
-  isPanelMinimized: boolean;
   selectedEntity: ObservatoryEntity | null;
 
   firmsHotspots: FirmsHotspot[];
@@ -88,7 +86,6 @@ interface ObservatoryState {
   setAllLayers: (layers: ObservatoryLayerId[]) => void;
   setLayerOpacity: (layerId: ObservatoryLayerId, opacity: number) => void;
   setPanelOpen: (open: boolean) => void;
-  setPanelMinimized: (minimized: boolean) => void;
   togglePanel: () => void;
   setSelectedEntity: (entity: ObservatoryEntity | null) => void;
   /** Muda janela/confiança das queimadas e recarrega a camada. */
@@ -107,7 +104,6 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     MARITIME_ROUTES: 1.0,
   },
   isPanelOpen: false,
-  isPanelMinimized: false,
   selectedEntity: null,
 
   firmsHotspots: fallbackFirms(DEFAULT_FIRMS_WINDOW),
@@ -181,15 +177,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     }));
   },
 
-  setPanelOpen: (open) => set({ isPanelOpen: open, isPanelMinimized: false }),
-  setPanelMinimized: (minimized) => set({ isPanelMinimized: minimized }),
-  // Pela navbar: recolhido → expande; aberto → fecha; fechado → abre expandido.
-  togglePanel: () =>
-    set((s) =>
-      s.isPanelOpen && s.isPanelMinimized
-        ? { isPanelMinimized: false }
-        : { isPanelOpen: !s.isPanelOpen, isPanelMinimized: false }
-    ),
+  setPanelOpen: (open) => set({ isPanelOpen: open }),
+  togglePanel: () => set((s) => ({ isPanelOpen: !s.isPanelOpen })),
 
   setSelectedEntity: (entity) => set({ selectedEntity: entity }),
 
@@ -297,6 +286,5 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       activeLayers: [],
       selectedEntity: null,
       isPanelOpen: false,
-      isPanelMinimized: false,
     }),
 }));

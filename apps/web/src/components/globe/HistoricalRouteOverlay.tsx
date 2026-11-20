@@ -145,9 +145,9 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
     <div
       data-historical-route-overlay="true"
       data-testid="historical-route-overlay"
-      className={`fixed top-16 sm:top-20 left-3 sm:left-6 z-20 ${
+      className={`fixed top-[7.5rem] left-3 sm:left-6 z-20 ${
         isMinimized ? "w-80" : "w-96"
-      } max-w-[calc(100vw-1.5rem)] sm:max-w-[calc(100vw-3rem)] glass-panel rounded-2xl p-4 shadow-2xl border border-emerald-500/40 bg-slate-950/90 backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-left-4 text-slate-100 select-none`}
+      } max-w-[calc(100vw-1.5rem)] sm:max-w-[calc(100vw-3rem)] max-h-[calc(100vh-18.5rem)] overflow-y-auto glass-panel rounded-2xl p-4 shadow-2xl border border-emerald-500/40 bg-slate-950/90 backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-left-4 text-slate-100 select-none`}
     >
       {/* 1. Header Bar: Título, Ícone Náutico, Minimizar & Fechar */}
       <div className={`flex items-center justify-between ${isMinimized ? "" : "pb-3 border-b border-slate-800"}`}>

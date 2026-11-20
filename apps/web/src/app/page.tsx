@@ -7,14 +7,13 @@ import { TopNavBar } from "@/components/nav/TopNavBar";
 import { HistoricalEraBadge } from "@/components/globe/HistoricalEraBadge";
 import { PaleoEraBadge } from "@/components/globe/PaleoEraBadge";
 import { HistoricalRouteOverlay } from "@/components/globe/HistoricalRouteOverlay";
-import { InspectorHUD } from "@/components/hud/InspectorHUD";
+import { RightDock } from "@/components/layout/RightDock";
 import { CosmicInspectorHUD } from "@/components/hud/CosmicInspectorHUD";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
 import { ReaderMode } from "@/components/reader/ReaderMode";
 import { CountryComparator } from "@/components/comparator/CountryComparator";
 import { StudyShareModal } from "@/components/study/StudyShareModal";
 import { CitationModal } from "@/components/reader/CitationModal";
-import { ObservatoryPanel } from "@/components/observatory/ObservatoryPanel";
 
 // Load 3D WebGL Canvas client-side only (disables SSR for R3F / Three.js)
 const GlobeCanvas = dynamic(
@@ -53,11 +52,11 @@ export default function HomePage() {
       {/* Floating Historical Expedition / Magellan Route HUD Overlay (RN12) */}
       <HistoricalRouteOverlay />
 
-      {/* Camada 1: Inspector HUD (Floating Right Glassmorphism Drawer for Countries) */}
-      <InspectorHUD />
+      {/* Dock direito (D15): Inspector do país, Observatório e Inspector cósmico num único lugar */}
+      <RightDock />
 
-      {/* Cosmic Inspector HUD (Floating Right Glassmorphism Drawer for Solar System) */}
-      <CosmicInspectorHUD />
+      {/* Botão flutuante de camadas cósmicas (quando nenhum corpo está focado) */}
+      <CosmicInspectorHUD placement="floating" />
 
       {/* Bottom Semantic Dynamic Timeline (50 Years Default) */}
       <TimelineBar />
@@ -73,9 +72,6 @@ export default function HomePage() {
 
       {/* Citation Generator Modal (Global) */}
       <CitationModal />
-
-      {/* Planetary Observatory Floating Control Drawer */}
-      <ObservatoryPanel />
     </main>
   );
 }

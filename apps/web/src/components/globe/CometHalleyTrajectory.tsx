@@ -4,7 +4,7 @@ import React, { useMemo, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
-import { cn } from "@/components/ui";
+import { cn } from "@/components/ui/cn";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import {

@@ -6,13 +6,13 @@ import { ChevronUp, ChevronDown, Clock, Play, Pause, FastForward } from "lucide-
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
-import { useObservatoryStore } from "@/stores/observatoryStore";
 import { PresetSelector } from "./PresetSelector";
 import { CategoryFilterPills } from "./CategoryFilterPills";
 import { TimelineAxis } from "./TimelineAxis";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
+import { useRightDock } from "@/components/layout/useRightDock";
 
 const YEAR_INPUT = "w-16 rounded-control border border-line bg-surface-sunken px-1.5 py-1 text-center font-mono text-label tabular-nums text-fg";
 
@@ -25,13 +25,6 @@ export const TimelineBar: React.FC = () => {
   const setYearRange = useTimelineStore((s) => s.setYearRange);
 
   const storeIsReaderOpen = useGlobeStore((s) => s.isReaderOpen);
-  const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
-
-  const storeIsObservatoryPanelOpen = useObservatoryStore((s) => s.isPanelOpen);
-
-  const storeIsCosmicMode = useCosmicStore((s) => s.isCosmicMode);
-  const storeFocusedBodyId = useCosmicStore((s) => s.focusedBodyId);
-  const storeIsCosmicInspectorOpen = useCosmicStore((s) => s.isInspectorOpen);
   const storeIsPlaying = useCosmicStore((s) => s.isPlaying);
   const storePlaybackSpeed = useCosmicStore((s) => s.playbackSpeed);
   const setPlayback = useCosmicStore((s) => s.setPlayback);
@@ -42,28 +35,15 @@ export const TimelineBar: React.FC = () => {
   const startYear = isServer ? useTimelineStore.getState().startYear : storeStartYear;
   const endYear = isServer ? useTimelineStore.getState().endYear : storeEndYear;
   const isReaderOpen = isServer ? useGlobeStore.getState().isReaderOpen : storeIsReaderOpen;
-  const selectedIso = isServer ? useGlobeStore.getState().selectedIso : storeSelectedIso;
-  const isObservatoryPanelOpen = isServer
-    ? useObservatoryStore.getState().isPanelOpen
-    : storeIsObservatoryPanelOpen;
-  const isCosmicMode = isServer ? useCosmicStore.getState().isCosmicMode : storeIsCosmicMode;
-  const focusedBodyId = isServer ? useCosmicStore.getState().focusedBodyId : storeFocusedBodyId;
-  const isCosmicInspectorOpen = isServer
-    ? useCosmicStore.getState().isInspectorOpen
-    : storeIsCosmicInspectorOpen;
   const isPlaying = isServer ? useCosmicStore.getState().isPlaying : storeIsPlaying;
   const playbackSpeed = isServer ? useCosmicStore.getState().playbackSpeed : storePlaybackSpeed;
 
   // Época ativa: fonte única (T12)
   const isGeological = useEpochState().mode === "GEOLOGICAL";
 
-  const isCosmicDrawerOpen =
-    (isCosmicMode || focusedBodyId === "MOON") &&
-    isCosmicInspectorOpen &&
-    Boolean(focusedBodyId);
-
-  const hasRightSidePanel =
-    Boolean(selectedIso) || isObservatoryPanelOpen || isCosmicDrawerOpen;
+  // Layout (D15): com o dock direito aberto, a timeline fica à esquerda dele (lg+) e some em telas
+  // estreitas, onde o dock vira bottom sheet — nunca fica sob um painel.
+  const hasRightSidePanel = useRightDock().visible;
 
   // Playback timer loop: increments timeline year smoothly when isPlaying is active
   useEffect(() => {
@@ -117,7 +97,7 @@ export const TimelineBar: React.FC = () => {
       data-side-panel-open={hasRightSidePanel ? "true" : "false"}
       className={`fixed bottom-4 z-20 rounded-panel border border-line bg-surface/86 px-4 py-3 shadow-e2 backdrop-blur-md transition-[left,right,max-width] duration-slow ease-out md:px-5 ${
         hasRightSidePanel
-          ? "left-4 right-4 lg:left-6 lg:right-[26.5rem] max-w-[calc(100vw-2rem)] lg:max-w-[calc(100vw-28rem)] translate-x-0"
+          ? "max-lg:hidden left-4 right-4 lg:left-6 lg:right-[26.5rem] max-w-[calc(100vw-2rem)] lg:max-w-[calc(100vw-28rem)] translate-x-0"
           : "left-1/2 -translate-x-1/2 right-auto w-[calc(100vw-2rem)] max-w-6xl"
       }`}
     >

@@ -11,6 +11,8 @@ import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { useLayoutStore } from "@/stores/layoutStore";
+import { panelButtonAction, useRightDock } from "@/components/layout/useRightDock";
 import { PILOT_COUNTRIES, getCountryData } from "@/lib/country-data";
 import { IconButton } from "@/components/ui/IconButton";
 import { buttonClasses } from "@/components/ui/Button";
@@ -33,7 +35,14 @@ export const TopNavBar: React.FC = () => {
     typeof window === "undefined"
       ? useObservatoryStore.getState().isPanelOpen
       : storeIsPanelOpen;
-  const toggleObservatoryPanel = useObservatoryStore((s) => s.togglePanel);
+  const togglePanel = useObservatoryStore((s) => s.togglePanel);
+  const dock = useRightDock();
+  const setActiveRightPanel = useLayoutStore((s) => s.setActiveRightPanel);
+  // Aberto mas atrás de outra aba do dock → traz para frente; senão abre/fecha (D15).
+  const toggleObservatoryPanel = () => {
+    if (panelButtonAction("observatory", isObservatoryPanelOpen, dock) === "focus") setActiveRightPanel("observatory");
+    else togglePanel();
+  };
   const storeActiveLayers = useObservatoryStore((s) => s.activeLayers);
   const activeObservatoryLayers =
     typeof window === "undefined"

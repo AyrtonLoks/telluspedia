@@ -6,7 +6,6 @@ import { useObservatoryStore } from "../src/stores/observatoryStore";
 import { useGlobeStore } from "../src/stores/globeStore";
 import { useTimelineStore } from "../src/stores/timelineStore";
 import { ObservatoryTelemetryHUD } from "../src/components/observatory/ObservatoryTelemetryHUD";
-import { ObservatoryPanel } from "../src/components/observatory/ObservatoryPanel";
 import { FirmsLayerControls } from "../src/components/observatory/FirmsLayerControls";
 import { FirmsCountrySummary } from "../src/components/observatory/FirmsCountrySummary";
 import { buildFirePickIndex, buildFirmsGeometry, firePickCandidates, fireWorldSize } from "../src/components/globe/NasaFirmsLayer";
@@ -127,7 +126,7 @@ describe("D05: store e UI", () => {
 
   afterEach(() => {
     globalThis.fetch = realFetch;
-    useObservatoryStore.setState({ firmsWindow: { days: 1, confidence: "nominal" }, selectedEntity: null, isPanelOpen: false, isPanelMinimized: false });
+    useObservatoryStore.setState({ firmsWindow: { days: 1, confidence: "nominal" }, selectedEntity: null, isPanelOpen: false });
     useGlobeStore.setState({ selectedIso: null });
   });
 
@@ -170,30 +169,6 @@ describe("D05: store e UI", () => {
     useObservatoryStore.getState().setFirmsWindow({ days: 5 });
     await new Promise((r) => setTimeout(r, 0));
     assert.equal(urls.length, n);
-  });
-
-  test("painel recolhido vira barra compacta; navbar reexpande", () => {
-    useObservatoryStore.setState({ isPanelOpen: true, isPanelMinimized: true, activeLayers: ["NASA_FIRMS"] });
-    const html = renderToStaticMarkup(<ObservatoryPanel />);
-    assert.match(html, /data-minimized="true"/);
-    assert.match(html, /1 camada ativa/);
-    assert.match(html, /aria-label="Expandir Observatório"/);
-    assert.doesNotMatch(html, /Queimadas Ativas/, "a lista de camadas não aparece recolhida");
-    useObservatoryStore.getState().togglePanel();
-    assert.equal(useObservatoryStore.getState().isPanelMinimized, false);
-    assert.equal(useObservatoryStore.getState().isPanelOpen, true);
-    useObservatoryStore.getState().togglePanel();
-    assert.equal(useObservatoryStore.getState().isPanelOpen, false);
-    useObservatoryStore.setState({ activeLayers: [] });
-  });
-
-  test("expandido com país aberto: ao lado do Inspector, com botão de recolher", () => {
-    useObservatoryStore.setState({ isPanelOpen: true, isPanelMinimized: false });
-    useGlobeStore.setState({ selectedIso: "BRA" });
-    const html = renderToStaticMarkup(<ObservatoryPanel />);
-    assert.match(html, /data-beside-inspector="true"/);
-    assert.match(html, /lg:right-\[26\.5rem\]/);
-    assert.match(html, /aria-label="Recolher Observatório"/);
   });
 
   test("card do foco: data/hora UTC, satélite, FRP, confiança e link da fonte (RN02)", () => {

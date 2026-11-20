@@ -1,7 +1,7 @@
 "use client";
 
 import { StudyContext } from "@/components/tellus-bridge/StudyContext";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import {
   X,
   Flame,
@@ -12,8 +12,6 @@ import {
   AlertTriangle,
   RotateCcw,
   Layers,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
@@ -24,7 +22,7 @@ import { ObservatoryLayerId } from "@/lib/observatory-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
-import { Panel, PanelFooter, PanelHeader } from "@/components/ui/Panel";
+import { PanelFooter, PanelHeader } from "@/components/ui/Panel";
 import { Switch } from "@/components/ui/Switch";
 import { TONES, type Tone } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
@@ -107,74 +105,22 @@ export const ObservatoryPanel: React.FC = () => {
   // Época ativa: fonte única (T12)
   const epoch = useEpochState();
 
-  // Com o Inspector do país aberto (canto direito), o Observatório fica à esquerda dele em vez
-  // de sobrepor; a altura para acima da timeline. Layout completo de painéis: D15.
+  // País selecionado: mostra o resumo de focos do país na seção de queimadas.
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
-  const storeReaderOpen = useGlobeStore((s) => s.isReaderOpen);
   const selectedIso = typeof window === "undefined" ? useGlobeStore.getState().selectedIso : storeSelectedIso;
-  const isReaderOpen = typeof window === "undefined" ? useGlobeStore.getState().isReaderOpen : storeReaderOpen;
-  const isInspectorOpen = Boolean(selectedIso) && !isReaderOpen;
   const isContemporary = epoch.isContemporary;
   const effectiveMa = epoch.geologicalMa;
 
-  const storeMinimized = useObservatoryStore((s) => s.isPanelMinimized);
-  const isMinimized = typeof window === "undefined" ? useObservatoryStore.getState().isPanelMinimized : storeMinimized;
-  const setPanelMinimized = useObservatoryStore((s) => s.setPanelMinimized);
-
-  // Ao abrir um país, o Observatório se recolhe para não cobrir o globo; o usuário reexpande quando quiser.
-  const prevIsoRef = useRef(selectedIso);
-  useEffect(() => {
-    if (selectedIso && selectedIso !== prevIsoRef.current) setPanelMinimized(true);
-    prevIsoRef.current = selectedIso;
-  }, [selectedIso, setPanelMinimized]);
-
   if (!isPanelOpen) return null;
 
-  const position = isInspectorOpen ? "right-6 lg:right-[26.5rem]" : "right-6";
-
-  if (isMinimized) {
-    return (
-      <Panel
-        as="aside"
-        aria-label="Observatório Planetário (recolhido)"
-        data-testid="observatory-panel"
-        data-minimized="true"
-        className={cn("fixed top-20 z-30 max-w-[calc(100vw-3rem)] flex-row items-center gap-2 py-1.5 pl-3 pr-1.5", position)}
-      >
-        <Radio aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-secondary" />
-        <span className="text-label font-medium text-fg">Observatório Planetário</span>
-        <span className="text-caption text-fg-muted">
-          {activeLayers.length} {activeLayers.length === 1 ? "camada ativa" : "camadas ativas"}
-        </span>
-        <IconButton label="Expandir Observatório" icon={<ChevronDown />} size="sm" onClick={() => setPanelMinimized(false)} />
-        <IconButton label="Fechar painel do observatório" icon={<X />} size="sm" onClick={() => setPanelOpen(false)} />
-      </Panel>
-    );
-  }
-
+  // Posicionamento e convivência com outros painéis: RightDock (D15). Aqui o painel só preenche o dock.
   return (
-    <Panel
-      as="aside"
-      aria-label="Observatório Planetário"
-      data-testid="observatory-panel"
-      data-beside-inspector={isInspectorOpen ? "true" : "false"}
-      data-minimized="false"
-      className={cn(
-        "fixed top-20 z-30 w-96 max-w-[calc(100vw-3rem)] overflow-hidden",
-        position,
-        isInspectorOpen ? "max-h-[calc(100vh-6.5rem)] lg:max-h-[calc(100vh-15rem)]" : "max-h-[calc(100vh-6.5rem)]"
-      )}
-    >
+    <aside aria-label="Observatório Planetário" data-testid="observatory-panel" className="flex min-h-0 flex-1 flex-col">
       <PanelHeader
         title="Observatório Planetário"
         subtitle="NASA · OpenSky · CelesTrak"
         icon={<Radio />}
-        actions={
-          <>
-            <IconButton label="Recolher Observatório" icon={<ChevronUp />} size="sm" onClick={() => setPanelMinimized(true)} />
-            <IconButton label="Fechar painel do observatório" icon={<X />} size="sm" onClick={() => setPanelOpen(false)} />
-          </>
-        }
+        actions={<IconButton label="Fechar painel do observatório" icon={<X />} size="sm" onClick={() => setPanelOpen(false)} />}
       />
 
       {/* Aviso de anacronismo (RN09 & RN10) */}
@@ -266,6 +212,6 @@ export const ObservatoryPanel: React.FC = () => {
           </Button>
         )}
       </PanelFooter>
-    </Panel>
+    </aside>
   );
 };
