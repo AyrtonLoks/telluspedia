@@ -57,8 +57,8 @@ async function fetchHistoricalTopology(path: string): Promise<CountryTopology | 
   const load = STATIC_TOPOLOGY_LOADERS[path];
   if (!load) return null;
   try {
-    const module = await load();
-    return isCountryTopology(module.default) ? module.default : null;
+    const { default: data } = await load();
+    return isCountryTopology(data) ? data : null;
   } catch (error) {
     console.error(`Failed to load historical topology for ${path}:`, error);
     return null;

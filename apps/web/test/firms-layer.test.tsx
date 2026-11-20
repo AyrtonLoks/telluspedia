@@ -75,7 +75,7 @@ describe("D05: store e UI", () => {
 
   beforeEach(() => {
     urls = [];
-    useTimelineStore.setState({ selectedYear: null, selectedMilestoneId: null, timelineMode: "HISTORICAL", geologicalMa: null, selectedGeologicalMa: null });
+    useTimelineStore.setState({ selectedYear: null, selectedMilestoneId: null, geologicalMa: null });
     useObservatoryStore.setState({ firmsWindow: { days: 1, confidence: "nominal" }, selectedEntity: null });
     globalThis.fetch = (async (input: string | URL | Request) => {
       urls.push(String(input));

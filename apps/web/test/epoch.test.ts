@@ -36,7 +36,7 @@ const CASES: Case[] = [
   ["rota desconhecida não ativa cena", { activeRouteId: "outra-rota" }, { activeScene: null }],
 
   // ---- Geológico (precedência máxima)
-  ["selectedGeologicalMa 150", { geologicalMa: 150 }, { mode: "GEOLOGICAL", geologicalMa: 150 }],
+  ["idade geológica de 150 Ma", { geologicalMa: 150 }, { mode: "GEOLOGICAL", geologicalMa: 150 }],
   ["geologicalMa sem modo também ativa", { geologicalMa: 200 }, { mode: "GEOLOGICAL", geologicalMa: 200 }],
   ["marco pangea-250ma ativa geológico", { selectedMilestoneId: "pangea-250ma" }, { mode: "GEOLOGICAL", geologicalMa: 250 }],
   ["marco gondwana-150ma ativa geológico", { selectedMilestoneId: "gondwana-150ma" }, { geologicalMa: 150 }],
