@@ -187,7 +187,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | TODO | — | T05 | G-OBS |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
-| D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | IN_PROGRESS | codex | — | G-COSMOS |
+| D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | REVIEW | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
@@ -1229,7 +1229,7 @@ A camada "Rotas Marítimas Globais" é só um conjunto de 5 polylines estáticas
 
 ### D09 · Catálogo estelar real e 88 constelações
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d09-catalogo-estelar · **Worktree:** ../telluspedia-wt/codex-d09
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d09-catalogo-estelar · **Worktree:** ../telluspedia-wt/codex-d09
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS
 
 **Contexto / problema**
@@ -1245,14 +1245,15 @@ O "catálogo HYG 3.500+" (`lib/hyg-star-data.ts:240-270`, `generateHygCatalog`) 
 7. Remover o gerador aleatório.
 
 **Critérios de aceite**
-- [ ] Nenhuma estrela gerada aleatoriamente.
-- [ ] 88 constelações com linhas corretas (conferir Órion, Cruzeiro do Sul e Ursa Maior contra o Stellarium).
-- [ ] Estrelas circulares com tamanho por magnitude.
-- [ ] Atribuições/licenças em `docs/DATA_SOURCES.md`.
+- [x] Nenhuma estrela gerada aleatoriamente.
+- [x] 88 constelações com linhas corretas (conferir Órion, Cruzeiro do Sul e Ursa Maior contra o Stellarium).
+- [x] Estrelas circulares com tamanho por magnitude.
+- [x] Atribuições/licenças em `docs/DATA_SOURCES.md`.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 6. D06 a D08 compartilham G-OBS com a D04. A D02 compartilha G-GLOBO com a T14.
+- 2026-11-20 · codex · REVIEW · Binário HYG v4.1 de 212 KiB com 8.920 estrelas observadas até V = 6,5 e dois vértices HIP adicionais. As 88 figuras e os rótulos pt-BR vêm do Stellarium v25.4. Todos os caminhos HIP foram resolvidos. Órion, Cruzeiro do Sul e Ursa Maior foram conferidos contra os caminhos originais. Estrelas circulares com diâmetro e brilho por magnitude e cor por B−V. A Via Láctea vem do NASA SVS com dados Gaia DR2. Estrelas, traçados e fundo compartilham o referencial J2000, com rotação sideral no globo terrestre e conversão eclíptica no Cosmos. A opção de rótulos do Cosmos controla nomes estelares e planetários. Os rótulos do céu são posicionados sem colisão entre si. Capturas do Cosmos antes e depois mostram a troca de um fundo preto com poucos traçados por uma faixa da Via Láctea com figuras e nomes de Órion e das estrelas próximas. Chromium confirmou o carregamento dos assets, os traçados, o tamanho relativo das estrelas e os dois controles. Typecheck, lint, 416 testes e build passaram após rebase. Atribuições em DATA_SOURCES.md.
 
 ---
 
