@@ -160,8 +160,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T04 | Corrigir parse do CSV do FIRMS | Dados | P0 | P | DONE | claude | — | G-OBS |
 | T05 | Sinalizar dados ao vivo vs fallback | Dados | P0 | M | DONE | claude | — | G-OBS |
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | DONE | codex | — | G-PIPELINE, G-PAIS |
-| T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | REVIEW | codex | — | G-ESTUDOS, G-INFRA |
-| T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
+| T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | DONE | codex | — | G-ESTUDOS, G-INFRA |
+| T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | IN_PROGRESS | codex | T07 | G-ESTUDOS |
 | T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | REVIEW | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | IN_PROGRESS | antigravity | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | TODO | — | — | G-INFRA |
@@ -436,7 +436,7 @@ As rotas `apps/web/src/app/api/observatory/{eonet,firms,iss,traffic}/route.ts` d
 
 ### T07 · Schema e validação em POST /api/studies
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t07-validar-schema-studies · **Worktree:** ../telluspedia-wt/codex-t07
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/t07-validar-schema-studies · **Worktree:** ../telluspedia-wt/codex-t07
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-ESTUDOS, G-INFRA
 
 **Contexto / problema**
@@ -463,12 +463,13 @@ Criação e fork compartilham 10 tentativas por minuto em memória por instânci
 - 2026-11-20 · codex · IN_PROGRESS · Reivindicada como a próxima tarefa elegível da fase 3 após o aceite da T06.
 - 2026-11-20 · codex · IN_PROGRESS · Incluído G-INFRA, pois o schema requer adicionar Zod ao manifesto e ao lockfile. Grupo conferido e disponível.
 - 2026-11-20 · codex · REVIEW · Zod valida tipos, listas, tamanhos, IDs e faixas no POST. JSON malformado recebe 400, corpo acima de 384 KiB recebe 413 e a cota responde 429 com Retry-After. Criação, restauração e fork usam as mesmas regras de época. O conteúdo do estudo original continua disponível na leitura. Apenas os textos copiados para um novo fork são limitados. Typecheck, lint, 257 testes e build passaram. O smoke HTTP da versão de produção confirmou criação, leitura, fork e cota compartilhada com persistência em memória em um servidor isolado. O build reutilizou cópias temporárias dos arquivos originais do Google Fonts. A estratégia para a persistência sem banco é tratada na T08.
+- 2026-11-20 · ayrton · DONE · Aprovada a validação dos estudos e a limitação de tentativas de criação e fork.
 
 ---
 
 ### T08 · Fallback em memória dos estudos não pode mentir
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t08-fallback-estudos · **Worktree:** ../telluspedia-wt/codex-t08
 - **Prioridade:** P1 · **Área:** Backend · **Tamanho:** P · **Depende de:** T07 · **Grupos:** G-ESTUDOS
 
 **Contexto / problema**
@@ -486,6 +487,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Reivindicada como a próxima tarefa elegível da fase 3 após o aceite da T07.
 
 ---
 
