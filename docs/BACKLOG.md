@@ -162,7 +162,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T06 | Validar lat/lng em /api/weather | Segurança | P1 | P | DONE | codex | — | G-PIPELINE, G-PAIS |
 | T07 | Schema e validação em POST /api/studies | Segurança | P1 | M | IN_PROGRESS | codex | — | G-ESTUDOS, G-INFRA |
 | T08 | Fallback em memória dos estudos não pode mentir | Backend | P1 | P | TODO | — | T07 | G-ESTUDOS |
-| T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | IN_PROGRESS | antigravity | — | G-OBS |
+| T09 | Cache sem limite em /api/observatory/cosmos | Segurança | P1 | P | REVIEW | antigravity | — | G-OBS |
 | T10 | Endurecer serviço Python (CORS, Docker, Redis) | Segurança | P1 | M | TODO | — | — | G-PIPELINE |
 | T11 | Ajustar next.config e script de build | Infra | P1 | P | TODO | — | — | G-INFRA |
 | T12 | Seletor único de época (`useEpochState`) | Arquitetura | P1 | G | TODO | — | — | G-EPOCA, G-FRONTEIRAS |
@@ -487,7 +487,7 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 
 ### T09 · Cache sem limite em /api/observatory/cosmos
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t09-cosmos-lru-cache · **Worktree:** ../telluspedia-wt/antigravity-t09
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t09-cosmos-lru-cache · **Worktree:** ../telluspedia-wt/antigravity-t09
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -499,12 +499,13 @@ Com Postgres fora, `POST /api/studies` e o fork salvam num `Map` do processo (`l
 3. Validar `startYear`/`endYear`/`categories` em `/api/timeline`.
 
 **Critérios de aceite**
-- [ ] `?year=abc` → 400; `?year=1e308` → 400.
-- [ ] Cache nunca passa do limite (teste unitário do LRU).
+- [x] `?year=abc` → 400; `?year=1e308` → 400.
+- [x] Cache nunca passa do limite (teste unitário do LRU).
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (4cb10a9).
+- 2026-11-20 · antigravity · REVIEW · Implementado (commit dc7f4f3): (1) criado `LruCache<K, V>` limitado O(1) com suporte a TTL em `apps/web/src/lib/lru-cache.ts`; (2) criados validadores estritos por allow-list em `apps/web/src/lib/cosmos-validation.ts` (`parseCosmosYear` finito em `[-3000, 3000]` arredondado para 2 casas, `parseCosmosBody` enum `CelestialBodyId`, e `parseTimelineQuery` para inteiros `startYear`/`endYear` em `[-3000, 3000]` com `startYear <= endYear` e `categories` em `ALL_CATEGORIES`); (3) atualizado `GET /api/observatory/cosmos` para usar `LruCache` (máx. 500 entradas, TTL 1h), retornar 400 para parâmetros inválidos (incluindo `NaN`, `Infinity`, `1e308`, `abc`, `__proto__`) e evitar lookup via operador `in`; (4) atualizado `GET /api/timeline` para rejeitar `startYear`/`endYear`/`categories` inválidos com 400. Validação: `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 252/252 (35 suítes, incluindo nova `apps/web/test/cosmos-timeline-api.test.ts` com testes do LRU e das rotas), `pnpm build` ok (16/16 páginas).
 
 ---
 
