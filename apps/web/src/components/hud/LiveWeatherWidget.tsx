@@ -66,19 +66,19 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
 
   const getWeatherIcon = (code: number | null | undefined) => {
     if (code == null) return null;
-    if (code >= 51 && code <= 67) return <CloudRain className="w-4 h-4 text-blue-400" />;
-    if (code >= 1 && code <= 3) return <Cloud className="w-4 h-4 text-slate-300" />;
-    return <Sun className="w-4 h-4 text-amber-400" />;
+    if (code >= 51 && code <= 67) return <CloudRain aria-hidden="true" className="h-4 w-4 text-fg-secondary" />;
+    if (code >= 1 && code <= 3) return <Cloud aria-hidden="true" className="h-4 w-4 text-fg-secondary" />;
+    return <Sun aria-hidden="true" className="h-4 w-4 text-fg-secondary" />;
   };
 
   if (!hasCoords) {
     return (
-      <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-700/40 text-xs">
+      <div className="flex items-center justify-between rounded-card border border-line bg-surface-raised px-3 py-2">
         <div className="flex items-center gap-2">
-          <Cloud className="w-4 h-4 text-slate-500" />
+          <Cloud aria-hidden="true" className="h-4 w-4 text-fg-muted" />
           <div>
-            <div className="font-semibold text-slate-400 text-xs">Dado indisponível</div>
-            <div className="text-[10px] text-slate-500">Clima local</div>
+            <div className="text-label font-medium text-fg-secondary">Dado indisponível</div>
+            <div className="text-caption text-fg-muted">Clima local</div>
           </div>
         </div>
       </div>
@@ -86,38 +86,38 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-1.5 rounded-lg border border-slate-700/40 bg-slate-900/60 px-3 py-2 text-xs">
+    <div className="flex min-w-0 flex-col gap-1.5 rounded-card border border-line bg-surface-raised px-3 py-2">
       <div>
-        <div className="font-medium text-slate-200">Clima local · {referenceName ?? "Ponto de referência"}</div>
-        <div className="text-[10px] text-slate-400" title="Latitude e longitude do ponto consultado">
+        <div className="text-caption font-medium text-fg-secondary">Clima local · {referenceName ?? "Ponto de referência"}</div>
+        <div className="font-mono text-caption tabular-nums text-fg-muted" title="Latitude e longitude do ponto consultado">
           {lat?.toFixed(4)}, {lng?.toFixed(4)}
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {getWeatherIcon(current?.weather_code)}
         <div>
-          <div className="font-semibold text-slate-100 text-sm">
+          <div className="font-mono text-body font-medium tabular-nums text-fg">
             {loading ? "..." : formatMeasurement(current?.temperature, "°C")}
           </div>
-          <div className="text-[10px] text-slate-400">
+          <div className="text-caption text-fg-muted">
             {current ? `Sensação ${formatMeasurement(current.apparent_temperature, "°C")}` : "Clima local"}
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-300">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-caption tabular-nums text-fg-secondary">
         <div className="flex items-center gap-1" title="Umidade Relativa">
-          <Droplets className="w-3 h-3 text-cyan-400" />
+          <Droplets aria-hidden="true" className="h-3 w-3 text-fg-muted" />
           <span>{formatMeasurement(current?.relative_humidity, "%")}</span>
         </div>
         <div className="flex items-center gap-1" title="Velocidade do Vento">
-          <Wind className="w-3 h-3 text-slate-400" />
+          <Wind aria-hidden="true" className="h-3 w-3 text-fg-muted" />
           <span>{formatMeasurement(current?.wind_speed, " km/h")}</span>
         </div>
       </div>
-      <p className="text-[10px] text-slate-400">
+      <p className="text-caption text-fg-muted">
         Estimativa{" "}
-        <a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer" className="text-cyan-300 underline">
+        <a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer" className="text-accent underline hover:text-accent-hover">
           Open-Meteo
         </a>
         {hasReferenceTime && (

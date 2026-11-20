@@ -10,6 +10,10 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { PresetSelector } from "./PresetSelector";
 import { CategoryFilterPills } from "./CategoryFilterPills";
 import { TimelineAxis } from "./TimelineAxis";
+import { IconButton } from "@/components/ui/IconButton";
+import { cn } from "@/components/ui/cn";
+
+const YEAR_INPUT = "w-16 rounded-control border border-line bg-surface-sunken px-1.5 py-1 text-center font-mono text-label tabular-nums text-fg";
 
 export const TimelineBar: React.FC = () => {
   const storeIsExpanded = useTimelineStore((s) => s.isExpanded);
@@ -115,7 +119,7 @@ export const TimelineBar: React.FC = () => {
     <footer
       data-timeline-bar="true"
       data-side-panel-open={hasRightSidePanel ? "true" : "false"}
-      className={`fixed bottom-4 z-20 glass-panel rounded-2xl px-4 md:px-5 py-3 transition-all duration-300 ${
+      className={`fixed bottom-4 z-20 rounded-panel border border-line bg-surface/86 px-4 py-3 shadow-e2 backdrop-blur-md transition-[left,right,max-width] duration-slow ease-out md:px-5 ${
         hasRightSidePanel
           ? "left-4 right-4 lg:left-6 lg:right-[26.5rem] max-w-[calc(100vw-2rem)] lg:max-w-[calc(100vw-28rem)] translate-x-0"
           : "left-1/2 -translate-x-1/2 right-auto w-[calc(100vw-2rem)] max-w-6xl"
@@ -124,16 +128,16 @@ export const TimelineBar: React.FC = () => {
       {/* Header bar: Zone A (Title + Scrollable Presets) & Zone B (Fixed Controls always accessible) */}
       <div
         data-testid="timeline-header"
-        className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 pb-2 border-b border-slate-700/40 min-w-0"
+        className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2"
       >
         {/* Zone A: Title & Horizontally Scrollable Presets */}
         <div
           data-testid="timeline-presets-zone"
           className="flex items-center gap-2 min-w-0 flex-1 basis-[280px] max-w-full"
         >
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 shrink-0">
-            <Clock className="w-4 h-4 shrink-0" />
-            <span className="hidden md:inline whitespace-nowrap">Linha do Tempo</span>
+          <div className="flex shrink-0 items-center gap-1.5 text-label font-semibold text-fg">
+            <Clock aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
+            <span className="hidden whitespace-nowrap md:inline">Linha do Tempo</span>
           </div>
 
           <PresetSelector />
@@ -145,20 +149,19 @@ export const TimelineBar: React.FC = () => {
           className="flex items-center justify-end gap-2 flex-wrap shrink-0 ml-auto min-w-0 max-w-full"
         >
           {/* Orbital / Chronological Playback Controls */}
-          <div className="flex items-center gap-1 bg-slate-900/70 border border-slate-800 rounded-xl px-1.5 py-0.5 shrink-0">
+          <div className="flex shrink-0 items-center gap-1">
             <button
               type="button"
               onClick={() => setPlayback(!isPlaying)}
               data-testid="timeline-play-toggle"
               aria-label={isPlaying ? "Pausar reprodução orbital" : "Reproduzir evolução orbital"}
-              className={`p-1 rounded-lg text-xs transition-colors ${
-                isPlaying
-                  ? "bg-cyan-500 text-slate-950 font-bold"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
+              className={cn(
+                "inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-fast ease-out",
+                isPlaying ? "bg-accent text-accent-on hover:bg-accent-hover" : "bg-surface-raised text-fg hover:bg-surface-hover"
+              )}
               title={isPlaying ? "Pausar reprodução orbital" : "Reproduzir evolução orbital"}
             >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+              {isPlaying ? <Pause aria-hidden="true" className="h-4 w-4" /> : <Play aria-hidden="true" className="h-4 w-4" />}
             </button>
 
             <button
@@ -168,47 +171,47 @@ export const TimelineBar: React.FC = () => {
                 setPlaybackSpeed(nextSpeed);
               }}
               data-testid="timeline-speed-toggle"
-              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold text-cyan-300 hover:bg-slate-800 transition-colors whitespace-nowrap"
+              className="flex h-8 items-center gap-1 whitespace-nowrap rounded-control px-2 font-mono text-caption font-medium tabular-nums text-fg-secondary transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
               title="Velocidade de reprodução (1x, 30x, 365x)"
             >
-              <FastForward className="w-3 h-3 text-cyan-400 shrink-0" />
+              <FastForward aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
               <span>{playbackSpeed}x</span>
             </button>
           </div>
 
           {/* Year Range Inputs or Geological Deep-Time Range */}
           {isGeological ? (
-            <div className="flex items-center gap-1.5 text-xs font-mono shrink-0">
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-amber-950/40 border border-amber-800/60 text-amber-300">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
-                <span className="font-semibold whitespace-nowrap">300 Ma — 0 Ma</span>
-                <span className="text-[10px] text-amber-400/70 font-sans hidden xl:inline whitespace-nowrap">
+            <div className="flex shrink-0 items-center gap-1.5">
+              <div className="flex items-center gap-2 rounded-control border border-line bg-surface-raised px-2.5 py-1 text-label text-fg">
+                <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full bg-warning" />
+                <span className="whitespace-nowrap font-mono font-medium tabular-nums">300 Ma — 0 Ma</span>
+                <span className="hidden whitespace-nowrap text-caption text-fg-muted xl:inline">
                   (Tempo Geológico Profundo)
                 </span>
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 text-xs font-mono shrink-0">
+            <div className="flex shrink-0 items-center gap-1.5">
               <input
                 type="number"
                 aria-label="Ano inicial"
                 value={startYear}
                 onChange={handleStartChange}
-                className="w-14 sm:w-16 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-slate-100 text-center"
+                className={YEAR_INPUT}
                 min={1400}
                 max={endYear - 1}
               />
-              <span className="text-slate-500">—</span>
+              <span aria-hidden="true" className="text-fg-muted">–</span>
               <input
                 type="number"
                 aria-label="Ano final"
                 value={endYear}
                 onChange={handleEndChange}
-                className="w-14 sm:w-16 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-slate-100 text-center"
+                className={YEAR_INPUT}
                 min={startYear + 1}
                 max={2030}
               />
-              <span className="text-[10px] text-slate-400 font-sans hidden 2xl:inline whitespace-nowrap">
+              <span className="hidden whitespace-nowrap text-caption text-fg-muted 2xl:inline">
                 ({endYear - startYear} anos)
               </span>
             </div>
@@ -216,19 +219,12 @@ export const TimelineBar: React.FC = () => {
 
           {!isGeological && <CategoryFilterPills />}
 
-          <button
-            type="button"
+          <IconButton
+            label={isExpanded ? "Recolher timeline" : "Expandir timeline"}
+            icon={isExpanded ? <ChevronDown /> : <ChevronUp />}
+            size="sm"
             onClick={toggleExpanded}
-            aria-label={isExpanded ? "Recolher timeline" : "Expandir timeline"}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
-            title={isExpanded ? "Recolher timeline" : "Expandir timeline"}
-          >
-            {isExpanded ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronUp className="w-4 h-4" />
-            )}
-          </button>
+          />
         </div>
       </div>
 

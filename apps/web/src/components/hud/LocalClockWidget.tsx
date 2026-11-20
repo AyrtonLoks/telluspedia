@@ -48,25 +48,25 @@ export const LocalClockWidget: React.FC<LocalClockWidgetProps> = ({ timezone }) 
 
   if (!timezone) {
     return (
-      <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-700/40 text-xs">
-        <Clock className="w-4 h-4 text-slate-500 shrink-0" />
+      <div className="flex items-center gap-2.5 rounded-card border border-line bg-surface-raised px-3 py-2">
+        <Clock aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
         <div>
-          <div className="font-mono font-medium text-slate-400 text-xs">Dado indisponível</div>
-          <div className="text-[10px] text-slate-500">Fuso horário</div>
+          <div className="text-label font-medium text-fg-secondary">Dado indisponível</div>
+          <div className="text-caption text-fg-muted">Fuso horário</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-700/40 text-xs">
-      <Clock className="w-4 h-4 text-cyan-400 shrink-0" />
-      <div>
-        <div className="font-mono font-medium text-slate-100 tracking-wider text-sm">
+    <div className="flex items-center gap-2.5 rounded-card border border-line bg-surface-raised px-3 py-2">
+      <Clock aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-secondary" />
+      <div className="min-w-0">
+        <div className="font-mono text-body font-medium tabular-nums text-fg">
           {timeStr || "Calculando..."}
         </div>
-        <div className="text-[10px] text-slate-400 capitalize">
-          {dateStr} • {timezone.split("/")[1]?.replace(/_/g, " ") || timezone}
+        <div className="truncate text-caption capitalize text-fg-muted">
+          {dateStr} · {timezone.split("/")[1]?.replace(/_/g, " ") || timezone}
         </div>
       </div>
     </div>

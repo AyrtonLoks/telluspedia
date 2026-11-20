@@ -7,6 +7,30 @@ import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { calculateIssPosition, isContemporaryEpoch, IssTelemetryData } from "@/lib/observatory-data";
+import { Button, buttonClasses } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
+import { TONES, type Tone } from "@/components/ui/tones";
+import { cn } from "@/components/ui/cn";
+
+const ENTITY_META: Record<"ISS" | "EONET" | "AIRCRAFT" | "MARITIME", { title: string; tone: Tone; icon: React.ReactNode }> = {
+  ISS: { title: "Telemetria Orbital ISS", tone: "layer-satellites", icon: <Radio /> },
+  EONET: { title: "Evento Severo NASA", tone: "layer-events", icon: <Activity /> },
+  AIRCRAFT: { title: "Aeronave Comercial", tone: "layer-aircraft", icon: <Plane /> },
+  MARITIME: { title: "Corredor Mercante", tone: "layer-maritime", icon: <Anchor /> },
+};
+
+/** Par rótulo/valor da telemetria; valores numéricos em mono tabular. */
+function Field({ label, children, mono = true }: { label: string; children: React.ReactNode; mono?: boolean }) {
+  return (
+    <div className="flex min-w-0 flex-col gap-0.5">
+      <span className="text-caption text-fg-muted">{label}</span>
+      <span className={cn("truncate text-label text-fg", mono && "font-mono tabular-nums")}>{children}</span>
+    </div>
+  );
+}
+
+const FIELD_GRID = "grid grid-cols-2 gap-3 rounded-card border border-line bg-surface-raised p-3";
 
 export const ObservatoryTelemetryHUD: React.FC = () => {
   const storeSelectedEntity = useObservatoryStore((s) => s.selectedEntity);
@@ -61,136 +85,82 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
 
   const activeIss = liveIss || (selectedEntity.type === "ISS" ? selectedEntity.data : null);
 
+  const meta = ENTITY_META[selectedEntity.type];
+
   return (
-    <div
+    <Panel
       data-testid="observatory-telemetry-hud"
-      className="fixed bottom-24 left-6 z-30 w-84 max-w-[calc(100vw-3rem)] glass-panel rounded-2xl shadow-2xl border border-cyan-500/40 p-4 animate-in fade-in slide-in-from-bottom-3"
+      className="fixed bottom-24 left-6 z-30 w-80 max-w-[calc(100vw-3rem)]"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between pb-2.5 border-b border-slate-700/60">
-        <div className="flex items-center gap-2">
-          {selectedEntity.type === "ISS" && (
-            <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
-          )}
-          {selectedEntity.type === "EONET" && (
-            <Activity className="w-4 h-4 text-rose-400 animate-pulse" />
-          )}
-          {selectedEntity.type === "AIRCRAFT" && (
-            <Plane className="w-4 h-4 text-sky-400" />
-          )}
-          {selectedEntity.type === "MARITIME" && (
-            <Anchor className="w-4 h-4 text-emerald-400" />
-          )}
+      <PanelHeader
+        headingLevel={3}
+        title={meta.title}
+        icon={<span className={TONES[meta.tone].text}>{meta.icon}</span>}
+        className="px-4 py-3"
+        actions={<IconButton label="Fechar telemetria" icon={<X />} size="sm" onClick={() => setSelectedEntity(null)} />}
+      />
 
-          <h3 className="text-xs font-bold text-slate-100 uppercase tracking-wider font-mono">
-            {selectedEntity.type === "ISS" && "Telemetria Orbital ISS"}
-            {selectedEntity.type === "EONET" && "Evento Severo NASA"}
-            {selectedEntity.type === "AIRCRAFT" && "Aeronave Comercial"}
-            {selectedEntity.type === "MARITIME" && "Corredor Mercante"}
-          </h3>
-        </div>
-
-        <button
-          onClick={() => setSelectedEntity(null)}
-          className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          title="Fechar telemetria"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Body content per entity type */}
-      <div className="my-3 text-xs space-y-2">
+      <div className="space-y-3 p-4">
         {selectedEntity.type === "ISS" && activeIss && (
           <>
-            <div>
-              <div className="font-semibold text-slate-100">
-                Estação Espacial Internacional (Zvezda / Destiny)
-              </div>
-              <span className="text-[10px] text-cyan-400 font-mono">
-                NORAD ID: 25544 • Inclinação: {activeIss.orbitInclinationDeg}°
+            <div className="space-y-0.5">
+              <div className="text-label font-medium text-fg">Estação Espacial Internacional (Zvezda / Destiny)</div>
+              <span className="font-mono text-caption tabular-nums text-fg-muted">
+                NORAD ID: 25544 · Inclinação: {activeIss.orbitInclinationDeg}°
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px]">
-              <div>
-                <span className="text-slate-400 block text-[10px]">Altitude:</span>
-                <span className="font-mono text-cyan-300 font-medium">
-                  {activeIss.altitudeKm} km
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Velocidade:</span>
-                <span className="font-mono text-cyan-300 font-medium">
-                  {activeIss.velocityKmh.toLocaleString("pt-BR")} km/h
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Coordenadas:</span>
-                <span className="font-mono text-slate-300">
-                  {activeIss.latitude.toFixed(2)}°, {activeIss.longitude.toFixed(2)}°
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Iluminação:</span>
-                <span className="font-mono text-emerald-400">
-                  {activeIss.visibility === "daylight" ? "Dia Orbital" : "Noite Orbital"}
-                </span>
-              </div>
+            <div className={FIELD_GRID}>
+              <Field label="Altitude">{activeIss.altitudeKm} km</Field>
+              <Field label="Velocidade">{activeIss.velocityKmh.toLocaleString("pt-BR")} km/h</Field>
+              <Field label="Coordenadas">
+                {activeIss.latitude.toFixed(2)}°, {activeIss.longitude.toFixed(2)}°
+              </Field>
+              <Field label="Iluminação" mono={false}>
+                {activeIss.visibility === "daylight" ? "Dia Orbital" : "Noite Orbital"}
+              </Field>
             </div>
 
-            <button
-              onClick={() =>
-                handleFocus(activeIss.latitude, activeIss.longitude, 1.8)
-              }
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-semibold text-xs transition-colors"
-            >
-              <Crosshair className="w-3.5 h-3.5" />
-              <span>Focar Câmera na ISS</span>
-            </button>
+            <Button variant="primary" size="sm" className="w-full" onClick={() => handleFocus(activeIss.latitude, activeIss.longitude, 1.8)}>
+              <Crosshair aria-hidden="true" className="h-4 w-4" />
+              Focar Câmera na ISS
+            </Button>
           </>
         )}
 
         {selectedEntity.type === "EONET" && (
           <>
-            <div>
-              <div className="font-semibold text-slate-100">
-                {selectedEntity.data.title}
-              </div>
-              <span className="text-[10px] text-rose-400 font-mono">
-                Categoria: {selectedEntity.data.category} • {new Date(selectedEntity.data.date).toLocaleDateString("pt-BR")}
+            <div className="space-y-0.5">
+              <div className="text-label font-medium text-fg">{selectedEntity.data.title}</div>
+              <span className="text-caption text-fg-muted">
+                Categoria: {selectedEntity.data.category} · {new Date(selectedEntity.data.date).toLocaleDateString("pt-BR")}
               </span>
             </div>
 
             {selectedEntity.data.magnitudeValue && (
-              <div className="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px]">
-                <span className="text-slate-400 block text-[10px]">Magnitude Observada:</span>
-                <span className="font-mono text-rose-300 font-medium">
+              <div className={cn(FIELD_GRID, "grid-cols-1")}>
+                <Field label="Magnitude observada">
                   {selectedEntity.data.magnitudeValue} {selectedEntity.data.magnitudeUnit || ""}
-                </span>
+                </Field>
               </div>
             )}
 
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                onClick={() =>
-                  handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.8)
-                }
-                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs transition-colors"
-              >
-                <Crosshair className="w-3.5 h-3.5" />
-                <span>Focar Evento</span>
-              </button>
+            <div className="flex items-center gap-2">
+              <Button variant="primary" size="sm" className="flex-1" onClick={() => handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.8)}>
+                <Crosshair aria-hidden="true" className="h-4 w-4" />
+                Focar Evento
+              </Button>
 
               {selectedEntity.data.sources?.[0]?.url && (
                 <a
                   href={selectedEntity.data.sources[0].url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors"
+                  aria-label="Abrir relatório científico primário"
                   title="Abrir relatório científico primário"
+                  className={buttonClasses("secondary", "sm", "w-8 px-0")}
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink aria-hidden="true" className="h-4 w-4" />
                 </a>
               )}
             </div>
@@ -199,93 +169,62 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
 
         {selectedEntity.type === "AIRCRAFT" && (
           <>
-            <div>
-              <div className="font-semibold text-slate-100 font-mono">
+            <div className="space-y-0.5">
+              <div className="font-mono text-label font-medium text-fg">
                 {selectedEntity.data.callsign} ({selectedEntity.data.icao24})
               </div>
-              <span className="text-[10px] text-sky-400">
-                Origem / Registro: {selectedEntity.data.originCountry}
-              </span>
+              <span className="text-caption text-fg-muted">Origem / Registro: {selectedEntity.data.originCountry}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px]">
-              <div>
-                <span className="text-slate-400 block text-[10px]">Altitude de Voo:</span>
-                <span className="font-mono text-sky-300 font-medium">
-                  {selectedEntity.data.altitudeMeters} m
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Velocidade:</span>
-                <span className="font-mono text-sky-300 font-medium">
-                  {Math.round(selectedEntity.data.velocityMs * 3.6)} km/h
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Rumo (Heading):</span>
-                <span className="font-mono text-slate-300">
-                  {selectedEntity.data.headingDeg}°
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Posição:</span>
-                <span className="font-mono text-slate-300">
-                  {selectedEntity.data.lat.toFixed(1)}°, {selectedEntity.data.lng.toFixed(1)}°
-                </span>
-              </div>
+            <div className={FIELD_GRID}>
+              <Field label="Altitude de voo">{selectedEntity.data.altitudeMeters} m</Field>
+              <Field label="Velocidade">{Math.round(selectedEntity.data.velocityMs * 3.6)} km/h</Field>
+              <Field label="Rumo">{selectedEntity.data.headingDeg}°</Field>
+              <Field label="Posição">
+                {selectedEntity.data.lat.toFixed(1)}°, {selectedEntity.data.lng.toFixed(1)}°
+              </Field>
             </div>
 
-            <button
-              onClick={() =>
-                handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.8)
-              }
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition-colors"
-            >
-              <Crosshair className="w-3.5 h-3.5" />
-              <span>Focar Câmera na Aeronave</span>
-            </button>
+            <Button variant="primary" size="sm" className="w-full" onClick={() => handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.8)}>
+              <Crosshair aria-hidden="true" className="h-4 w-4" />
+              Focar Câmera na Aeronave
+            </Button>
           </>
         )}
 
         {selectedEntity.type === "MARITIME" && (
           <>
-            <div>
-              <div className="font-semibold text-slate-100">
-                {selectedEntity.data.name}
-              </div>
-              <span className="text-[10px] text-emerald-400 font-mono">
+            <div className="space-y-0.5">
+              <div className="text-label font-medium text-fg">{selectedEntity.data.name}</div>
+              <span className="text-caption text-fg-muted">
                 {selectedEntity.data.category === "CANAL" ? "Canal Interoceânico" : "Estreito Estratégico"}
               </span>
             </div>
 
-            <div className="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] space-y-1">
-              <div>
-                <span className="text-slate-400 text-[10px]">Ponto Crítico: </span>
-                <span className="text-slate-200 font-medium">
-                  {selectedEntity.data.chokePoint || "Corredor Mercante Principal"}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 text-[10px]">Volume Diário Estimado: </span>
-                <span className="font-mono text-emerald-300 font-medium">
-                  ~{selectedEntity.data.dailyTonnageTeuApprox.toLocaleString("pt-BR")} TEU/dia
-                </span>
-              </div>
+            <div className={cn(FIELD_GRID, "grid-cols-1")}>
+              <Field label="Ponto crítico" mono={false}>
+                {selectedEntity.data.chokePoint || "Corredor Mercante Principal"}
+              </Field>
+              <Field label="Volume diário estimado">
+                ~{selectedEntity.data.dailyTonnageTeuApprox.toLocaleString("pt-BR")} TEU/dia
+              </Field>
             </div>
 
-            <button
+            <Button
+              variant="primary"
+              size="sm"
+              className="w-full"
               onClick={() => {
                 const first = selectedEntity.data.coordinates[0];
                 if (first) handleFocus(first[0], first[1], 1.8);
               }}
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-semibold text-xs transition-colors"
             >
-              <Crosshair className="w-3.5 h-3.5" />
-              <span>Focar Corredor Marítimo</span>
-            </button>
+              <Crosshair aria-hidden="true" className="h-4 w-4" />
+              Focar Corredor Marítimo
+            </Button>
           </>
         )}
       </div>
-    </div>
+    </Panel>
   );
 };

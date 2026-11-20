@@ -5,6 +5,7 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { MilestonePin } from "./MilestonePin";
 import { GLOBAL_MILESTONES, PILOT_COUNTRIES, findMilestoneById, MilestoneItem } from "@/lib/country-data";
 import { useGlobeStore } from "@/stores/globeStore";
+import { cn } from "@/components/ui/cn";
 
 export const TimelineAxis: React.FC = () => {
   const storeStartYear = useTimelineStore((s) => s.startYear);
@@ -56,7 +57,6 @@ export const TimelineAxis: React.FC = () => {
       ageMa: 250,
       percent: 16.67,
       emoji: "🌋",
-      badgeColor: "border-amber-500 bg-amber-500/20 text-amber-300",
     },
     {
       id: "breakup-200ma",
@@ -66,7 +66,6 @@ export const TimelineAxis: React.FC = () => {
       ageMa: 200,
       percent: 33.33,
       emoji: "🌊",
-      badgeColor: "border-sky-500 bg-sky-500/20 text-sky-300",
     },
     {
       id: "gondwana-150ma",
@@ -76,7 +75,6 @@ export const TimelineAxis: React.FC = () => {
       ageMa: 150,
       percent: 50.0,
       emoji: "🦖",
-      badgeColor: "border-emerald-500 bg-emerald-500/20 text-emerald-300",
     },
     {
       id: "kpg-66ma",
@@ -86,7 +84,6 @@ export const TimelineAxis: React.FC = () => {
       ageMa: 66,
       percent: 78.0,
       emoji: "☄️",
-      badgeColor: "border-rose-500 bg-rose-500/20 text-rose-300",
     },
     {
       id: "contemporary-0ma",
@@ -96,7 +93,6 @@ export const TimelineAxis: React.FC = () => {
       ageMa: 0,
       percent: 100,
       emoji: "🌍",
-      badgeColor: "border-cyan-500 bg-cyan-500/20 text-cyan-300",
     },
   ], []);
 
@@ -168,7 +164,7 @@ export const TimelineAxis: React.FC = () => {
         data-testid="geological-timeline-axis"
       >
         {/* Central Axis Line in Terracotta / Amber Gradient */}
-        <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-700/60 via-amber-500/80 to-cyan-500/60" />
+        <div className="absolute left-0 right-0 top-1/2 h-0.5 rounded-full bg-surface-hover" />
 
         {/* Geological Ticks & Labels (Hang strictly below central line) */}
         {geologicalTicks.map((t) => (
@@ -186,8 +182,8 @@ export const TimelineAxis: React.FC = () => {
                 : "-translate-x-1/2"
             }`}
           >
-            <div className="w-[1px] h-2 bg-amber-600/70" />
-            <span className="mt-0.5 font-mono text-[9px] text-amber-300/80 whitespace-nowrap">
+            <div className="h-2 w-px bg-line-strong" />
+            <span className="mt-0.5 whitespace-nowrap font-mono text-caption tabular-nums text-fg-muted">
               {t.label}
             </span>
           </div>
@@ -229,17 +225,19 @@ export const TimelineAxis: React.FC = () => {
                 type="button"
                 onClick={handleClick}
                 title={`${m.title} — ${m.subtitle}`}
-                className={`group relative flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-medium transition-all shadow-md ${
+                aria-pressed={isSelected}
+                className={cn(
+                  "group relative flex h-7 items-center gap-1 rounded-full border px-2.5 text-caption font-medium shadow-e1 transition-colors duration-fast ease-out",
                   isSelected
-                    ? "bg-amber-400 text-slate-950 border-amber-300 ring-2 ring-amber-400/50 scale-105"
-                    : "bg-slate-900/95 text-amber-300 border-amber-500/40 hover:bg-slate-800 hover:border-amber-400"
-                }`}
+                    ? "border-accent bg-accent text-accent-on"
+                    : "border-line-strong bg-surface-raised text-fg hover:bg-surface-hover"
+                )}
               >
                 <span>{m.emoji}</span>
-                <span className="font-mono">{m.ageMa > 0 ? `${m.ageMa} Ma` : "Hoje"}</span>
+                <span className="font-mono tabular-nums">{m.ageMa > 0 ? `${m.ageMa} Ma` : "Hoje"}</span>
               </button>
               {/* Subtle connector down to axis */}
-              <div className="w-[1px] h-1.5 mx-auto bg-amber-500/40" />
+              <div className="mx-auto h-1.5 w-px bg-line-strong" />
             </div>
           );
         })}
@@ -254,7 +252,7 @@ export const TimelineAxis: React.FC = () => {
       onClick={handleAxisBackgroundClick}
     >
       {/* Central Axis Line */}
-      <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-900/40 via-cyan-500/50 to-cyan-900/40" />
+      <div className="absolute left-0 right-0 top-1/2 h-0.5 rounded-full bg-surface-hover" />
 
       {/* Year Ticks & Labels (Hang strictly below central axis & pins so labels never collide with pins) */}
       {ticks.map((t) => {
@@ -280,11 +278,9 @@ export const TimelineAxis: React.FC = () => {
             }`}
           >
             <div
-              className={`w-[1px] h-2.5 ${
-                hasNearbyPin ? "bg-slate-600/35" : "bg-slate-600/70"
-              }`}
+              className={cn("h-2.5 w-px", hasNearbyPin ? "bg-line" : "bg-line-strong")}
             />
-            <span className="mt-1 font-mono text-[10px] leading-none text-slate-400 whitespace-nowrap">
+            <span className="mt-1 whitespace-nowrap font-mono text-caption leading-none tabular-nums text-fg-muted">
               {t.year}
             </span>
           </div>

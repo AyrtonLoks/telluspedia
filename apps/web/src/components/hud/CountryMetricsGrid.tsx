@@ -109,13 +109,13 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
     return (
       <div
         data-testid="country-data-unavailable"
-        className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2 text-xs"
+        className="space-y-2 rounded-card border border-line bg-surface-raised p-3.5 text-label"
       >
-        <div className="flex items-center gap-2 text-amber-300 font-semibold">
-          <Info className="w-4 h-4 shrink-0" />
+        <div className="flex items-center gap-2 font-semibold text-fg">
+          <Info aria-hidden="true" className="h-4 w-4 shrink-0 text-warning" />
           <span>Indicadores ainda indisponíveis</span>
         </div>
-        <p className="text-[11px] text-slate-400 leading-relaxed">
+        <p className="text-caption text-fg-secondary">
           Os dados demográficos, econômicos e institucionais de {countryName} ainda não foram
           ingeridos na base local do TellusPedia. Consulte diretamente as fontes externas oficiais:
         </p>
@@ -125,20 +125,20 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
               href={`https://data.worldbank.org/country/${encodeURIComponent(isoCode)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-950 text-cyan-300 border border-slate-700 text-[10px] font-medium transition-colors"
+              className="inline-flex items-center gap-1 rounded-control border border-line-strong bg-surface px-2 py-1 text-caption font-medium text-fg transition-colors duration-fast ease-out hover:bg-surface-hover"
             >
               <span>Banco Mundial ({isoCode})</span>
-              <ExternalLink className="w-2.5 h-2.5" />
+              <ExternalLink aria-hidden="true" className="h-3 w-3" />
             </a>
           )}
           <a
             href={`https://pt.wikipedia.org/wiki/${encodeURIComponent(countryName)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-950 text-slate-200 border border-slate-700 text-[10px] font-medium transition-colors"
+            className="inline-flex items-center gap-1 rounded-control border border-line-strong bg-surface px-2 py-1 text-caption font-medium text-fg transition-colors duration-fast ease-out hover:bg-surface-hover"
           >
             <span>Wikipédia</span>
-            <ExternalLink className="w-2.5 h-2.5" />
+            <ExternalLink aria-hidden="true" className="h-3 w-3" />
           </a>
         </div>
       </div>
@@ -153,12 +153,12 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
     Boolean(currencyCode);
 
   return (
-    <div className="grid grid-cols-2 gap-2 text-xs">
+    <div className="grid grid-cols-2 gap-2 text-label">
       {/* População */}
-      <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
+      <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
+        <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
           <div className="flex items-center gap-1.5 truncate">
-            <Users className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <Users aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span className="truncate">População</span>
           </div>
           {population !== null && (
@@ -168,11 +168,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-cyan-400/90 hover:text-cyan-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
                 title={`Fonte Primária: ${popSource} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(popSource)}</span>
-                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
               <button
                 type="button"
@@ -186,10 +186,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                     publicationYear: 2026,
                   });
                 }}
-                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
                 title="Gerar citação deste indicador"
+                aria-label="Gerar citação deste indicador"
               >
-                <Quote className="w-2.5 h-2.5" />
+                <Quote aria-hidden="true" className="h-3 w-3" />
               </button>
             </div>
           )}
@@ -197,8 +198,8 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         <div
           className={
             population !== null
-              ? "font-semibold text-slate-100 text-sm"
-              : "font-medium text-slate-500 text-xs"
+              ? "font-mono text-body font-medium tabular-nums text-fg"
+              : "text-label text-fg-muted"
           }
         >
           {population !== null ? formatPop(population) : "Dado indisponível"}
@@ -206,10 +207,10 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
       </div>
 
       {/* Área */}
-      <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
+      <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
+        <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
           <div className="flex items-center gap-1.5 truncate">
-            <Maximize2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <Maximize2 aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span className="truncate">Área Territorial</span>
           </div>
           {areaKm2 !== null && (
@@ -219,11 +220,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-emerald-400/90 hover:text-emerald-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
                 title={`Fonte Primária: ${areaSource} (1:110m) (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(areaSource)}</span>
-                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
               <button
                 type="button"
@@ -237,10 +238,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                     publicationYear: 2026,
                   });
                 }}
-                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
                 title="Gerar citação deste indicador"
+                aria-label="Gerar citação deste indicador"
               >
-                <Quote className="w-2.5 h-2.5" />
+                <Quote aria-hidden="true" className="h-3 w-3" />
               </button>
             </div>
           )}
@@ -248,8 +250,8 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         <div
           className={
             areaKm2 !== null
-              ? "font-semibold text-slate-100 text-sm"
-              : "font-medium text-slate-500 text-xs"
+              ? "font-mono text-body font-medium tabular-nums text-fg"
+              : "text-label text-fg-muted"
           }
         >
           {areaKm2 !== null ? `${areaKm2.toLocaleString("pt-BR")} km²` : "Dado indisponível"}
@@ -257,10 +259,10 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
       </div>
 
       {/* PIB */}
-      <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
+      <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
+        <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
           <div className="flex items-center gap-1.5 truncate">
-            <DollarSign className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <DollarSign aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span className="truncate">PIB Nominal</span>
           </div>
           {gdpIndicator !== undefined && (
@@ -270,11 +272,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-amber-400/90 hover:text-amber-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
                 title={`Fonte Primária: ${gdpSource} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(gdpSource)}</span>
-                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
               <button
                 type="button"
@@ -288,10 +290,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                     publicationYear: 2026,
                   });
                 }}
-                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
                 title="Gerar citação deste indicador"
+                aria-label="Gerar citação deste indicador"
               >
-                <Quote className="w-2.5 h-2.5" />
+                <Quote aria-hidden="true" className="h-3 w-3" />
               </button>
             </div>
           )}
@@ -299,8 +302,8 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         <div
           className={
             gdpIndicator !== undefined
-              ? "font-semibold text-slate-100 text-sm"
-              : "font-medium text-slate-500 text-xs"
+              ? "font-mono text-body font-medium tabular-nums text-fg"
+              : "text-label text-fg-muted"
           }
         >
           {formatGdp(gdpIndicator?.value)}
@@ -308,10 +311,10 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
       </div>
 
       {/* IDH */}
-      <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
+      <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
+        <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
           <div className="flex items-center gap-1.5 truncate">
-            <Award className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+            <Award aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span className="truncate">IDH Geral</span>
           </div>
           {hdiIndicator !== undefined && (
@@ -321,11 +324,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-purple-400/90 hover:text-purple-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
                 title={`Fonte Primária: ${hdiSource} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(hdiSource)}</span>
-                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
               <button
                 type="button"
@@ -339,10 +342,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                     publicationYear: 2026,
                   });
                 }}
-                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
                 title="Gerar citação deste indicador"
+                aria-label="Gerar citação deste indicador"
               >
-                <Quote className="w-2.5 h-2.5" />
+                <Quote aria-hidden="true" className="h-3 w-3" />
               </button>
             </div>
           )}
@@ -350,8 +354,8 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         <div
           className={
             hdiIndicator !== undefined
-              ? "font-semibold text-slate-100 text-sm"
-              : "font-medium text-slate-500 text-xs"
+              ? "font-mono text-body font-medium tabular-nums text-fg"
+              : "text-label text-fg-muted"
           }
         >
           {hdiIndicator?.value !== undefined ? hdiIndicator.value.toFixed(3) : "Dado indisponível"}
@@ -360,10 +364,10 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
 
       {/* Indicadores Complementares de Saúde e Segurança (OMS / SIPRI) se presentes */}
       {lifeExpectancy && (
-        <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
+        <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
+          <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
             <div className="flex items-center gap-1.5 truncate">
-              <HeartPulse className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+              <HeartPulse aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
               <span className="truncate">Expectativa Vida</span>
             </div>
             <div className="flex items-center gap-1 shrink-0">
@@ -372,11 +376,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-rose-400/90 hover:text-rose-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
                 title={`Fonte Primária: ${lifeSource} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(lifeSource)}</span>
-                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
               <button
                 type="button"
@@ -390,24 +394,25 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                     publicationYear: 2026,
                   });
                 }}
-                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
                 title="Gerar citação deste indicador"
+                aria-label="Gerar citação deste indicador"
               >
-                <Quote className="w-2.5 h-2.5" />
+                <Quote aria-hidden="true" className="h-3 w-3" />
               </button>
             </div>
           </div>
-          <div className="font-semibold text-slate-100 text-sm">
+          <div className="font-mono text-body font-medium tabular-nums text-fg">
             {lifeExpectancy.value} {lifeExpectancy.unit}
           </div>
         </div>
       )}
 
       {militaryExp && (
-        <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
+        <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
+          <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
             <div className="flex items-center gap-1.5 truncate">
-              <Shield className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+              <Shield aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
               <span className="truncate">Gastos Militares</span>
             </div>
             <div className="flex items-center gap-1 shrink-0">
@@ -416,11 +421,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-indigo-400/90 hover:text-indigo-200 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
                 title={`Fonte Primária: ${milSource} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(milSource)}</span>
-                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
               <button
                 type="button"
@@ -434,14 +439,15 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                     publicationYear: 2026,
                   });
                 }}
-                className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
                 title="Gerar citação deste indicador"
+                aria-label="Gerar citação deste indicador"
               >
-                <Quote className="w-2.5 h-2.5" />
+                <Quote aria-hidden="true" className="h-3 w-3" />
               </button>
             </div>
           </div>
-          <div className="font-semibold text-slate-100 text-sm">
+          <div className="font-mono text-body font-medium tabular-nums text-fg">
             {militaryExp.value}% PIB
           </div>
         </div>
@@ -449,10 +455,10 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
 
       {/* Governo & Moeda */}
       {hasGovernmentBlock && (
-        <div className="col-span-2 p-2.5 rounded-lg bg-slate-900/50 border border-slate-800">
-          <div className="flex items-center justify-between text-slate-400 mb-1 gap-1">
+        <div className="col-span-2 rounded-card border border-line bg-surface-raised p-2.5">
+          <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
             <div className="flex items-center gap-1.5">
-              <Landmark className="w-3.5 h-3.5 text-cyan-400" />
+              <Landmark aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
               <span>Regime Político & Chefia</span>
             </div>
             {(governmentType || headOfState) && (
@@ -462,11 +468,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 hover:text-cyan-300 hover:bg-slate-700/80 border border-slate-700/60 inline-flex items-center gap-0.5 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
                   title="Fonte Primária: Constituições Nacionais e Divisão de Assuntos Políticos da ONU (Abrir Repositório)"
                 >
                   <span>Constituições / ONU</span>
-                  <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                  <ExternalLink aria-hidden="true" className="h-3 w-3" />
                 </a>
                 <button
                   type="button"
@@ -480,34 +486,35 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                       publicationYear: 2026,
                     });
                   }}
-                  className="p-1 rounded bg-slate-800/80 hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-slate-700/60 transition-colors"
+                  className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
                   title="Gerar citação institucional"
+                  aria-label="Gerar citação institucional"
                 >
-                  <Quote className="w-2.5 h-2.5" />
+                  <Quote aria-hidden="true" className="h-3 w-3" />
                 </button>
               </div>
             )}
           </div>
           {governmentType || headOfState ? (
-            <div className="font-medium text-slate-200">
+            <div className="font-medium text-fg">
               {governmentType || "Dado indisponível"}
               {headOfState && (
                 <>
-                  {" "}• <span className="text-slate-400">{headOfState}</span>
+                  {" "}· <span className="text-fg-secondary">{headOfState}</span>
                 </>
               )}
             </div>
           ) : (
-            <div className="font-medium text-slate-500 text-xs">Dado indisponível</div>
+            <div className="text-label text-fg-muted">Dado indisponível</div>
           )}
           {historicalLeader && (
-            <div className="text-[11px] text-amber-300/90 mt-1 flex items-center gap-1 font-mono">
-              <span className="text-slate-400">{leaderTitle || "Líder da Época"}:</span>
-              <strong className="text-slate-200 font-semibold">{historicalLeader}</strong>
+            <div className="mt-1 flex items-center gap-1 text-caption">
+              <span className="text-fg-muted">{leaderTitle || "Líder da Época"}:</span>
+              <strong className="font-medium text-fg">{historicalLeader}</strong>
             </div>
           )}
           {(currencyName || currencyCode) && (
-            <div className="text-[11px] text-slate-400 mt-0.5">
+            <div className="mt-0.5 text-caption text-fg-muted">
               Moeda: {currencyName || currencyCode}
               {currencyName && currencyCode ? ` (${currencyCode})` : ""}
             </div>

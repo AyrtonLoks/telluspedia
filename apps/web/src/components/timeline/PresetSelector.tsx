@@ -4,6 +4,15 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTimelineStore, TimelinePreset } from "@/stores/timelineStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
+import { cn } from "@/components/ui/cn";
+
+/** Todos os recortes usam o mesmo estilo; selecionado = superfície elevada (segmento ativo). */
+function presetClasses(isSelected: boolean) {
+  return cn(
+    "h-7 shrink-0 whitespace-nowrap rounded-control px-2.5 text-caption font-medium transition-colors duration-fast ease-out",
+    isSelected ? "bg-surface-hover text-fg" : "text-fg-secondary hover:bg-surface-hover/60 hover:text-fg"
+  );
+}
 
 export const PresetSelector: React.FC = () => {
   const startYear = useTimelineStore((s) => s.startYear);
@@ -131,9 +140,9 @@ export const PresetSelector: React.FC = () => {
           type="button"
           onClick={() => scrollByAmount(-180)}
           aria-label="Rolar períodos para a esquerda"
-          className="absolute left-0 z-10 h-full px-1 flex items-center bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-transparent text-slate-300 hover:text-cyan-300 transition-colors rounded-l"
+          className="absolute left-0 z-10 flex h-full items-center rounded-l-control bg-gradient-to-r from-surface via-surface/80 to-transparent px-1 text-fg-secondary transition-colors duration-fast ease-out hover:text-fg"
         >
-          <ChevronLeft className="w-3.5 h-3.5" />
+          <ChevronLeft aria-hidden="true" className="h-4 w-4" />
         </button>
       )}
 
@@ -159,18 +168,14 @@ export const PresetSelector: React.FC = () => {
               title={p.label}
               aria-label={p.label}
               aria-pressed={isSelected}
-              className={`px-2 py-0.5 rounded text-[11px] font-medium whitespace-nowrap shrink-0 transition-all ${
-                isSelected
-                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent"
-              }`}
+              className={presetClasses(isSelected)}
             >
               {p.shortLabel}
             </button>
           );
         })}
 
-        <div className="h-3 w-[1px] bg-slate-700/50 shrink-0 mx-0.5" aria-hidden="true" />
+        <div className="mx-1 h-4 w-px shrink-0 bg-line-strong" aria-hidden="true" />
 
         {/* 2. Geological Deep-Time Presets (RN10 & RN11) */}
         {geologicalPresets.map((p) => {
@@ -183,18 +188,14 @@ export const PresetSelector: React.FC = () => {
               title={p.label}
               aria-label={p.label}
               aria-pressed={isSelected}
-              className={`px-2 py-0.5 rounded text-[11px] font-medium whitespace-nowrap shrink-0 transition-all ${
-                isSelected
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-sm shadow-amber-500/20"
-                  : "text-amber-400/70 hover:text-amber-300 hover:bg-amber-950/30 border border-amber-900/40"
-              }`}
+              className={presetClasses(isSelected)}
             >
               {p.shortLabel}
             </button>
           );
         })}
 
-        <div className="h-3 w-[1px] bg-slate-700/50 shrink-0 mx-0.5" aria-hidden="true" />
+        <div className="mx-1 h-4 w-px shrink-0 bg-line-strong" aria-hidden="true" />
 
         {/* 3. Historical Expeditions Presets (RN12) */}
         {routePresets.map((p) => {
@@ -207,11 +208,7 @@ export const PresetSelector: React.FC = () => {
               title={p.label}
               aria-label={p.label}
               aria-pressed={isSelected}
-              className={`px-2 py-0.5 rounded text-[11px] font-medium whitespace-nowrap shrink-0 transition-all ${
-                isSelected
-                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-sm shadow-emerald-500/20"
-                  : "text-emerald-400/80 hover:text-emerald-300 hover:bg-emerald-950/30 border border-emerald-900/40"
-              }`}
+              className={presetClasses(isSelected)}
             >
               {p.shortLabel}
             </button>
@@ -224,9 +221,9 @@ export const PresetSelector: React.FC = () => {
           type="button"
           onClick={() => scrollByAmount(180)}
           aria-label="Rolar períodos para a direita"
-          className="absolute right-0 z-10 h-full px-1 flex items-center bg-gradient-to-l from-slate-950/95 via-slate-950/80 to-transparent text-slate-300 hover:text-cyan-300 transition-colors rounded-r"
+          className="absolute right-0 z-10 flex h-full items-center rounded-r-control bg-gradient-to-l from-surface via-surface/80 to-transparent px-1 text-fg-secondary transition-colors duration-fast ease-out hover:text-fg"
         >
-          <ChevronRight className="w-3.5 h-3.5" />
+          <ChevronRight aria-hidden="true" className="h-4 w-4" />
         </button>
       )}
     </div>
