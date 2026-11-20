@@ -181,13 +181,13 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | TODO | — | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | TODO | — | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | TODO | — | D01 | G-GLOBO |
-| D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | REVIEW | codex | — | G-FRONTEIRAS |
+| D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | IN_PROGRESS | claude | — | G-OBS, G-INFRA |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | TODO | — | T05 | G-OBS |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
-| D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | TODO | — | — | G-COSMOS |
+| D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | IN_PROGRESS | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
@@ -1051,7 +1051,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D03 · Fronteiras com espessura real e highlight
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d03-destaque-sutil · **Worktree:** ../telluspedia-wt/codex-d03b
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/d03-destaque-sutil · **Worktree:** ../telluspedia-wt/codex-d03b
 - **Prioridade:** P2 · **Área:** 3D · **Tamanho:** M · **Depende de:** — · **Grupos:** G-FRONTEIRAS
 
 **Contexto / problema**
@@ -1075,6 +1075,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 - 2026-11-20 · codex · REVIEW · Fronteiras com LineSegments2 e largura em pixels CSS. A largura e a opacidade das linhas base acompanham o zoom. Seleção com contorno de 3 px, halo e preenchimento esférico translúcido. Hover com contorno de 2,15 px. Contornos e preenchimentos calculados sob demanda e reaproveitados por atlas e ISO. Geometrias e materiais GPU descartados na troca ou desmontagem. A subdivisão mantém as faces e os segmentos acima da Terra. Captura anterior mostra o Brasil marcado por uma linha fina. Captura posterior no mesmo enquadramento mostra o Brasil preenchido e o Peru contornado sob o cursor. Chromium com viewport de 1366 × 850 confirmou 3 px CSS tanto em DPR 1× quanto 2×. Validados 376 testes, typecheck, lint e build. Testes de geometria cobrem territórios separados, o enclave do Lesoto, a Antártida, a Prússia e a reutilização do cache.
 - 2026-11-20 · codex · IN_PROGRESS · Reaberta após reprovação do Ayrton. A captura de referência mostra que o contorno claro domina o globo quando a câmera está afastada. A revisão ajusta largura, brilho e opacidade do destaque com o zoom.
 - 2026-11-20 · codex · REVIEW · O destaque agora usa ciano menos luminoso e acompanha o zoom. A seleção fica entre 1,15 e 1,8 px CSS, com preenchimento de 5% a 12% e halo único que some à distância. O hover mantém um contorno mais discreto. Nas capturas do Brasil no mesmo enquadramento e horário, a versão anterior exibe linha clara de 3 px com duas camadas de halo. A nova captura afastada mostra o contorno fino e a textura visível. De perto, a captura distingue a seleção do Brasil do hover no Peru. Chromium confirmou as mesmas larguras em DPR 1× e 2×. Typecheck, lint, 401 testes e build passaram após rebase.
+- 2026-11-20 · ayrton · DONE · Aceite confirmado pelo Ayrton após a revisão visual.
 
 ---
 
@@ -1227,7 +1228,7 @@ A camada "Rotas Marítimas Globais" é só um conjunto de 5 polylines estáticas
 
 ### D09 · Catálogo estelar real e 88 constelações
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d09-catalogo-estelar · **Worktree:** ../telluspedia-wt/codex-d09
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS
 
 **Contexto / problema**
@@ -1250,6 +1251,7 @@ O "catálogo HYG 3.500+" (`lib/hyg-star-data.ts:240-270`, `generateHygCatalog`) 
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 6. D06 a D08 compartilham G-OBS com a D04. A D02 compartilha G-GLOBO com a T14.
 
 ---
 
