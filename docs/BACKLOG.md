@@ -184,8 +184,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | TODO | claude | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
-| D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | REVIEW | codex | T05 | G-OBS, G-INFRA |
-| D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
+| D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | DONE | codex | T05 | G-OBS, G-INFRA |
+| D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | IN_PROGRESS | codex | T05 | G-OBS |
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | TODO | — | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
@@ -1153,7 +1153,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D06 · Eventos severos: símbolos, clusters, trilhas
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d06-eventos-eonet · **Worktree:** ../telluspedia-wt/codex-d06
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/d06-eventos-eonet · **Worktree:** ../telluspedia-wt/codex-d06
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** T05 · **Grupos:** G-OBS, G-INFRA
 
 **Contexto / problema**
@@ -1175,12 +1175,13 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 5. G-OBS e G-INFRA estão livres. Reservado G-INFRA para adicionar Supercluster ao workspace.
 - 2026-11-20 · codex · REVIEW · A rota preserva geometrias válidas e datadas, inclusive polígonos, e consulta até 100 eventos abertos. A camada usa sprites com escala em pixels CSS, símbolos por categoria, espiral animada para tempestades e Supercluster seguido de agrupamento em tela. Os grupos exibem a contagem e permitem escolher um evento. O card mostra data UTC, magnitude quando disponível e links das fontes. Pontos datados da trajetória são clicáveis. O filtro por categoria fica no Observatório. Capturas no Chromium com o mesmo cenário simulado mostram cinco círculos sobrepostos antes e um grupo com o número 5 depois, além dos símbolos e da trilha selecionada. Verificados clique, filtro e seleção de observações com magnitudes distintas. Na consulta direta à NASA, os 100 eventos foram normalizados e um tinha 22 observações. Typecheck, lint, 423 testes e build passaram.
+- 2026-11-20 · ayrton · DONE · Aceite confirmado pelo Ayrton.
 
 ---
 
 ### D07 · Aviões: modelos glTF, interpolação, cobertura global
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d07-trafego-aereo · **Worktree:** ../telluspedia-wt/codex-d07
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** T05 · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -1203,6 +1204,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Primeira tarefa elegível da fase 5. D04 segue atribuída ao claude. T05 está concluída e G-OBS está livre.
 
 ---
 
