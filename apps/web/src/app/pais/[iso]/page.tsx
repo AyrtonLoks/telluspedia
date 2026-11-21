@@ -2,6 +2,8 @@ import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { GlobeExperienceShell } from "@/components/shell/GlobeExperienceShell";
+import { JsonLdScript } from "@/components/seo/JsonLdScript";
+import { buildCountryJsonLd } from "@/lib/seo";
 import { buildCountryMetadata, loadCountryByIso } from "@/lib/server-loaders";
 
 interface CountryPageProps {
@@ -23,13 +25,16 @@ export default async function CountryDirectPage({ params }: CountryPageProps) {
   }
 
   return (
-    <GlobeExperienceShell
-      initialState={{
-        kind: "country",
-        iso: country.isoCode,
-        latitude: country.latitude,
-        longitude: country.longitude,
-      }}
-    />
+    <>
+      <JsonLdScript data={buildCountryJsonLd(country)} />
+      <GlobeExperienceShell
+        initialState={{
+          kind: "country",
+          iso: country.isoCode,
+          latitude: country.latitude,
+          longitude: country.longitude,
+        }}
+      />
+    </>
   );
 }

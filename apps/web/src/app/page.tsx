@@ -1,6 +1,13 @@
 import React from "react";
 import { GlobeExperienceShell } from "@/components/shell/GlobeExperienceShell";
+import { JsonLdScript } from "@/components/seo/JsonLdScript";
+import { buildWebApplicationJsonLd } from "@/lib/seo";
 
 export default function HomePage() {
-  return <GlobeExperienceShell initialState={{ kind: "default" }} />;
+  return (
+    <>
+      <JsonLdScript data={buildWebApplicationJsonLd()} />
+      <GlobeExperienceShell initialState={{ kind: "default" }} />
+    </>
+  );
 }

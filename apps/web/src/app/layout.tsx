@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
 import { SearchProvider } from "@/components/explore/SearchProvider";
@@ -39,6 +39,10 @@ const merriweather = localFont({
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+export const viewport: Viewport = {
+  themeColor: "#05070B",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
