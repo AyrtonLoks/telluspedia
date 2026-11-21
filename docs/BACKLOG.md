@@ -38,9 +38,9 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19, D25 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24, T41 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24 |
-| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25 |
+| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19 |
@@ -148,7 +148,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | 8 | Qualidade contínua | T16, T17, T19, T20, T21, T22, T23, T25, D19 |
 | 9 | Ciclo 2 — Segurança crítica, integridade e conteúdo imediato | T28, T29, D21, D24 |
 | 10 | Ciclo 2 — Resiliência, produção, SEO e séries históricas reais | T30, T31, T32, T33, T34 |
-| 11 | Ciclo 2 — Diferenciação científica, 3D avançado e higiene | D22, D23, D25, D26, D27, D28, T35, T36, T37, T38, T39 |
+| 11 | Ciclo 2 — Diferenciação científica, 3D avançado e higiene | D22, D23, D25, D26, D27, D28, T35, T36, T37, T38, T39, T41 |
 
 ---
 
@@ -216,11 +216,12 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
+| T41 | Corrigir aviso de hidratação do botão Observatório em `/study/<id>` com camadas ativas | Frontend | P2 | P | TODO | — | — | G-SHELL, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | DONE | antigravity | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | DONE | antigravity | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | DONE | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS |
-| D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | REVIEW | claude | — | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
+| D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | DONE | claude | — | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | REVIEW | antigravity | D24 | G-CONTEUDO, G-TIMELINE |
 | D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
 | D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
@@ -1338,6 +1339,34 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 
 ---
 
+### T41 · Corrigir aviso de hidratação do botão Observatório em `/study/<id>` com camadas ativas
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Frontend · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL, G-OBS
+
+**Contexto / problema**
+Ao abrir um estudo salvo (`/study/<id>`) que tenha qualquer camada do Observatório ligada, o React registra no console "A tree hydrated but some attributes of the server rendered HTML didn't match the client properties" no botão `#observatory-trigger` da `TopNavBar`: o `className` renderizado no servidor difere do cliente (`aria-pressed` é igual, `false`). Reproduzido em 2026-11-21 com um estudo só com `NASA_FIRMS` e com outro só com `NASA_GIBS`, então não depende da camada. O React avisa que não corrige o atributo, então o botão pode ficar com o destaque de "camadas ativas" errado até a próxima renderização.
+
+Suspeitas: a `TopNavBar` lê `activeLayers`/`isPanelOpen` com `getState()` no servidor (`typeof window === "undefined"`) e com o hook no cliente; o servidor e o cliente podem enxergar estados diferentes do `observatoryStore` no primeiro render (ordem de `applyInitialGlobeState` em relação à `TopNavBar`, ou o store singleton do servidor carregando estado entre requisições).
+
+**O que fazer**
+1. Reproduzir: subir o banco, criar um estudo com uma camada do Observatório e abrir `/study/<id>` com o console aberto.
+2. Descobrir qual lado tem as camadas no primeiro render e por quê.
+3. Fazer o servidor e o cliente renderizarem o mesmo estado inicial (de preferência hidratando os stores antes da `TopNavBar`, sem esconder o aviso com `suppressHydrationWarning`).
+
+**Critérios de aceite**
+- [ ] `/study/<id>` com camadas do Observatório ativas não gera aviso de hidratação no console.
+- [ ] O botão Observatório aparece destacado já no HTML do servidor quando o estudo tem camadas ativas.
+- [ ] A página inicial e `/study/<id>` sem camadas continuam sem aviso.
+- [ ] Teste automatizado cobrindo o estado do botão no SSR de um estudo com camadas.
+
+**Como verificar**: abrir `/study/<id>` de um estudo com `NASA_FIRMS` e outro com `NASA_GIBS` e conferir o console; `pnpm test`.
+
+**Log**
+- 2026-11-21 · claude · TODO · Tarefa criada a pedido do Ayrton, a partir do achado na verificação da D25.
+
+---
+
 ### D01 · Globo escuro: color space + tone mapping
 
 - **Status:** DONE · **Responsável:** codex · **Branch:** task/d01-correcao-ciclo-noturno · **Worktree:** ../telluspedia-wt/codex-d01
@@ -2107,8 +2136,8 @@ O player genérico de cenas (D12) está pronto, mas o catálogo contém apenas 2
 
 ### D25 · Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial)
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d25-gibs · **Worktree:** ../telluspedia-wt/claude-d25
-- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d25-gibs · **Worktree:** ../telluspedia-wt/claude-d25
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS
 
 **Contexto / problema**
 O `docs/ROADMAP.md` prevê camadas científicas de observação terrestre da NASA GIBS no Observatório, mas ainda não há nenhuma integração GIBS no código.
@@ -2127,6 +2156,7 @@ O `docs/ROADMAP.md` prevê camadas científicas de observação terrestre da NAS
 - 2026-11-21 · claude · REVIEW · `79d701d`: proxy `/api/observatory/gibs` (+ `/image` pela própria origem, CSP T30) no envelope T05; 4 produtos (NDVI, neve, gelo marinho, temperatura) com mês, legenda oficial e opacidade; `GibsLayer` no globo (raio 1.0015, sem raycast, textura descartada); referência local quando o GIBS não tem a data. Testes: `test/gibs.test.tsx` 20/20; suíte 654 ok, 6 falhas de ambiente (Prisma). First Load `/` +1,2 kB gz (231,6 → 232,8). Verificado no navegador em 1440×900: NDVI e temperatura de 2026-10 ao vivo e alinhados aos continentes, abril de 2025 cai para a referência de 2024-07 com aviso, opacidade 75→100% e desligar limpos, sem erros no console. Acompanhamento: a URL já grava `camadas=NASA_GIBS`, mas `view-url.ts` ignora ao carregar; incluir NASA_GIBS em busca/URL/estudos quando G-SHELL/G-ESTUDOS liberarem.
 - 2026-11-21 · claude · IN_PROGRESS · Ayrton pediu as pendências na própria D25. D22 está DONE, então G-SHELL e G-ESTUDOS estão livres e foram adicionados: NASA_GIBS (com produto e mês) na busca ⌘K, na URL compartilhável e nos estudos salvos.
 - 2026-11-21 · claude · REVIEW · `f4610b3` (busca ⌘K com atalho por produto, URL `gibs=<produto>[,AAAA-MM]`, estudos com `gibsProduct`/`gibsMonth` + migração `20261121220000_add_study_gibs_view`, exportação) e `1756625` (estudos em memória compartilhados entre rotas em dev; o link temporário dava 404). Testes: `test/gibs.test.tsx` 26/26; suíte com as mesmas 6 falhas de ambiente (Prisma). Verificado no navegador com Postgres: link `gibs=snow,2024-01` restaura neve/jan-2024; ⌘K "gelo marinho" troca o produto e atualiza a URL; estudo salvo no banco com `lst`/`2024-07` e `/study/<id>` reabre a temperatura de julho de 2024. Achado fora da D25: em `/study/<id>` com qualquer camada do Observatório (testado também só com NASA_FIRMS) há aviso de hidratação no botão Observatório da `TopNavBar` (className do servidor ≠ cliente).
+- 2026-11-21 · ayrton · DONE · Aprovado (registrado por claude). O aviso de hidratação virou a T41.
 
 ---
 
