@@ -207,13 +207,13 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | IN_PROGRESS | claude | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
-| T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | REVIEW | antigravity | T29 | G-PAIS, G-PIPELINE |
+| T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | DONE | antigravity | T29 | G-PAIS, G-PIPELINE |
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | TODO | — | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | TODO | — | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
 | T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | TODO | — | — | G-PAIS, G-OBS, G-SHELL |
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | TODO | — | — | G-PAIS, G-COSMOS, G-INFRA |
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
-| T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | TODO | — | T32 | G-PAIS |
+| T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | IN_PROGRESS | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | TODO | — | — | G-COSMOS |
@@ -1128,7 +1128,7 @@ O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `G
 
 ### T32 · Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t32-worldbank-timeseries · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t32-worldbank-timeseries · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Dados · **Tamanho:** G · **Depende de:** T29 · **Grupos:** G-PAIS, G-PIPELINE
 
 **Contexto / problema**
@@ -1147,6 +1147,7 @@ O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `G
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (773e877). Dependência T29 em DONE; grupos G-PAIS e G-PIPELINE livres (T40 do codex ocupa G-INFRA/G-COSMOS/G-OBS).
 - 2026-11-21 · antigravity · REVIEW · Estendido `scripts/ingest-worldbank-indicators.mjs` (consultas por janelas de década 1990–2024 na World Bank API v2, `lastupdated: 2026-11-11`, CC BY 4.0) incorporando os 3 novos indicadores (`NY.GDP.PCAP.CD` PIB per capita, `EG.FEC.RNEW.ZS` energia renovável e `EN.GHG.CO2.PC.CE.AR5` CO₂ per capita) em `public/data/countries-worldbank-indicators.json` (167 KB / 16,7 KB gzip) e gerando `public/data/worldbank-timeseries.json` (267 KB / 110 KB gzip, **39.631 observações anuais reais** em 7 indicadores: 170 países em população/expectativa de vida, 169 em PIB/PIB per capita/renováveis, 165 em CO₂ per capita e 160 em gastos militares, com lacunas oficiais preservadas como `null`). Criado `lib/worldbank-timeseries.ts` com carregamento sob demanda via `fetch("/data/worldbank-timeseries.json")` (nunca importado estaticamente) e `buildHistoricalSeriesDataset`. Atualizados `ComparisonCharts.tsx` (alternância "Mais recente" ↔ "Série 1990–2024" com `LineChart` usando `connectNulls={false}`, período observado, contagem de pontos e links diretos RN02 por país), `comparator-data.ts`, `ComparisonGrid.tsx`, `CountryMetricsGrid.tsx`, `citations.ts` (prefixos `EG.` e `EN.`) e `docs/DATA_SOURCES.md`. Adicionados 5 testes em `test/worldbank-timeseries.test.tsx` + atualização de `test/country-data-integrity.test.tsx`. Validação pós-rebase em `origin/master`: `pnpm typecheck`, `pnpm lint`, `pnpm test` (576/576) e `pnpm build` (`/` mantido em **225 kB** — 0 kB de aumento!) + smoke HTTP 200 em `/compare?c=BRA,ARG,CHN,DEU`, `/pais/ARG` e `/data/worldbank-timeseries.json` na porta 3003. Verificação interativa no navegador pendente do Ayrton. Commit: 11c511f.
+- 2026-11-21 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
@@ -1257,7 +1258,7 @@ Cinco arquivos ultrapassam 850 linhas (`country-data.ts` 1.138, `CometHalleyTraj
 
 ### T38 · Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t38-analytical-reader-177 · **Worktree:** ../telluspedia-wt/antigravity-t38
 - **Prioridade:** P2 · **Área:** Dados/UX · **Tamanho:** G · **Depende de:** T32 · **Grupos:** G-PAIS
 
 **Contexto / problema**
@@ -1272,6 +1273,7 @@ Apenas os 6 `PILOT_COUNTRIES` possuem dossiês completos no Modo Leitura; os dem
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (9f7bbae). Dependência T32 em DONE; grupo G-PAIS livre (D18 do codex ocupa G-SHELL/G-EPOCA/G-COSMOS; T30 do claude ocupa G-INFRA/G-ESTUDOS).
 
 ---
 
