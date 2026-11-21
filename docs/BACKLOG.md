@@ -179,7 +179,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | DONE | codex | T18 | G-INFRA |
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | DONE | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
-| T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | REVIEW | codex | D14 | G-SHELL, G-EPOCA, G-TIMELINE |
+| T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | DONE | codex | D14 | G-SHELL, G-EPOCA, G-TIMELINE |
 | T23 | Limpezas menores | Qualidade | P2 | P | DONE | antigravity | — | G-TIMELINE, G-PAIS |
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | DONE | antigravity | T03 | G-PAIS, G-PIPELINE |
@@ -201,7 +201,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | DONE | claude | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | DONE | codex | D14 | G-SHELL, G-EPOCA, G-COSMOS |
-| D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
+| D19 | Responsividade e contraste | Design | P2 | M | IN_PROGRESS | codex | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
@@ -899,7 +899,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### T22 · Acessibilidade (labels, teclado, foco)
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t22-acessibilidade · **Worktree:** ../telluspedia-wt/codex-t22
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/t22-acessibilidade · **Worktree:** ../telluspedia-wt/codex-t22
 - **Prioridade:** P2 · **Área:** A11y · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL, G-EPOCA, G-TIMELINE
 
 **Contexto / problema**
@@ -923,6 +923,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 - 2026-11-21 · codex · REVIEW · Rótulos acessíveis na navbar e timeline; atalhos de órbita e zoom no globo; barra abre a busca com foco no globo ou no próprio botão. O dock permite alternar abas com setas e usar o globo enquanto está aberto. Busca por teclado leva o foco à ficha e, ao fechar, devolve-o ao controle de origem. Modais Radix contêm e restauram o foco. Os interruptores do Observatório foram verificados com Espaço e aria-checked. Implementação: `adbc521`.
 - 2026-11-21 · codex · REVIEW · Capturas antes/depois em 1366 e 1920 px: a diferença visual na home se restringe ao controle de busca, com rótulo curto e atalho sem sobreposição. Capturas com Tab em 1366 e 390 px confirmam contorno ciano visível sobre o canvas.
 - 2026-11-21 · codex · REVIEW · Após integrar a D21: typecheck, lint, build, 609 testes e 14 cenários Playwright passaram. O teste de KTX2, pulado no host por falta de Chrome no caminho esperado, passou em execução separada no Chromium. Axe 4.14.1 sem violações na home em 1366×850 e 390×844.
+- 2026-11-21 · ayrton · DONE · Entrega aprovada no chat.
 
 ---
 
@@ -1924,7 +1925,7 @@ A busca da navbar cobre só países/ISO. Não há paleta de comandos, sugestões
 
 ### D19 · Responsividade e contraste
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d19-responsividade · **Worktree:** ../telluspedia-wt/codex-d19
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14, T19 · **Grupos:** G-SHELL
 
 **Contexto / problema**
@@ -1943,6 +1944,7 @@ Layout quebra em larguras comuns (ver T02); textos ciano/cinza pequenos sobre az
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa disponível da fase 8, com D14 e T19 concluídas e G-SHELL livre.
 
 ---
 
