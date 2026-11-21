@@ -4,7 +4,6 @@ import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React, { useState } from "react";
 import {
   X,
-  Compass,
   Rocket,
   ExternalLink,
   BookOpen,
@@ -12,7 +11,6 @@ import {
   RotateCw,
   RotateCcw,
   Globe,
-  Eye,
   Layers,
 } from "lucide-react";
 import { useCosmicStore, CosmicLayerId } from "@/stores/cosmicStore";
@@ -23,10 +21,13 @@ import {
   HALLEY_TAIL_ACTIVATION_AU,
   computeAllPlanetaryPositions,
   calculateHalleyPosition,
-  CelestialBodyId,
   HalleyPosition,
 } from "@/lib/astronomy-planets";
 import { cn } from "@/components/ui/cn";
+import { Button, buttonClasses } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { Panel } from "@/components/ui/Panel";
+import { Badge } from "@/components/ui/Badge";
 import { useRightDock } from "@/components/layout/useRightDock";
 import { clearCelestialFocus } from "@/stores/actions";
 
@@ -82,7 +83,6 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
       ? useCosmicStore.getState().activeCosmicLayers
       : storeActiveLayers;
 
-  const setInspectorOpen = useCosmicStore((s) => s.setInspectorOpen);
   const focusBody = useCosmicStore((s) => s.focusBody);
   const toggleLayer = useCosmicStore((s) => s.toggleLayer);
   const scaleMode = useCosmicStore((s) => s.scaleMode);
@@ -101,26 +101,38 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
   const lunarPhase = focusedBodyId === "MOON" ? getLunarPhase(new Date()) : null;
 
   if (!isCosmicMode && !isNormalModeMoon) return null;
+
   // Botão flutuante de camadas cósmicas: disponível em todo o modo Cosmos, inclusive com um corpo
   // focado (o painel do corpo fica no dock, então não disputa mais o mesmo lugar).
   const layersToggle = (
-      <aside className={`fixed top-20 z-20 flex flex-col gap-2 ${isDockVisible ? "right-6 lg:right-[26.5rem]" : "right-6"}`}>
-        <button
-          onClick={() => setShowLayerPanel(!showLayerPanel)}
-          data-testid="cosmic-layers-toggle"
-          className="flex items-center gap-2 px-3.5 py-2 rounded-2xl glass-panel text-xs font-medium text-slate-200 hover:text-cyan-300 hover:border-cyan-500/50 shadow-xl transition-all"
-          title="Alternar Camadas Cósmicas"
-        >
-          <Layers className="w-4 h-4 text-cyan-400" />
-          <span>Camadas Cósmicas</span>
-        </button>
+    <aside
+      className={cn(
+        "fixed top-20 z-20 flex flex-col items-end gap-2",
+        isDockVisible ? "right-6 lg:right-[26.5rem]" : "right-6"
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => setShowLayerPanel(!showLayerPanel)}
+        data-testid="cosmic-layers-toggle"
+        aria-expanded={showLayerPanel}
+        className={cn(
+          "flex items-center gap-2 rounded-panel border bg-surface/86 px-3.5 py-2 text-label font-medium shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out",
+          showLayerPanel
+            ? "border-accent text-accent"
+            : "border-line text-fg hover:border-line-strong hover:bg-surface-hover"
+        )}
+        title="Alternar camadas cósmicas"
+      >
+        <Layers aria-hidden="true" className="h-4 w-4 text-accent" />
+        <span>Camadas Cósmicas</span>
+      </button>
 
-        {showLayerPanel && (
-          <div className="glass-panel rounded-2xl p-3 shadow-2xl w-52 space-y-2 text-xs">
-            <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              Camadas Visuais
-            </h4>
-            <div className="flex flex-col gap-1.5">
+      {showLayerPanel && (
+        <Panel className="w-56 space-y-3 p-3 text-label">
+          <div className="space-y-1.5">
+            <h4 className="text-caption font-medium text-fg-muted">Camadas visuais</h4>
+            <div className="flex flex-col gap-1">
               {(
                 [
                   ["ORBITS", "Órbitas Keplerianas"],
@@ -135,68 +147,76 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                 return (
                   <button
                     key={layerId}
+                    type="button"
                     aria-pressed={isActive}
                     onClick={() => toggleLayer(layerId)}
-                    className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-left transition-colors ${
+                    className={cn(
+                      "flex items-center justify-between gap-2 rounded-control border px-2.5 py-1.5 text-left text-caption transition-colors duration-fast ease-out",
                       isActive
-                        ? "bg-cyan-950/60 text-cyan-300 border border-cyan-800/40"
-                        : "bg-slate-900/40 text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
-                    }`}
+                        ? "border-accent/50 bg-accent/15 text-accent"
+                        : "border-transparent bg-surface-raised text-fg-secondary hover:border-line hover:bg-surface-hover hover:text-fg"
+                    )}
                   >
                     <span>{label}</span>
                     <span
-                      className={`w-2 h-2 rounded-full ${
-                        isActive ? "bg-cyan-400 shadow-sm shadow-cyan-400" : "bg-slate-700"
-                      }`}
+                      aria-hidden="true"
+                      className={cn(
+                        "h-2 w-2 shrink-0 rounded-full",
+                        isActive ? "bg-accent" : "bg-control"
+                      )}
                     />
                   </button>
                 );
               })}
             </div>
-            <div className="space-y-1.5 border-t border-slate-800/80 pt-2">
-              <h4 id="cosmic-scale-heading" className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                Tamanho dos corpos
-              </h4>
-              <div role="group" aria-labelledby="cosmic-scale-heading" className="grid grid-cols-2 gap-1">
-                {(
-                  [
-                    ["visual", "Visual"],
-                    ["real", "Real"],
-                  ] as const
-                ).map(([mode, label]) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    aria-pressed={scaleMode === mode}
-                    data-testid={`cosmic-scale-${mode}`}
-                    onClick={() => setScaleMode(mode)}
-                    className={`px-2 py-1.5 rounded-lg transition-colors ${
-                      scaleMode === mode
-                        ? "bg-cyan-950/60 text-cyan-300 border border-cyan-800/40"
-                        : "bg-slate-900/40 text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <p className="text-[10px] leading-snug text-slate-500">
-                {scaleMode === "real"
-                  ? "Raios na proporção real entre os corpos. As distâncias continuam comprimidas."
-                  : "Raios exagerados por um fator único para todos ficarem visíveis. Distâncias comprimidas."}
-              </p>
-            </div>
-            <a
-              href="https://github.com/AyrtonLoks/telluspedia/blob/master/docs/DATA_SOURCES.md#catálogo-estelar-e-via-láctea-d09"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block text-slate-400 hover:text-cyan-300 underline underline-offset-2"
-            >
-              Fontes do céu
-            </a>
           </div>
-        )}
-      </aside>
+
+          <div className="space-y-1.5 border-t border-line pt-2.5">
+            <h4 id="cosmic-scale-heading" className="text-caption font-medium text-fg-muted">
+              Tamanho dos corpos
+            </h4>
+            <div role="group" aria-labelledby="cosmic-scale-heading" className="grid grid-cols-2 gap-1">
+              {(
+                [
+                  ["visual", "Visual"],
+                  ["real", "Real"],
+                ] as const
+              ).map(([mode, label]) => (
+                <button
+                  key={mode}
+                  type="button"
+                  aria-pressed={scaleMode === mode}
+                  data-testid={`cosmic-scale-${mode}`}
+                  onClick={() => setScaleMode(mode)}
+                  className={cn(
+                    "rounded-control border px-2 py-1.5 text-caption font-medium transition-colors duration-fast ease-out",
+                    scaleMode === mode
+                      ? "border-accent/50 bg-accent/15 text-accent"
+                      : "border-line bg-surface-raised text-fg-secondary hover:bg-surface-hover hover:text-fg"
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p className="text-caption text-fg-muted">
+              {scaleMode === "real"
+                ? "Raios na proporção real entre os corpos. As distâncias continuam comprimidas."
+                : "Raios exagerados por um fator único para todos ficarem visíveis. Distâncias comprimidas."}
+            </p>
+          </div>
+
+          <a
+            href="https://github.com/AyrtonLoks/telluspedia/blob/master/docs/DATA_SOURCES.md#catálogo-estelar-e-via-láctea-d09"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block text-caption text-accent underline underline-offset-2 hover:text-accent-hover"
+          >
+            Fontes do céu
+          </a>
+        </Panel>
+      )}
+    </aside>
   );
 
   if (placement === "floating") return layersToggle;
@@ -250,59 +270,53 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
     <aside
       data-testid="cosmic-inspector-hud"
       // Posicionamento e convivência com outros painéis: RightDock (D15). Aqui o painel só preenche o dock.
-      className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5"
+      className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4"
     >
       {/* Header */}
-      <div className="flex items-start justify-between border-b border-slate-700/40 pb-3">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between gap-2 border-b border-line pb-3">
+        <div className="flex min-w-0 items-center gap-3">
           <span
-            className="w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-slate-950 shadow-lg text-sm shrink-0"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-card font-mono text-label font-semibold text-accent-on"
             style={{ backgroundColor: meta.visualColor }}
           >
             {focusedBodyId.slice(0, 2)}
           </span>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-slate-100 tracking-tight leading-none">
-                {meta.namePt}
-              </h2>
-              <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800/40">
-                {meta.category}
-              </span>
+              <h2 className="truncate text-title font-semibold text-fg">{meta.namePt}</h2>
+              <Badge tone="neutral">{meta.category}</Badge>
             </div>
-            <p className="text-xs text-slate-400 font-mono mt-0.5">
+            <p className="mt-0.5 font-mono text-caption tabular-nums text-fg-muted">
               Época: {formatCosmicEpoch(selectedYear)}
             </p>
           </div>
         </div>
-        <button
+        <IconButton
+          label="Fechar painel e deselecionar"
+          icon={<X />}
+          size="sm"
           onClick={clearCelestialFocus}
-          aria-label="Fechar painel e deselecionar"
-          className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
-          title="Fechar painel de inspeção"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        />
       </div>
 
       {/* Real-time Telemetry Grid */}
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="p-2.5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
-          <span className="text-[10px] text-slate-400 font-medium block">Distância até o Sol</span>
-          <span className="text-sm font-bold font-mono text-amber-300 block mt-0.5">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-card border border-line bg-surface-raised p-2.5">
+          <span className="block text-caption text-fg-secondary">Distância até o Sol</span>
+          <span className="mt-0.5 block font-mono text-body font-medium tabular-nums text-warning">
             {distanceSunAu} UA
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">
+          <span className="font-mono text-caption tabular-nums text-fg-muted">
             {distanceSunMkm.toLocaleString("pt-BR")} mi km
           </span>
         </div>
 
-        <div className="p-2.5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
-          <span className="text-[10px] text-slate-400 font-medium block">Distância até a Terra</span>
-          <span className="text-sm font-bold font-mono text-cyan-300 block mt-0.5">
+        <div className="rounded-card border border-line bg-surface-raised p-2.5">
+          <span className="block text-caption text-fg-secondary">Distância até a Terra</span>
+          <span className="mt-0.5 block font-mono text-body font-medium tabular-nums text-fg">
             {distanceEarthAu} UA
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">
+          <span className="font-mono text-caption tabular-nums text-fg-muted">
             {distanceEarthMkm.toLocaleString("pt-BR")} mi km
           </span>
         </div>
@@ -312,7 +326,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
       {halleyTelemetry && (
         <div
           data-testid="halley-activity-panel"
-          className="rounded-card border border-line bg-surface-raised/80 p-3 space-y-2.5"
+          className="space-y-2.5 rounded-card border border-line bg-surface-raised p-3"
         >
           <div className="flex items-center justify-between gap-2">
             <span className="text-caption font-medium text-fg-secondary">
@@ -341,7 +355,9 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           {halleyTelemetry.hasTail ? (
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-caption">
-                <span className="text-fg-secondary">Sublimação solar (&lt; {HALLEY_TAIL_ACTIVATION_AU} UA)</span>
+                <span className="text-fg-secondary">
+                  Sublimação solar (&lt; {HALLEY_TAIL_ACTIVATION_AU} UA)
+                </span>
                 <span className="font-mono tabular-nums text-accent">
                   {Math.round(halleyTelemetry.activityFactor * 100)}%
                 </span>
@@ -376,11 +392,11 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                     "flex flex-col items-start rounded-control border px-2 py-1.5 text-left transition-colors duration-fast ease-out",
                     isActivePreset
                       ? "border-accent bg-accent/15 text-accent"
-                      : "border-line bg-surface hover:border-line-strong text-fg"
+                      : "border-line bg-surface text-fg hover:border-line-strong"
                   )}
                 >
                   <span className="text-caption font-medium leading-tight">{preset.label}</span>
-                  <span className="text-caption font-mono tabular-nums text-fg-muted leading-tight">
+                  <span className="font-mono text-caption leading-tight tabular-nums text-fg-muted">
                     {preset.sublabel}
                   </span>
                 </button>
@@ -391,47 +407,47 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
       )}
 
       {/* Astrophysical Fact Sheet */}
-      <div className="space-y-1.5 text-xs">
-        <h3 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-          Propriedades Astrofísicas
-        </h3>
-        <div className="divide-y divide-slate-800/60 rounded-2xl bg-slate-900/40 border border-slate-800/60 p-2.5">
+      <div className="space-y-1.5 text-label">
+        <h3 className="text-caption font-medium text-fg-muted">Propriedades Astrofísicas</h3>
+        <div className="divide-y divide-line rounded-card border border-line bg-surface-raised p-2.5 text-caption">
           <div className="flex items-center justify-between py-1">
-            <span className="text-slate-400">Raio Equatorial:</span>
-            <span className="font-mono text-slate-200">
+            <span className="text-fg-secondary">Raio equatorial</span>
+            <span className="font-mono tabular-nums text-fg">
               {meta.equatorialRadiusKm.toLocaleString("pt-BR")} km
             </span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-slate-400">Massa:</span>
-            <span className="font-mono text-slate-200">{meta.massKg} kg</span>
+            <span className="text-fg-secondary">Massa</span>
+            <span className="font-mono tabular-nums text-fg">{meta.massKg} kg</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-slate-400">Gravidade Superficial:</span>
-            <span className="font-mono text-slate-200">{meta.surfaceGravityMs2} m/s²</span>
+            <span className="text-fg-secondary">Gravidade superficial</span>
+            <span className="font-mono tabular-nums text-fg">{meta.surfaceGravityMs2} m/s²</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-slate-400">Período Orbital:</span>
-            <span className="font-mono text-slate-200">
+            <span className="text-fg-secondary">Período orbital</span>
+            <span className="font-mono tabular-nums text-fg">
               {meta.orbitalPeriodDays > 0 ? `${meta.orbitalPeriodDays} dias` : "Centro Heliocêntrico"}
             </span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-slate-400">Duração do Dia (Rotação):</span>
-            <span className="font-mono text-slate-200">{meta.rotationPeriodHours} h</span>
+            <span className="text-fg-secondary">Duração do dia (rotação)</span>
+            <span className="font-mono tabular-nums text-fg">{meta.rotationPeriodHours} h</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-slate-400">Temperatura Média:</span>
-            <span className="font-mono text-slate-200">{meta.meanTemperatureC} °C</span>
+            <span className="text-fg-secondary">Temperatura média</span>
+            <span className="font-mono tabular-nums text-fg">{meta.meanTemperatureC} °C</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-slate-400">Luas Confirmadas:</span>
-            <span className="font-mono text-cyan-300 font-bold">{meta.confirmedMoons}</span>
+            <span className="text-fg-secondary">Luas confirmadas</span>
+            <span className="font-mono font-semibold tabular-nums text-fg">
+              {meta.confirmedMoons}
+            </span>
           </div>
           {lunarPhase && (
             <div className="flex items-center justify-between py-1">
-              <span className="text-slate-400">Fase Lunar:</span>
-              <span className="font-mono text-cyan-300 font-semibold">
+              <span className="text-fg-secondary">Fase Lunar:</span>
+              <span className="font-mono font-medium tabular-nums text-accent">
                 {lunarPhase.phaseName} ({Math.round(lunarPhase.illumination * 100)}%)
               </span>
             </div>
@@ -441,15 +457,13 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
 
       {/* Atmospheric Composition */}
       {meta.atmosphere && meta.atmosphere.length > 0 && (
-        <div className="space-y-1.5 text-xs">
-          <h3 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-            Composição Atmosférica
-          </h3>
+        <div className="space-y-1.5">
+          <h3 className="text-caption font-medium text-fg-muted">Composição atmosférica</h3>
           <div className="flex flex-wrap gap-1.5">
             {meta.atmosphere.map((gas, i) => (
               <span
                 key={i}
-                className="px-2 py-0.5 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-300 font-mono text-[10px]"
+                className="rounded-control border border-line bg-surface-raised px-2 py-0.5 font-mono text-caption text-fg-secondary"
               >
                 {gas}
               </span>
@@ -460,26 +474,24 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
 
       {/* Notable Space Missions */}
       {meta.missions && meta.missions.length > 0 && (
-        <div className="space-y-2 text-xs">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-            <Rocket className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Missões Espaciais Históricas</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5 text-caption font-medium text-fg-muted">
+            <Rocket aria-hidden="true" className="h-3.5 w-3.5 text-fg-muted" />
+            <span>Missões espaciais históricas</span>
           </div>
           <div className="space-y-1.5">
             {meta.missions.map((mission, idx) => (
               <div
                 key={idx}
-                className="p-2 rounded-xl bg-slate-900/50 border border-slate-800/80 hover:border-cyan-800/40 transition-colors"
+                className="rounded-card border border-line bg-surface-raised p-2.5 transition-colors duration-fast ease-out hover:border-line-strong"
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-200">{mission.name}</span>
-                  <span className="text-[10px] font-mono text-cyan-400">
-                    {mission.year} • {mission.agency}
+                <div className="flex items-center justify-between gap-2 text-label">
+                  <span className="font-medium text-fg">{mission.name}</span>
+                  <span className="shrink-0 font-mono text-caption tabular-nums text-fg-muted">
+                    {mission.year} · {mission.agency}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-                  {mission.description}
-                </p>
+                <p className="mt-0.5 text-caption text-fg-secondary">{mission.description}</p>
               </div>
             ))}
           </div>
@@ -488,76 +500,77 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
 
       {/* Contextual Action Buttons for Earth Landing & Moon Navigation */}
       {isCosmicMode && focusedBodyId === "EARTH" && (
-        <button
+        <Button
+          variant="primary"
+          className="w-full"
+          data-testid="cosmic-land-earth-button"
           onClick={() => {
             useCosmicStore.getState().exitToEarthView();
           }}
-          data-testid="cosmic-land-earth-button"
-          className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-cyan-900/30 transition-all"
         >
-          <Globe className="w-4 h-4" />
+          <Globe aria-hidden="true" className="h-4 w-4" />
           <span>Explorar Superfície / Países</span>
-        </button>
+        </Button>
       )}
 
       {isNormalModeMoon && (
-        <button
-          onClick={() => focusBody(null)}
+        <Button
+          variant="primary"
+          className="w-full"
           data-testid="moon-return-earth-button"
-          className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-cyan-900/30 transition-all"
+          onClick={() => focusBody(null)}
         >
-          <RotateCcw className="w-4 h-4" />
+          <RotateCcw aria-hidden="true" className="h-4 w-4" />
           <span>Voltar à Terra</span>
-        </button>
+        </Button>
       )}
 
       {isCosmicMode && focusedBodyId === "MOON" && (
-        <button
-          onClick={() => focusBody("EARTH")}
+        <Button
+          variant="secondary"
+          className="w-full"
           data-testid="moon-focus-earth-button"
-          className="w-full flex items-center justify-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-cyan-300 text-xs font-medium transition-all"
+          onClick={() => focusBody("EARTH")}
         >
-          <Globe className="w-4 h-4" />
+          <Globe aria-hidden="true" className="h-4 w-4" />
           <span>Focar na Terra (Planeta-mãe)</span>
-        </button>
+        </Button>
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 pt-2 border-t border-slate-700/40">
-        <button
-          onClick={() => focusBody(null)}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-medium transition-colors"
-        >
-          <RotateCw className="w-3.5 h-3.5" />
+      <div className="flex items-center gap-2 border-t border-line pt-3">
+        <Button variant="secondary" className="flex-1" onClick={() => focusBody(null)}>
+          <RotateCw aria-hidden="true" className="h-3.5 w-3.5" />
           <span>Visão Geral</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="secondary"
           onClick={handleCopyCitation}
-          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-950/80 border border-cyan-800/60 hover:bg-cyan-900/80 text-cyan-300 text-xs font-medium transition-colors"
           title="Copiar Citação Acadêmica (RN02)"
         >
           {copiedCitation ? (
             <>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <Check aria-hidden="true" className="h-3.5 w-3.5 text-success" />
               <span>Copiado!</span>
             </>
           ) : (
             <>
-              <BookOpen className="w-3.5 h-3.5" />
+              <BookOpen aria-hidden="true" className="h-3.5 w-3.5" />
               <span>Citação</span>
             </>
           )}
-        </button>
+        </Button>
 
         <a
           href={meta.citationUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors"
+          className={buttonClasses("secondary", "sm", "px-2")}
           title="Abrir Fonte Primária NASA"
+          aria-label="Abrir Fonte Primária NASA"
         >
-          <ExternalLink className="w-4 h-4" />
+          <ExternalLink aria-hidden="true" className="h-4 w-4" />
         </a>
       </div>
       {isCosmicMode && <StudyContext entityId="observatory:COSMOS" />}

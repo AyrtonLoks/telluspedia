@@ -8,6 +8,8 @@ import { CountryData } from "@/lib/country-data";
 import { getSourceUrl } from "@/lib/citations";
 import { HoverCardPreview } from "./HoverCardPreview";
 import { HoverCitationCard } from "./HoverCitationCard";
+import { Button, buttonClasses } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 
 interface ReaderContentProps {
   country: CountryData;
@@ -100,48 +102,44 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
     return (
       <article
         data-testid="reader-empty-state"
-        className="flex-1 px-8 py-6 overflow-y-auto max-h-[calc(85vh-4rem)] scrollbar-thin scrollbar-thumb-slate-700/60 scrollbar-track-transparent"
+        className="max-h-[calc(85vh-6rem)] flex-1 overflow-y-auto px-6 py-4"
       >
-        <div className="pb-6 border-b border-slate-800">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-md bg-cyan-950/70 border border-cyan-800/60 text-cyan-400 font-mono text-xs font-semibold">
-              {activeDimension}
-            </span>
-            <span className="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700 text-slate-400 text-xs font-mono">
-              Sem verbete editorial
-            </span>
+        <div className="border-b border-line pb-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone="neutral">{activeDimension}</Badge>
+            <Badge tone="neutral">Sem verbete editorial</Badge>
           </div>
 
-          <h1 className="mt-4 text-2xl font-serif font-bold text-slate-100 tracking-tight leading-snug">
+          <h1 className="mt-4 font-serif text-display font-bold leading-snug text-fg">
             {country.nameCommon}
           </h1>
           {country.nameOfficial && (
-            <p className="text-xs text-slate-400 mt-1">{country.nameOfficial}</p>
+            <p className="mt-1 text-caption text-fg-secondary">{country.nameOfficial}</p>
           )}
         </div>
 
-        <div className="mt-8 p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-          <div className="flex items-center gap-2.5 text-slate-100 font-semibold text-base">
-            <BookOpen className="w-5 h-5 text-cyan-400 shrink-0" />
+        <div className="mt-8 space-y-4 rounded-card border border-line bg-surface-raised p-6">
+          <div className="flex items-center gap-2.5 text-title font-semibold text-fg">
+            <BookOpen aria-hidden="true" className="h-5 w-5 shrink-0 text-accent" />
             <h2>Este dossiê ainda não foi escrito</h2>
           </div>
 
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-body leading-relaxed text-fg-secondary">
             Ainda não há um verbete curado com fontes primárias auditadas para a dimensão{" "}
-            <span className="font-mono text-cyan-300">{activeDimension}</span> de{" "}
-            <strong className="text-slate-100">{country.nameCommon}</strong> no TellusPedia. Para
-            consultar dados e referências verificáveis diretamente nas fontes externas:
+            <span className="font-mono text-fg">{activeDimension}</span> de{" "}
+            <strong className="font-semibold text-fg">{country.nameCommon}</strong> no TellusPedia.
+            Para consultar dados e referências verificáveis diretamente nas fontes externas:
           </p>
 
-          <div className="flex items-center gap-2.5 flex-wrap pt-2">
+          <div className="flex flex-wrap items-center gap-2.5 pt-2">
             <a
               href={wikipediaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-cyan-950 text-cyan-300 hover:text-white border border-slate-700 hover:border-cyan-700 text-xs font-medium transition-colors"
+              className={buttonClasses("secondary", "sm")}
             >
               <span>Wikipédia ({country.nameCommon})</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
             </a>
 
             {wikidataUrl && (
@@ -149,10 +147,10 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                 href={wikidataUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-cyan-950 text-slate-200 hover:text-white border border-slate-700 hover:border-cyan-700 text-xs font-medium transition-colors"
+                className={buttonClasses("secondary", "sm")}
               >
                 <span>Wikidata ({country.wikidataQid})</span>
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
               </a>
             )}
 
@@ -161,10 +159,10 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                 href={worldBankUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-cyan-950 text-slate-200 hover:text-white border border-slate-700 hover:border-cyan-700 text-xs font-medium transition-colors"
+                className={buttonClasses("secondary", "sm")}
               >
                 <span>Banco Mundial ({country.isoCode})</span>
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
               </a>
             )}
           </div>
@@ -222,19 +220,22 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
           }
         } else if (token.startsWith("**") && token.endsWith("**")) {
           parts.push(
-            <strong key={`b-${pIdx}-${lIdx}-${match.index}`} className="font-semibold text-slate-100">
+            <strong key={`b-${pIdx}-${lIdx}-${match.index}`} className="font-semibold text-fg">
               {token.slice(2, -2)}
             </strong>
           );
         } else if (token.startsWith("*") && token.endsWith("*") && token.length > 2) {
           parts.push(
-            <em key={`i-${pIdx}-${lIdx}-${match.index}`} className="italic text-slate-300">
+            <em key={`i-${pIdx}-${lIdx}-${match.index}`} className="italic text-fg-secondary">
               {token.slice(1, -1)}
             </em>
           );
         } else if (COUNTRY_NAME_TO_ISO[token] && COUNTRY_NAME_TO_ISO[token] !== country.isoCode) {
           parts.push(
-            <HoverCardPreview key={`c-${pIdx}-${lIdx}-${match.index}`} isoCode={COUNTRY_NAME_TO_ISO[token]}>
+            <HoverCardPreview
+              key={`c-${pIdx}-${lIdx}-${match.index}`}
+              isoCode={COUNTRY_NAME_TO_ISO[token]}
+            >
               {token}
             </HoverCardPreview>
           );
@@ -287,12 +288,15 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
         {blocks.map((block, bIdx) => {
           if (block.type === "list") {
             return (
-              <ul key={`ul-${pIdx}-${bIdx}`} className="leading-relaxed space-y-1.5 list-disc pl-5 my-2">
+              <ul
+                key={`ul-${pIdx}-${bIdx}`}
+                className="my-2 list-disc space-y-1.5 pl-5 leading-relaxed"
+              >
                 {block.lines.map((l, lIdx) => {
                   const cleanLine = l.trim().startsWith("- ") ? l.trim().slice(2) : l.trim();
                   const parts = parseLineTokens(cleanLine, lIdx);
                   return (
-                    <li key={`li-${lIdx}`} className="text-slate-200">
+                    <li key={`li-${lIdx}`} className="text-fg">
                       {parts}
                     </li>
                   );
@@ -315,26 +319,26 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
   const footnoteEntries = Object.entries(activeFootnotesMap);
 
   return (
-    <article className="flex-1 px-8 py-4 overflow-y-auto max-h-[calc(85vh-4rem)] scrollbar-thin scrollbar-thumb-slate-700/60 scrollbar-track-transparent">
+    <article className="max-h-[calc(85vh-6rem)] flex-1 overflow-y-auto px-6 py-4">
       {/* Header of Dossier Entry */}
-      <div className="pb-6 border-b border-slate-800">
-        <div className="flex items-center justify-between gap-4">
+      <div className="border-b border-line pb-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-md bg-cyan-950/70 border border-cyan-800/60 text-cyan-400 font-mono text-xs font-semibold">
-              {activeDimension}
-            </span>
-            <span className="flex items-center gap-1 text-slate-400 text-xs font-mono">
-              <Clock className="w-3.5 h-3.5" />
+            <Badge tone="neutral">{activeDimension}</Badge>
+            <span className="flex items-center gap-1 font-mono text-caption tabular-nums text-fg-muted">
+              <Clock aria-hidden="true" className="h-3.5 w-3.5" />
               <span>Leitura de ~{section.estimatedReadMin || 6} min</span>
             </span>
           </div>
 
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => {
-              const url = typeof window !== "undefined"
-                ? `${window.location.origin}/pais/${country.isoCode}`
-                : `https://telluspedia.org/pais/${country.isoCode}`;
+              const url =
+                typeof window !== "undefined"
+                  ? `${window.location.origin}/pais/${country.isoCode}`
+                  : `https://telluspedia.org/pais/${country.isoCode}`;
               setCitationModalOpen(true, {
                 title,
                 countryName: country.nameCommon,
@@ -344,25 +348,22 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                 publicationYear: 2026,
               });
             }}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all shadow-sm"
           >
-            <Quote className="w-3.5 h-3.5 text-cyan-400" />
+            <Quote aria-hidden="true" className="h-3.5 w-3.5 text-accent" />
             <span>Citar Verbete</span>
-          </button>
+          </Button>
         </div>
 
-        <h1 className="mt-4 text-2xl font-serif font-bold text-slate-100 tracking-tight leading-snug">
-          {title}
-        </h1>
+        <h1 className="mt-4 font-serif text-display font-bold leading-snug text-fg">{title}</h1>
         {country.nameOfficial && (
-          <p className="text-xs text-slate-400 mt-1">
-            {country.nameOfficial} • TellusPedia Planetary & Geopolitical Knowledge Base
+          <p className="mt-1 text-caption text-fg-muted">
+            {country.nameOfficial} · TellusPedia Planetary &amp; Geopolitical Knowledge Base
           </p>
         )}
       </div>
 
       {/* Main Prose Content with Academic Typography */}
-      <div className="mt-6 font-serif text-slate-200 text-base leading-relaxed space-y-4">
+      <div className="mt-6 space-y-4 font-serif text-body leading-relaxed text-fg">
         {content.split("\n\n").map((paragraph, idx) => renderFormattedParagraph(paragraph, idx))}
       </div>
 
@@ -370,13 +371,13 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
 
       {/* Footnotes & Academic References Section (only rendered when declared real references exist) */}
       {footnoteEntries.length > 0 && (
-        <div className="mt-12 pt-6 border-t border-slate-800 text-xs font-sans text-slate-400 space-y-3">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2 font-semibold text-slate-200">
-              <Bookmark className="w-4 h-4 text-cyan-400" />
-              <span>Fontes Primárias & Notas de Rodapé Acadêmicas</span>
+        <div className="mt-12 space-y-3 border-t border-line pt-6 font-sans text-caption text-fg-secondary">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-label font-semibold text-fg">
+              <Bookmark aria-hidden="true" className="h-4 w-4 text-accent" />
+              <span>Fontes primárias e notas de rodapé acadêmicas</span>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">
+            <span className="font-mono text-caption text-fg-muted">
               Conformidade ABNT NBR 6023 / APA 7
             </span>
           </div>
@@ -387,40 +388,39 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
               <div
                 key={num}
                 id={`footnote-${num}`}
-                className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/30 transition-all flex items-start gap-3 group"
+                className="flex items-start gap-3 rounded-card border border-line bg-surface-raised p-3 transition-colors duration-fast ease-out hover:border-line-strong"
               >
-                <span className="font-mono font-bold text-cyan-400 text-xs bg-cyan-950/80 border border-cyan-800/60 px-2 py-0.5 rounded shrink-0">
+                <span className="shrink-0 rounded-sm border border-accent/40 bg-accent/15 px-2 py-0.5 font-mono text-caption font-medium tabular-nums text-accent">
                   [{num}]
                 </span>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <a
                       href={getSourceUrl(fn.source)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold text-slate-200 hover:text-cyan-300 hover:underline text-xs inline-flex items-center gap-1.5 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-label font-medium text-fg transition-colors duration-fast ease-out hover:text-accent hover:underline"
                       title={`Abrir repositório da fonte primária (${fn.source})`}
                     >
                       <span>{fn.source}</span>
-                      <ExternalLink className="w-3 h-3 text-cyan-400 shrink-0" />
+                      <ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0 text-accent" />
                     </a>
-                    <span className="text-[10px] font-mono text-cyan-400/80 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700/60 shrink-0">
-                      {fn.type}
-                    </span>
+                    <Badge tone="neutral">{fn.type}</Badge>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">{fn.detail}</p>
-                  <div className="pt-2 mt-1 border-t border-slate-800/60 flex items-center justify-between gap-2 text-[10px]">
+                  <p className="text-caption leading-relaxed text-fg-secondary">{fn.detail}</p>
+                  <div className="mt-1 flex items-center justify-between gap-2 border-t border-line pt-2 text-caption">
                     <a
                       href={getSourceUrl(fn.source)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-cyan-400/90 hover:text-cyan-200 hover:underline inline-flex items-center gap-1"
+                      className="inline-flex items-center gap-1 text-accent hover:text-accent-hover hover:underline"
                     >
-                      <ExternalLink className="w-3 h-3" />
-                      <span>Acessar Dados Primários</span>
+                      <ExternalLink aria-hidden="true" className="h-3 w-3" />
+                      <span>Acessar dados primários</span>
                     </a>
-                    <button
-                      type="button"
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       onClick={() => {
                         setCitationModalOpen(true, {
                           title: `${fn.source}${fn.detail ? ` — ${fn.detail}` : ""}`,
@@ -430,12 +430,11 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                           publicationYear: 2026,
                         });
                       }}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-800 hover:bg-cyan-950 text-cyan-300 hover:text-white border border-slate-700 hover:border-cyan-700 text-[10px] font-semibold transition-all shadow-sm"
                       title={`Gerar citação acadêmica para ${fn.source}`}
                     >
-                      <Quote className="w-3 h-3 text-cyan-400" />
-                      <span>Gerar Citação</span>
-                    </button>
+                      <Quote aria-hidden="true" className="h-3 w-3 text-accent" />
+                      <span>Gerar citação</span>
+                    </Button>
                   </div>
                 </div>
               </div>

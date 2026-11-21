@@ -21,8 +21,8 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
   { title, description, footer, className, children, ...props },
   ref
 ) {
-  return (
-    <RadixDialog.Portal>
+  const content = (
+    <>
       <RadixDialog.Overlay className="fixed inset-0 z-50 bg-bg/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in" />
       <RadixDialog.Content
         ref={ref}
@@ -49,6 +49,9 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 text-body text-fg-secondary">{children}</div>
         {footer && <div className="flex justify-end gap-2 border-t border-line px-5 py-3">{footer}</div>}
       </RadixDialog.Content>
-    </RadixDialog.Portal>
+    </>
   );
+
+  // Em SSR (ex.: renderToStaticMarkup em testes), renderiza inline para manter o markup acessível.
+  return typeof document === "undefined" ? content : <RadixDialog.Portal>{content}</RadixDialog.Portal>;
 });

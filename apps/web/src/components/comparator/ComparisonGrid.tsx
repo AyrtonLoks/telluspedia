@@ -1,11 +1,13 @@
 "use client";
 
 import React from "react";
-import { X, Globe, Users, Maximize2, DollarSign, Award, Landmark, ExternalLink, Quote } from "lucide-react";
+import { X, ExternalLink, Quote } from "lucide-react";
 import { getCountryData, CountryData } from "@/lib/country-data";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { getSourceUrl } from "@/lib/citations";
+import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface ComparisonCardProps {
   country: CountryData;
@@ -38,94 +40,123 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
   };
 
   return (
-    <div className="p-3 rounded-2xl bg-slate-900/50 border border-slate-800 relative space-y-3">
+    <div className="relative space-y-3 rounded-card border border-line bg-surface-raised p-3.5">
       {/* Header with remove button */}
-      <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-800">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+        <div className="flex min-w-0 items-center gap-2">
           {c.flagSvgUrl && !flagError ? (
             <img
               src={c.flagSvgUrl}
               alt={`Bandeira de ${c.nameCommon}`}
               onError={() => setFlagError(true)}
-              className="w-6 h-4 object-cover rounded shadow"
+              className="h-4 w-6 shrink-0 rounded-sm border border-line object-cover"
             />
           ) : (
-            <span className="w-6 h-4 rounded bg-cyan-950 text-[10px] font-mono text-cyan-300 font-bold flex items-center justify-center border border-cyan-800/60 shadow">
+            <span className="flex h-4 w-6 shrink-0 items-center justify-center rounded-sm border border-line-strong bg-surface font-mono text-caption font-medium text-fg-secondary">
               {c.isoCode}
             </span>
           )}
-          <div>
-            <h5 className="font-bold text-slate-100 text-xs line-clamp-1">{c.nameCommon}</h5>
-            <span className="text-[10px] text-cyan-400 font-mono">{c.isoCode}</span>
+          <div className="min-w-0">
+            <h5 className="line-clamp-1 text-label font-semibold text-fg">{c.nameCommon}</h5>
+            <span className="font-mono text-caption text-fg-muted">{c.isoCode}</span>
           </div>
         </div>
 
-        <button
+        <IconButton
+          label={`Remover ${c.nameCommon}`}
+          icon={<X />}
+          size="sm"
           onClick={() => onRemove(c.isoCode)}
-          className="p-1 rounded text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition-colors"
-          title="Remover país"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
+        />
       </div>
 
       {/* Data Rows */}
-      <div className="space-y-2 text-xs">
+      <div className="space-y-2.5 text-label">
         <div>
-          <span className="text-[10px] text-slate-400 block">Capital</span>
-          <span className={c.capital ? "font-medium text-slate-200" : "text-slate-500"}>
+          <span className="block text-caption text-fg-muted">Capital</span>
+          <span className={c.capital ? "font-medium text-fg" : "text-fg-muted"}>
             {c.capital ?? "Dado indisponível"}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">
+          <span className="block text-caption text-fg-muted">
             População{popInd?.year ? ` (${popInd.year})` : ""}
           </span>
-          <span className={c.population !== null ? "font-semibold text-cyan-300" : "text-slate-500"}>
+          <span
+            className={
+              c.population !== null
+                ? "font-mono font-medium tabular-nums text-fg"
+                : "text-fg-muted"
+            }
+          >
             {formatPop(c.population)}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">
+          <span className="block text-caption text-fg-muted">
             Área Territorial{areaInd?.year ? ` (${areaInd.year})` : ""}
           </span>
-          <span className={c.areaKm2 !== null ? "font-medium text-slate-200" : "text-slate-500"}>
+          <span
+            className={
+              c.areaKm2 !== null
+                ? "font-mono font-medium tabular-nums text-fg"
+                : "text-fg-muted"
+            }
+          >
             {c.areaKm2 !== null ? `${c.areaKm2.toLocaleString("pt-BR")} km²` : "Dado indisponível"}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">
+          <span className="block text-caption text-fg-muted">
             PIB Nominal{gdpInd?.year ? ` (${gdpInd.year})` : ""}
           </span>
-          <span className={gdp !== undefined ? "font-semibold text-amber-300" : "text-slate-500"}>
+          <span
+            className={
+              gdp !== undefined
+                ? "font-mono font-medium tabular-nums text-warning"
+                : "text-fg-muted"
+            }
+          >
             {formatGdp(gdp)}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">
+          <span className="block text-caption text-fg-muted">
             IDH{hdiInd?.year ? ` (${hdiInd.year})` : ""}
           </span>
-          <span className={hdi !== undefined ? "font-semibold text-purple-300" : "text-slate-500"}>
+          <span
+            className={
+              hdi !== undefined
+                ? "font-mono font-medium tabular-nums text-fg"
+                : "text-fg-muted"
+            }
+          >
             {hdi !== undefined ? hdi.toFixed(3) : "Dado indisponível"}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">
+          <span className="block text-caption text-fg-muted">
             Expectativa de Vida{lifeInd?.year ? ` (${lifeInd.year})` : ""}
           </span>
-          <span className={lifeExp !== undefined ? "font-medium text-slate-200" : "text-slate-500"}>
+          <span
+            className={
+              lifeExp !== undefined
+                ? "font-mono font-medium tabular-nums text-fg"
+                : "text-fg-muted"
+            }
+          >
             {lifeExp !== undefined ? `${lifeExp} anos` : "Dado indisponível"}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">Sistema de Governo</span>
-          <span className={c.governmentType ? "text-[11px] text-slate-300 line-clamp-2" : "text-slate-500"}>
+          <span className="block text-caption text-fg-muted">Sistema de Governo</span>
+          <span className={c.governmentType ? "line-clamp-2 text-caption text-fg-secondary" : "text-fg-muted"}>
             {c.governmentType ?? "Dado indisponível"}
           </span>
         </div>
@@ -149,7 +180,7 @@ export const ComparisonGrid: React.FC = () => {
 
   if (countries.length === 0) {
     return (
-      <div className="p-8 text-center text-slate-400 text-sm">
+      <div className="p-8 text-center text-body text-fg-muted">
         Nenhum país selecionado para comparação. Adicione até 4 países para visualizar os dados lado a lado.
       </div>
     );
@@ -158,9 +189,10 @@ export const ComparisonGrid: React.FC = () => {
   const handleGenerateComparisonCitation = () => {
     const names = countries.map((c) => c.nameCommon).join(", ");
     const isos = countries.map((c) => c.isoCode).join(",");
-    const url = typeof window !== "undefined"
-      ? `${window.location.origin}/compare?c=${encodeURIComponent(isos)}`
-      : `https://telluspedia.org/compare?c=${encodeURIComponent(isos)}`;
+    const url =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/compare?c=${encodeURIComponent(isos)}`
+        : `https://telluspedia.org/compare?c=${encodeURIComponent(isos)}`;
 
     setCitationModalOpen(true, {
       title: `Estudo Comparativo Multidimensional: ${names}`,
@@ -174,86 +206,47 @@ export const ComparisonGrid: React.FC = () => {
   return (
     <div className="overflow-x-auto">
       <div
-        className="grid gap-3 min-w-[600px]"
+        className="grid min-w-[600px] gap-3"
         style={{
           gridTemplateColumns: `repeat(${countries.length}, minmax(180px, 1fr))`,
         }}
       >
         {countries.map((c) => (
-          <ComparisonCountryCard
-            key={c.isoCode}
-            country={c}
-            onRemove={removeCountry}
-          />
+          <ComparisonCountryCard key={c.isoCode} country={c} onRemove={removeCountry} />
         ))}
       </div>
 
       {/* Institutional cited sources footer */}
-      <footer className="mt-4 pt-2.5 text-[10px] text-slate-400 flex items-center justify-between border-t border-slate-800 flex-wrap gap-2">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <strong className="text-cyan-400 font-medium">Fontes Primárias:</strong>
-          <a
-            href={getSourceUrl("Banco Mundial")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-cyan-300 hover:underline inline-flex items-center gap-0.5"
-          >
-            <span>Banco Mundial</span>
-            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-          </a>
-          •
-          <a
-            href={getSourceUrl("PNUD")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-cyan-300 hover:underline inline-flex items-center gap-0.5"
-          >
-            <span>PNUD</span>
-            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-          </a>
-          •
-          <a
-            href={getSourceUrl("OMS")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-cyan-300 hover:underline inline-flex items-center gap-0.5"
-          >
-            <span>OMS</span>
-            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-          </a>
-          •
-          <a
-            href={getSourceUrl("SIPRI")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-cyan-300 hover:underline inline-flex items-center gap-0.5"
-          >
-            <span>SIPRI</span>
-            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-          </a>
-          •
-          <a
-            href={getSourceUrl("Natural Earth")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-cyan-300 hover:underline inline-flex items-center gap-0.5"
-          >
-            <span>Natural Earth</span>
-            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-          </a>
+      <footer className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3 text-caption text-fg-muted">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <strong className="font-medium text-fg-secondary">Fontes primárias:</strong>
+          {(["Banco Mundial", "PNUD", "OMS", "SIPRI", "Natural Earth"] as const).map((src, idx) => (
+            <React.Fragment key={src}>
+              {idx > 0 && <span aria-hidden="true">·</span>}
+              <a
+                href={getSourceUrl(src)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 text-accent hover:text-accent-hover hover:underline"
+              >
+                <span>{src}</span>
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
+              </a>
+            </React.Fragment>
+          ))}
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={handleGenerateComparisonCitation}
-            className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-800 hover:bg-cyan-950 text-cyan-300 hover:text-white border border-slate-700 hover:border-cyan-700 font-mono text-[9px] transition-colors"
             title="Gerar Citação Acadêmica desta Comparação"
           >
-            <Quote className="w-2.5 h-2.5" />
-            <span>Citar Comparação</span>
-          </button>
-          <span className="font-mono text-slate-500">Auditoria TellusPedia</span>
+            <Quote aria-hidden="true" className="h-3 w-3 text-accent" />
+            <span>Citar comparação</span>
+          </Button>
+          <span className="font-mono text-caption text-fg-muted">Auditoria TellusPedia</span>
         </div>
       </footer>
     </div>

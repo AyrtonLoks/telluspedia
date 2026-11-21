@@ -15,13 +15,6 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        cosmic: {
-          dark: "#050811",
-          card: "rgba(11, 17, 32, 0.85)",
-          border: "rgba(56, 189, 248, 0.2)",
-          cyan: "#06b6d4",
-          gold: "#f59e0b",
-        },
         // D14 — tokens semânticos (ver src/styles/globals.css)
         bg: token("bg"),
         surface: {

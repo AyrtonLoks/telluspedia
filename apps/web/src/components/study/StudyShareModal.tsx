@@ -1,19 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Share2, Copy, Check } from "lucide-react";
+import { Share2, Copy, Check } from "lucide-react";
 import { useStudyStore } from "@/stores/studyStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { HISTORICAL_ERAS } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";
-import { findMilestoneById } from "@/lib/country-data";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { getHistoricalRoute } from "@/lib/historical-routes";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { Dialog, DialogContent } from "@/components/ui/Dialog";
+import { Button } from "@/components/ui/Button";
 
 export const StudyShareModal: React.FC = () => {
   const storeIsShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
@@ -25,7 +26,6 @@ export const StudyShareModal: React.FC = () => {
   const title = useStudyStore((s) => s.title);
   const setTitle = useStudyStore((s) => s.setTitle);
   const description = useStudyStore((s) => s.description);
-  const setDescription = useStudyStore((s) => s.setDescription);
   const notes = useStudyStore((s) => s.notes);
   const setNotes = useStudyStore((s) => s.setNotes);
 
@@ -45,18 +45,7 @@ export const StudyShareModal: React.FC = () => {
       ? (useTimelineStore.getState().endYear ?? storeEndYear)
       : storeEndYear;
 
-  const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
-  const storeSelectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
-  const selectedYear =
-    typeof window === "undefined"
-      ? (useTimelineStore.getState().selectedYear ?? storeSelectedYear)
-      : storeSelectedYear;
-  const selectedMilestoneId =
-    typeof window === "undefined"
-      ? (useTimelineStore.getState().selectedMilestoneId ?? storeSelectedMilestoneId)
-      : storeSelectedMilestoneId;
   const activeCategories = useTimelineStore((s) => s.activeCategories);
-
   const comparatorIsos = useComparatorStore((s) => s.selectedIsos);
 
   // Época ativa: fonte única (T12)
@@ -109,7 +98,6 @@ export const StudyShareModal: React.FC = () => {
   const historicalRouteDef = activeRouteId ? getHistoricalRoute(activeRouteId) : null;
 
   const isContemporary = epoch.isContemporary;
-
   const effectiveObservatoryLayers = isContemporary ? activeObservatoryLayers : [];
 
   const handleGenerateLink = async () => {
@@ -153,7 +141,6 @@ export const StudyShareModal: React.FC = () => {
         setTemporaryShare(res.headers.get("x-study-persistence") === "memory");
         setShareUrl(`${origin}/study/${data.id}`);
 
-        // Update local study store with the created study snapshot
         useStudyStore.getState().restoreStudy({
           id: data.id,
           parentId: data.parentId || null,
@@ -188,44 +175,54 @@ export const StudyShareModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-      <div className="w-full max-w-lg glass-panel rounded-2xl p-6 shadow-2xl border border-cyan-500/30">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-700/60">
-          <div className="flex items-center gap-2">
-            <Share2 className="w-5 h-5 text-cyan-400" />
-            <h3 className="text-base font-bold text-slate-100">Compartilhar Estudo Imutável</h3>
-          </div>
-          <button
-            onClick={() => setShareModalOpen(false)}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="space-y-4 my-4">
+    <Dialog open={isShareModalOpen} onOpenChange={(open) => setShareModalOpen(open)}>
+      <DialogContent
+        className="w-[min(92vw,34rem)]"
+        title={
+          <span className="flex items-center gap-2">
+            <Share2 aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
+            <span>Compartilhar estudo imutável</span>
+          </span>
+        }
+        description="Salve o estado atual do globo, linha do tempo e camadas como um link permanente."
+        footer={
+          <>
+            <Button variant="ghost" size="sm" onClick={() => setShareModalOpen(false)}>
+              Cancelar
+            </Button>
+            {!shareUrl && (
+              <Button variant="primary" size="sm" onClick={handleGenerateLink} disabled={loading}>
+                {loading ? "Criando snapshot..." : "Gerar link de estudo"}
+              </Button>
+            )}
+          </>
+        }
+      >
+        <div className="space-y-4 text-label">
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">
-              Título do Estudo
+            <label htmlFor="study-title-input" className="mb-1 block text-caption font-medium text-fg-secondary">
+              Título do estudo
             </label>
             <input
+              id="study-title-input"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-cyan-400"
+              className="w-full rounded-card border border-line-strong bg-surface-sunken px-3 py-2 text-label text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
               placeholder="Ex: Análise Comparativa do Cone Sul e Europa"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">
-              Anotações & Contexto Científico
+            <label htmlFor="study-notes-input" className="mb-1 block text-caption font-medium text-fg-secondary">
+              Anotações e contexto científico
             </label>
             <textarea
+              id="study-notes-input"
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-cyan-400 resize-none"
+              className="w-full resize-none rounded-card border border-line-strong bg-surface-sunken px-3 py-2 text-label text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
               placeholder="Descreva as hipóteses ou conclusões deste recorte planetário..."
             />
           </div>
@@ -234,16 +231,12 @@ export const StudyShareModal: React.FC = () => {
           {isHistoricalEraActive && (
             <div
               data-testid="modal-historical-era-badge"
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium animate-in fade-in"
+              className="flex items-center gap-2.5 rounded-card border border-warning/40 bg-warning/10 p-3 text-label"
             >
-              <span className="text-lg select-none">🏛️</span>
+              <span aria-hidden="true" className="select-none text-title">🏛️</span>
               <div className="flex-1">
-                <div className="font-semibold text-amber-200">
-                  Cartografia Histórica Ativa Capturada
-                </div>
-                <div className="text-[11px] text-amber-300/80">
-                  {eraDef.label}
-                </div>
+                <div className="font-semibold text-fg">Cartografia Histórica Ativa Capturada</div>
+                <div className="text-caption text-warning">{eraDef.label}</div>
               </div>
             </div>
           )}
@@ -252,14 +245,12 @@ export const StudyShareModal: React.FC = () => {
           {isApollo11Active && (
             <div
               data-testid="modal-apollo11-badge"
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-medium animate-in fade-in"
+              className="flex items-center gap-2.5 rounded-card border border-accent/40 bg-accent/10 p-3 text-label"
             >
-              <span className="text-lg select-none">🚀</span>
+              <span aria-hidden="true" className="select-none text-title">🚀</span>
               <div className="flex-1">
-                <div className="font-semibold text-cyan-200">
-                  Missão Espacial Apollo 11 (1969)
-                </div>
-                <div className="text-[11px] text-cyan-300/80">
+                <div className="font-semibold text-fg">Missão Espacial Apollo 11 (1969)</div>
+                <div className="text-caption text-accent">
                   Trajetória Translunar 3D e telemetria incluídas no estudo.
                 </div>
               </div>
@@ -270,14 +261,12 @@ export const StudyShareModal: React.FC = () => {
           {geologicalMa && (
             <div
               data-testid="modal-geological-era-badge"
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium animate-in fade-in"
+              className="flex items-center gap-2.5 rounded-card border border-success/40 bg-success/10 p-3 text-label"
             >
-              <span className="text-lg select-none">🌋</span>
+              <span aria-hidden="true" className="select-none text-title">🌋</span>
               <div className="flex-1">
-                <div className="font-semibold text-emerald-200">
-                  Paleogeografia & Deriva Continental Ativa
-                </div>
-                <div className="text-[11px] text-emerald-300/80">
+                <div className="font-semibold text-fg">Paleogeografia &amp; Deriva Continental Ativa</div>
+                <div className="text-caption text-success">
                   {geologicalEraDef?.name || `Era Geológica: ${geologicalMa} Ma atrás`}
                 </div>
               </div>
@@ -288,14 +277,12 @@ export const StudyShareModal: React.FC = () => {
           {activeRouteId && (
             <div
               data-testid="modal-historical-route-badge"
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-medium animate-in fade-in"
+              className="flex items-center gap-2.5 rounded-card border border-cat-politics/40 bg-cat-politics/10 p-3 text-label"
             >
-              <span className="text-lg select-none">⛵</span>
+              <span aria-hidden="true" className="select-none text-title">⛵</span>
               <div className="flex-1">
-                <div className="font-semibold text-indigo-200">
-                  Rota de Expedição Histórica 3D
-                </div>
-                <div className="text-[11px] text-indigo-300/80">
+                <div className="font-semibold text-fg">Rota de Expedição Histórica 3D</div>
+                <div className="text-caption text-cat-politics">
                   {historicalRouteDef?.title || `Expedição Marítima (${activeRouteId})`}
                 </div>
               </div>
@@ -306,14 +293,12 @@ export const StudyShareModal: React.FC = () => {
           {effectiveObservatoryLayers.length > 0 && (
             <div
               data-testid="modal-observatory-badge"
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-medium animate-in fade-in"
+              className="flex items-center gap-2.5 rounded-card border border-accent/40 bg-accent/10 p-3 text-label"
             >
-              <span className="text-lg select-none">📡</span>
+              <span aria-hidden="true" className="select-none text-title">📡</span>
               <div className="flex-1">
-                <div className="font-semibold text-cyan-200">
-                  Observatório Planetário Ativo
-                </div>
-                <div className="text-[11px] text-cyan-300/80">
+                <div className="font-semibold text-fg">Observatório Planetário Ativo</div>
+                <div className="text-caption text-accent">
                   {effectiveObservatoryLayers.length} camada(s) científica(s) capturada(s) ({effectiveObservatoryLayers.join(", ")}).
                 </div>
               </div>
@@ -324,104 +309,99 @@ export const StudyShareModal: React.FC = () => {
           {isCosmicMode && (
             <div
               data-testid="modal-cosmic-badge"
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium animate-in fade-in"
+              className="flex items-center gap-2.5 rounded-card border border-warning/40 bg-warning/10 p-3 text-label"
             >
-              <span className="text-lg select-none">🪐</span>
+              <span aria-hidden="true" className="select-none text-title">🪐</span>
               <div className="flex-1">
-                <div className="font-semibold text-amber-200">
-                  Estudo Cósmico / Sistema Solar Ativo
-                </div>
-                <div className="text-[11px] text-amber-300/80">
-                  {focusedBodyId ? `Foco Orbital: ${focusedBodyId}` : "Visão Panorâmica Heliocêntrica"} • {activeCosmicLayers.length} camadas cósmicas capturadas.
+                <div className="font-semibold text-fg">Estudo Cósmico / Sistema Solar Ativo</div>
+                <div className="text-caption text-warning">
+                  {focusedBodyId ? `Foco Orbital: ${focusedBodyId}` : "Visão Panorâmica Heliocêntrica"} · {activeCosmicLayers.length} camadas cósmicas capturadas.
                 </div>
               </div>
             </div>
           )}
 
-          <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
-            <div className="font-semibold text-slate-300">Recorte capturado automaticamente:</div>
-            <div>• Período: {startYear} — {endYear} ({endYear - startYear} anos)</div>
-            <div>• Países: {[selectedIso, ...comparatorIsos].filter(Boolean).join(", ") || "Visão Global"}</div>
-            <div>• Coordenadas da Câmera: ({cameraLat.toFixed(1)}°, {cameraLng.toFixed(1)}°)</div>
+          <div className="space-y-1 rounded-card border border-line bg-surface-sunken p-3 text-caption text-fg-secondary">
+            <div className="font-semibold text-fg">Recorte capturado automaticamente:</div>
+            <div className="font-mono tabular-nums">
+              • Período: {startYear} — {endYear} ({endYear - startYear} anos)
+            </div>
+            <div>
+              • Países: {[selectedIso, ...comparatorIsos].filter(Boolean).join(", ") || "Visão Global"}
+            </div>
+            <div className="font-mono tabular-nums">
+              • Coordenadas da câmera: ({cameraLat.toFixed(1)}°, {cameraLng.toFixed(1)}°)
+            </div>
             {isHistoricalEraActive && (
-              <div className="text-amber-300 font-medium">• Era Histórica: {eraDef.label}</div>
+              <div className="font-medium text-warning">• Era Histórica: {eraDef.label}</div>
             )}
             {isApollo11Active && (
-              <div className="text-cyan-300 font-medium">• Missão Espacial: Apollo 11 (Trajetória Translunar Ativa)</div>
+              <div className="font-medium text-accent">
+                • Missão Espacial: Apollo 11 (Trajetória Translunar Ativa)
+              </div>
             )}
             {geologicalMa && (
-              <div className="text-emerald-300 font-medium">
+              <div className="font-medium text-success">
                 • Paleogeografia: {geologicalEraDef?.name || `${geologicalMa} Ma`}
               </div>
             )}
             {activeRouteId && (
-              <div className="text-indigo-300 font-medium">
+              <div className="font-medium text-cat-politics">
                 • Rota Histórica 3D: {historicalRouteDef?.title || activeRouteId}
               </div>
             )}
             {effectiveObservatoryLayers.length > 0 && (
-              <div className="text-cyan-300 font-medium">
+              <div className="font-medium text-accent">
                 • Observatório: {effectiveObservatoryLayers.length} camada(s) ativa(s)
               </div>
             )}
             {isCosmicMode && (
-              <div className="text-amber-300 font-medium">
+              <div className="font-medium text-warning">
                 • Expansão Cósmica: Sistema Solar ({focusedBodyId || "Visão Geral"}, {activeCosmicLayers.length} camadas)
               </div>
             )}
           </div>
 
           {errorMsg && (
-            <div role="alert" className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs">
+            <div
+              role="alert"
+              className="rounded-card border border-danger/40 bg-danger/10 p-3 text-caption text-danger"
+            >
               {errorMsg}
             </div>
           )}
 
           {shareUrl && (
-            <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-800/60 space-y-2">
-              <span className="text-[11px] text-cyan-300 font-medium block">
-                {temporaryShare ? "Link temporário deste servidor" : "Link Permanente & Imutável Gerado:"}
+            <div className="space-y-2 rounded-card border border-accent/40 bg-accent/10 p-3">
+              <span className="block text-caption font-medium text-accent">
+                {temporaryShare ? "Link temporário deste servidor" : "Link permanente e imutável gerado:"}
               </span>
               {temporaryShare && (
-                <p className="text-[11px] text-slate-300">O link pode deixar de funcionar ao reiniciar o servidor.</p>
+                <p className="text-caption text-fg-secondary">
+                  O link pode deixar de funcionar ao reiniciar o servidor.
+                </p>
               )}
               <div className="flex items-center gap-2">
                 <input
                   type="text"
                   readOnly
+                  aria-label="Link do estudo compartilhável"
                   value={shareUrl}
-                  className="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-cyan-700/50 text-cyan-200 text-xs font-mono select-all"
+                  className="flex-1 select-all rounded-control border border-line-strong bg-surface-sunken px-2.5 py-1.5 font-mono text-caption text-fg"
                 />
-                <button
-                  onClick={handleCopy}
-                  className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs transition-colors flex items-center gap-1"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <Button variant="primary" size="sm" onClick={handleCopy}>
+                  {copied ? (
+                    <Check aria-hidden="true" className="h-3.5 w-3.5" />
+                  ) : (
+                    <Copy aria-hidden="true" className="h-3.5 w-3.5" />
+                  )}
                   <span>{copied ? "Copiado" : "Copiar"}</span>
-                </button>
+                </Button>
               </div>
             </div>
           )}
         </div>
-
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
-          <button
-            onClick={() => setShareModalOpen(false)}
-            className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-white transition-colors"
-          >
-            Cancelar
-          </button>
-          {!shareUrl && (
-            <button
-              onClick={handleGenerateLink}
-              disabled={loading}
-              className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-semibold text-xs transition-all shadow-lg shadow-cyan-950/40 disabled:opacity-50"
-            >
-              {loading ? "Criando snapshot..." : "Gerar Link de Estudo"}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

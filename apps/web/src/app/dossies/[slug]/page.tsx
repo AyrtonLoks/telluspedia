@@ -32,13 +32,13 @@ export default async function DossierPage({ params, searchParams }: {
   return (
     <main className="min-h-screen">
       <article className="mx-auto max-w-3xl space-y-6 px-5 py-10">
-        <nav aria-label="Localização" className="flex flex-wrap gap-4 text-sm text-cyan-300">
-          <Link href="/" className="hover:underline">Globo</Link>
-          <Link href="/telluslab" className="hover:underline">TellusLab Hub</Link>
-          {origin && <a href={studyUrl(origin.slug, origin.nodeId, link.entityId)} className="hover:underline">← Retornar ao nó {origin.nodeId}</a>}
+        <nav aria-label="Localização" className="flex flex-wrap gap-4 text-label text-accent">
+          <Link href="/" className="hover:text-accent-hover hover:underline">Globo</Link>
+          <Link href="/telluslab" className="hover:text-accent-hover hover:underline">TellusLab Hub</Link>
+          {origin && <a href={studyUrl(origin.slug, origin.nodeId, link.entityId)} className="hover:text-accent-hover hover:underline">← Retornar ao nó {origin.nodeId}</a>}
         </nav>
-        <h1 className="font-serif text-4xl text-white">{link.title}</h1>
-        <p className="text-lg leading-relaxed text-slate-300">{introductions[slug]}</p>
+        <h1 className="font-serif text-display font-semibold text-fg">{link.title}</h1>
+        <p className="font-serif text-body leading-relaxed text-fg-secondary">{introductions[slug]}</p>
         <StudyContext entityId={link.entityId} />
       </article>
     </main>

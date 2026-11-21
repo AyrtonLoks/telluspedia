@@ -113,13 +113,39 @@ const MIGRATED = [
   "src/components/hud/CountryMiniTimeline.tsx",
   "src/components/hud/LiveWeatherWidget.tsx",
   "src/components/hud/LocalClockWidget.tsx",
+  "src/components/hud/CosmicInspectorHUD.tsx",
+  "src/components/layout/RightDock.tsx",
+  "src/components/reader/CitationModal.tsx",
+  "src/components/reader/HoverCardPreview.tsx",
+  "src/components/reader/HoverCitationCard.tsx",
+  "src/components/reader/ReaderContent.tsx",
+  "src/components/reader/ReaderMode.tsx",
+  "src/components/reader/ReaderTableOfContents.tsx",
+  "src/components/comparator/CountryComparator.tsx",
+  "src/components/comparator/ComparisonGrid.tsx",
+  "src/components/comparator/ComparisonCharts.tsx",
+  "src/components/study/ForkStudyBanner.tsx",
+  "src/components/study/StudyShareModal.tsx",
   "src/components/timeline/TimelineBar.tsx",
   "src/components/timeline/TimelineAxis.tsx",
   "src/components/timeline/MilestonePin.tsx",
   "src/components/timeline/PresetSelector.tsx",
   "src/components/timeline/CategoryFilterPills.tsx",
   "src/components/tellus-bridge/StudyContext.tsx",
+  "src/components/tellus-bridge/EntityLaunch.tsx",
+  "src/components/tellus-bridge/StudyHub.tsx",
+  "src/components/globe/HistoricalEraBadge.tsx",
+  "src/components/globe/PaleoEraBadge.tsx",
+  "src/components/globe/Apollo11TelemetryOverlay.tsx",
+  "src/components/globe/HistoricalRouteOverlay.tsx",
+  "src/components/globe/CelestialLabel.tsx",
   "src/components/shell/GlobeExperienceShell.tsx",
+  "src/app/page.tsx",
+  "src/app/pais/[iso]/page.tsx",
+  "src/app/compare/page.tsx",
+  "src/app/study/[slug]/page.tsx",
+  "src/app/telluslab/page.tsx",
+  "src/app/dossies/[slug]/page.tsx",
   "src/app/not-found.tsx",
   "src/app/dev/ui/page.tsx",
   // Os próprios primitivos também só podem usar tokens.
@@ -149,4 +175,28 @@ describe("D14: componentes migrados sem cor/tamanho fora dos tokens", () => {
       }
     });
   }
+});
+
+describe("D20: modais acessíveis (Dialog) e remoção de legados cosmic.*/glass-*", () => {
+  test("CitationModal, StudyShareModal, CountryComparator e ReaderMode usam o primitivo Dialog", () => {
+    for (const file of [
+      "src/components/reader/CitationModal.tsx",
+      "src/components/study/StudyShareModal.tsx",
+      "src/components/comparator/CountryComparator.tsx",
+      "src/components/reader/ReaderMode.tsx",
+    ]) {
+      const src = read(file);
+      assert.match(src, /from\s+["']@\/components\/ui\/Dialog["']/, `${file} deve importar Dialog pelo arquivo`);
+      assert.match(src, /<Dialog\b/, `${file} deve usar <Dialog>`);
+      assert.match(src, /<DialogContent\b/, `${file} deve usar <DialogContent>`);
+    }
+  });
+
+  test("paleta legada cosmic.* removida do tailwind.config.ts e classes .glass-* removidas do globals.css", () => {
+    const tailwind = read("tailwind.config.ts");
+    const css = read("src/styles/globals.css");
+    assert.doesNotMatch(tailwind, /\bcosmic\s*:/);
+    assert.doesNotMatch(css, /\.glass-panel\b/);
+    assert.doesNotMatch(css, /\.glass-button\b/);
+  });
 });

@@ -97,7 +97,7 @@ export const GlobeCanvas: React.FC = () => {
   };
 
   return (
-    <div className="absolute inset-0 w-full h-full bg-[#030712] overflow-hidden">
+    <div className="absolute inset-0 h-full w-full overflow-hidden bg-bg">
       <Canvas
         camera={{ position: [0, 0, 2.5], fov: 45 }}
         frameloop={isThrottled ? "demand" : "always"}

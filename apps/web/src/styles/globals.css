@@ -86,34 +86,6 @@ body {
   }
 }
 
-/* Superfícies translúcidas legadas: mesmos tokens do primitivo <Panel> */
-.glass-panel {
-  background: rgb(var(--color-surface) / 0.86);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgb(var(--color-line) / var(--line-alpha));
-  box-shadow: 0 12px 40px rgb(0 0 0 / 0.45);
-}
-
-.glass-panel-subtle {
-  background: rgb(var(--color-surface) / 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgb(var(--color-line) / var(--line-alpha));
-}
-
-.glass-button {
-  background: rgb(var(--color-surface-raised));
-  border: 1px solid rgb(var(--color-line) / var(--line-strong-alpha));
-  transition:
-    background-color var(--duration-base) var(--ease-out),
-    border-color var(--duration-base) var(--ease-out);
-}
-
-.glass-button:hover {
-  background: rgb(var(--color-surface-hover));
-}
-
 /* Barra de rolagem */
 ::-webkit-scrollbar {
   width: 6px;

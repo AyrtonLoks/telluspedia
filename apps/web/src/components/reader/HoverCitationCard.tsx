@@ -22,7 +22,6 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
   detail,
   type = "Fonte Primária",
   countryName = "TellusPedia",
-  countryIso,
   onOpenCitationModal,
   defaultOpen = false,
 }) => {
@@ -35,7 +34,6 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
 
-  // Clear timeout on unmount
   useEffect(() => {
     return () => {
       if (closeTimeoutRef.current) {
@@ -44,7 +42,6 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
     };
   }, []);
 
-  // Dismiss on click outside
   useEffect(() => {
     if (!isOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
@@ -141,14 +138,14 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
   return (
     <span
       ref={containerRef}
-      className="relative inline-block align-baseline mx-0.5"
+      className="relative mx-0.5 inline-block align-baseline"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <button
         type="button"
         onClick={handleBadgeClick}
-        className="inline-flex items-center justify-center font-mono text-[11px] font-bold text-cyan-400 hover:text-cyan-200 bg-cyan-950/70 hover:bg-cyan-900/90 border border-cyan-800/60 hover:border-cyan-400/80 rounded px-1.5 py-0.5 -translate-y-0.5 shadow-sm transition-all cursor-pointer"
+        className="-translate-y-0.5 inline-flex cursor-pointer items-center justify-center rounded-sm border border-accent/40 bg-accent/15 px-1.5 py-0.5 font-mono text-caption font-medium tabular-nums text-accent transition-colors duration-fast ease-out hover:border-accent hover:bg-accent/25 hover:text-accent-hover"
         title={`Nota [${number}]: ${source} (Clique para abrir opções de citação)`}
       >
         [{number}]
@@ -156,7 +153,7 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
 
       {isOpen && (
         <span
-          className={`absolute z-50 w-80 text-left block pointer-events-auto animate-in fade-in zoom-in-95 duration-150 ${
+          className={`pointer-events-auto absolute z-50 block w-80 text-left font-sans animate-in fade-in zoom-in-95 duration-fast ${
             placement === "bottom" ? "top-full pt-1.5" : "bottom-full pb-1.5"
           } ${
             align === "left"
@@ -169,16 +166,20 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
           onMouseLeave={handleMouseLeave}
         >
           {/* Bridge element preventing cursor drop */}
-          <span className={`absolute left-0 right-0 h-3 pointer-events-auto ${placement === "bottom" ? "-top-3" : "-bottom-3"}`} />
+          <span
+            className={`pointer-events-auto absolute left-0 right-0 h-3 ${
+              placement === "bottom" ? "-top-3" : "-bottom-3"
+            }`}
+          />
 
-          <span className="block p-3.5 rounded-xl bg-slate-900/95 backdrop-blur-xl border border-cyan-500/40 shadow-2xl relative">
-            <span className="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-slate-800">
-              <span className="flex items-center gap-1.5 text-xs font-bold text-slate-100">
-                <Bookmark className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <span className="relative block rounded-card border border-line-strong bg-surface p-3.5 shadow-e2 backdrop-blur-md">
+            <span className="mb-2 flex items-center justify-between gap-2 border-b border-line pb-1.5">
+              <span className="flex items-center gap-1.5 text-label font-semibold text-fg">
+                <Bookmark aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-accent" />
                 <span>Nota de Rodapé [{number}]</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950/90 px-1.5 py-0.5 rounded border border-cyan-800/60 shrink-0">
+                <span className="shrink-0 rounded-sm border border-line bg-surface-raised px-1.5 py-0.5 font-mono text-caption text-fg-secondary">
                   {type}
                 </span>
                 <button
@@ -187,10 +188,11 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
                     e.stopPropagation();
                     setIsOpen(false);
                   }}
-                  className="p-0.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="rounded-control p-0.5 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
                   title="Fechar"
+                  aria-label="Fechar prévia de citação"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X aria-hidden="true" className="h-3.5 w-3.5" />
                 </button>
               </span>
             </span>
@@ -200,15 +202,18 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-300 hover:text-cyan-100 hover:underline mb-1 leading-snug group/link"
+              className="group/link mb-1 inline-flex items-center gap-1.5 text-label font-medium leading-snug text-accent hover:text-accent-hover hover:underline"
               title={`Abrir repositório da fonte de dados: ${source}`}
             >
               <span className="break-words">{source}</span>
-              <ExternalLink className="w-3.5 h-3.5 shrink-0 text-cyan-400 opacity-80 group-hover/link:opacity-100 transition-opacity" />
+              <ExternalLink
+                aria-hidden="true"
+                className="h-3.5 w-3.5 shrink-0 opacity-80 transition-opacity group-hover/link:opacity-100"
+              />
             </a>
 
             {detail && (
-              <span className="block text-[11px] text-slate-400 mb-2 leading-relaxed">
+              <span className="mb-2 block text-caption leading-relaxed text-fg-secondary">
                 {detail}
               </span>
             )}
@@ -217,51 +222,51 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
             <button
               type="button"
               onClick={handleOpenGenerator}
-              className="w-full mt-1.5 mb-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-700/60 text-cyan-300 hover:text-white text-[11px] font-semibold transition-all shadow-sm cursor-pointer"
+              className="mb-2 mt-1.5 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-control border border-accent/40 bg-accent/15 px-3 py-1.5 text-caption font-medium text-accent transition-colors duration-fast ease-out hover:bg-accent/25 hover:text-accent-hover"
               title="Abrir gerador de citações completo (ABNT / APA / MLA / BibTeX)"
             >
-              <Quote className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <Quote aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
               <span>Gerar Citação (ABNT / APA / BibTeX)</span>
             </button>
 
-            <span className="flex items-center justify-between pt-2 border-t border-slate-800/80 text-[10px]">
+            <span className="flex items-center justify-between border-t border-line pt-2 text-caption">
               <a
                 href={getSourceUrl(source)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1 text-slate-400 hover:text-cyan-300 hover:underline"
+                className="flex items-center gap-1 text-fg-secondary hover:text-accent hover:underline"
                 title="Acessar base primária"
               >
-                <ExternalLink className="w-3 h-3" />
-                <span>Dados de Origem</span>
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
+                <span>Dados de origem</span>
               </a>
 
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2.5">
                 <button
                   type="button"
                   onClick={handleScrollToFootnote}
-                  className="flex items-center gap-0.5 text-slate-400 hover:text-slate-200 hover:underline transition-colors cursor-pointer"
+                  className="flex cursor-pointer items-center gap-0.5 text-fg-secondary transition-colors duration-fast ease-out hover:text-fg hover:underline"
                   title="Rolar para a nota no rodapé do artigo"
                 >
-                  <ArrowDown className="w-3 h-3 text-slate-500" />
+                  <ArrowDown aria-hidden="true" className="h-3 w-3 text-fg-muted" />
                   <span>Rodapé</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleQuickCopy}
-                  className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-medium transition-colors cursor-pointer"
+                  className="flex cursor-pointer items-center gap-1 font-medium text-accent transition-colors duration-fast ease-out hover:text-accent-hover"
                   title="Copiar citação ABNT rapidamente"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-3 h-3 text-emerald-400" />
-                      <span className="text-emerald-400 font-bold">Copiado!</span>
+                      <Check aria-hidden="true" className="h-3 w-3 text-success" />
+                      <span className="font-semibold text-success">Copiado!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3 h-3" />
+                      <Copy aria-hidden="true" className="h-3 w-3" />
                       <span>Copiar ABNT</span>
                     </>
                   )}

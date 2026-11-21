@@ -3,10 +3,13 @@
 import { restoreContemporaryTimeline } from "@/stores/actions";
 
 import React from "react";
-import { RotateCcw, Mountain } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useStudyStore } from "@/stores/studyStore";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
+import { Panel } from "@/components/ui/Panel";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/components/ui/cn";
 
 export interface PaleoEraBadgeProps {
   geologicalMa?: number | null;
@@ -38,40 +41,40 @@ export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
       : "🌋";
 
   // Reposicionamento dinâmico contra o ForkStudyBanner para evitar sobreposição na barra superior
-  const positionClass = currentStudyId
-    ? "top-24 sm:top-20"
-    : "top-16 sm:top-5";
+  const positionClass = currentStudyId ? "top-24 sm:top-20" : "top-16 sm:top-5";
 
   return (
-    <div
+    <Panel
       data-testid="paleo-era-badge"
-      className={`fixed ${positionClass} left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-4 py-2 rounded-2xl glass-panel shadow-2xl border border-amber-500/50 bg-slate-950/90 backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-300 pointer-events-auto`}
+      className={cn(
+        "pointer-events-auto fixed left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border-warning/40 px-4 py-2 animate-in fade-in slide-in-from-top-2 duration-slow",
+        positionClass
+      )}
     >
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-sm shadow-sm select-none">
+        <div className="flex h-6 w-6 select-none items-center justify-center rounded-control border border-warning/40 bg-warning/15 text-label">
           <span aria-hidden="true">{eraEmoji}</span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1.5">
-          <span className="text-xs font-semibold text-amber-400 tracking-wide">
-            Paleogeografia:
-          </span>
-          <span className="text-xs font-medium text-slate-200">
+          <span className="text-caption font-semibold text-warning">Paleogeografia:</span>
+          <span className="text-caption font-medium text-fg">
             {era.name} (~{era.ageMa} Ma)
           </span>
         </div>
       </div>
 
-      <div className="h-4 w-[1px] bg-slate-700/60" />
+      <div className="h-4 w-px bg-line-strong" />
 
-      <button
+      <Button
+        variant="secondary"
+        size="sm"
         onClick={restoreContemporaryTimeline}
         title="Restaurar Geografia Contemporânea"
-        className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 hover:border-amber-400/50 text-[11px] font-medium text-slate-300 hover:text-amber-300 transition-all shadow-sm"
       >
-        <RotateCcw className="w-3 h-3 text-amber-400" />
+        <RotateCcw aria-hidden="true" className="h-3 w-3 text-warning" />
         <span className="hidden md:inline">Restaurar Geografia Contemporânea</span>
         <span className="md:hidden">Restaurar</span>
-      </button>
-    </div>
+      </Button>
+    </Panel>
   );
 };

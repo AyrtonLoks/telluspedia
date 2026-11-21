@@ -1,11 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { X, Copy, Check, Download, Quote } from "lucide-react";
+import React, { useState } from "react";
+import { Copy, Check, Download, Quote } from "lucide-react";
 import { useReaderStore } from "@/stores/readerStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { getCountryData } from "@/lib/country-data";
-import { formatABNT, formatAPA, formatMLA, formatBibTeX, copyToClipboard, CitationParams } from "@/lib/citations";
+import {
+  formatABNT,
+  formatAPA,
+  formatMLA,
+  formatBibTeX,
+  copyToClipboard,
+  CitationParams,
+} from "@/lib/citations";
+import { Dialog, DialogContent } from "@/components/ui/Dialog";
+import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { cn } from "@/components/ui/cn";
 
 interface CitationModalProps {
   countryName?: string;
@@ -27,27 +38,21 @@ export const CitationModal: React.FC<CitationModalProps> = ({
 
   const [copied, setCopied] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!isCitationModalOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setCitationModalOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isCitationModalOpen, setCitationModalOpen]);
-
   if (!isCitationModalOpen) return null;
 
   const currentCountry = selectedIso ? getCountryData(selectedIso) : null;
   const effectiveIso = propCountryIso || currentCountry?.isoCode || "BRA";
   const effectiveCountryName = propCountryName || currentCountry?.nameCommon || "TellusPedia";
-  const effectiveTitle = propDimensionTitle || (currentCountry ? `${currentCountry.nameCommon}: Dossiê Temático` : "Observatório Planetário TellusPedia");
+  const effectiveTitle =
+    propDimensionTitle ||
+    (currentCountry
+      ? `${currentCountry.nameCommon}: Dossiê Temático`
+      : "Observatório Planetário TellusPedia");
 
-  const defaultUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/pais/${effectiveIso}`
-    : `https://telluspedia.org/pais/${effectiveIso}`;
+  const defaultUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/pais/${effectiveIso}`
+      : `https://telluspedia.org/pais/${effectiveIso}`;
 
   const params: CitationParams = customCitationParams || {
     title: effectiveTitle,
@@ -77,100 +82,93 @@ export const CitationModal: React.FC<CitationModalProps> = ({
     const blob = new Blob([bibContent], { type: "text/plain;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `telluspedia_${(params.countryName || effectiveIso).toLowerCase().replace(/[^a-z0-9]/g, "")}.bib`;
+    link.download = `telluspedia_${(params.countryName || effectiveIso)
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "")}.bib`;
     link.click();
   };
 
-  return (
-    <div
-      onClick={() => setCitationModalOpen(false)}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl glass-panel rounded-2xl p-6 shadow-2xl border border-cyan-500/30 text-left"
-      >
-        <div className="flex items-center justify-between pb-3 border-b border-slate-700/60">
-          <div className="flex items-center gap-2 min-w-0">
-            <Quote className="w-5 h-5 text-cyan-400 shrink-0" />
-            <h3 className="text-base font-bold text-slate-100 truncate">
-              {customCitationParams ? `Citar: ${params.title}` : "Citar Verbete / Fonte Acadêmica"}
-            </h3>
-          </div>
-          <button
-            onClick={() => setCitationModalOpen(false)}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
-            title="Fechar (Esc)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+  const modalTitle = customCitationParams
+    ? `Citar: ${params.title}`
+    : "Citar verbete / fonte acadêmica";
 
+  return (
+    <Dialog open={isCitationModalOpen} onOpenChange={(open) => setCitationModalOpen(open)}>
+      <DialogContent
+        className="w-[min(92vw,36rem)]"
+        title={
+          <span className="flex items-center gap-2">
+            <Quote aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
+            <span className="truncate">{modalTitle}</span>
+          </span>
+        }
+        description="Formatos acadêmicos ABNT NBR 6023, APA 7, MLA 9 e BibTeX."
+        footer={
+          <div className="flex w-full flex-wrap items-center justify-between gap-2">
+            <span className="max-w-[260px] truncate font-mono text-caption text-fg-muted">
+              {params.url}
+            </span>
+            <div className="ml-auto flex items-center gap-2">
+              {citationFormat === "BIBTEX" && (
+                <Button variant="secondary" size="sm" onClick={handleDownloadBib}>
+                  <Download aria-hidden="true" className="h-3.5 w-3.5" />
+                  <span>Baixar .bib</span>
+                </Button>
+              )}
+              <Button variant="primary" size="sm" onClick={handleCopy}>
+                {copied ? (
+                  <>
+                    <Check aria-hidden="true" className="h-4 w-4" />
+                    <span>Copiado!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy aria-hidden="true" className="h-4 w-4" />
+                    <span>Copiar citação</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        }
+      >
         {/* Format Selector Tabs */}
-        <div className="flex items-center gap-2 my-4 flex-wrap">
-          {(["ABNT", "APA", "MLA", "BIBTEX"] as const).map((fmt) => (
-            <button
-              key={fmt}
-              onClick={() => setCitationFormat(fmt)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                citationFormat === fmt
-                  ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30"
-                  : "bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800"
-              }`}
-            >
-              {fmt === "ABNT" ? "ABNT (NBR 6023)" : fmt === "BIBTEX" ? "BibTeX (.bib)" : fmt}
-            </button>
-          ))}
+        <div role="tablist" aria-label="Formato de citação" className="mb-4 flex flex-wrap items-center gap-2">
+          {(["ABNT", "APA", "MLA", "BIBTEX"] as const).map((fmt) => {
+            const active = citationFormat === fmt;
+            return (
+              <button
+                key={fmt}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setCitationFormat(fmt)}
+                className={cn(
+                  "rounded-control border px-3 py-1.5 text-caption font-medium transition-colors duration-fast ease-out",
+                  active
+                    ? "border-accent bg-accent text-accent-on"
+                    : "border-line bg-surface-raised text-fg-secondary hover:bg-surface-hover hover:text-fg"
+                )}
+              >
+                {fmt === "ABNT" ? "ABNT (NBR 6023)" : fmt === "BIBTEX" ? "BibTeX (.bib)" : fmt}
+              </button>
+            );
+          })}
         </div>
 
         {/* Formatted Citation Block */}
-        <div className="relative p-4 rounded-xl bg-slate-950/80 border border-slate-800 font-mono text-xs text-slate-200 leading-relaxed whitespace-pre-wrap break-words min-h-[90px] group">
-          <button
-            onClick={handleCopy}
-            className="absolute top-2 right-2 p-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-white transition-all shadow-sm opacity-80 group-hover:opacity-100"
-            title="Copiar citação formatada"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-          </button>
+        <div className="group relative min-h-[96px] whitespace-pre-wrap break-words rounded-card border border-line bg-surface-sunken p-4 pr-11 font-mono text-caption leading-relaxed text-fg">
+          <div className="absolute right-2 top-2">
+            <IconButton
+              label="Copiar citação formatada"
+              size="sm"
+              icon={copied ? <Check className="text-success" /> : <Copy />}
+              onClick={handleCopy}
+            />
+          </div>
           {formattedText}
         </div>
-
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between mt-5 pt-3 border-t border-slate-800 flex-wrap gap-2">
-          <span className="text-[11px] text-slate-400 truncate max-w-[280px]">
-            {params.url}
-          </span>
-
-          <div className="flex items-center gap-2 ml-auto">
-            {citationFormat === "BIBTEX" && (
-              <button
-                onClick={handleDownloadBib}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Baixar .bib</span>
-              </button>
-            )}
-
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-semibold text-xs transition-colors shadow-lg shadow-cyan-900/30"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4 text-slate-950" />
-                  <span>Copiado!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4" />
-                  <span>Copiar Citação</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "./cn";
 
 /** Painel translúcido sobre o globo (cabeçalho · corpo rolável · rodapé). */
-export const Panel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { as?: "div" | "aside" | "section" | "header" | "nav" }>(
+export const Panel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { as?: "div" | "aside" | "section" | "header" | "nav" | "article" }>(
   function Panel({ as: Tag = "div", className, ...props }, ref) {
     return (
       <Tag

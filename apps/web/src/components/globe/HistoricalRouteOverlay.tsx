@@ -24,6 +24,11 @@ import { useGlobeStore } from "@/stores/globeStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 import { MAGELLAN_ROUTE } from "@/lib/historical-routes";
 import { useEpochState } from "@/lib/epoch/useEpochState";
+import { Panel } from "@/components/ui/Panel";
+import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { Badge } from "@/components/ui/Badge";
+import { cn } from "@/components/ui/cn";
 
 export interface HistoricalRouteOverlayProps {
   forceActive?: boolean;
@@ -117,9 +122,7 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
     (currentWaypointIndex >= 11 ? "Juan Sebastián Elcano" : "Fernão de Magalhães");
 
   const pigafettaDiary: string | null =
-    currentWaypoint.pigafettaDiary ||
-    currentWaypoint.quoteFromPigafetta ||
-    null;
+    currentWaypoint.pigafettaDiary || currentWaypoint.quoteFromPigafetta || null;
 
   if (!isVisible) {
     return null;
@@ -142,64 +145,51 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
   }`;
 
   return (
-    <div
+    <Panel
       data-historical-route-overlay="true"
       data-testid="historical-route-overlay"
-      className={`fixed top-[7.5rem] left-3 sm:left-6 z-20 ${
+      className={cn(
+        "fixed left-3 top-[7.5rem] z-20 max-h-[calc(100vh-18.5rem)] max-w-[calc(100vw-1.5rem)] select-none overflow-y-auto p-4 text-fg animate-in fade-in slide-in-from-left-4 duration-slow sm:left-6 sm:max-w-[calc(100vw-3rem)]",
         isMinimized ? "w-80" : "w-96"
-      } max-w-[calc(100vw-1.5rem)] sm:max-w-[calc(100vw-3rem)] max-h-[calc(100vh-18.5rem)] overflow-y-auto glass-panel rounded-2xl p-4 shadow-2xl border border-emerald-500/40 bg-slate-950/90 backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-left-4 text-slate-100 select-none`}
+      )}
     >
-      {/* 1. Header Bar: Título, Ícone Náutico, Minimizar & Fechar */}
-      <div className={`flex items-center justify-between ${isMinimized ? "" : "pb-3 border-b border-slate-800"}`}>
+      {/* 1. Header Bar */}
+      <div className={cn("flex items-center justify-between", !isMinimized && "border-b border-line pb-3")}>
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 shadow-md shadow-emerald-500/20">
-            <Anchor className="w-4 h-4 text-emerald-400" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-card border border-success/40 bg-success/15 text-success">
+            <Anchor aria-hidden="true" className="h-4 w-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold tracking-wider text-emerald-400">
-                CIRCUM-NAVEGAÇÃO
-              </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-300 font-mono">
-                1519–1522
-              </span>
+              <span className="text-label font-semibold text-fg">CIRCUM-NAVEGAÇÃO</span>
+              <Badge tone="neutral">1519–1522</Badge>
             </div>
-            <p className="text-[10px] text-slate-400">
-              Telemetria Náutica & Diário de Bordo
-            </p>
+            <p className="text-caption text-fg-muted">Telemetria náutica e diário de bordo</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1">
-          <button
+          <IconButton
+            label={isMinimized ? "Expandir HUD" : "Minimizar HUD"}
+            size="sm"
+            icon={isMinimized ? <Maximize2 /> : <Minimize2 />}
             onClick={toggleMinimized}
-            aria-label={isMinimized ? "Expandir HUD" : "Minimizar HUD"}
-            title={isMinimized ? "Expandir HUD" : "Minimizar HUD"}
-            className="p-1.5 rounded-lg hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 transition-colors"
-          >
-            {isMinimized ? (
-              <Maximize2 className="w-4 h-4" />
-            ) : (
-              <Minimize2 className="w-4 h-4" />
-            )}
-          </button>
-          <button
+          />
+          <IconButton
+            label="Fechar diário de bordo"
+            size="sm"
+            icon={<X />}
             onClick={handleClose}
-            aria-label="Fechar diário de bordo"
-            title="Fechar"
-            className="p-1.5 rounded-lg hover:bg-red-950/40 hover:text-red-300 text-slate-400 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          />
         </div>
       </div>
 
       {isMinimized && (
-        <div className="flex items-center justify-between pt-2.5 text-[10px] text-slate-400">
-          <span className="text-emerald-300 font-mono font-medium truncate max-w-[200px]">
-            {vessel} • WP {currentWaypointIndex + 1}/{totalWaypoints}
+        <div className="flex items-center justify-between pt-2.5 text-caption text-fg-muted">
+          <span className="max-w-[200px] truncate font-mono font-medium text-fg">
+            {vessel} · WP {currentWaypointIndex + 1}/{totalWaypoints}
           </span>
-          <span className="text-amber-300 font-mono font-bold shrink-0">
+          <span className="shrink-0 font-mono font-semibold tabular-nums text-warning">
             {Math.round(progress * 100)}%
           </span>
         </div>
@@ -208,103 +198,83 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
       {!isMinimized && (
         <>
           {/* 2. Grid de Telemetria Naval da Expedição */}
-          <div className="grid grid-cols-2 gap-2 my-3">
-            {/* Navio Ativo */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2.5 flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Ship className="w-3 h-3 text-emerald-400" /> Embarcação Ativa
+          <div className="my-3 grid grid-cols-2 gap-2">
+            <div className="flex flex-col rounded-card border border-line bg-surface-raised p-2.5">
+              <span className="flex items-center gap-1 text-caption text-fg-muted">
+                <Ship aria-hidden="true" className="h-3 w-3 text-success" /> Embarcação ativa
               </span>
-              <span className="text-xs font-semibold text-emerald-300 mt-1 truncate">
-                {vessel}
-              </span>
-              <span className="text-[9px] text-slate-400 mt-0.5">
-                Armada das Molucas
-              </span>
+              <span className="mt-1 truncate text-label font-semibold text-fg">{vessel}</span>
+              <span className="mt-0.5 text-caption text-fg-muted">Armada das Molucas</span>
             </div>
 
-            {/* Comandante Ativo */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2.5 flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Compass className="w-3 h-3 text-amber-400" /> Comandante
+            <div className="flex flex-col rounded-card border border-line bg-surface-raised p-2.5">
+              <span className="flex items-center gap-1 text-caption text-fg-muted">
+                <Compass aria-hidden="true" className="h-3 w-3 text-warning" /> Comandante
               </span>
-              <span className="text-xs font-semibold text-amber-300 mt-1 truncate">
-                {commander}
-              </span>
-              <span className="text-[9px] text-slate-400 mt-0.5">
-                Bandeira de Castela
-              </span>
+              <span className="mt-1 truncate text-label font-semibold text-fg">{commander}</span>
+              <span className="mt-0.5 text-caption text-fg-muted">Bandeira de Castela</span>
             </div>
 
-            {/* Léguas Navegadas */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2 flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider">
-                Léguas Navegadas
-              </span>
-              <span className="text-xs font-mono font-bold text-slate-100 mt-0.5">
+            <div className="flex flex-col rounded-card border border-line bg-surface-raised p-2.5">
+              <span className="text-caption text-fg-muted">Léguas navegadas</span>
+              <span className="mt-0.5 font-mono text-label font-semibold tabular-nums text-fg">
                 {leaguesNavigated.toLocaleString("pt-BR")}{" "}
-                <span className="text-[9px] text-emerald-400 font-sans">
-                  léguas
-                </span>
+                <span className="font-sans text-caption font-normal text-success">léguas</span>
               </span>
-              <span className="text-[9px] font-mono text-slate-400">
-                ≈ {(leaguesNavigated * 4.18).toLocaleString("pt-BR", {
-                  maximumFractionDigits: 0,
-                })}{" "}
-                km
+              <span className="font-mono text-caption tabular-nums text-fg-muted">
+                ≈ {(leaguesNavigated * 4.18).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} km
               </span>
             </div>
 
-            {/* Dias de Viagem */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2 flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider">
-                Tempo em Mar
-              </span>
-              <span className="text-xs font-mono font-bold text-slate-100 mt-0.5">
+            <div className="flex flex-col rounded-card border border-line bg-surface-raised p-2.5">
+              <span className="text-caption text-fg-muted">Tempo em mar</span>
+              <span className="mt-0.5 font-mono text-label font-semibold tabular-nums text-fg">
                 {daysAtSea}{" "}
-                <span className="text-[9px] text-amber-400 font-sans">dias</span>
+                <span className="font-sans text-caption font-normal text-warning">dias</span>
               </span>
-              <span className="text-[9px] text-slate-400">
-                de 1.082 dias totais
-              </span>
+              <span className="text-caption text-fg-muted">de 1.082 dias totais</span>
             </div>
           </div>
 
           {/* 3. Localização Geográfica e Data Histórica */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 my-2 space-y-1.5">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="font-semibold text-slate-200 flex items-center gap-1.5 truncate">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <div className="my-2 space-y-1.5 rounded-card border border-line bg-surface-raised p-2.5">
+            <div className="flex items-center justify-between gap-2 text-label">
+              <span className="flex min-w-0 items-center gap-1.5 font-semibold text-fg">
+                <MapPin aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-success" />
                 <span className="truncate">{currentWaypoint.name}</span>
               </span>
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
+                className="shrink-0"
                 onClick={handleFlyToShip}
-                title="Centralizar Câmera no Navio"
-                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40 transition-colors shrink-0"
+                title="Centralizar câmera no navio"
               >
-                <Eye className="w-3 h-3" /> Focar
-              </button>
+                <Eye aria-hidden="true" className="h-3 w-3 text-accent" />
+                <span>Focar</span>
+              </Button>
             </div>
 
-            <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-800/60">
+            <div className="flex items-center justify-between border-t border-line pt-1.5 font-mono text-caption tabular-nums text-fg-muted">
               <span className="flex items-center gap-1">
-                <Calendar className="w-3 h-3 text-cyan-400" />
+                <Calendar aria-hidden="true" className="h-3 w-3 text-accent" />
                 {currentWaypoint.date}
               </span>
-              <span className="text-emerald-400/90">{formattedCoordinates}</span>
+              <span className="text-fg-secondary">{formattedCoordinates}</span>
             </div>
           </div>
 
           {/* 4. Extrato Autêntico do Diário de Bordo de Antonio Pigafetta */}
           {pigafettaDiary && (
-            <div className="my-3 p-3 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-100/90 text-[11px] space-y-1.5">
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold text-amber-400 uppercase tracking-wider">
-                <BookOpen className="w-3 h-3 text-amber-400" />
+            <div className="my-3 space-y-1.5 rounded-card border border-warning/30 bg-warning/10 p-3 text-caption">
+              <div className="flex items-center gap-1.5 font-medium text-warning">
+                <BookOpen aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
                 <span>Diário de Bordo — Antonio Pigafetta (1524)</span>
               </div>
-              <blockquote className="italic leading-relaxed text-amber-200/95 font-serif border-l-2 border-amber-500/50 pl-2.5 my-1">
+              <blockquote className="my-1 border-l-2 border-warning/50 pl-2.5 font-serif italic leading-relaxed text-fg">
                 &ldquo;{pigafettaDiary}&rdquo;
               </blockquote>
-              <p className="text-[10px] text-slate-400 font-sans leading-tight">
+              <p className="font-sans leading-snug text-fg-secondary">
                 {currentWaypoint.description}
               </p>
             </div>
@@ -312,9 +282,9 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
 
           {/* 5. Slider de Progresso da Viagem (0% a 100%) */}
           <div className="my-3 space-y-1">
-            <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+            <div className="flex items-center justify-between font-mono text-caption tabular-nums text-fg-muted">
               <span>Sanlúcar (1519)</span>
-              <span className="text-emerald-300 font-bold">
+              <span className="font-semibold text-accent">
                 {Math.round(progress * 100)}% ({currentWaypointIndex + 1}/{totalWaypoints})
               </span>
               <span>Retorno (1522)</span>
@@ -327,67 +297,65 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
               value={progress}
               onChange={(e) => seek(parseFloat(e.target.value))}
               aria-label="Progresso da circum-navegação de Magalhães"
-              className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400 hover:accent-emerald-300 focus:outline-none"
+              className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-control accent-accent focus:outline-none"
             />
           </div>
 
           {/* 6. Controles de Reprodução e Stepper */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+          <div className="flex items-center justify-between border-t border-line pt-2.5">
             <div className="flex items-center gap-1.5">
-              <button
-                onClick={prevWaypoint}
+              <IconButton
+                label="Waypoint anterior"
+                size="sm"
+                icon={<ChevronLeft />}
                 disabled={currentWaypointIndex <= 0}
-                aria-label="Waypoint anterior"
-                title="Waypoint anterior"
-                className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 disabled:opacity-40 transition-colors"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
+                onClick={prevWaypoint}
+              />
 
-              <button
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={togglePlay}
                 aria-label={isPlaying ? "Pausar navegação" : "Iniciar navegação"}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition-colors shadow-md shadow-emerald-500/20"
               >
                 {isPlaying ? (
-                  <Pause className="w-3.5 h-3.5" />
+                  <Pause aria-hidden="true" className="h-3.5 w-3.5" />
                 ) : (
-                  <Play className="w-3.5 h-3.5" />
+                  <Play aria-hidden="true" className="h-3.5 w-3.5" />
                 )}
                 <span>{isPlaying ? "Pausar" : "Navegar"}</span>
-              </button>
+              </Button>
 
-              <button
-                onClick={nextWaypoint}
+              <IconButton
+                label="Próximo waypoint"
+                size="sm"
+                icon={<ChevronRight />}
                 disabled={currentWaypointIndex >= totalWaypoints - 1}
-                aria-label="Próximo waypoint"
-                title="Próximo waypoint"
-                className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 disabled:opacity-40 transition-colors"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+                onClick={nextWaypoint}
+              />
 
-              <button
+              <IconButton
+                label="Reiniciar circum-navegação"
+                size="sm"
+                icon={<RotateCcw />}
                 onClick={reset}
-                aria-label="Reiniciar circum-navegação"
-                title="Reiniciar rota"
-                className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
+              />
             </div>
 
             {/* Velocidade de Reprodução */}
-            <div className="flex items-center gap-1">
+            <div role="group" aria-label="Velocidade da navegação" className="flex items-center gap-1">
               {[0.5, 1.0, 2.0, 5.0].map((speed) => (
                 <button
                   key={speed}
+                  type="button"
+                  aria-pressed={playbackSpeed === speed}
                   onClick={() => setPlaybackSpeed(speed)}
-                  className={`px-1.5 py-0.5 rounded-lg text-[10px] font-mono transition-colors ${
+                  className={cn(
+                    "rounded-control border px-1.5 py-0.5 font-mono text-caption tabular-nums transition-colors duration-fast ease-out",
                     playbackSpeed === speed
-                      ? "bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-bold"
-                      : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200"
-                  }`}
+                      ? "border-accent/60 bg-accent/15 font-semibold text-accent"
+                      : "border-line bg-surface-raised text-fg-secondary hover:bg-surface-hover hover:text-fg"
+                  )}
                 >
                   {speed}x
                 </button>
@@ -396,6 +364,6 @@ export const HistoricalRouteOverlay: React.FC<HistoricalRouteOverlayProps> = ({
           </div>
         </>
       )}
-    </div>
+    </Panel>
   );
 };

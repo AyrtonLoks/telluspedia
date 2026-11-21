@@ -1,18 +1,20 @@
 "use client";
 
 import React from "react";
-import { X, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
 import { getCountryData } from "@/lib/country-data";
 import { ReaderTableOfContents } from "./ReaderTableOfContents";
 import { ReaderContent } from "./ReaderContent";
 import { useReaderStore } from "@/stores/readerStore";
+import { Dialog, DialogContent } from "@/components/ui/Dialog";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 
 export const ReaderMode: React.FC = () => {
   const isReaderOpen = useGlobeStore((s) => s.isReaderOpen);
   const setReaderOpen = useGlobeStore((s) => s.setReaderOpen);
   const selectedIso = useGlobeStore((s) => s.selectedIso);
-  const activeDimension = useReaderStore((s) => s.activeDimension);
   const resetActiveDimension = useReaderStore((s) => s.resetActiveDimension);
   const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
 
@@ -46,51 +48,42 @@ export const ReaderMode: React.FC = () => {
   if (!country) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-xl animate-in fade-in zoom-in-95">
-      <div className="w-full max-w-5xl h-[88vh] glass-panel rounded-3xl flex flex-col shadow-2xl overflow-hidden border border-slate-700/60">
-        {/* Top Navbar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/40">
-          <button
-            onClick={() => setReaderOpen(false)}
-            className="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-cyan-400 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retornar ao Globo Interativo</span>
-          </button>
-
-          <div className="flex items-center gap-3">
+    <Dialog open={isReaderOpen} onOpenChange={(open) => setReaderOpen(open)}>
+      <DialogContent
+        className="h-[88vh] max-h-[88vh] w-[min(94vw,64rem)]"
+        title={
+          <span className="flex flex-wrap items-center gap-3">
             {country.flagSvgUrl && !flagError ? (
               <img
                 src={country.flagSvgUrl}
                 alt={`Bandeira de ${country.nameCommon}`}
                 onError={() => setFlagError(true)}
-                className="w-5 h-3.5 object-cover rounded shadow"
+                className="h-4 w-6 rounded-sm border border-line object-cover"
               />
             ) : (
-              <span className="w-6 h-4 rounded bg-cyan-950 text-[9px] font-mono text-cyan-300 font-bold flex items-center justify-center border border-cyan-800/60 shadow">
+              <span className="flex h-4 w-6 items-center justify-center rounded-sm border border-line-strong bg-surface-raised font-mono text-caption font-medium text-fg-secondary">
                 {country.isoCode}
               </span>
             )}
-            <span className="font-semibold text-sm text-slate-100">{country.nameCommon}</span>
-            <span className="text-xs font-mono text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800/60">
-              Modo Leitura Profunda
-            </span>
-          </div>
-
-          <button
-            onClick={() => setReaderOpen(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+            <span>{country.nameCommon}</span>
+            <Badge tone="neutral">Modo Leitura Profunda</Badge>
+          </span>
+        }
+        description={`Dossiê multidisciplinar de ${country.nameCommon}.`}
+      >
+        <div className="mb-4 flex items-center border-b border-line pb-3">
+          <Button variant="ghost" size="sm" onClick={() => setReaderOpen(false)}>
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+            <span>Retornar ao globo interativo</span>
+          </Button>
         </div>
 
         {/* Content Body: Sidebar TOC + Main Academic Reader */}
-        <div className="flex flex-1 overflow-hidden p-6 gap-6">
+        <div className="flex min-h-0 flex-1 gap-6 overflow-hidden">
           <ReaderTableOfContents />
           <ReaderContent country={country} />
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

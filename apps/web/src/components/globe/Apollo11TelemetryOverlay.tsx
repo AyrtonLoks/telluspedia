@@ -23,6 +23,11 @@ import {
   APOLLO11_WIDE_CAMERA,
   getMissionTelemetry,
 } from "@/lib/apollo11";
+import { Panel } from "@/components/ui/Panel";
+import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { Badge } from "@/components/ui/Badge";
+import { cn } from "@/components/ui/cn";
 
 export interface Apollo11TelemetryOverlayProps {
   forceActive?: boolean;
@@ -84,83 +89,76 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
   };
 
   const handleMoonView = () => {
-    // Focus camera on the real 1969-07-20 Moon and Tranquility Base from lunar perspective
     flyTo(APOLLO11_MOON_CAMERA.lat, APOLLO11_MOON_CAMERA.lng, APOLLO11_MOON_CAMERA.altitude);
   };
 
   return (
-    <div
+    <Panel
       data-apollo-telemetry-overlay="true"
-      className="fixed top-[7.5rem] left-6 z-20 w-88 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-18.5rem)] overflow-y-auto glass-panel rounded-2xl p-4 shadow-2xl border border-cyan-500/30 transition-all duration-300 animate-in fade-in slide-in-from-left-4 text-slate-100 select-none"
+      className="fixed left-6 top-[7.5rem] z-20 max-h-[calc(100vh-18.5rem)] w-88 max-w-[calc(100vw-3rem)] select-none overflow-y-auto p-4 text-fg animate-in fade-in slide-in-from-left-4 duration-slow"
     >
       {/* 1. Header Bar */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div className="flex items-center justify-between border-b border-line pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-400 shadow-md shadow-cyan-500/20">
-            <Rocket className="w-4 h-4 text-cyan-400" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-card border border-accent/40 bg-accent/15 text-accent">
+            <Rocket aria-hidden="true" className="h-4 w-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold tracking-wider text-cyan-400">APOLLO 11</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 font-mono">
-                1969
-              </span>
+              <span className="text-label font-semibold text-fg">APOLLO 11</span>
+              <Badge tone="neutral">1969</Badge>
             </div>
-            <p className="text-[10px] text-slate-400">Telemetria de Voo Espacial NASA</p>
+            <p className="text-caption text-fg-muted">Telemetria de Voo Espacial NASA</p>
           </div>
         </div>
 
-        <button
+        <IconButton
+          label={isMinimized ? "Expandir HUD" : "Minimizar HUD"}
+          size="sm"
+          icon={isMinimized ? <Maximize2 /> : <Minimize2 />}
           onClick={toggleMinimized}
-          aria-label={isMinimized ? "Expandir HUD" : "Minimizar HUD"}
-          className="p-1.5 rounded-lg hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 transition-colors"
-        >
-          {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
-        </button>
+        />
       </div>
 
       {!isMinimized && (
         <>
           {/* 2. Real-time Telemetry Metrics Grid */}
-          <div className="grid grid-cols-3 gap-2 my-3">
-            {/* Speed Gauge */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2 flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Gauge className="w-3 h-3 text-cyan-400" /> Vel.
+          <div className="my-3 grid grid-cols-3 gap-2">
+            <div className="flex flex-col rounded-card border border-line bg-surface-raised p-2">
+              <span className="flex items-center gap-1 text-caption text-fg-muted">
+                <Gauge aria-hidden="true" className="h-3 w-3 text-accent" /> Vel.
               </span>
-              <span className="text-xs font-mono font-bold text-cyan-300 mt-1">
+              <span className="mt-1 font-mono text-label font-semibold tabular-nums text-fg">
                 {telemetry.speedKmH.toLocaleString("pt-BR")}
               </span>
-              <span className="text-[9px] font-mono text-slate-400">km/h</span>
+              <span className="font-mono text-caption text-fg-muted">km/h</span>
             </div>
 
-            {/* Distance from Earth */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2 flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Milestone className="w-3 h-3 text-cyan-400" /> Dist.
+            <div className="flex flex-col rounded-card border border-line bg-surface-raised p-2">
+              <span className="flex items-center gap-1 text-caption text-fg-muted">
+                <Milestone aria-hidden="true" className="h-3 w-3 text-accent" /> Dist.
               </span>
-              <span className="text-xs font-mono font-bold text-slate-200 mt-1">
+              <span className="mt-1 font-mono text-label font-semibold tabular-nums text-fg">
                 {telemetry.distanceKm.toLocaleString("pt-BR")}
               </span>
-              <span className="text-[9px] font-mono text-slate-400">km</span>
+              <span className="font-mono text-caption text-fg-muted">km</span>
             </div>
 
-            {/* Ground Elapsed Time (GET) */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2 flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Radio className="w-3 h-3 text-amber-400" /> GET
+            <div className="flex flex-col rounded-card border border-line bg-surface-raised p-2">
+              <span className="flex items-center gap-1 text-caption text-fg-muted">
+                <Radio aria-hidden="true" className="h-3 w-3 text-warning" /> GET
               </span>
-              <span className="text-xs font-mono font-bold text-amber-300 mt-1">
+              <span className="mt-1 font-mono text-label font-semibold tabular-nums text-warning">
                 {telemetry.getFormatted}
               </span>
-              <span className="text-[9px] font-mono text-slate-400">HHH:MM:SS</span>
+              <span className="font-mono text-caption text-fg-muted">HHH:MM:SS</span>
             </div>
           </div>
 
           {/* 3. Mission Phase Stepper */}
-          <div className="space-y-1.5 my-3">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-              Fases da Missão Translunar
+          <div className="my-3 space-y-1.5">
+            <span className="text-caption font-medium text-fg-muted">
+              Fases da missão translunar
             </span>
             <div className="grid grid-cols-2 gap-1.5">
               {APOLLO11_PHASES.map((phase) => {
@@ -168,18 +166,21 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
                 return (
                   <button
                     key={phase.id}
+                    type="button"
+                    aria-pressed={isActive}
                     onClick={() => jumpToPhase(phase.id)}
-                    className={`text-left p-2 rounded-xl border text-[11px] transition-all flex flex-col gap-0.5 ${
+                    className={cn(
+                      "flex flex-col gap-0.5 rounded-card border p-2 text-left text-caption transition-colors duration-fast ease-out",
                       isActive
-                        ? "bg-cyan-500/15 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20"
-                        : "bg-slate-900/50 border-slate-800/80 text-slate-400 hover:text-slate-200 hover:border-slate-700"
-                    }`}
+                        ? "border-accent bg-accent/15 text-accent"
+                        : "border-line bg-surface-raised text-fg-secondary hover:border-line-strong hover:text-fg"
+                    )}
                   >
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1">
-                      {isActive && <ChevronRight className="w-3 h-3 text-cyan-400 animate-pulse" />}
+                    <span className="flex items-center gap-1 font-mono text-caption font-medium text-accent">
+                      {isActive && <ChevronRight aria-hidden="true" className="h-3 w-3" />}
                       {phase.badge}
                     </span>
-                    <span className="truncate text-[10px] font-medium leading-tight">
+                    <span className="truncate text-caption font-medium leading-tight text-fg">
                       {phase.name}
                     </span>
                   </button>
@@ -188,18 +189,21 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
             </div>
 
             {/* Current Phase Description */}
-            <div className="bg-slate-950/60 border border-slate-800/60 rounded-xl p-2 text-[10px] text-slate-300 flex items-start gap-2 mt-2">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1 shrink-0 animate-ping" />
+            <div className="mt-2 flex items-start gap-2 rounded-card border border-line bg-surface-sunken p-2 text-caption text-fg-secondary">
+              <span
+                aria-hidden="true"
+                className="mt-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+              />
               <p className="leading-snug">{telemetry.phase.description}</p>
             </div>
           </div>
 
           {/* 4. Scrubbable Mission Timeline Slider */}
           <div className="my-3 space-y-1">
-            <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
-              <span>0% (Cabo Canaveral)</span>
-              <span className="text-cyan-300 font-bold">{Math.round(progress * 100)}%</span>
-              <span>100% (Mar da Tranquilidade)</span>
+            <div className="flex items-center justify-between font-mono text-caption tabular-nums text-fg-muted">
+              <span>0% (Canaveral)</span>
+              <span className="font-semibold text-accent">{Math.round(progress * 100)}%</span>
+              <span>100% (Tranquilidade)</span>
             </div>
             <input
               type="range"
@@ -209,43 +213,49 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
               value={progress}
               onChange={(e) => setProgress(parseFloat(e.target.value))}
               aria-label="Progresso da missão Apollo 11"
-              className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 hover:accent-cyan-300 focus:outline-none"
+              className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-control accent-accent focus:outline-none"
             />
           </div>
 
           {/* 5. Playback Controls & Speed Multipliers */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+          <div className="flex items-center justify-between border-t border-line pt-2.5">
             <div className="flex items-center gap-1.5">
-              <button
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={togglePlay}
                 aria-label={isPlaying ? "Pausar voo orbital" : "Iniciar voo orbital"}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs transition-colors shadow-md shadow-cyan-500/20"
               >
-                {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                {isPlaying ? (
+                  <Pause aria-hidden="true" className="h-3.5 w-3.5" />
+                ) : (
+                  <Play aria-hidden="true" className="h-3.5 w-3.5" />
+                )}
                 <span>{isPlaying ? "Pausar" : "Reproduzir"}</span>
-              </button>
+              </Button>
 
-              <button
+              <IconButton
+                label="Reiniciar voo"
+                size="sm"
+                icon={<RotateCcw />}
                 onClick={resetMission}
-                aria-label="Reiniciar voo"
-                title="Reiniciar voo"
-                className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
+              />
             </div>
 
             {/* Speed Multipliers */}
-            <div className="flex items-center gap-1">
+            <div role="group" aria-label="Velocidade da missão" className="flex items-center gap-1">
               {[0.5, 1.0, 2.0].map((speed) => (
                 <button
                   key={speed}
+                  type="button"
+                  aria-pressed={playbackSpeed === speed}
                   onClick={() => setPlaybackSpeed(speed)}
-                  className={`px-2 py-1 rounded-lg text-[10px] font-mono transition-colors ${
+                  className={cn(
+                    "rounded-control border px-2 py-1 font-mono text-caption tabular-nums transition-colors duration-fast ease-out",
                     playbackSpeed === speed
-                      ? "bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 font-bold"
-                      : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200"
-                  }`}
+                      ? "border-accent/60 bg-accent/15 font-semibold text-accent"
+                      : "border-line bg-surface-raised text-fg-secondary hover:bg-surface-hover hover:text-fg"
+                  )}
                 >
                   {speed}x
                 </button>
@@ -254,42 +264,33 @@ export const Apollo11TelemetryOverlay: React.FC<Apollo11TelemetryOverlayProps> =
           </div>
 
           {/* 6. Cinematic Camera Presets */}
-          <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-            <span className="text-slate-400 flex items-center gap-1">
-              <Eye className="w-3 h-3 text-cyan-400" /> Câmera:
+          <div className="mt-3 flex items-center justify-between border-t border-line pt-2.5 text-caption">
+            <span className="flex items-center gap-1 text-fg-muted">
+              <Eye aria-hidden="true" className="h-3 w-3 text-accent" /> Câmera:
             </span>
             <div className="flex items-center gap-1">
-              <button
-                onClick={handleWideView}
-                className="px-2 py-0.5 rounded-md bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-300 transition-colors"
-              >
+              <Button variant="secondary" size="sm" onClick={handleWideView}>
                 Orbital Ampla
-              </button>
-              <button
-                onClick={handleCanaveralView}
-                className="px-2 py-0.5 rounded-md bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-300 transition-colors"
-              >
+              </Button>
+              <Button variant="secondary" size="sm" onClick={handleCanaveralView}>
                 Terra
-              </button>
-              <button
-                onClick={handleMoonView}
-                className="px-2 py-0.5 rounded-md bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-300 transition-colors"
-              >
+              </Button>
+              <Button variant="secondary" size="sm" onClick={handleMoonView}>
                 Lua
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* 7. Historical Radio Transmission Pill */}
           {progress >= 0.96 && (
-            <div className="mt-3 p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-[10px] font-mono animate-in fade-in flex items-center gap-2">
-              <Radio className="w-3.5 h-3.5 text-amber-400 shrink-0 animate-pulse" />
+            <div className="mt-3 flex items-center gap-2 rounded-card border border-warning/40 bg-warning/10 p-2 font-mono text-caption text-warning animate-in fade-in">
+              <Radio aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
               <span>&ldquo;Houston, Tranquility Base here. The Eagle has landed.&rdquo;</span>
             </div>
           )}
         </>
       )}
-    </div>
+    </Panel>
   );
 };
 

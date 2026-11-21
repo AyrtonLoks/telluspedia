@@ -14,7 +14,11 @@ interface HoverCardPreviewProps {
   defaultOpen?: boolean;
 }
 
-export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({ isoCode, children, defaultOpen = false }) => {
+export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({
+  isoCode,
+  children,
+  defaultOpen = false,
+}) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [placement, setPlacement] = useState<"top" | "bottom">("top");
   const [flagError, setFlagError] = useState(false);
@@ -89,57 +93,63 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({ isoCode, chi
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <span className="text-cyan-400 hover:text-cyan-300 underline decoration-cyan-500/40 underline-offset-4 cursor-pointer font-medium">
+      <span className="cursor-pointer font-medium text-accent underline decoration-accent/40 underline-offset-4 hover:text-accent-hover">
         {children}
       </span>
 
       {isOpen && country && (
         <span
-          className={`absolute left-0 z-50 w-64 text-left block pointer-events-auto ${
+          className={`pointer-events-auto absolute left-0 z-50 block w-64 text-left ${
             placement === "bottom" ? "top-full pt-1.5" : "bottom-full pb-1.5"
           }`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           {/* Bridge element preventing cursor drop */}
-          <span className={`absolute left-0 right-0 h-3 pointer-events-auto ${placement === "bottom" ? "-top-3" : "-bottom-3"}`} />
+          <span
+            className={`pointer-events-auto absolute left-0 right-0 h-3 ${
+              placement === "bottom" ? "-top-3" : "-bottom-3"
+            }`}
+          />
 
-          <span className="block p-3 rounded-xl bg-slate-900/95 backdrop-blur-md border border-cyan-500/30 shadow-2xl relative">
-            <span className="flex items-center gap-2 mb-2">
+          <span className="relative block rounded-card border border-line-strong bg-surface p-3 font-sans shadow-e2 backdrop-blur-md">
+            <span className="mb-2 flex items-center gap-2">
               {country.flagSvgUrl && !flagError ? (
                 <img
                   src={country.flagSvgUrl}
                   alt=""
                   onError={() => setFlagError(true)}
-                  className="w-6 h-4 object-cover rounded shadow"
+                  className="h-4 w-6 rounded-sm border border-line object-cover"
                 />
               ) : (
-                <span className="w-6 h-4 rounded bg-cyan-950 text-[10px] font-mono text-cyan-300 font-bold flex items-center justify-center border border-cyan-800/60 shadow">
+                <span className="flex h-4 w-6 items-center justify-center rounded-sm border border-line-strong bg-surface-raised font-mono text-caption font-medium text-fg-secondary">
                   {country.isoCode}
                 </span>
               )}
-              <span className="font-bold text-slate-100 text-xs block">{country.nameCommon}</span>
-              <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 px-1 py-0.5 rounded ml-auto block">
+              <span className="block truncate text-label font-semibold text-fg">
+                {country.nameCommon}
+              </span>
+              <span className="ml-auto block rounded-sm border border-line-strong bg-surface-raised px-1.5 py-0.5 font-mono text-caption text-fg-secondary">
                 {country.isoCode}
               </span>
             </span>
 
-            <span className="text-[11px] text-slate-300 line-clamp-3 leading-relaxed mb-3 block">
+            <span className="mb-3 block line-clamp-3 text-caption leading-relaxed text-fg-secondary">
               {country.summary || "Dados descritivos ainda indisponíveis na base local."}
             </span>
 
-            <span className="flex items-center gap-1.5 pt-2 border-t border-slate-800">
+            <span className="flex items-center gap-1.5 border-t border-line pt-2">
               <button
                 type="button"
                 onClick={handleFocusGlobe}
-                className="flex-1 py-1 px-2 rounded bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 text-[10px] font-medium transition-colors text-center cursor-pointer"
+                className="flex-1 cursor-pointer rounded-control border border-accent/50 bg-accent/15 px-2 py-1 text-center text-caption font-medium text-accent transition-colors duration-fast ease-out hover:bg-accent/25"
               >
                 Focar Globo
               </button>
               <button
                 type="button"
                 onClick={handleCompare}
-                className="flex-1 py-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-medium transition-colors text-center cursor-pointer"
+                className="flex-1 cursor-pointer rounded-control border border-line bg-surface-raised px-2 py-1 text-center text-caption font-medium text-fg transition-colors duration-fast ease-out hover:bg-surface-hover"
               >
                 Comparar
               </button>
