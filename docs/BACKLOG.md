@@ -1394,6 +1394,7 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
   - **D12c — Player genérico:** um componente que recebe uma cena e desenha trajetória animada, veículo por tipo (nau, nave, avião, exército), pontos de interesse, câmera guiada por SLERP (invariantes do AGENTS.md) e linha do tempo própria (play/pause/scrub); substitui `Apollo11Trajectory`, `HistoricalRouteTrajectory` e os dois overlays, mantendo os testes de fidelidade atuais (ex.: a trajetória da Apollo não atravessa a Lua).
   - **D12d — Ativação:** cena só por seleção explícita (pin, busca, link `?cena=<id>`); sair restaura o estado anterior; `resolveEpoch` deixa de conhecer `MAGELLAN`/`APOLLO11` pelo nome.
   - **D12e — Ingestão:** script SPARQL do Wikidata que gera rascunhos (`published: false`) com QID, datas, coordenadas e fonte, para revisão humana antes de publicar.
+- 2026-11-20 · claude · IN_PROGRESS · **D12a concluída** (`feat(cenas): modelo de dados das cenas históricas em zod [D12a]`): `lib/scenes/schema.ts` (zod) com datas parciais ISO e precisão, fontes citáveis obrigatórias, câmera nos limites do globo, era de fronteiras validada contra `HISTORICAL_ERAS`, trajetórias `surface` (pontos com instantes em ordem cronológica e `facts`/`quote` livres) e `cislunar` (fases com instantes), POIs, mídia com licença, dossiê, `published` e QID; `parseSceneCollection` (ids únicos, erro com caminho). Documentação em `docs/SCENES.md`. 7 testes em `test/scenes.test.ts`. Próximo: D12b (migração).
 ---
 
 ### D13 · Eixo da timeline: zoom, clusters, prévias
