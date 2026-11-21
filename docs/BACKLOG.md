@@ -201,7 +201,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | DONE | claude | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | DONE | codex | D14 | G-SHELL, G-EPOCA, G-COSMOS |
-| D19 | Responsividade e contraste | Design | P2 | M | IN_PROGRESS | codex | D14, T19 | G-SHELL, G-EPOCA, G-TIMELINE, G-OBS, G-INFRA, G-ESTUDOS |
+| D19 | Responsividade e contraste | Design | P2 | M | BLOCKED | codex | D14, T19 | G-SHELL, G-EPOCA, G-TIMELINE, G-OBS, G-INFRA, G-ESTUDOS |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
@@ -1926,7 +1926,7 @@ A busca da navbar cobre só países/ISO. Não há paleta de comandos, sugestões
 
 ### D19 · Responsividade e contraste
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d19-responsividade · **Worktree:** ../telluspedia-wt/codex-d19
+- **Status:** BLOCKED · **Responsável:** codex · **Branch:** task/d19-responsividade · **Worktree:** ../telluspedia-wt/codex-d19
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14, T19 · **Grupos:** G-SHELL, G-EPOCA, G-TIMELINE, G-OBS, G-INFRA, G-ESTUDOS
 
 **Contexto / problema**
@@ -1948,6 +1948,9 @@ Layout quebra em larguras comuns (ver T02); textos ciano/cinza pequenos sobre az
 - 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa disponível da fase 8, com D14 e T19 concluídas e G-SHELL livre.
 - 2026-11-21 · codex · IN_PROGRESS · Reservados G-EPOCA, G-TIMELINE, G-OBS e G-INFRA para integrar controles do globo, timeline, telemetria e matriz Playwright. Grupos livres no remoto.
 - 2026-11-21 · codex · IN_PROGRESS · Reservado G-ESTUDOS para manter o banner dos estudos e os avisos de era em posições distintas da navegação. Grupo livre no remoto.
+- 2026-11-21 · codex · BLOCKED · Implementação pronta no worktree da D19, branch `task/d19-responsividade` (`222e6e6`). Capturas antes/depois: em 375 e 768 px a navegação passou de duas linhas sobre os controles para uma linha com espaço próprio. A timeline começa recolhida, a ficha ocupa uma folha inferior e os avisos têm uma faixa própria. Seis baselines versionados no branch.
+- 2026-11-21 · codex · BLOCKED · Validação na base anterior ao commit `b1561e1`: typecheck, lint, build, 622 testes e teste KTX2 separado no Chromium. Seis larguras passaram em Playwright também com a atualização de snapshots desabilitada. Auditoria em 18 cenários (home, país histórico, Observatório) com axe e cálculo sobre superfícies translúcidas não apontou pares abaixo de 4,5:1.
+- 2026-11-21 · codex · BLOCKED · A publicação depende do typecheck limpo no master. Confirmado em `cc73d50`: o teste introduzido pela D21 em `b1561e1` não resolve `esbuild` nem `playwright` em instalação limpa. Registro na D21. Quando o master resolver os imports, rebasear e repetir a validação integrada para liberar REVIEW.
 
 ---
 
