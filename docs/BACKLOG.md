@@ -207,7 +207,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | TODO | — | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
-| T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | IN_PROGRESS | antigravity | T29 | G-PAIS, G-PIPELINE |
+| T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | REVIEW | antigravity | T29 | G-PAIS, G-PIPELINE |
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | TODO | — | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | TODO | — | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
 | T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | TODO | — | — | G-PAIS, G-OBS, G-SHELL |
@@ -1127,7 +1127,7 @@ O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `G
 
 ### T32 · Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t32-worldbank-timeseries · **Worktree:** ../telluspedia-wt/antigravity-t32
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t32-worldbank-timeseries · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Dados · **Tamanho:** G · **Depende de:** T29 · **Grupos:** G-PAIS, G-PIPELINE
 
 **Contexto / problema**
@@ -1139,12 +1139,13 @@ O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `G
 3. Habilitar no `ComparisonCharts` o modo Série Histórica Real (1990–2024) com `connectNulls={false}` para lacunas reais e citação direta da fonte oficial.
 
 **Critérios de aceite**
-- [ ] Gráfico histórico exibe apenas leituras reais do Banco Mundial (zero interpolação sintética) para os 177 países.
-- [ ] Dataset histórico carregado sob demanda sem aumentar o First Load JS de `/`.
+- [x] Gráfico histórico exibe apenas leituras reais do Banco Mundial (zero interpolação sintética) para os 177 países.
+- [x] Dataset histórico carregado sob demanda sem aumentar o First Load JS de `/`.
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (773e877). Dependência T29 em DONE; grupos G-PAIS e G-PIPELINE livres (T40 do codex ocupa G-INFRA/G-COSMOS/G-OBS).
+- 2026-11-21 · antigravity · REVIEW · Estendido `scripts/ingest-worldbank-indicators.mjs` (consultas por janelas de década 1990–2024 na World Bank API v2, `lastupdated: 2026-11-11`, CC BY 4.0) incorporando os 3 novos indicadores (`NY.GDP.PCAP.CD` PIB per capita, `EG.FEC.RNEW.ZS` energia renovável e `EN.GHG.CO2.PC.CE.AR5` CO₂ per capita) em `public/data/countries-worldbank-indicators.json` (167 KB / 16,7 KB gzip) e gerando `public/data/worldbank-timeseries.json` (267 KB / 110 KB gzip, **39.631 observações anuais reais** em 7 indicadores: 170 países em população/expectativa de vida, 169 em PIB/PIB per capita/renováveis, 165 em CO₂ per capita e 160 em gastos militares, com lacunas oficiais preservadas como `null`). Criado `lib/worldbank-timeseries.ts` com carregamento sob demanda via `fetch("/data/worldbank-timeseries.json")` (nunca importado estaticamente) e `buildHistoricalSeriesDataset`. Atualizados `ComparisonCharts.tsx` (alternância "Mais recente" ↔ "Série 1990–2024" com `LineChart` usando `connectNulls={false}`, período observado, contagem de pontos e links diretos RN02 por país), `comparator-data.ts`, `ComparisonGrid.tsx`, `CountryMetricsGrid.tsx`, `citations.ts` (prefixos `EG.` e `EN.`) e `docs/DATA_SOURCES.md`. Adicionados 5 testes em `test/worldbank-timeseries.test.tsx` + atualização de `test/country-data-integrity.test.tsx`. Validação pós-rebase em `origin/master`: `pnpm typecheck`, `pnpm lint`, `pnpm test` (576/576) e `pnpm build` (`/` mantido em **225 kB** — 0 kB de aumento!) + smoke HTTP 200 em `/compare?c=BRA,ARG,CHN,DEU`, `/pais/ARG` e `/data/worldbank-timeseries.json` na porta 3003. Verificação interativa no navegador pendente do Ayrton. Commit: 11c511f.
 
 ---
 
