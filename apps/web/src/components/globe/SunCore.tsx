@@ -63,6 +63,9 @@ void main() {
 }
 `;
 
+/** Intensidade da luz do Sol no Cosmos (sem atenuação com a distância). */
+export const SUN_LIGHT_INTENSITY = 2.2;
+
 export const SunCore: React.FC = () => {
   // Visível no Cosmos e durante a descida de volta à Terra (D17).
   const isCosmicMode = useSolarSystemVisible();
@@ -134,8 +137,10 @@ export const SunCore: React.FC = () => {
 
   return (
     <group name="sun-core" position={[0, 0, 0]}>
-      {/* Central Omnidirectional Solar Light Source */}
-      <pointLight color="#fffbeb" intensity={4.5} distance={1500} decay={1.0} />
+      {/* Luz do Sol sem atenuação (D21): as distâncias de cena são comprimidas (r^0,55), então a queda
+          física deixava de 0,02 a 0,27 de luz direta nos planetas, abaixo da ambiente — sem lado dia/noite
+          e com os anéis de Saturno pretos. Mesma intensidade da luz direcional da Terra. */}
+      <pointLight color="#fffbeb" intensity={SUN_LIGHT_INTENSITY} distance={1500} decay={0} />
 
       <group scale={sunScale}>
       {/* Pulsing Solar Corona Glow Atmosphere */}
