@@ -205,7 +205,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
-| T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | REVIEW | claude | — | G-INFRA, G-ESTUDOS |
+| T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | DONE | claude | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | DONE | antigravity | T29 | G-PAIS, G-PIPELINE |
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | TODO | — | — | G-SHELL, G-PAIS |
@@ -216,7 +216,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
-| D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | REVIEW | claude | — | G-COSMOS, G-GLOBO |
+| D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | TODO | — | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | TODO | — | — | G-CONTEUDO, G-EPOCA |
@@ -1091,7 +1091,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ### T30 · Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/t30-cabecalhos-seguranca · **Worktree:** ../telluspedia-wt/claude-t30
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/t30-cabecalhos-seguranca · **Worktree:** ../telluspedia-wt/claude-t30
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA, G-ESTUDOS
 
 **Contexto / problema**
@@ -1113,6 +1113,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 - 2026-11-21 · ayrton · DONE · Aprovado (registrado por claude) — reaberto em seguida, ver abaixo.
 - 2026-11-21 · claude · REVIEW · **Reaberto por defeito em produção, registrado pelo codex às 05:21 (antes da minha verificação, que foi em dev)** e corrigido (`fix(seguranca): worker do KTX2 como arquivo com CSP própria — página sem unsafe-eval [T30]`). O `basis_transcoder.js` (Emscripten/embind) chama `new Function`; o KTX2Loader cria o worker a partir de um Blob, que herda a CSP da página, então em produção (sem `'unsafe-eval'`) o transcoder quebrava e as texturas caíam para JPG/PNG. **Decisão do Ayrton:** worker próprio. `public/basis/ktx2-worker.js` traz o mesmo código que o loader montaria no Blob (gerado por `scripts/textures/build-ktx2-worker.ts`, `pnpm --filter web textures:ktx2-worker`; o corpo do `BasisWorker` é lido do arquivo-fonte do three — por `toString()` sob o tsx viria com `__name(...)` do esbuild, o que o teste pegou); `FileWorkerKTX2Loader` (subclasse) cria os workers por URL; `next.config.mjs` dá a esse arquivo CSP própria (`default-src 'none'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'`) e a página segue sem `'unsafe-eval'`. **Prova:** `test/ktx2-worker-csp.test.ts` sobe uma página com a CSP de produção no Chrome headless: o worker de arquivo transcodifica `earth_clouds_2k.ktx2` (2048 px) e o controle — o mesmo código num Blob — falha com o erro de eval da CSP; outro teste garante que o arquivo bate com o three e o transcoder instalados. Validação: 567/571 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok.
 - 2026-11-21 · codex · IN_PROGRESS · Na validação da D18 após integrar `7428ffe`, o teste Playwright existente “clicking Brazil in the globe opens the country panel” abriu a ficha, mas registrou quatro `EvalError` em cada resolução. O worker do `basis_transcoder.js` chama `Function` em `craftInvokerFunction` durante o registro de bindings do WASM, e a CSP de produção bloqueia a chamada. Reproduzir com `pnpm build` seguido de `pnpm test:e2e -- --grep 'clicking Brazil'` ou selecionar o teste em `home.spec.ts`.
+- 2026-11-21 · ayrton · DONE · Aprovado (registrado por claude).
 
 ---
 
@@ -1983,7 +1984,7 @@ A D14 criou tokens e primitivos e migrou navbar, Observatório, Inspector do pa�
 
 ### D21 · Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d21-texturas-planetas · **Worktree:** ../telluspedia-wt/claude-d21
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d21-texturas-planetas · **Worktree:** ../telluspedia-wt/claude-d21
 - **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS, G-GLOBO
 
 **Contexto / problema**
@@ -2005,6 +2006,7 @@ No modo Cosmos, apenas Terra e Lua possuem texturas fotográficas reais; `Planet
 - 2026-11-21 · claude · IN_PROGRESS · **Verificação no navegador e três correções.** (1) **Sombras:** o shader pegava a posição do Sol no grupo já posicionado no planeta (Sol = centro de Saturno, anel inteiro na sombra); agora usa a origem do `planetary-system` (`solarOrigin`). (2) **Luz dos planetas:** reproduzindo Saturno no Chrome headless, o anel saía preto até sem as sombras — a luz pontual do `SunCore` (`decay=1`) entregava de 0,02 a 0,27 de luz direta nos planetas (distâncias de cena comprimidas), abaixo da ambiente: nenhum planeta tinha lado dia/noite. Agora `decay=0`, intensidade 2,2 (a da luz direcional da Terra). `test/saturn-ring-render.test.ts` renderiza de verdade (SwiftShader; pula sem Chrome) e cobre anel iluminado, sombra do planeta no anel e dos anéis no hemisfério sul. (3) **Terra no Cosmos** (o Ayrton notou a luz errada): o globo ficava no referencial fixo da Terra, com a luz do ponto subsolar — eixo sem os 23,4° e lado dia fora do Sol da cena. `EarthOrientationGroup` gira o grupo da Terra (globo, nuvens, atmosfera, fronteiras, Lua) para a eclíptica — polo exato e longitude do meio-dia voltada ao Sol —, amortecido (~1,5 s; direto com movimento reduzido); no Cosmos a luz dos shaders da Terra aponta para o Sol da cena (a posição vem do ano e o subsolar do relógio/21 de junho, que poriam a luz até ~47° fora), e no modo Terra nada muda. Picking de países passa a usar o ponto local. **G-GLOBO** adicionado à tarefa antes (livre). Halo de seleção movido para fora dos anéis. Testes: `planet-textures` (19), `earth-orientation` (6; com a mesma data o subsolar girado fica a < 1,5° do Sol da cena), `saturn-ring-render` (1).
 - 2026-11-21 · claude · REVIEW · **Verificado no navegador (painel visível, 1440×900):** ao entrar no Cosmos carregam só as 8 texturas 1K + anel em KTX2 pelo worker da T30 (nenhum fallback, nenhum erro); nada de planeta é pedido na Terra; foco em Júpiter pede só `jupiter_2k.ktx2`; texturas corretas (faixas, hexágono polar de Saturno); halo por fora dos anéis; **zero leak:** dois ciclos Terra → Cosmos → Terra com contagem de `createTexture`/`deleteTexture` do WebGL terminam com 0 texturas vivas (44/44); Terra no Cosmos inclinada, lado dia, reflexo do oceano e fase da Lua coerentes com a direção do Sol da cena; de volta ao modo Terra, globo de pé com o terminador do relógio. Os outros planetas confirmados pelo Ayrton. Observação: com a câmera padrão o anel de Saturno fica de perfil (o plano do anel passa pela câmera) — girar mostra o anel aberto. Validação: typecheck e lint ok; testes só com as falhas de ambiente do Prisma (5, incluindo a nova `production-packaging` da T34).
 - 2026-11-21 · codex · IN_PROGRESS · A validação da D19 no master `b1561e1` parou no typecheck: `test/saturn-ring-render.test.ts` importa `esbuild` e `playwright`, que não são dependências diretas de `apps/web`. O teste avulso com Chromium também falha ao resolver `esbuild`. O pacote já declara `@playwright/test`.
+- 2026-11-21 · ayrton · DONE · Aprovado (registrado por claude).
 
 ---
 
