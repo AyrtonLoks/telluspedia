@@ -215,7 +215,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | TODO | — | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
-| T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | IN_PROGRESS | codex | — | G-INFRA, G-COSMOS, G-OBS |
+| T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | REVIEW | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | TODO | — | — | G-COSMOS |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | TODO | — | T30 | G-ESTUDOS, G-SHELL |
@@ -1297,15 +1297,16 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 
 ### T40 · Corrigir desmontagem dos rótulos HTML no WebGL
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t40-drei-html · **Worktree:** ../telluspedia-wt/codex-t40
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t40-drei-html · **Worktree:** ../telluspedia-wt/codex-t40
 - **Prioridade:** P1 · **Área:** 3D/Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA, G-COSMOS, G-OBS
 
 **Critérios de aceite**
-- [ ] Em desenvolvimento com Strict Mode, entrar no Cosmos, voltar à Terra e reentrar funciona sem aviso de desmontagem de raiz React.
-- [ ] Rótulos celestes aparecem, são removidos na saída e reaparecem na reentrada.
+- [x] Em desenvolvimento com Strict Mode, entrar no Cosmos, voltar à Terra e reentrar funciona sem aviso de desmontagem de raiz React.
+- [x] Rótulos celestes aparecem, são removidos na saída e reaparecem na reentrada.
 
 **Log**
 - 2026-11-21 · codex · IN_PROGRESS · Erro informado pelo Ayrton ao montar os rótulos celestes com Next.js 15.5.29 e React 19.
+- 2026-11-21 · codex · REVIEW · Patch do Drei 10.7.9 reaproveita a raiz quando o efeito é reexecutado e adia a desmontagem definitiva até após o commit do React. Reprodução isolada em Strict Mode passou de seis avisos a zero. No app em desenvolvimento, três ciclos Terra ↔ Cosmos confirmaram reaparecimento e remoção dos rótulos sem o aviso. Typecheck, lint, 571 testes, build e seis testes Playwright passaram. Implementação: `ca0feca`.
 
 ---
 
