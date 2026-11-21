@@ -239,3 +239,33 @@ describe("D21 — carregamento sob demanda", () => {
     assert.match(body, /\.dispose\(\)/);
   });
 });
+
+describe("D21 — origem do Sol para as sombras", () => {
+  test("o Sol é a origem do planetary-system, não o grupo posicionado no planeta", async () => {
+    const { solarOrigin } = await import("../src/components/globe/PlanetBody");
+    const root = new THREE.Group();
+    root.name = "planetary-system";
+    root.position.set(5, 0, 0); // como na descida de volta à Terra (D17)
+    const planetGroup = new THREE.Group();
+    const positioned = new THREE.Group();
+    positioned.position.set(100, 0, -40);
+    const anchor = new THREE.Group();
+    root.add(planetGroup);
+    planetGroup.add(positioned);
+    positioned.add(anchor);
+    root.updateMatrixWorld(true);
+    const sun = solarOrigin(anchor).getWorldPosition(new THREE.Vector3());
+    assert.deepEqual(sun.toArray(), [5, 0, 0]);
+    assert.notDeepEqual(anchor.getWorldPosition(new THREE.Vector3()).toArray(), sun.toArray());
+    assert.throws(() => solarOrigin(new THREE.Group()));
+  });
+});
+
+describe("D21 — halo de seleção", () => {
+  test("fica por fora dos anéis de Saturno e Urano", async () => {
+    const { focusHaloRatio, RING_RATIOS } = await import("../src/lib/cosmic-scale");
+    assert.ok(focusHaloRatio("SATURN") > RING_RATIOS.SATURN[1]);
+    assert.ok(focusHaloRatio("URANUS") > RING_RATIOS.URANUS[1]);
+    assert.equal(focusHaloRatio("MARS"), 1.35);
+  });
+});

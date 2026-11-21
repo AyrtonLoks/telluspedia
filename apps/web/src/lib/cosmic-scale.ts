@@ -47,6 +47,12 @@ export const RING_RATIOS = {
   URANUS: [1.22, 1.78],
 } as const;
 
+/** Raio interno do halo de seleção, em múltiplos do raio: por fora dos anéis, quando há. */
+export function focusHaloRatio(id: string): number {
+  const ring = (RING_RATIOS as Record<string, readonly [number, number]>)[id];
+  return ring ? ring[1] * 1.08 : 1.35;
+}
+
 /** Rótulo: prioridade para a anticolisão (maior vence). Foco > hover > tamanho real. */
 export function celestialLabelPriority(radiusKm: number, state: { focused?: boolean; hovered?: boolean } = {}): number {
   return (state.focused ? 2e7 : 0) + (state.hovered ? 1e7 : 0) + radiusKm;

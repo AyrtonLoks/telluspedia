@@ -24,10 +24,18 @@ const UP = new THREE.Vector3(0, 1, 0);
 const tmpQuat = new THREE.Quaternion();
 const tmpScale = new THREE.Vector3();
 
+/** Grupo cuja origem é o Sol: o `planetary-system` acima do corpo (o pai imediato já está no planeta). */
+export function solarOrigin(object: THREE.Object3D): THREE.Object3D {
+  let node: THREE.Object3D | null = object.parent;
+  while (node && node.name !== "planetary-system") node = node.parent;
+  if (!node) throw new Error("PlanetBody precisa estar dentro do grupo planetary-system");
+  return node;
+}
+
 /**
  * Esfera de um planeta no Cosmos (D21): textura real (1K ao entrar, 2K em foco), eixo no polo de
  * rotação real, rotação sideral comprimida e, em Saturno, anéis texturizados com sombras mútuas.
- * Fica dentro do grupo posicionado do planeta; o pai desse grupo está na origem do Sol.
+ * Fica dentro do grupo posicionado do planeta; o Sol é a origem do grupo `planetary-system`.
  */
 export const PlanetBody: React.FC<PlanetBodyProps> = ({ id, radius, color, focused, onSelect, onHover, onLeave }) => {
   const orientation = useMemo(() => planetOrientation(id), [id]);
@@ -100,8 +108,8 @@ export const PlanetBody: React.FC<PlanetBodyProps> = ({ id, radius, color, focus
     if (spinning.current && w > 0) spinning.current.rotation.y += w * Math.min(delta, 0.1);
 
     if (!hasRing || !anchor.current || !tilted.current) return;
-    // Uniforms em mundo: o Sol é a origem do grupo pai (inclui a escala da descida, D17).
-    anchor.current.parent?.getWorldPosition(uniforms.uSunPos.value);
+    // Uniforms em mundo: o Sol é a origem do grupo `planetary-system` (inclui a escala da descida, D17).
+    solarOrigin(anchor.current).getWorldPosition(uniforms.uSunPos.value);
     anchor.current.getWorldPosition(uniforms.uBodyCenter.value);
     const s = anchor.current.getWorldScale(tmpScale).x;
     uniforms.uBodyRadius.value = radius * s;

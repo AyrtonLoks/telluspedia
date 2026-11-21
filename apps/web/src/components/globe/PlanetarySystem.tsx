@@ -11,7 +11,7 @@ import {
   CelestialBodyId,
   ASTROPHYSICAL_CATALOG,
 } from "@/lib/astronomy-planets";
-import { bodySceneRadius, celestialLabelPriority } from "@/lib/cosmic-scale";
+import { bodySceneRadius, celestialLabelPriority, focusHaloRatio } from "@/lib/cosmic-scale";
 import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
 import { PlanetBody } from "./PlanetBody";
 
@@ -78,6 +78,8 @@ export const PlanetarySystem: React.FC = () => {
 
         // Raio pela política única de escala (D11); eixo, rotação e texturas ficam no PlanetBody (D21)
         const radius = bodySceneRadius(meta.equatorialRadiusKm, scaleMode);
+        // Halo de seleção por fora dos anéis (D21): antes cobria os anéis reais de Saturno e Urano.
+        const haloRatio = focusHaloRatio(id);
 
         return (
           <group key={id} name={`planet-group-${id}`}>
@@ -116,7 +118,7 @@ export const PlanetarySystem: React.FC = () => {
               {/* Selection Halo / Indicator */}
               {isFocused && (
                 <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                  <ringGeometry args={[radius * 1.35, radius * 1.5, 48]} />
+                  <ringGeometry args={[radius * haloRatio, radius * (haloRatio + 0.15), 64]} />
                   <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.8} />
                 </mesh>
               )}
