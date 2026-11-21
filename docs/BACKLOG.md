@@ -173,7 +173,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | DONE | antigravity | T13 | G-PAIS, G-ESTUDOS, G-SHELL |
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
-| T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | REVIEW | antigravity | — | G-ESTUDOS |
+| T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | DONE | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
 | T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
@@ -198,7 +198,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
-| D20 | Migrar demais componentes para o design system | Design | P1 | G | TODO | — | D14 | G-SHELL, G-PAIS, G-COSMOS |
+| D20 | Migrar demais componentes para o design system | Design | P1 | G | IN_PROGRESS | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 
 ---
 
@@ -818,7 +818,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 
 ### T20 · Migrations Prisma e restrições do schema
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t20-prisma-migrations · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t20-prisma-migrations · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Backend · **Tamanho:** M · **Depende de:** — · **Grupos:** G-ESTUDOS
 
 **Contexto / problema**
@@ -838,6 +838,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (001e345). Grupo G-ESTUDOS livre; desbloqueia D12 (P1).
 - 2026-11-20 · antigravity · REVIEW · **Decisão sobre `Country.geometryJson`: removido** de `schema.prisma` e `prisma/seed.ts` (não era lido em nenhum endpoint, loader, frontend ou `data-pipeline` — fronteiras e picking vêm do `world-atlas`/TopoJSON; caso consultas espaciais no banco sejam necessárias futuramente, devem usar coluna PostGIS `geometry` dedicada em vez de blob JSON duplicado). **Restrições alinhadas ao Zod (T07):** adicionados `@db.VarChar` no modelo `Study` em `apps/web/prisma/schema.prisma` (`id`/`parentId` `VarChar(128)`, `title` `VarChar(200)`, `description` `VarChar(2000)`, `markdownNotes` `VarChar(50000)`, campos de enum `VarChar(64)` e arrays `VarChar(32|64)[]`), exportadas constantes `MAX_STUDY_SLUG_LENGTH` e `MAX_STUDY_ITEMS` em `src/lib/study-schema.ts`, e gerada/versionada a migration inicial `apps/web/prisma/migrations/20261121014158_init/migration.sql` (+ `migration_lock.toml`) com `CHECK` constraints PostgreSQL coerentes com o Zod (`timelineStartYear` ∈ `[-3000, 3000]` e `<= timelineEndYear`, `cameraLat` ∈ `[-90, 90]`, `cameraLng` ∈ `[-180, 180]`, `cameraAltitude` ∈ `[1.5, 6]`, `geologicalMa` ∈ `[0, 4600]`, cardinalidade dos arrays `<= 50`). **Documentação:** atualizado `README.md` com o fluxo completo `cp apps/web/.env.example apps/web/.env` → `pnpm docker:up` → `pnpm db:migrate` → `pnpm db:seed`, além de `prisma migrate reset` (dev) e `prisma migrate deploy` (prod/CI). **Validação:** testado em container efêmero `postgis/postgis:16-3.4` (`prisma migrate reset --force` aplicou `20261121014158_init` e executou o seed automaticamente: 6 países piloto, 36 indicadores, 11 dossiês, 45 marcos e 1 estudo; `prisma migrate status` e `prisma migrate dev` confirmaram zero drift; verificados 12 casos inválidos rejeitados pelo PostgreSQL + aceitação exata do limite máximo); `pnpm db:generate`, `pnpm typecheck`, `pnpm lint`, `pnpm test` (474/474, incluindo 4 novos testes de regressão em `test/prisma-schema.test.ts`) e `pnpm build` verdes. Desbloqueia `D12`. Commit: 67faa7a.
+- 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
@@ -1573,7 +1574,7 @@ Layout quebra em larguras comuns (ver T02); textos ciano/cinza pequenos sobre az
 
 ### D20 · Migrar demais componentes para o design system
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d20-design-system-migration · **Worktree:** ../telluspedia-wt/antigravity-d20
 - **Prioridade:** P1 · **Área:** Design · **Tamanho:** G · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS
 
 **Contexto / problema**
@@ -1592,6 +1593,7 @@ A D14 criou tokens e primitivos e migrou navbar, Observatório, Inspector do pa�
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada como follow-up da D14.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (1fc3fe4). Grupos G-SHELL, G-PAIS e G-COSMOS livres.
 
 ---
 
