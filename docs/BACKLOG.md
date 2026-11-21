@@ -198,7 +198,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
-| D20 | Migrar demais componentes para o design system | Design | P1 | G | IN_PROGRESS | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
+| D20 | Migrar demais componentes para o design system | Design | P1 | G | REVIEW | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 
 ---
 
@@ -1586,7 +1586,7 @@ Layout quebra em larguras comuns (ver T02); textos ciano/cinza pequenos sobre az
 
 ### D20 · Migrar demais componentes para o design system
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d20-design-system-migration · **Worktree:** ../telluspedia-wt/antigravity-d20
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d20-design-system-migration · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Design · **Tamanho:** G · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS
 
 **Contexto / problema**
@@ -1599,13 +1599,14 @@ A D14 criou tokens e primitivos e migrou navbar, Observatório, Inspector do pa�
 4. Pode ser fatiada em subtarefas por grupo (Reader/País = G-PAIS; Cosmos = G-COSMOS) se dois agentes quiserem trabalhar em paralelo.
 
 **Critérios de aceite**
-- [ ] `grep -rE "text-\[[0-9]|(text|bg|border)-(slate|cyan|sky|amber|emerald|rose|purple|indigo)-" apps/web/src` → 0 (exceto Three.js/cores de shader, que não são classes).
-- [ ] Todos os arquivos migrados na lista `MIGRATED` e o teste verde.
-- [ ] Modais usam o `Dialog` (foco preso, Esc, título acessível).
+- [x] `grep -rE "text-\[[0-9]|(text|bg|border)-(slate|cyan|sky|amber|emerald|rose|purple|indigo)-" apps/web/src` → 0 (exceto Three.js/cores de shader, que não são classes).
+- [x] Todos os arquivos migrados na lista `MIGRATED` e o teste verde.
+- [x] Modais usam o `Dialog` (foco preso, Esc, título acessível).
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada como follow-up da D14.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (1fc3fe4). Grupos G-SHELL, G-PAIS e G-COSMOS livres.
+- 2026-11-20 · antigravity · REVIEW · Migrados todos os componentes e páginas restantes para os primitivos (`@/components/ui/*` por arquivo) e tokens semânticos D14: `hud/CosmicInspectorHUD`, `reader/*` (`CitationModal` → `Dialog`, `ReaderMode` → `Dialog`, `ReaderContent`, `ReaderTableOfContents`, `HoverCardPreview`, `HoverCitationCard` preservando invariante HTML5 sem `<div>`), `comparator/*` (`CountryComparator` → `Dialog`, `ComparisonGrid`, `ComparisonCharts` usando CSS vars em vez de hex no Recharts), `study/*` (`StudyShareModal` → `Dialog`, `ForkStudyBanner`), `tellus-bridge/*` (`EntityLaunch`, `StudyHub`), overlays DOM do globo (`HistoricalEraBadge`, `PaleoEraBadge`, `Apollo11TelemetryOverlay`, `HistoricalRouteOverlay`), `GlobeCanvas` (`bg-[#030712]` → `bg-bg`) e `app/dossies/[slug]/page.tsx`. Ajustado `ui/Dialog.tsx` para suportar SSR/`renderToStaticMarkup` mantendo `RadixDialog.Portal` no cliente (foco preso, Esc, título/descrição acessíveis) e adicionado `as="article"` em `ui/Panel.tsx`. Removidos `cosmic.*` de `tailwind.config.ts` e `.glass-panel`/`.glass-panel-subtle`/`.glass-button` de `globals.css`. Acrescentados 26 arquivos à lista `MIGRATED` em `test/design-system.test.tsx` + 2 novos testes de regressão (`Dialog` nos 4 modais e remoção dos legados `cosmic.*`/`.glass-*`). Validação pós-rebase em `origin/master`: `grep -rnE "text-\[[0-9]|(text|bg|border)-(slate|cyan|sky|amber|emerald|rose|purple|indigo)-" apps/web/src` → **0 ocorrências**, `pnpm typecheck`, `pnpm lint`, `pnpm test` (518/518) e `pnpm build` verdes. Verificação visual no navegador pendente do Ayrton (Chromium headless indisponível neste container). Commit: b79ee3f.
 
 ---
 
