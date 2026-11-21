@@ -18,6 +18,7 @@ import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { StudyExportActions } from "@/components/study/StudyExportActions";
+import { CHOROPLETH_INDICATORS, isChoroplethIndicatorId } from "@/lib/choropleth";
 import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
 import { useComparatorStore } from "@/stores/comparatorStore";
 
@@ -55,6 +56,10 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
   const studyIsos = study?.selectedCountryIsos ?? [];
   const hasNotes = Boolean(study?.description?.trim() || study?.markdownNotes?.trim());
   const predatesWorldBank = Boolean(study && study.timelineStartYear < 1990);
+  const choroplethMeta =
+    study?.choroplethIndicator && isChoroplethIndicatorId(study.choroplethIndicator)
+      ? CHOROPLETH_INDICATORS[study.choroplethIndicator]
+      : null;
 
   const handleOpenComparator = () => {
     const comparator = useComparatorStore.getState();
@@ -109,6 +114,15 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                 </Link>
               ) : (
                 <span>Estudo compartilhado original</span>
+              )}
+
+              {choroplethMeta && (
+                <span
+                  data-testid="study-choropleth-indicator"
+                  className="inline-flex items-center gap-1 rounded-control border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-caption text-accent"
+                >
+                  Mapa: {choroplethMeta.shortLabel}
+                </span>
               )}
 
               {forkCount > 0 && (

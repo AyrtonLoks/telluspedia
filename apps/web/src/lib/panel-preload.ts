@@ -12,6 +12,7 @@ let comparatorPromise: Promise<unknown> | null = null;
 let studySharePromise: Promise<unknown> | null = null;
 let readerModePromise: Promise<unknown> | null = null;
 let citationModalPromise: Promise<unknown> | null = null;
+let choroplethHudPromise: Promise<unknown> | null = null;
 
 export function preloadRightDock(): void {
   if (!rightDockPromise) {
@@ -60,6 +61,14 @@ export function preloadCitationModal(): void {
   if (!citationModalPromise) {
     citationModalPromise = import("@/components/reader/CitationModal").catch(() => {
       citationModalPromise = null;
+    });
+  }
+}
+
+export function preloadChoroplethHud(): void {
+  if (!choroplethHudPromise) {
+    choroplethHudPromise = import("@/components/choropleth/ChoroplethHud").catch(() => {
+      choroplethHudPromise = null;
     });
   }
 }

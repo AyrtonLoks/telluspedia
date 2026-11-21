@@ -131,6 +131,7 @@ model Study {
   isCosmicMode            Boolean? @default(false)
   focusedCelestialBody    String?  @db.VarChar(64)
   activeCosmicLayers      String[] @default([]) @db.VarChar(64)
+  choroplethIndicator     String?  @db.VarChar(64)
   createdAt               DateTime @default(now())
 
   parent                  Study?   @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)

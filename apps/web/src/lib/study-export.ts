@@ -1,4 +1,5 @@
 import { formatABNT, formatAPA, getSourceUrl } from "./citations";
+import { CHOROPLETH_INDICATORS, isChoroplethIndicatorId } from "./choropleth";
 import { getCountryData, type CountryIndicator } from "./country-data";
 import { HISTORICAL_ERAS, type HistoricalEraId } from "./historical-entities";
 import type { StudyLineageInfo, StudyRecord } from "./studies-store";
@@ -71,6 +72,10 @@ export function collectStudyPrimarySources(study: StudyRecord): PrimarySourceEnt
 
   add("Natural Earth — Fronteiras Políticas 1:110m", "https://www.naturalearthdata.com/");
   add("Banco Mundial — World Development Indicators", "https://data.worldbank.org/");
+  if (study.choroplethIndicator && isChoroplethIndicatorId(study.choroplethIndicator)) {
+    const meta = CHOROPLETH_INDICATORS[study.choroplethIndicator];
+    add(`${meta.sourcePrimary} (${meta.id})`, meta.sourceUrl);
+  }
   if (study.isCosmicMode) {
     add("NASA JPL / IAU — Efemérides e Parâmetros Planetários", "https://ssd.jpl.nasa.gov/");
   }
@@ -143,6 +148,10 @@ export function buildStudyAcademicMarkdown(
 
   if (study.activeObservatoryLayers && study.activeObservatoryLayers.length > 0) {
     lines.push(`- **Camadas do Observatório:** ${study.activeObservatoryLayers.join(", ")}`);
+  }
+  if (study.choroplethIndicator && isChoroplethIndicatorId(study.choroplethIndicator)) {
+    const meta = CHOROPLETH_INDICATORS[study.choroplethIndicator];
+    lines.push(`- **Camada coroplética:** ${meta.label} (\`${meta.id}\` · ${meta.sourcePrimary})`);
   }
   if (study.activeCosmicLayers && study.activeCosmicLayers.length > 0) {
     lines.push(`- **Camadas Cósmicas:** ${study.activeCosmicLayers.join(", ")}`);

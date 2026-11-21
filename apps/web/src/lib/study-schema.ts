@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CHOROPLETH_INDICATOR_IDS } from "./choropleth";
 import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "./historical-entities";
 import { HISTORICAL_ROUTES } from "./historical-routes";
 import { PILOT_COUNTRIES, WORLD_COUNTRIES_CATALOG } from "./country-data";
@@ -29,6 +30,7 @@ const era = z.enum(Object.keys(HISTORICAL_ERAS));
 const route = z.string().trim().pipe(z.enum(Object.keys(HISTORICAL_ROUTES)));
 const body = z.enum([...VALID_CELESTIAL_BODIES]);
 const cosmicLayer = z.enum(ALL_COSMIC_LAYERS);
+const choroplethIndicator = z.enum(CHOROPLETH_INDICATOR_IDS);
 const observatoryLayer = z.enum([
   "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES",
 ] satisfies ObservatoryLayerId[]);
@@ -58,6 +60,7 @@ export const studyInput = z.object({
   geologicalMa: z.number().min(0).max(MAX_STUDY_GEOLOGICAL_MA).nullish(),
   isApollo11Active: z.boolean().nullish(),
   isCosmicMode: z.boolean().nullish(),
+  choroplethIndicator: choroplethIndicator.nullish(),
 }).refine(
   ({ timelineStartYear, timelineEndYear }) =>
     timelineStartYear === undefined || timelineEndYear === undefined || timelineStartYear <= timelineEndYear,
@@ -111,5 +114,6 @@ export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
     isCosmicMode: Boolean(input.isCosmicMode),
     focusedCelestialBody: valid(body, input.focusedCelestialBody) ?? null,
     activeCosmicLayers: knownItems(cosmicLayer, input.activeCosmicLayers),
+    choroplethIndicator: valid(choroplethIndicator, input.choroplethIndicator) ?? null,
   };
 }

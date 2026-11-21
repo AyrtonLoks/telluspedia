@@ -18,6 +18,7 @@ import { ExplorerUrlSync } from "@/components/explore/ExplorerUrlSync";
 import { WebGLErrorBoundary } from "@/components/globe/WebGLErrorBoundary";
 import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "@/lib/explore/view-camera";
 import { useComparatorStore } from "@/stores/comparatorStore";
+import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
@@ -85,6 +86,10 @@ const ForkStudyBanner = dynamic(
   () => import("@/components/study/ForkStudyBanner").then((m) => m.ForkStudyBanner),
   { ssr: false }
 );
+const ChoroplethHud = dynamic(
+  () => import("@/components/choropleth/ChoroplethHud").then((m) => m.ChoroplethHud),
+  { ssr: false }
+);
 
 function EntityLaunchGate() {
   const searchParams = useSearchParams();
@@ -119,6 +124,7 @@ export function getInitialGlobeStateKey(state: InitialGlobeState): string {
 export function applyInitialGlobeState(initialState: InitialGlobeState): void {
   if (initialState.kind === "study") {
     restoreStudySnapshot(initialState.study);
+    useChoroplethStore.getState().restoreIndicator(initialState.study.choroplethIndicator);
     return;
   }
 
@@ -187,16 +193,21 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const currentStudyId = useStudyStore((s) => s.currentStudyId);
   const studyHistoricalEra = useStudyStore((s) => s.historicalEra);
   const isCitationModalOpen = useReaderStore((s) => s.isCitationModalOpen);
+  const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
+  const isChoroplethSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
 
   const isStudyActive = initialState.kind === "study" && dismissedStudyKey !== stateKey;
 
   const dismissStudyBanner = useCallback(() => {
     setDismissedStudyKey(stateKey);
     useStudyStore.getState().resetStudy();
+    if (initialState.kind === "study" && initialState.study.choroplethIndicator) {
+      useChoroplethStore.getState().resetChoropleth();
+    }
     if (typeof window !== "undefined" && window.location.pathname.startsWith("/study/")) {
       window.history.replaceState(null, "", "/");
     }
-  }, [stateKey]);
+  }, [stateKey, initialState]);
 
   // Ao voltar à era atual (Restaurar Cartografia Atual / Geografia Contemporânea / Resetar visão),
   // encerra o modo de visualização do snapshot imutável e oculta o cartão do estudo imediatamente.
@@ -298,6 +309,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
 
         {/* Botão flutuante de camadas cósmicas (quando nenhum corpo está focado) */}
         {isCosmicMode && <CosmicInspectorHUD placement="floating" />}
+
+        {/* Seletor, legenda contínua e tooltip do modo coroplético (D22 — carregado sob demanda) */}
+        {(activeChoropleth !== null || isChoroplethSelectorOpen) && <ChoroplethHud />}
 
         {/* Bottom Semantic Dynamic Timeline (50 Years Default) */}
         <TimelineBar />

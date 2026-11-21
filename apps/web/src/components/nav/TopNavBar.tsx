@@ -4,15 +4,17 @@ import { resetGlobeView } from "@/stores/actions";
 
 import Link from "next/link";
 import React from "react";
-import { Globe, Search, BarChart2, Share2, RotateCcw, Radio, Orbit, BookOpen, Library } from "lucide-react";
+import { Globe, Search, BarChart2, Share2, RotateCcw, Radio, Orbit, BookOpen, Library, Layers } from "lucide-react";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { panelButtonAction, useRightDock } from "@/components/layout/useRightDock";
 import { useOpenExploreSearch } from "@/components/explore/SearchProvider";
 import {
+  preloadChoroplethHud,
   preloadCosmicHud,
   preloadCountryComparator,
   preloadRightDock,
@@ -25,7 +27,7 @@ import { cn } from "@/components/ui/cn";
 /** Botão de navegação da barra: neutro; selecionado = tinta do acento. */
 function navItemClasses(isActive: boolean) {
   return cn(
-    buttonClasses("ghost", "md", "relative w-7 gap-1.5 px-0 min-[360px]:w-8 sm:w-9 xl:w-auto xl:px-3"),
+    buttonClasses("ghost", "md", "relative w-7 gap-1.5 px-0 sm:w-9 xl:w-auto xl:px-2.5"),
     isActive && "bg-accent/15 text-fg hover:bg-accent/20"
   );
 }
@@ -60,9 +62,13 @@ export const TopNavBar: React.FC = () => {
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const toggleCosmicMode = useCosmicStore((s) => s.toggleCosmicMode);
+  const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
+  const isChoroplethSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
+  const toggleChoroplethSelector = useChoroplethStore((s) => s.toggleSelector);
 
   const handleResetGlobe = () => {
     resetGlobeView();
+    useChoroplethStore.getState().resetChoropleth();
     useStudyStore.getState().resetStudy();
     if (typeof window !== "undefined" && window.location.pathname.startsWith("/study/")) {
       window.history.replaceState(null, "", "/");
@@ -79,7 +85,7 @@ export const TopNavBar: React.FC = () => {
         <Link
           href="/"
           aria-label="TellusPedia"
-          className="flex h-9 w-7 items-center justify-center gap-2 min-[360px]:w-8 sm:w-9 rounded-control xl:w-auto xl:px-2 text-fg transition-colors duration-base ease-out hover:bg-surface-hover"
+          className="flex h-9 w-7 items-center justify-center gap-2 sm:w-9 rounded-control xl:w-auto xl:px-2 text-fg transition-colors duration-base ease-out hover:bg-surface-hover"
         >
           <Globe aria-hidden="true" className="h-5 w-5 text-accent" />
           <h1 className="sr-only text-body font-semibold leading-none xl:not-sr-only">TellusPedia</h1>
@@ -142,6 +148,26 @@ export const TopNavBar: React.FC = () => {
 
         <button
           type="button"
+          aria-label="Mapa temático"
+          onClick={toggleChoroplethSelector}
+          onMouseEnter={preloadChoroplethHud}
+          onFocus={preloadChoroplethHud}
+          data-testid="top-nav-choropleth-button"
+          aria-pressed={isChoroplethSelectorOpen || activeChoropleth !== null}
+          className={navItemClasses(isChoroplethSelectorOpen || activeChoropleth !== null)}
+          title="Mapa temático coroplético (colorir os 177 países por indicador real)"
+        >
+          <Layers aria-hidden="true" className="h-4 w-4" />
+          <span className="hidden xl:inline">Temático</span>
+          {activeChoropleth !== null && (
+            <span className="absolute right-1 top-1 flex h-2 w-2" aria-hidden="true">
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
           aria-label="Comparador"
           onClick={openComparator}
           onMouseEnter={preloadCountryComparator}
@@ -160,12 +186,12 @@ export const TopNavBar: React.FC = () => {
             aria-keyshortcuts="/ Control+k Meta+k"
             aria-haspopup="dialog"
             onClick={openSearch}
-            className={buttonClasses("secondary", "md", "gap-2 w-7 justify-center min-[360px]:w-8 sm:w-9 px-0 xl:w-56 xl:justify-start xl:bg-surface-sunken xl:px-4")}
+            className={buttonClasses("secondary", "md", "gap-2 w-7 justify-center sm:w-9 px-0 xl:w-48 xl:justify-start xl:bg-surface-sunken xl:px-3.5")}
           >
             <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span className="hidden text-fg-secondary xl:inline">Buscar</span>
           </button>
-          <kbd aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded border border-line px-1 font-mono text-caption text-fg-muted xl:block">⌘/Ctrl K</kbd>
+          <kbd aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-line px-1 font-mono text-caption text-fg-muted xl:block">⌘/Ctrl K</kbd>
         </div>
 
         <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-line xl:block" />
@@ -176,7 +202,7 @@ export const TopNavBar: React.FC = () => {
           onClick={() => setShareModalOpen(true)}
           onMouseEnter={preloadStudyShareModal}
           onFocus={preloadStudyShareModal}
-          className={buttonClasses("secondary", "md", "w-7 gap-1.5 px-0 min-[360px]:w-8 sm:w-9 xl:w-auto xl:px-3")}
+          className={buttonClasses("secondary", "md", "w-7 gap-1.5 px-0 sm:w-9 xl:w-auto xl:px-3")}
         >
           <Share2 aria-hidden="true" className="h-4 w-4" />
           <span className="hidden xl:inline">Compartilhar</span>

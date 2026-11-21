@@ -6,6 +6,8 @@ import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "@/lib/historical-entities"
 import type { ObservatoryLayerId } from "@/lib/observatory-data";
 import { getEpochState } from "@/lib/epoch/useEpochState";
 import { applyTimelinePreset, restoreContemporaryTimeline, selectCountry } from "@/stores/actions";
+import { CHOROPLETH_INDICATOR_LIST, type ChoroplethIndicatorId } from "@/lib/choropleth";
+import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { ALL_COSMIC_LAYERS, COSMIC_LAYER_LABELS, useCosmicStore, type CosmicLayerId } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -39,6 +41,7 @@ export const SEARCH_GROUPS = {
   event: "Eventos",
   body: "Corpos celestes",
   layer: "Camadas do Observatório",
+  choropleth: "Mapa temático coroplético",
   cosmicLayer: "Camadas cósmicas",
   preset: "Períodos e eras",
   command: "Comandos",
@@ -83,6 +86,13 @@ const entries: SearchResult[] = [
   })),
   ...Object.entries(OBSERVATORY_SEARCH_LAYERS).map(([id, layer]) => ({
     id: `layer:${id}`, group: "layer" as const, title: layer.title, keywords: `ativar ${layer.keywords}`,
+  })),
+  ...CHOROPLETH_INDICATOR_LIST.map((item) => ({
+    id: `choropleth:${item.id}`,
+    group: "choropleth" as const,
+    title: `Mapa temático: ${item.label}`,
+    detail: item.sourcePrimary,
+    keywords: `coropletico tematico globo colorir indicador ${item.shortLabel} ${item.unit} ${item.id}`,
   })),
   ...ALL_COSMIC_LAYERS.map((id) => ({
     id: `cosmicLayer:${id}`, group: "cosmicLayer" as const, title: COSMIC_LAYER_LABELS[id], keywords: "ativar cosmos",
@@ -161,7 +171,9 @@ export function searchExplore(raw: string): SearchResult[] {
           words.some((word) => oneEditAway(token, word)) ? 3 : 0;
         return !rank || total < 0 ? -1 : total + rank;
       }, 0);
-    return score > 0 ? [{ entry, score: score + (entry.group === "body" ? 1 : 0) }] : [];
+    return score > 0
+      ? [{ entry, score: score + (entry.group === "body" ? 1 : entry.group === "choropleth" ? -1 : 0) }]
+      : [];
   });
   const matches = scored.sort((a, b) => b.score - a.score || a.entry.title.localeCompare(b.entry.title, "pt-BR"))
     .slice(0, 13).map(({ entry }) => entry);
@@ -257,6 +269,13 @@ export function runSearchResult(result: SearchResult) {
       observatory.setPanelOpen(true);
       observatory.setLayerActive(value as ObservatoryLayerId, true);
       useLayoutStore.getState().setActiveRightPanel("observatory");
+      break;
+    }
+    case "choropleth": {
+      if (!getEpochState().isContemporary) restoreContemporaryTimeline();
+      showEarth();
+      useChoroplethStore.getState().setIndicator(value as ChoroplethIndicatorId);
+      useChoroplethStore.getState().setSelectorOpen(false);
       break;
     }
     case "cosmicLayer": {

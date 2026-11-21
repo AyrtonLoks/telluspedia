@@ -15,6 +15,8 @@ import { getHistoricalRoute } from "@/lib/historical-routes";
 import { sceneHasTrajectoryKind } from "@/lib/scenes/catalog";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { useChoroplethStore } from "@/stores/choroplethStore";
+import { CHOROPLETH_INDICATORS } from "@/lib/choropleth";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 
@@ -81,6 +83,12 @@ export const StudyShareModal: React.FC = () => {
       ? (useCosmicStore.getState().activeCosmicLayers || [])
       : (storeCosmicLayers || []);
 
+  const storeChoroplethIndicator = useChoroplethStore((s) => s.activeIndicator);
+  const activeChoroplethIndicator =
+    typeof window === "undefined"
+      ? (useChoroplethStore.getState().activeIndicator ?? null)
+      : storeChoroplethIndicator;
+
   const [shareUrl, setShareUrl] = useState<string>("");
   const [temporaryShare, setTemporaryShare] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -99,6 +107,11 @@ export const StudyShareModal: React.FC = () => {
 
   const isContemporary = epoch.isContemporary;
   const effectiveObservatoryLayers = isContemporary ? activeObservatoryLayers : [];
+  const effectiveChoroplethIndicator =
+    isContemporary && !isCosmicMode ? activeChoroplethIndicator : null;
+  const choroplethMeta = effectiveChoroplethIndicator
+    ? CHOROPLETH_INDICATORS[effectiveChoroplethIndicator]
+    : null;
 
   const handleGenerateLink = async () => {
     setLoading(true);
@@ -126,6 +139,7 @@ export const StudyShareModal: React.FC = () => {
       isCosmicMode: Boolean(isCosmicMode),
       focusedCelestialBody: focusedBodyId,
       activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
+      choroplethIndicator: effectiveChoroplethIndicator,
     };
 
     try {
@@ -155,6 +169,7 @@ export const StudyShareModal: React.FC = () => {
           isCosmicMode: Boolean(isCosmicMode),
           focusedCelestialBody: focusedBodyId,
           activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
+          choroplethIndicator: effectiveChoroplethIndicator,
         });
       } else if (res.status === 503) {
         setErrorMsg("O banco de dados de estudos está indisponível. Tente gerar o link novamente em instantes.");
@@ -308,6 +323,22 @@ export const StudyShareModal: React.FC = () => {
                 <div className="font-semibold text-fg">Observatório Planetário Ativo</div>
                 <div className="text-caption text-accent">
                   {effectiveObservatoryLayers.length} camada(s) científica(s) capturada(s) ({effectiveObservatoryLayers.join(", ")}).
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Thematic Choropleth Layer Badge (D22) */}
+          {choroplethMeta && (
+            <div
+              data-testid="modal-choropleth-badge"
+              className="flex items-center gap-2.5 rounded-card border border-accent/40 bg-accent/10 p-3 text-label"
+            >
+              <span aria-hidden="true" className="select-none text-title">🗺️</span>
+              <div className="flex-1">
+                <div className="font-semibold text-fg">Mapa Temático Coroplético Capturado</div>
+                <div className="text-caption text-accent">
+                  {choroplethMeta.label} ({choroplethMeta.sourcePrimary}) — restaurado automaticamente ao abrir o link.
                 </div>
               </div>
             </div>

@@ -26,6 +26,7 @@ export interface StudyRecord {
   isCosmicMode?: boolean | null;
   focusedCelestialBody?: string | null;
   activeCosmicLayers?: string[];
+  choroplethIndicator?: string | null;
   createdAt: string;
 }
 
@@ -71,6 +72,7 @@ Este estudo examina as repercussões da bipolaridade EUA-URSS nas instituições
   isCosmicMode: false,
   focusedCelestialBody: null,
   activeCosmicLayers: [],
+  choroplethIndicator: null,
   createdAt: new Date("2026-10-19T00:00:00Z").toISOString(),
 });
 

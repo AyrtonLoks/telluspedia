@@ -101,6 +101,7 @@ describe("D14: primitivos", () => {
 // Critério de aceite do D14: os componentes migrados não usam cor/tamanho fora dos tokens.
 const MIGRATED = [
   "src/components/nav/TopNavBar.tsx",
+  "src/components/choropleth/ChoroplethHud.tsx",
   "src/components/observatory/ObservatoryPanel.tsx",
   "src/components/observatory/DataSourceBadge.tsx",
   "src/components/observatory/ObservatoryTelemetryHUD.tsx",

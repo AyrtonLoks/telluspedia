@@ -13,6 +13,7 @@ interface StudyState {
   isCosmicMode: boolean;
   focusedCelestialBody: string | null;
   activeCosmicLayers: string[];
+  choroplethIndicator: string | null;
   isShareModalOpen: boolean;
 
   setStudy: (study: {
@@ -31,6 +32,7 @@ interface StudyState {
     isCosmicMode?: boolean | null;
     focusedCelestialBody?: string | null;
     activeCosmicLayers?: string[] | null;
+    choroplethIndicator?: string | null;
   }) => void;
   restoreStudy: (study: {
     id: string;
@@ -48,6 +50,7 @@ interface StudyState {
     isCosmicMode?: boolean | null;
     focusedCelestialBody?: string | null;
     activeCosmicLayers?: string[] | null;
+    choroplethIndicator?: string | null;
   }) => void;
   forkStudy: (forked: {
     id: string;
@@ -65,6 +68,7 @@ interface StudyState {
     isCosmicMode?: boolean | null;
     focusedCelestialBody?: string | null;
     activeCosmicLayers?: string[] | null;
+    choroplethIndicator?: string | null;
   }) => void;
   setCurrentStudyId: (id: string | null) => void;
   setTitle: (title: string) => void;
@@ -76,6 +80,7 @@ interface StudyState {
   setIsCosmicMode: (isCosmic: boolean) => void;
   setFocusedCelestialBody: (body: string | null) => void;
   setActiveCosmicLayers: (layers: string[]) => void;
+  setChoroplethIndicator: (indicator: string | null) => void;
   setShareModalOpen: (isOpen: boolean) => void;
   resetStudy: () => void;
 }
@@ -92,6 +97,7 @@ export const useStudyStore = create<StudyState>((set) => ({
   isCosmicMode: false,
   focusedCelestialBody: null,
   activeCosmicLayers: [],
+  choroplethIndicator: null,
   isShareModalOpen: false,
 
   restoreStudy: (study) => {
@@ -108,6 +114,7 @@ export const useStudyStore = create<StudyState>((set) => ({
       isCosmicMode: Boolean(study.isCosmicMode),
       focusedCelestialBody: study.focusedCelestialBody || null,
       activeCosmicLayers: Array.isArray(study.activeCosmicLayers) ? [...study.activeCosmicLayers] : [],
+      choroplethIndicator: study.choroplethIndicator || null,
     });
   },
 
@@ -129,6 +136,7 @@ export const useStudyStore = create<StudyState>((set) => ({
   setIsCosmicMode: (isCosmic) => set({ isCosmicMode: isCosmic }),
   setFocusedCelestialBody: (body) => set({ focusedCelestialBody: body }),
   setActiveCosmicLayers: (layers) => set({ activeCosmicLayers: layers }),
+  setChoroplethIndicator: (choroplethIndicator) => set({ choroplethIndicator }),
   setShareModalOpen: (isOpen) => set({ isShareModalOpen: isOpen }),
   resetStudy: () =>
     set({
@@ -143,6 +151,7 @@ export const useStudyStore = create<StudyState>((set) => ({
       isCosmicMode: false,
       focusedCelestialBody: null,
       activeCosmicLayers: [],
+      choroplethIndicator: null,
       isShareModalOpen: false,
     }),
 }));

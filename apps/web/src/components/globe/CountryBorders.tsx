@@ -19,6 +19,7 @@ import {
   loadHistoricalTopology,
   getHistoricalTopologySync,
 } from "@/lib/historical-topology";
+import { ChoroplethOverlay } from "./ChoroplethOverlay";
 
 const ignoreRaycast = () => null;
 
@@ -288,6 +289,7 @@ export function CountryBorders() {
 
   return (
     <group>
+      <ChoroplethOverlay visible={!isHistorical && !isGeological} />
       <BaseBorders topology={contemporaryTopology} opacity={isHistorical || isGeological ? 0 : 0.46} />
       {historicalTopology && (
         <BaseBorders
