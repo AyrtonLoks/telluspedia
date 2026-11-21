@@ -206,7 +206,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | DONE | claude | — | G-INFRA, G-ESTUDOS |
-| T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | IN_PROGRESS | antigravity | — | G-SHELL, G-GLOBO |
+| T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | REVIEW | antigravity | — | G-SHELL, G-GLOBO |
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | DONE | antigravity | T29 | G-PAIS, G-PIPELINE |
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | TODO | — | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | DONE | antigravity | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
@@ -1119,7 +1119,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ### T31 · Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t31-runtime-resilience · **Worktree:** ../telluspedia-wt/antigravity-t31
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t31-runtime-resilience · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Frontend/3D · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-GLOBO
 
 **Contexto / problema**
@@ -1131,11 +1131,12 @@ O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `G
 3. Tratar `webglcontextlost` e `webglcontextrestored` em `gl.domElement` com aviso discreto e recuperação limpa.
 
 **Critérios de aceite**
-- [ ] Erro de render ou perda de contexto WebGL exibe fallback D14 com recuperação funcional sem travar o restante da interface.
+- [x] Erro de render ou perda de contexto WebGL exibe fallback D14 com recuperação funcional sem travar o restante da interface.
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (720c52a). Primeira P1 elegível da Fase 10; grupos G-SHELL e G-GLOBO livres (D24 do claude ocupa G-CONTEUDO e G-EPOCA).
+- 2026-11-21 · antigravity · REVIEW · Implementação em `bda44c6`. **App Router D14 (`error.tsx`, `global-error.tsx`, `GlobalErrorView.tsx`, `loading.tsx`):** fronteiras de erro de rota e raiz com tokens semânticos D14, `role="alert"`/`role="status"`, referência `digest` sem vazar stack trace ou mensagens internas, e recuperação via `reset()` + links para `/`, `/compare` e `/telluslab`. **Suporte WebGL e fallback navegável sem GPU (`src/lib/webgl-support.ts`, `src/components/globe/WebGLErrorBoundary.tsx`):** `detectWebGLSupport` sonda WebGL2/WebGL1 (`failIfMajorPerformanceCaveat: false`) liberando imediatamente o contexto de sondagem via `WEBGL_lose_context`; `WebGLErrorBoundary` envolve `<GlobeCanvas />` em `GlobeExperienceShell.tsx` (mantendo o dynamic import de `GlobeCanvas` e o orçamento de bundle da T25) exibindo `WebGLFallbackPanel` navegável sem bloquear barra superior, timeline, dock ou modais — com ações para recarregar o contexto 3D, abrir a Busca Universal (`useOpenExploreSearch`), abrir o Comparador, visitar Dossiês/TellusLab e selecionar países diretamente. **Recuperação de contexto WebGL (`GlobeCanvas.tsx`):** `WebGLContextMonitor` registra `attachWebGLContextListeners(gl.domElement, ...)` chamando `event.preventDefault()` em `webglcontextlost`, exibindo banner discreto (`webgl-context-lost-banner`) com botão "Recarregar 3D" (remount limpo do `<Canvas>`) e confirmando a restauração (`webgl-context-restored-banner` + `invalidate()`). **Testes e validação:** 5 novos arquivos registrados em `MIGRATED` no `design-system.test.tsx` (70/70 arquivos D14 verdes); adicionados 7 testes em `apps/web/test/runtime-resilience.test.tsx`; `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 640/641 ok (0 falhas, 1 skip), `pnpm build` ok (`/` = 231 kB, `bundle-budget.test.ts` pós-build verde < 250 kB e sem Three/Recharts/Radix no chunk inicial). Verificação visual interativa pendente do Ayrton.
 
 ---
 
