@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import type { StudyRecord } from "@/lib/studies-store";
 import { persistStudy } from "@/lib/study-persistence";
 import { sanitizeStudy, studyInput } from "@/lib/study-schema";
-import { studyCreationRetryAfter } from "@/lib/study-rate-limit";
+import { studyCreationRetryAfterAsync } from "@/lib/study-rate-limit";
 
 const MAX_BODY_BYTES = 384 * 1024;
 
@@ -39,7 +39,7 @@ async function readBody(req: NextRequest) {
 }
 
 async function postHandler(req: NextRequest) {
-  const retryAfter = studyCreationRetryAfter(req.headers);
+  const retryAfter = await studyCreationRetryAfterAsync(req.headers);
   if (retryAfter) {
     return NextResponse.json({ error: "Too many study creations" }, {
       status: 429,

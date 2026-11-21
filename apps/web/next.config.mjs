@@ -29,6 +29,7 @@ export default (phase) => {
   const dev = phase === PHASE_DEVELOPMENT_SERVER;
   return withBundleAnalyzer({
     ...nextConfig,
+    ...(process.env.NEXT_OUTPUT_STANDALONE === "true" ? { output: "standalone" } : {}),
     // T30: sem "X-Powered-By: Next.js" e com cabeçalhos de segurança em todas as respostas.
     poweredByHeader: false,
     async headers() {

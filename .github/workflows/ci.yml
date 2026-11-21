@@ -24,6 +24,8 @@ jobs:
           runtime: node@22
           cache: true
           require-lockfile: true
+      - name: Security audit (prod dependencies)
+        run: pnpm audit --prod --audit-level=high
       - name: Generate Prisma Client
         run: pnpm db:generate
       - name: Typecheck
@@ -60,3 +62,44 @@ jobs:
         run: uv sync --locked
       - name: Test
         run: uv run --no-sync pytest
+
+  prisma-migrations:
+    name: Prisma Migrations & Seed (PostGIS)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: telluspedia
+          POSTGRES_PASSWORD: telluspedia_ci_password
+          POSTGRES_DB: telluspedia_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -h 127.0.0.1 -U telluspedia -d telluspedia_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      DATABASE_URL: postgresql://telluspedia:telluspedia_ci_password@127.0.0.1:5432/telluspedia_test?schema=public
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/setup@731dfb6463bbd11c11fd0ee11fe00ed0e36d48a1 # v3.2.0
+        with:
+          version: '12.9.1'
+          runtime: node@22
+          cache: true
+          require-lockfile: true
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+      - name: Apply Prisma migrations
+        run: pnpm --filter web exec prisma migrate deploy
+      - name: Verify migration status
+        run: pnpm --filter web exec prisma migrate status
+      - name: Seed database (initial + idempotency check)
+        run: |
+          pnpm db:seed
+          pnpm db:seed

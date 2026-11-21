@@ -5,13 +5,13 @@ import type { Study } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { forkStudyRecord, type StudyRecord } from "@/lib/studies-store";
 import { persistStudy, readDevelopmentStudy, studyDatabaseFailure } from "@/lib/study-persistence";
-import { studyCreationRetryAfter } from "@/lib/study-rate-limit";
+import { studyCreationRetryAfterAsync } from "@/lib/study-rate-limit";
 
 async function postHandler(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const retryAfter = studyCreationRetryAfter(req.headers);
+  const retryAfter = await studyCreationRetryAfterAsync(req.headers);
   if (retryAfter) {
     return NextResponse.json({ error: "Too many study creations" }, {
       status: 429,

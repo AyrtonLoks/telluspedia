@@ -12,7 +12,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U telluspedia -d telluspedia_db"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U telluspedia -d telluspedia_db"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -25,6 +25,11 @@ services:
       - "6379:6379"
     volumes:
       - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   data-pipeline:
     build:
@@ -42,7 +47,30 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
+
+  web:
+    profiles: ["prod"]
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: telluspedia-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://telluspedia:telluspedia_secret@postgres:5432/telluspedia_db?schema=public"
+      REDIS_URL: "redis://redis:6379/0"
+      DATA_PIPELINE_URL: "http://data-pipeline:8000"
+      STUDIES_TRUST_PROXY: "false"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      data-pipeline:
+        condition: service_healthy
 
 volumes:
   pgdata:
