@@ -23,7 +23,7 @@ export function MaritimeLayerControls() {
         <Switch label="Mostrar somente embarcações em movimento" checked={movingOnly} onCheckedChange={setMovingOnly} />
       </label>
       <p className="text-caption text-fg-muted">
-        Filtro a partir de 1 nó. A proa mostra o rumo. Selecione um número no mapa para abrir o grupo.
+        Filtro a partir de 1 nó. A proa acompanha o rumo quando informado. Selecione um número no mapa para abrir o grupo.
       </p>
       <ul aria-label="Regiões com cobertura AIS" className="grid grid-cols-2 gap-1">
         {AIS_REGIONS.map(({ id, name, south, north, west, east }) => {
