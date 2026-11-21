@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { simulatedAisSnapshot, type AisSnapshot } from "@/lib/ais-data";
 import {
-  ObservatoryLayerId,
+  ObservatoryLayer,
   FirmsHotspot,
   EonetEvent,
   EonetCategoryFilter,
@@ -36,6 +36,20 @@ import {
   type SatelliteTle,
 } from "@/lib/satellites";
 import type { SatRec } from "satellite.js";
+import { GIBS_DEFAULT_PRODUCT, GIBS_PRODUCTS, type GibsLayerData, type GibsProductId } from "@/lib/gibs";
+
+/** Referência local do produto, quando nem o servidor do TellusPedia respondeu. */
+function gibsLocalReference(product: GibsProductId, month: string | null): GibsLayerData {
+  const p = GIBS_PRODUCTS[product];
+  return {
+    product,
+    month: month ?? p.fallbackMonth,
+    imageMonth: p.fallbackMonth,
+    imageUrl: p.fallbackImage,
+    gibsLayer: p.gibsLayer,
+    time: `${p.fallbackMonth}-${String(p.day).padStart(2, "0")}`,
+  };
+}
 
 export interface FirmsWindow {
   days: FirmsWindowDays;
@@ -57,16 +71,17 @@ function isEonetSelection(entity: ObservatoryEntity | null) {
 const DEFAULT_FIRMS_WINDOW: FirmsWindow = { days: 1, confidence: "nominal" };
 const fallbackFirms = (w: FirmsWindow) => filterByConfidence(FALLBACK_FIRMS_HOTSPOTS, w.confidence);
 
-const ALL_LAYERS: ObservatoryLayerId[] = [
+const ALL_LAYERS: ObservatoryLayer[] = [
   "NASA_FIRMS",
   "NASA_EONET",
   "ISS_SATELLITES",
   "FLIGHTS_OPENSKY",
   "MARITIME_ROUTES",
+  "NASA_GIBS",
 ];
 
-function perLayer<T>(make: () => T): Record<ObservatoryLayerId, T> {
-  return Object.fromEntries(ALL_LAYERS.map((id) => [id, make()])) as Record<ObservatoryLayerId, T>;
+function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
+  return Object.fromEntries(ALL_LAYERS.map((id) => [id, make()])) as Record<ObservatoryLayer, T>;
 }
 
 async function fetchEnvelope(url: string) {
@@ -76,8 +91,8 @@ async function fetchEnvelope(url: string) {
 }
 
 interface ObservatoryState {
-  activeLayers: ObservatoryLayerId[];
-  layerOpacity: Record<ObservatoryLayerId, number>;
+  activeLayers: ObservatoryLayer[];
+  layerOpacity: Record<ObservatoryLayer, number>;
   isPanelOpen: boolean;
   selectedEntity: ObservatoryEntity | null;
 
@@ -105,25 +120,31 @@ interface ObservatoryState {
   ais: AisSnapshot;
   vesselsMovingOnly: boolean;
   setVesselsMovingOnly: (enabled: boolean) => void;
+  /** Camada NASA GIBS (D25): produto e mês pedidos (null = último mês processado) e o que o servidor entregou. */
+  gibsProduct: GibsProductId;
+  gibsMonth: string | null;
+  gibs: GibsLayerData | null;
+  /** Troca produto e/ou mês e recarrega a camada. */
+  setGibsRequest: (request: { product?: GibsProductId; month?: string | null }) => void;
 
-  isLoading: Record<ObservatoryLayerId, boolean>;
-  hasLoaded: Record<ObservatoryLayerId, boolean>;
+  isLoading: Record<ObservatoryLayer, boolean>;
+  hasLoaded: Record<ObservatoryLayer, boolean>;
   /** Procedência do dado exibido em cada camada (T05). */
-  layerMeta: Record<ObservatoryLayerId, ObservatoryMeta>;
+  layerMeta: Record<ObservatoryLayer, ObservatoryMeta>;
   /** true quando o próprio servidor do TellusPedia não respondeu (dados locais em uso). */
-  layerError: Record<ObservatoryLayerId, boolean>;
+  layerError: Record<ObservatoryLayer, boolean>;
 
-  toggleLayer: (layerId: ObservatoryLayerId) => void;
-  setLayerActive: (layerId: ObservatoryLayerId, active: boolean) => void;
-  setAllLayers: (layers: ObservatoryLayerId[]) => void;
-  setLayerOpacity: (layerId: ObservatoryLayerId, opacity: number) => void;
+  toggleLayer: (layerId: ObservatoryLayer) => void;
+  setLayerActive: (layerId: ObservatoryLayer, active: boolean) => void;
+  setAllLayers: (layers: ObservatoryLayer[]) => void;
+  setLayerOpacity: (layerId: ObservatoryLayer, opacity: number) => void;
   setPanelOpen: (open: boolean) => void;
   togglePanel: () => void;
   setEonetCategory: (category: EonetCategoryFilter) => void;
   setSelectedEntity: (entity: ObservatoryEntity | null) => void;
   /** Muda janela/confiança das queimadas e recarrega a camada. */
   setFirmsWindow: (window: Partial<FirmsWindow>) => void;
-  loadLayerData: (layerId: ObservatoryLayerId) => Promise<void>;
+  loadLayerData: (layerId: ObservatoryLayer) => Promise<void>;
   /** Recalcula a telemetria da ISS por SGP4 no instante dado (HUD, painel e modelo usam este valor). */
   refreshIssTelemetry: (now?: number) => void;
   toggleSatelliteCategory: (category: SatelliteCategory) => void;
@@ -139,6 +160,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     ISS_SATELLITES: 1.0,
     FLIGHTS_OPENSKY: 1.0,
     MARITIME_ROUTES: 1.0,
+    // Imagem cobre o globo inteiro: começa translúcida para o relevo e as fronteiras aparecerem.
+    NASA_GIBS: 0.75,
   },
   isPanelOpen: false,
   selectedEntity: null,
@@ -149,6 +172,18 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   firmsByCountry: null,
   eonetEvents: FALLBACK_EONET_EVENTS,
   eonetCategory: "all",
+  gibsProduct: GIBS_DEFAULT_PRODUCT,
+  gibsMonth: null,
+  gibs: null,
+  setGibsRequest: ({ product, month }) => {
+    const cur = get();
+    const nextProduct = product ?? cur.gibsProduct;
+    const nextMonth = month === undefined ? cur.gibsMonth : month;
+    if (nextProduct === cur.gibsProduct && nextMonth === cur.gibsMonth) return;
+    set({ gibsProduct: nextProduct, gibsMonth: nextMonth });
+    if (cur.activeLayers.includes("NASA_GIBS")) void get().loadLayerData("NASA_GIBS");
+    else set((s) => ({ hasLoaded: { ...s.hasLoaded, NASA_GIBS: false } }));
+  },
   issTelemetry: calculateIssPosition(),
   satellites: [],
   satelliteCategories: ["station", "visual"],
@@ -169,6 +204,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     ISS_SATELLITES: false,
     FLIGHTS_OPENSKY: false,
     MARITIME_ROUTES: false,
+    NASA_GIBS: false,
   },
   hasLoaded: {
     NASA_FIRMS: false,
@@ -176,6 +212,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     ISS_SATELLITES: false,
     FLIGHTS_OPENSKY: false,
     MARITIME_ROUTES: false,
+    NASA_GIBS: false,
   },
   layerMeta: perLayer(initialLocalMeta),
   layerError: perLayer(() => false),
@@ -264,7 +301,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       isLoading: { ...s.isLoading, [layerId]: true },
     }));
 
-    const applyMeta = (id: ObservatoryLayerId, meta: ObservatoryMeta) =>
+    const applyMeta = (id: ObservatoryLayer, meta: ObservatoryMeta) =>
       set((s) => ({
         layerMeta: { ...s.layerMeta, [id]: meta },
         layerError: { ...s.layerError, [id]: false },
@@ -302,6 +339,17 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           get().refreshIssTelemetry();
           applyMeta("ISS_SATELLITES", body.meta);
         }
+      } else if (layerId === "NASA_GIBS") {
+        const { gibsProduct, gibsMonth } = get();
+        const query = `product=${gibsProduct}${gibsMonth ? `&month=${gibsMonth}` : ""}`;
+        const body = await fetchEnvelope(`/api/observatory/gibs?${query}`);
+        const data = isObservatoryEnvelope(body) ? (body.data as GibsLayerData) : null;
+        if (!data || typeof data.imageUrl !== "string") throw new Error("Resposta GIBS inválida");
+        // Resposta atrasada de um pedido anterior (o usuário já trocou produto ou mês): descarta.
+        const now = get();
+        if (data.product !== now.gibsProduct || (now.gibsMonth !== null && data.month !== now.gibsMonth)) return;
+        set({ gibs: data });
+        applyMeta("NASA_GIBS", body.meta);
       } else if (layerId === "MARITIME_ROUTES") {
         const body = await fetchEnvelope("/api/observatory/ais");
         if (!isObservatoryEnvelope(body)) throw new Error("Resposta AIS inválida");
@@ -333,6 +381,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         },
       }));
       if (layerId === "ISS_SATELLITES") set({ issTelemetry: calculateIssPosition() });
+      if (layerId === "NASA_GIBS") set({ gibs: gibsLocalReference(get().gibsProduct, get().gibsMonth) });
     } finally {
       set((s) => ({
         isLoading: { ...s.isLoading, [layerId]: false },

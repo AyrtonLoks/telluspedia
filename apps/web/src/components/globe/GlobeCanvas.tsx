@@ -30,6 +30,7 @@ import { ScenePlayer } from "@/components/scenes/ScenePlayer";
 import { getScene } from "@/lib/scenes/catalog";
 import { PaleoPlatesLayer } from "./PaleoPlatesLayer";
 import { NasaFirmsLayer } from "./NasaFirmsLayer";
+import { GibsLayer } from "./GibsLayer";
 import { NasaEonetLayer } from "./NasaEonetLayer";
 import { IssOrbitLayer } from "./IssOrbitLayer";
 import { AirTrafficLayer } from "./AirTrafficLayer";
@@ -255,6 +256,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {activeSceneData && <ScenePlayer scene={activeSceneData} />}
 
             {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
+            {isContemporary && activeObservatoryLayers.includes("NASA_GIBS") && <GibsLayer />}
             {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
             {isContemporary && activeObservatoryLayers.includes("NASA_EONET") && <NasaEonetLayer />}
             {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && <IssOrbitLayer />}

@@ -3,12 +3,19 @@ import { geoCentroid } from "d3-geo";
 import type { ObservatoryMeta } from "./observatory-source";
 import { referenceIssTelemetry } from "./satellites";
 
+/** Camadas que a busca ⌘K, a URL compartilhável e os estudos conhecem. */
 export type ObservatoryLayerId =
   | "NASA_FIRMS"
   | "NASA_EONET"
   | "ISS_SATELLITES"
   | "FLIGHTS_OPENSKY"
   | "MARITIME_ROUTES";
+
+/**
+ * Todas as camadas do Observatório. A NASA GIBS (D25) ainda fica fora da busca, da URL e dos estudos
+ * (arquivos de outros grupos): quando entrar neles, junte-a a `ObservatoryLayerId`.
+ */
+export type ObservatoryLayer = ObservatoryLayerId | "NASA_GIBS";
 
 export interface FirmsHotspot {
   id: string;

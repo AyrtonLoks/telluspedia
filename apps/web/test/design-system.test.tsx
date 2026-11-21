@@ -107,6 +107,7 @@ const MIGRATED = [
   "src/components/observatory/FirmsLayerControls.tsx",
   "src/components/observatory/FirmsCountrySummary.tsx",
   "src/components/observatory/SatelliteLayerControls.tsx",
+  "src/components/observatory/GibsLayerControls.tsx",
   "src/components/hud/InspectorHUD.tsx",
   "src/components/hud/CountryHeader.tsx",
   "src/components/hud/CountryMetricsGrid.tsx",

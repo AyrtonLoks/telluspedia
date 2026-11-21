@@ -2,6 +2,7 @@
 
 import { EonetLayerControls } from "./EonetLayerControls";
 import { StudyContext } from "@/components/tellus-bridge/StudyContext";
+import dynamic from "next/dynamic";
 import React, { useId, useState } from "react";
 import {
   X,
@@ -14,6 +15,7 @@ import {
   RotateCcw,
   Layers,
   ChevronDown,
+  Satellite,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
@@ -21,8 +23,9 @@ import { MaritimeLayerControls } from "./MaritimeLayerControls";
 import { FirmsLayerControls } from "./FirmsLayerControls";
 import { FirmsCountrySummary } from "./FirmsCountrySummary";
 import { SatelliteLayerControls } from "./SatelliteLayerControls";
+import { GIBS_PRODUCTS, formatGibsMonth } from "@/lib/gibs";
 import { useGlobeStore } from "@/stores/globeStore";
-import { ObservatoryLayerId } from "@/lib/observatory-data";
+import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { getScene } from "@/lib/scenes/catalog";
 import { Button } from "@/components/ui/Button";
@@ -33,8 +36,14 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { TONES, type Tone } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
 
+// Controles do GIBS só baixam quando a camada é aberta (D25: não pesar no primeiro carregamento).
+const GibsLayerControls = dynamic(() => import("./GibsLayerControls").then((m) => m.GibsLayerControls), {
+  ssr: false,
+  loading: () => <div className="h-24" aria-hidden="true" />,
+});
+
 interface LayerOption {
-  id: ObservatoryLayerId;
+  id: ObservatoryLayer;
   name: string;
   source: string;
   description: string;
@@ -97,6 +106,16 @@ const LAYER_OPTIONS: LayerOption[] = [
     tone: "layer-maritime",
     badgeText: (s) => `${s.ais.vessels.length.toLocaleString("pt-BR")} embarcações`,
   },
+  {
+    id: "NASA_GIBS",
+    name: "Imagens de Satélite (GIBS)",
+    source: "NASA GIBS (MODIS, GHRSST)",
+    description: "Mapas globais mensais de vegetação, neve, gelo marinho e temperatura da superfície, desde 2000.",
+    icon: Satellite,
+    tone: "layer-satellites",
+    badgeText: (s: ReturnType<typeof useObservatoryStore.getState>) =>
+      s.gibs ? `${GIBS_PRODUCTS[s.gibs.product].shortName} · ${formatGibsMonth(s.gibs.imageMonth)}` : GIBS_PRODUCTS[s.gibsProduct].shortName,
+  },
 ];
 
 /** Opacidade da camada no globo (o store guarda 0–1; as camadas já leem `layerOpacity`). */
@@ -126,10 +145,10 @@ const LayerOpacity: React.FC<{ layer: LayerOption }> = ({ layer }) => {
   );
 };
 
-export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayerId[] }> = ({ initialExpanded }) => {
+export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }> = ({ initialExpanded }) => {
   // Opções de cada camada (descrição, controles, opacidade, TellusLab) ficam recolhidas (D16).
-  const [expanded, setExpanded] = useState<ReadonlySet<ObservatoryLayerId>>(() => new Set(initialExpanded));
-  const toggleExpanded = (id: ObservatoryLayerId) =>
+  const [expanded, setExpanded] = useState<ReadonlySet<ObservatoryLayer>>(() => new Set(initialExpanded));
+  const toggleExpanded = (id: ObservatoryLayer) =>
     setExpanded((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -262,6 +281,7 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayerId[]
                   </p>
                   {layer.id === "NASA_EONET" && <EonetLayerControls />}
                   {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
+                  {layer.id === "NASA_GIBS" && <GibsLayerControls />}
                   {layer.id === "MARITIME_ROUTES" && isContemporary && <MaritimeLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>

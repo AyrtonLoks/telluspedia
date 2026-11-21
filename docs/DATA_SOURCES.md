@@ -248,3 +248,32 @@ node apps/web/scripts/ingest-worldbank-indicators.mjs --dry-run
   divergentes, e o país do P17, que é o país atual do local e não a entidade da época). Datas a.C.:
   o serviço usa ano astronômico (`-0047` = 48 a.C.), convertido para o ano histórico do projeto.
 - **Publicação:** só depois da revisão humana (docs/SCENES.md, "Importar do Wikidata").
+
+## Anexo — Imagens de satélite do NASA GIBS no Observatório (D25, 2026-11-21)
+
+**Fonte:** NASA Global Imagery Browse Services (GIBS), WMS 1.3.0 em EPSG:4326 (`https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi`). Dados de satélite da NASA, sem restrição de uso (NASA Earth Science Data and Information Policy); crédito: "Imagens: NASA GIBS / EOSDIS".
+
+**Acesso:** o navegador nunca fala com o GIBS. `GET /api/observatory/gibs?product=&month=` valida o pedido (produto da lista, mês `AAAA-MM` entre o início do produto e o último mês já processado) e responde no envelope T05; a imagem é servida pela própria origem em `/api/observatory/gibs/image` (a CSP T30 só permite `img-src 'self'`). Cache em memória de 12 imagens e de falhas por 60 s; tempo limite de 15 s. Quando o GIBS não tem imagem para a data, ele devolve um PNG transparente de cerca de 8 KB (HTTP 200): tratamos ≤ 16 KB como "sem dado" e caímos para a referência local, com o motivo no badge.
+
+| Produto | Camada GIBS | Desde | Referência local (fallback) |
+|---|---|---|---|
+| Vegetação (NDVI) | `MODIS_Terra_L3_NDVI_Monthly` | 2000-03 | `ndvi-ref.webp` (2024-07) |
+| Neve | `MODIS_Terra_L3_Snow_Cover_Monthly_Average_Pct` | 2000-03 | `snow-ref.webp` (2024-01) |
+| Gelo marinho | `GHRSST_L4_MUR_Sea_Ice_Concentration` (diária; usamos o dia 15) | 2002-06 | `seaice-ref.webp` (2024-09-15) |
+| Temperatura da superfície (dia) | `MODIS_Terra_L3_Land_Surface_Temp_Monthly_Day` | 2000-03 | `lst-ref.webp` (2024-07) |
+
+**Arquivos locais** (`apps/web/public/observatory/gibs/`): referências 1024×512 WebP baixadas do GetMap acima nas datas indicadas; barras de cores 256×8 PNG recortadas das legendas oficiais do GIBS (`https://gibs.earthdata.nasa.gov/legends/{MODIS_L3_NDVI_H,MODIS_NDSI_Snow_Cover_H,GHRSST_Sea_Ice_Concentration_H,MODIS_Land_Surface_Temp_H}.png`). A escala de temperatura oficial (200–350 K) é rotulada em °C no painel.
+
+SHA-256:
+```
+977a87a6afbe981ce4026a09f13e5f10b208c396ebc679223dcef457405f8303  ndvi-ref.webp
+104ac3d399e66794c7ae02f11cdf3e8f93dfe2d1ccc4b45d25094123c195e95f  snow-ref.webp
+74bc25e7e7a03e53c726e3a73a0ea25b9ee0c0afe8f67fc0fa00c69018cb93bb  seaice-ref.webp
+51188979f2c7bddb3cf94ab5358ac850ab0d17aaf10c5ae3172c21e54e23815f  lst-ref.webp
+61dbe9d5a746b10776bfb5619bb3a252afd1c21140422ff321c769d9c697e37c  ndvi-scale.png
+12f8fda94899f2076b20e4fd484e8b7f3cab1edd0514766375e3b8aeb804214a  snow-scale.png
+1f66f2fdf189adfb2b7ba5ee337e44c48378078b2906f7bc25ecfa446a9eda71  seaice-scale.png
+557c62477d7f57388ea4345a2119d3dda1128b388830f1f06204dd2936df6711  lst-scale.png
+```
+
+**Fora do escopo por enquanto:** a camada não entra na busca ⌘K, na URL compartilhável nem nos estudos salvos (arquivos dos grupos G-SHELL/G-ESTUDOS); fica como acompanhamento.
