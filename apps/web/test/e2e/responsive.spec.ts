@@ -67,7 +67,7 @@ test("mapa, controles e painéis cabem na tela com contraste AA", async ({ page 
     const css = getComputedStyle(document.documentElement);
     const rgb = (name: string) => css.getPropertyValue(`--color-${name}`).trim().split(/\s+/).map(Number);
     const blend = (fg: number[], bg: number[], opacity: number) =>
-      fg.map((value, index) => value * opacity + bg[index] * (1 - opacity));
+      bg.map((value, index) => fg[index] * opacity + value * (1 - opacity));
     const luminance = (color: number[]) => color.reduce((sum, value, index) => {
       const channel = value / 255;
       const linear = channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
@@ -81,7 +81,16 @@ test("mapa, controles e painéis cabem na tela com contraste AA", async ({ page 
       "accent", "success", "warning", "danger", "cat-politics", "cat-economy", "cat-war", "cat-science",
       "cat-health", "layer-fires", "layer-events", "layer-satellites", "layer-aircraft", "layer-maritime",
     ].filter((name) => ratio(rgb(name), blend(rgb(name), glass, 0.1)) < 4.5);
-    return [...neutral, ...tinted];
+    const cssColor = (value: string) => value.match(/[\d.]+/g)?.map(Number) ?? [];
+    const toggles = Array.from(document.querySelectorAll("[data-testid=map-tools] button")).flatMap((button) => {
+      const style = getComputedStyle(button);
+      const background = cssColor(style.backgroundColor);
+      const solid = blend(background, [255, 255, 255], background[3] ?? 1);
+      const foreground = cssColor(style.color);
+      const text = blend(foreground, solid, foreground[3] ?? 1);
+      return ratio(text, solid) < 4.5 ? [button.textContent?.trim()] : [];
+    });
+    return [...neutral, ...tinted, ...toggles];
   });
   expect(insufficientContrast).toEqual([]);
 

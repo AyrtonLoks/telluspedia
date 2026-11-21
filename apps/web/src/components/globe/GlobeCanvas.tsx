@@ -17,7 +17,7 @@ import { earthSystemScale } from "@/lib/cosmic-scale";
 
 /** Botões de alternância sobre o globo (tokens do design system — D14). */
 const GLOBE_TOGGLE =
-  "flex h-9 items-center gap-2 rounded-control border border-line bg-surface/86 px-3 text-label font-medium text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:text-fg aria-pressed:border-accent/40 aria-pressed:bg-accent/15 aria-pressed:text-fg disabled:cursor-not-allowed disabled:opacity-50";
+  "flex h-9 items-center gap-2 rounded-control border border-line bg-surface/86 px-3 text-label font-medium text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:text-fg aria-pressed:border-accent/40 aria-pressed:bg-surface-raised aria-pressed:text-accent disabled:cursor-not-allowed disabled:opacity-50";
 import { CountryBorders } from "./CountryBorders";
 import { OrbitingMoon } from "./OrbitingMoon";
 import { SkyStars } from "./SkyStars";

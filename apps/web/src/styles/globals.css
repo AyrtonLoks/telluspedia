@@ -73,7 +73,7 @@ body {
 
 /* Shared positions for the map UI. The dock and timeline report their real height. */
 [data-map-shell] {
-  --map-tools-top: 4rem;
+  --map-tools-top: 4.375rem;
   --map-annotation-top: calc(var(--map-tools-top) + 2.75rem);
   --map-overlay-top: calc(var(--map-annotation-top) + var(--annotation-obstruction, 0px));
   --map-overlay-bottom: max(1rem, var(--timeline-obstruction, 0px), var(--dock-obstruction, 0px));
