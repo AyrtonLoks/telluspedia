@@ -199,7 +199,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
-| D17 | Movimento e transições | Design | P2 | M | IN_PROGRESS | claude | D14 | G-SHELL |
+| D17 | Movimento e transições | Design | P2 | M | REVIEW | claude | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
@@ -1840,7 +1840,7 @@ No painel do Observatório, cada card repete um botão grande "Aprofundar no Tel
 
 ### D17 · Movimento e transições
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d17-movimento · **Worktree:** ../telluspedia-wt/claude-d17
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d17-movimento · **Worktree:** ../telluspedia-wt/claude-d17
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL
 
 **Contexto / problema**
@@ -1869,6 +1869,7 @@ Painéis aparecem/somem sem transição coerente; troca Terra → Cosmos é um c
 - 2026-11-21 · claude · IN_PROGRESS · **Ayrton pediu manter o sistema solar na tela durante a descida** (`feat(movimento): sistema solar esmaece na descida de volta à Terra [D17]`). `stores/cosmicExitStore.ts` guarda a saída (centro e escala da Terra na órbita) enquanto a câmera desce; Sol, planetas, cinturão, cometa e meteoros continuam montados (`useSolarSystemVisible`) dentro de `SolarSystemFrame`, que aplica o mesmo reposicionamento da câmera — `(p − c)/s` — e esmaece materiais e o shader do Sol (novo `uOpacity`) de 100 % a 0 entre 15 % e 80 % do voo, sem aceitar cliques; rótulos saem na descida; o controlador limpa a saída no fim (ou ao reentrar, ou com movimento reduzido). Testes novos em `test/motion.test.tsx`. Validação: 544/548 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok. Falta conferir no navegador.
 - 2026-11-21 · claude · IN_PROGRESS · **Verificação no navegador achou erro** (`fix(movimento): rótulos ocultos, não desmontados, na descida do Cosmos [D17]`): o overlay de dev do Next acusou "Attempted to synchronously unmount a root while React was already rendering" em `CelestialLabel` — o rótulo desmontava o `<Html>` do drei (raiz React própria) quando a saída começava, e a saída começa num layout effect, durante a renderização. Agora o rótulo fica montado e só oculto (`visibility: hidden`) na descida (teste). Validação: 544/548 (as 4 do Prisma), lint ok.
 - 2026-11-21 · claude · IN_PROGRESS · **Folha de contato da volta (6,5 s)** (`fix(movimento): corpo some quando a câmera passa perto na descida [D17]`): o esmaecimento funciona (aos 1,8 s o sistema solar já sumiu; descida contínua até a vista da Terra), mas, com o Sol agora na tela, a descida passou rente a ele num quadro (Sol enchendo a tela) — acontece quando a Terra está atrás do Sol vista do ponto de partida. Agora cada malha também some pela distância da câmera à superfície (inteira a partir de 4 raios, invisível a 1 raio). Testes. Validação: 550/554 (as 4 do Prisma), lint ok.
+- 2026-11-21 · claude · REVIEW · **Volta conferida no navegador** (servidor atualizado, 12 quadros em 4 s): sem erros no overlay do Next; o sistema solar esmaece e some por volta de 1,8 s; descida contínua até a vista padrão da Terra; quando a descida passa perto do Sol, ele aparece como uma fração da tela já esmaecendo (não enche mais) e some no quadro seguinte. Pronto para aceite.
 
 ---
 
