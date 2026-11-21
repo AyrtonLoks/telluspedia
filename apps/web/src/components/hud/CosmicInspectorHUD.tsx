@@ -85,6 +85,8 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
   const setInspectorOpen = useCosmicStore((s) => s.setInspectorOpen);
   const focusBody = useCosmicStore((s) => s.focusBody);
   const toggleLayer = useCosmicStore((s) => s.toggleLayer);
+  const scaleMode = useCosmicStore((s) => s.scaleMode);
+  const setScaleMode = useCosmicStore((s) => s.setScaleMode);
 
   const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedYear =
@@ -150,6 +152,39 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                   </button>
                 );
               })}
+            </div>
+            <div className="space-y-1.5 border-t border-slate-800/80 pt-2">
+              <h4 id="cosmic-scale-heading" className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                Tamanho dos corpos
+              </h4>
+              <div role="group" aria-labelledby="cosmic-scale-heading" className="grid grid-cols-2 gap-1">
+                {(
+                  [
+                    ["visual", "Visual"],
+                    ["real", "Real"],
+                  ] as const
+                ).map(([mode, label]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={scaleMode === mode}
+                    data-testid={`cosmic-scale-${mode}`}
+                    onClick={() => setScaleMode(mode)}
+                    className={`px-2 py-1.5 rounded-lg transition-colors ${
+                      scaleMode === mode
+                        ? "bg-cyan-950/60 text-cyan-300 border border-cyan-800/40"
+                        : "bg-slate-900/40 text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] leading-snug text-slate-500">
+                {scaleMode === "real"
+                  ? "Raios na proporção real entre os corpos. As distâncias continuam comprimidas."
+                  : "Raios exagerados por um fator único para todos ficarem visíveis. Distâncias comprimidas."}
+              </p>
             </div>
             <a
               href="https://github.com/AyrtonLoks/telluspedia/blob/master/docs/DATA_SOURCES.md#catálogo-estelar-e-via-láctea-d09"

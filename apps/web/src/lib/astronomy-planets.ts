@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { bodySceneRadius } from "./cosmic-scale";
 
 /**
  * TellusPedia — Celestial Mechanics & Keplerian Ephemerides
@@ -660,19 +661,6 @@ export function calculatePlanetaryPosition(
   const kmPerAu = 149597870.7;
   const distanceSunMkm = Number(((rAu * kmPerAu) / 1e6).toFixed(2));
 
-  // Visual radii mapping
-  const visualRadii: Record<string, number> = {
-    MERCURY: 0.45,
-    VENUS: 0.95,
-    EARTH: 1.0,
-    MARS: 0.55,
-    JUPITER: 3.2,
-    SATURN: 2.7,
-    URANUS: 1.8,
-    NEPTUNE: 1.75,
-    PLUTO: 0.35,
-  };
-
   return {
     id: bodyId,
     name: meta.name,
@@ -684,7 +672,7 @@ export function calculatePlanetaryPosition(
     distanceEarthMkm: 0,
     trueAnomalyDeg: Number(trueAnomalyDeg.toFixed(2)),
     scenePosition: scenePos,
-    visualRadius: visualRadii[bodyId] || 1.0,
+    visualRadius: bodySceneRadius(meta.equatorialRadiusKm, "visual"),
     color: meta.visualColor,
   };
 }

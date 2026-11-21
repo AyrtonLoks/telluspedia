@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { CelestialBodyId } from "@/lib/astronomy-planets";
+import type { CosmicScaleMode } from "@/lib/cosmic-scale";
 
 export type CosmicLayerId =
   | "ORBITS"
@@ -26,6 +27,8 @@ export interface CosmicState {
   isPlaying: boolean;
   playbackSpeed: number; // 1 | 30 | 365
   isInspectorOpen: boolean;
+  /** Política de escala dos corpos (D11): exagero visual ou proporção real entre raios. */
+  scaleMode: CosmicScaleMode;
 
   enterCosmicView: (targetBodyId?: CelestialBodyId) => void;
   exitToEarthView: () => void;
@@ -37,6 +40,7 @@ export interface CosmicState {
   setPlayback: (isPlaying: boolean, speed?: number) => void;
   setPlaybackSpeed: (speed: number) => void;
   setInspectorOpen: (open: boolean) => void;
+  setScaleMode: (mode: CosmicScaleMode) => void;
   resetCosmicState: () => void;
 }
 
@@ -48,6 +52,7 @@ export const useCosmicStore = create<CosmicState>((set) => ({
   isPlaying: false,
   playbackSpeed: 30,
   isInspectorOpen: false,
+  scaleMode: "visual",
 
   enterCosmicView: (targetBodyId) =>
     set({
@@ -101,6 +106,8 @@ export const useCosmicStore = create<CosmicState>((set) => ({
 
   setInspectorOpen: (open) => set({ isInspectorOpen: open }),
 
+  setScaleMode: (mode) => set({ scaleMode: mode }),
+
   resetCosmicState: () =>
     set({
       isCosmicMode: false,
@@ -110,5 +117,6 @@ export const useCosmicStore = create<CosmicState>((set) => ({
       isPlaying: false,
       playbackSpeed: 30,
       isInspectorOpen: false,
+      scaleMode: "visual",
     }),
 }));

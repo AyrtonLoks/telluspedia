@@ -4,6 +4,9 @@ import React, { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { ASTROPHYSICAL_CATALOG } from "@/lib/astronomy-planets";
+import { bodySceneRadius, celestialLabelPriority, SUN_GEOMETRY_RADIUS } from "@/lib/cosmic-scale";
+import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
 
 const sunVertexShader = `
 varying vec2 vUv;
@@ -63,12 +66,15 @@ export const SunCore: React.FC = () => {
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const focusBody = useCosmicStore((s) => s.focusBody);
   const setHoveredBody = useCosmicStore((s) => s.setHoveredBody);
+  const hoveredBodyId = useCosmicStore((s) => s.hoveredBodyId);
+  const scaleMode = useCosmicStore((s) => s.scaleMode);
+  const showLabels = useCosmicStore((s) => s.activeCosmicLayers.includes("LABELS"));
 
   const sunMeshRef = useRef<THREE.Mesh>(null);
   const coronaRef = useRef<THREE.Mesh>(null);
 
   const [sunGeo, sunMat, coronaGeo, coronaMat] = useMemo(() => {
-    const sGeo = new THREE.SphereGeometry(7.5, 48, 48);
+    const sGeo = new THREE.SphereGeometry(SUN_GEOMETRY_RADIUS, 48, 48);
     const sMat = new THREE.ShaderMaterial({
       vertexShader: sunVertexShader,
       fragmentShader: sunFragmentShader,
@@ -117,12 +123,16 @@ export const SunCore: React.FC = () => {
   if (!isCosmicMode) return null;
 
   const isFocused = focusedBodyId === "SUN";
+  // Política única de escala (D11): a geometria tem raio 7,5 e o grupo é escalado para o raio do modo.
+  const sunRadius = bodySceneRadius(ASTROPHYSICAL_CATALOG.SUN.equatorialRadiusKm, scaleMode);
+  const sunScale = sunRadius / SUN_GEOMETRY_RADIUS;
 
   return (
     <group name="sun-core" position={[0, 0, 0]}>
       {/* Central Omnidirectional Solar Light Source */}
       <pointLight color="#fffbeb" intensity={4.5} distance={1500} decay={1.0} />
 
+      <group scale={sunScale}>
       {/* Pulsing Solar Corona Glow Atmosphere */}
       <mesh ref={coronaRef} geometry={coronaGeo} material={coronaMat} />
 
@@ -148,6 +158,16 @@ export const SunCore: React.FC = () => {
           <ringGeometry args={[8.8, 9.2, 64]} />
           <meshBasicMaterial color="#fbbf24" transparent opacity={0.6} side={THREE.DoubleSide} />
         </mesh>
+      )}
+      </group>
+
+      {showLabels && (
+        <CelestialLabel
+          anchorHeight={sunRadius}
+          priority={celestialLabelPriority(ASTROPHYSICAL_CATALOG.SUN.equatorialRadiusKm, { focused: isFocused, hovered: hoveredBodyId === "SUN" })}
+        >
+          <CelestialLabelChip name="Sol" focused={isFocused} hovered={hoveredBodyId === "SUN"} />
+        </CelestialLabel>
       )}
     </group>
   );

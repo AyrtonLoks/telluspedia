@@ -10,7 +10,10 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import {
   calculateHalleyPosition,
   generateHalleyOrbitalPath,
+  ASTROPHYSICAL_CATALOG,
 } from "@/lib/astronomy-planets";
+import { celestialLabelPriority } from "@/lib/cosmic-scale";
+import { CelestialLabel } from "./CelestialLabel";
 
 const ION_PARTICLE_COUNT = 320;
 const DUST_PARTICLE_COUNT = 380;
@@ -1010,9 +1013,12 @@ export const CometHalleyTrajectory: React.FC = () => {
           </Html>
         )}
 
-        {/* Clickable fixed-pixel label (no distanceFactor) using D14 design tokens */}
+        {/* Rótulo clicável pelo componente único (D11): px fixos e anticolisão */}
         {showLabels && (
-          <Html center className="pointer-events-none select-none">
+          <CelestialLabel
+            anchorHeight={0.2}
+            priority={celestialLabelPriority(ASTROPHYSICAL_CATALOG.HALLEY.equatorialRadiusKm, { focused: isFocused, hovered: isHovered })}
+          >
             <button
               type="button"
               data-testid="halley-label"
@@ -1024,7 +1030,7 @@ export const CometHalleyTrajectory: React.FC = () => {
               onMouseEnter={handleHoverStart}
               onMouseLeave={handleHoverEnd}
               className={cn(
-                "pointer-events-auto cursor-pointer -translate-y-8 inline-flex items-center gap-1.5 whitespace-nowrap rounded-control border bg-surface/86 px-2.5 py-1 text-caption font-medium shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:border-accent hover:text-accent",
+                "pointer-events-auto cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap rounded-control border bg-surface/86 px-2.5 py-1 text-caption font-medium shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:border-accent hover:text-accent",
                 isFocused
                   ? "border-accent text-accent"
                   : halley.hasTail
@@ -1042,7 +1048,7 @@ export const CometHalleyTrajectory: React.FC = () => {
                 <span className="text-cat-science">· Cauda ativa</span>
               ) : null}
             </button>
-          </Html>
+          </CelestialLabel>
         )}
       </group>
     </group>

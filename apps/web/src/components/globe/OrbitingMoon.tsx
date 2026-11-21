@@ -10,7 +10,9 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { focusCelestialBody } from "@/stores/actions";
 import { slerpVectors } from "@/lib/geo-spatial";
 import { calculateLunarPosition } from "@/lib/astronomy";
-import { calculatePlanetaryPosition, currentMoonWorldPos } from "@/lib/astronomy-planets";
+import { calculatePlanetaryPosition, currentMoonWorldPos, ASTROPHYSICAL_CATALOG } from "@/lib/astronomy-planets";
+import { bodySceneRadius, celestialLabelPriority, earthSystemScale } from "@/lib/cosmic-scale";
+import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
 
 const MOON_RADIUS = 0.27;
 
@@ -163,6 +165,15 @@ export const OrbitingMoon: React.FC = () => {
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const hoveredBodyId = useCosmicStore((s) => s.hoveredBodyId);
   const setHoveredBody = useCosmicStore((s) => s.setHoveredBody);
+  const scaleMode = useCosmicStore((s) => s.scaleMode);
+  const showLabels = useCosmicStore((s) => s.activeCosmicLayers.includes("LABELS"));
+
+  // Política única de escala no modo Cosmos (D11). O grupo Terra + Lua já vem escalado por
+  // earthSystemScale; aqui só se compensa a diferença até o raio da política. No modo Terra
+  // a Lua mantém o raio real relativo (0,27).
+  const moonScale = isCosmicMode
+    ? bodySceneRadius(ASTROPHYSICAL_CATALOG.MOON.equatorialRadiusKm, scaleMode) / (earthSystemScale(scaleMode) * MOON_RADIUS)
+    : 1;
 
   const isFocused = focusedBodyId === "MOON";
   const isHovered = hoveredBodyId === "MOON";
@@ -326,7 +337,7 @@ export const OrbitingMoon: React.FC = () => {
   });
 
   return (
-    <group ref={moonGroupRef} name="orbiting-moon-group">
+    <group ref={moonGroupRef} name="orbiting-moon-group" scale={moonScale}>
       <mesh
         ref={moonRef}
         name="orbiting-moon"
@@ -354,6 +365,15 @@ export const OrbitingMoon: React.FC = () => {
       {/* Selection indicator halo around Moon */}
       {isFocused && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} geometry={ringGeo} material={ringMat} />
+      )}
+
+      {isCosmicMode && showLabels && (
+        <CelestialLabel
+          anchorHeight={MOON_RADIUS}
+          priority={celestialLabelPriority(ASTROPHYSICAL_CATALOG.MOON.equatorialRadiusKm, { focused: isFocused, hovered: isHovered })}
+        >
+          <CelestialLabelChip name="Lua" focused={isFocused} hovered={isHovered} />
+        </CelestialLabel>
       )}
     </group>
   );

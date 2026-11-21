@@ -2,7 +2,6 @@
 
 import React, { useMemo, useEffect } from "react";
 import * as THREE from "three";
-import { Html } from "@react-three/drei";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import {
@@ -11,6 +10,8 @@ import {
   CelestialBodyId,
   ASTROPHYSICAL_CATALOG,
 } from "@/lib/astronomy-planets";
+import { bodySceneRadius, celestialLabelPriority, RING_RATIOS } from "@/lib/cosmic-scale";
+import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
 
 const PLANET_IDS: Array<Exclude<CelestialBodyId, "SUN" | "MOON" | "HALLEY">> = [
   "MERCURY",
@@ -31,6 +32,7 @@ export const PlanetarySystem: React.FC = () => {
   const activeCosmicLayers = useCosmicStore((s) => s.activeCosmicLayers);
   const focusBody = useCosmicStore((s) => s.focusBody);
   const setHoveredBody = useCosmicStore((s) => s.setHoveredBody);
+  const scaleMode = useCosmicStore((s) => s.scaleMode);
 
   const selectedYear = useTimelineStore((s) => s.selectedYear) || new Date().getUTCFullYear();
 
@@ -71,8 +73,8 @@ export const PlanetarySystem: React.FC = () => {
         const isFocused = focusedBodyId === id;
         const isHovered = hoveredBodyId === id;
 
-        // Visual radius & axial tilt
-        const radius = planet.visualRadius;
+        // Raio pela política única de escala (D11) e inclinação axial
+        const radius = bodySceneRadius(meta.equatorialRadiusKm, scaleMode);
         const axialTiltRad = (meta.axialTiltDeg * Math.PI) / 180;
 
         return (
@@ -118,7 +120,7 @@ export const PlanetarySystem: React.FC = () => {
               {/* Rings for Saturn */}
               {id === "SATURN" && meta.hasRings && (
                 <mesh rotation={[-Math.PI / 2 + axialTiltRad, 0, 0]}>
-                  <ringGeometry args={[meta.ringInnerRadius || 3.3, meta.ringOuterRadius || 6.2, 64]} />
+                  <ringGeometry args={[radius * RING_RATIOS.SATURN[0], radius * RING_RATIOS.SATURN[1], 64]} />
                   <meshStandardMaterial
                     color="#e2d8b8"
                     side={THREE.DoubleSide}
@@ -132,7 +134,7 @@ export const PlanetarySystem: React.FC = () => {
               {/* Rings for Uranus */}
               {id === "URANUS" && meta.hasRings && (
                 <mesh rotation={[-Math.PI / 2 + axialTiltRad, 0, 0]}>
-                  <ringGeometry args={[meta.ringInnerRadius || 2.2, meta.ringOuterRadius || 3.2, 64]} />
+                  <ringGeometry args={[radius * RING_RATIOS.URANUS[0], radius * RING_RATIOS.URANUS[1], 64]} />
                   <meshStandardMaterial
                     color="#bae6fd"
                     side={THREE.DoubleSide}
@@ -151,31 +153,14 @@ export const PlanetarySystem: React.FC = () => {
                 </mesh>
               )}
 
-              {/* Floating Information Label */}
+              {/* Rótulo único (D11): px fixos, anticolisão por prioridade */}
               {showLabels && (
-                <Html
-                  distanceFactor={50}
-                  position={[0, radius + 1.2, 0]}
-                  center
-                  className="pointer-events-none select-none"
+                <CelestialLabel
+                  anchorHeight={radius}
+                  priority={celestialLabelPriority(meta.equatorialRadiusKm, { focused: isFocused, hovered: isHovered })}
                 >
-                  <div className="flex flex-col items-center">
-                    <span
-                      className={`px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap shadow-md transition-all ${
-                        isFocused
-                          ? "bg-cyan-500/90 text-slate-950 font-bold border border-cyan-300"
-                          : isHovered
-                          ? "bg-slate-800/90 text-cyan-300 border border-cyan-500/50"
-                          : "bg-slate-900/80 text-slate-200 border border-slate-700/60"
-                      }`}
-                    >
-                      {planet.namePt}
-                    </span>
-                    <span className="text-[9px] font-mono text-slate-400 mt-0.5">
-                      {planet.distanceSunAu} UA
-                    </span>
-                  </div>
-                </Html>
+                  <CelestialLabelChip name={planet.namePt} detail={`${planet.distanceSunAu} UA`} focused={isFocused} hovered={isHovered} />
+                </CelestialLabel>
               )}
             </group>
           </group>
@@ -184,3 +169,4 @@ export const PlanetarySystem: React.FC = () => {
     </group>
   );
 };
+

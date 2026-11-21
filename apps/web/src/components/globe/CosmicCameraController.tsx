@@ -13,6 +13,7 @@ import {
   CelestialBodyId,
   currentMoonWorldPos,
 } from "@/lib/astronomy-planets";
+import { bodySceneRadius, scaledViewDistance, type CosmicScaleMode } from "@/lib/cosmic-scale";
 
 function resetControlsDeltas(ctrl: any) {
   if (!ctrl) return;
@@ -74,12 +75,41 @@ function getBodyViewOffset(id: CelestialBodyId | null): THREE.Vector3 {
   return new THREE.Vector3(0, distance * 0.45, distance * 0.9);
 }
 
+/** Mínimos de distância da câmera ao alvo (AGENTS.md §1: Lua ≥ 0,4; Terra ≥ 1,5). */
+function minimumViewDistance(id: CelestialBodyId | null): number {
+  if (id === "EARTH") return 1.5;
+  if (id === "MOON") return 0.4;
+  return 0.3;
+}
+
+/**
+ * Offset da câmera para o corpo focado na política de escala ativa (D11): o offset do modo visual
+ * é multiplicado pela razão entre os raios, respeitando os mínimos acima. Sol (vista geral) e
+ * Halley (sem corpo em escala) não mudam.
+ */
+export function getScaledBodyViewOffset(id: CelestialBodyId | null, mode: CosmicScaleMode): THREE.Vector3 {
+  const base = getBodyViewOffset(id);
+  if (!id || id === "SUN" || id === "HALLEY" || mode === "visual") return base;
+  const km = ASTROPHYSICAL_CATALOG[id].equatorialRadiusKm;
+  const distance = scaledViewDistance(base.length(), bodySceneRadius(km, "visual"), bodySceneRadius(km, mode), minimumViewDistance(id));
+  return base.normalize().multiplyScalar(distance);
+}
+
+/** Zoom mínimo do OrbitControls no modo Cosmos: 1,0 no visual; perto do corpo no modo real. */
+export function cosmicMinDistance(id: CelestialBodyId | null, mode: CosmicScaleMode): number {
+  if (mode === "visual" || !id || id === "SUN" || id === "HALLEY") return 1.0;
+  if (id === "EARTH") return 1.0;
+  if (id === "MOON") return 0.4;
+  return Math.max(0.1, bodySceneRadius(ASTROPHYSICAL_CATALOG[id].equatorialRadiusKm, mode) * 2.5);
+}
+
 export const CosmicCameraController: React.FC = () => {
   const { camera } = useThree();
   const controlsHook = useThree((state) => (state as any).controls);
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
+  const scaleMode = useCosmicStore((s) => s.scaleMode);
   const selectedYear = useTimelineStore((s) => s.selectedYear) || new Date().getUTCFullYear();
 
   // Animation state
@@ -92,6 +122,7 @@ export const CosmicCameraController: React.FC = () => {
   const transitionDuration = useRef<number>(1.5); // seconds
   const prevCosmicMode = useRef<boolean>(false);
   const prevFocusedId = useRef<CelestialBodyId | null>(null);
+  const prevScaleMode = useRef<CosmicScaleMode>(scaleMode);
 
   // Detect state transitions
   useEffect(() => {
@@ -99,8 +130,11 @@ export const CosmicCameraController: React.FC = () => {
 
     const cosmicModeChanged = prevCosmicMode.current !== isCosmicMode;
     const focusChanged = prevFocusedId.current !== focusedBodyId;
+    // Trocar a escala com um corpo focado reenquadra a câmera no novo tamanho.
+    const scaleChanged = prevScaleMode.current !== scaleMode && isCosmicMode && focusedBodyId !== null;
+    prevScaleMode.current = scaleMode;
 
-    if (cosmicModeChanged || focusChanged) {
+    if (cosmicModeChanged || focusChanged || scaleChanged) {
       prevCosmicMode.current = isCosmicMode;
       prevFocusedId.current = focusedBodyId;
 
@@ -127,11 +161,11 @@ export const CosmicCameraController: React.FC = () => {
         targetCameraPos.current.copy(bodyPos).add(offset);
       } else {
         // In Cosmic View
-        controlsHook.minDistance = 1.0;
+        controlsHook.minDistance = cosmicMinDistance(focusedBodyId, scaleMode);
         controlsHook.maxDistance = 1200.0;
 
         const bodyPos = getBodyPosition(focusedBodyId, selectedYear, isCosmicMode);
-        const offset = getBodyViewOffset(focusedBodyId);
+        const offset = getScaledBodyViewOffset(focusedBodyId, scaleMode);
 
         targetControlsTarget.current.copy(bodyPos);
         targetCameraPos.current.copy(bodyPos).add(offset);
@@ -140,7 +174,7 @@ export const CosmicCameraController: React.FC = () => {
       transitionProgress.current = 0.0;
       isTransitioning.current = true;
     }
-  }, [isCosmicMode, focusedBodyId, controlsHook, camera.position, selectedYear]);
+  }, [isCosmicMode, focusedBodyId, scaleMode, controlsHook, camera.position, selectedYear]);
 
   // Frame update
   useFrame((_, delta) => {

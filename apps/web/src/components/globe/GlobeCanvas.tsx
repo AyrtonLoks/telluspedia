@@ -9,6 +9,8 @@ import { OrbitControls } from "@react-three/drei";
 import { EarthSphere } from "./EarthSphere";
 import { Atmosphere } from "./Atmosphere";
 import { CloudLayer } from "./CloudLayer";
+import { CelestialLabelManager } from "./CelestialLabel";
+import { earthSystemScale } from "@/lib/cosmic-scale";
 
 /** Botões de alternância sobre o globo (tokens do design system — D14). */
 const GLOBE_TOGGLE =
@@ -77,6 +79,9 @@ export const GlobeCanvas: React.FC = () => {
   const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  const cosmicScaleMode = useCosmicStore((s) => s.scaleMode);
+  // D11: no modo Cosmos o grupo Terra + Lua segue a política única de escala.
+  const earthGroupScale = isCosmicMode ? earthSystemScale(cosmicScaleMode) : 1;
 
   // Compute Earth's position in cosmic space or origin for earth mode
   const earthPosition = useMemo(() => {
@@ -140,11 +145,12 @@ export const GlobeCanvas: React.FC = () => {
             <AsteroidBeltLayer />
             <CometHalleyTrajectory />
             <MeteorShowersLayer />
+            <CelestialLabelManager />
           </>
         )}
 
         {/* Earth Core Entities Group (Positioned at Origin in Earth View, or Orbit in Cosmic View) */}
-        <group position={earthPosition}>
+        <group position={earthPosition} scale={earthGroupScale}>
           {/* Realistic Moon Orbit */}
           <OrbitingMoon />
 

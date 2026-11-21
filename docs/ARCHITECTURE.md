@@ -247,6 +247,25 @@ O Horizonte 4 expande a escala da cena do raio planetário terrestre para o espa
    - Seleção da Terra no Modo Cosmos: suprime a inspeção de países soberanos individuais e abre a ficha técnica planetária no `CosmicInspectorHUD`, com botão "Explorar Superfície / Países" que restaura a visão geopolítica normal.
    - Seleção da Lua: interativa tanto na órbita terrestre normal quanto no Modo Cosmos, calculando dinamicamente `currentMoonWorldPos`, renderizando o anel de destaque e oferecendo botões contextuais de navegação ("Voltar à Terra" / "Focar na Terra").
 
+
+#### 2.4.1. Política de escala do modo Cosmos (D11)
+
+Uma regra só para todos os corpos sólidos (Sol, planetas, Plutão e Lua), implementada em `lib/cosmic-scale.ts`:
+
+| Grandeza | Regra | Onde |
+|---|---|---|
+| **Distância** ao Sol | Sempre comprimida: $R_{\text{cena}} = 28 \cdot r_{\text{UA}}^{0,55}$ (`mapDistanceToSceneRadius`). Distâncias lineares e raios reais não cabem juntos numa cena navegável: com Netuno a ~180 unidades, a Terra ficaria a 6 e seria um ponto subpixel. | `astronomy-planets.ts` |
+| **Raio — escala visual** (padrão) | Exagero com fator único: $r = (R / R_\oplus)^{0,43}$. A Terra fica com 1 (raio do `EarthSphere`), Júpiter com 2,8, o Sol com 7,5 (raio da geometria do `SunCore`) e Mercúrio com 0,66. A ordem real de tamanhos é preservada. | `bodySceneRadius(km, "visual")` |
+| **Raio — escala real** (educativo) | Proporção verdadeira: $r = 0{,}11 \cdot (R / R_\oplus)$. O fator 0,11 é o maior que mantém o Sol, com a coroa, dentro do periélio de Mercúrio na distância comprimida. Planetas pequenos viram pontos; os rótulos continuam permitindo achá-los. | `bodySceneRadius(km, "real")` |
+| **Terra + Lua** | O grupo da Terra (com Lua, fronteiras e camadas) é escalado por `earthSystemScale` (1 no visual, 0,11 no real); a Lua compensa até o raio da política. No modo Terra nada muda. | `GlobeCanvas`, `OrbitingMoon` |
+| **Anéis** | Múltiplos do raio do planeta: Saturno 1,22–2,3 R; Urano 1,22–1,78 R. | `RING_RATIOS` |
+| **Câmera** | O offset de foco do modo visual é multiplicado pela razão entre os raios dos dois modos, com os mínimos do `AGENTS.md` (Terra ≥ 1,5; Lua ≥ 0,4) e nunca dentro do corpo. Trocar a escala com um corpo focado reenquadra a câmera. | `getScaledBodyViewOffset`, `cosmicMinDistance` |
+| **Fora da regra** | Cometa (núcleo, coma e caudas), cinturão de asteroides e meteoros são partículas representativas, sem corpo sólido em escala. | — |
+
+O usuário alterna entre as duas escalas em **Camadas Cósmicas → Tamanho dos corpos**.
+
+**Rótulos.** Todo corpo usa o componente `<CelestialLabel>` (`components/globe/CelestialLabel.tsx`): tamanho fixo em px (sem `distanceFactor`), base 6 px acima do topo do corpo, conteúdo padrão `CelestialLabelChip` com os tokens do design system. O `CelestialLabelManager`, montado uma vez no Canvas do modo Cosmos, projeta as âncoras a cada quadro e resolve a anticolisão em espaço de tela (`lib/label-layout.ts`): ordena por prioridade — foco > hover > raio real — e esconde, com fade, o rótulo que encostaria num de prioridade maior ou que está atrás da câmera. Rótulo escondido não recebe clique.
+
 ---
 
 ## 3. Arquitetura do Backend (`services/data-pipeline`)
