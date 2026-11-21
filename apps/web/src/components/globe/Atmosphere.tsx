@@ -2,8 +2,9 @@
 
 import React, { useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
+import { worldSunDirection } from "@/lib/earth-orientation";
 
 /** Raio da casca de atmosfera (globo de raio 1). */
 export const ATMOSPHERE_RADIUS = 1.025;
@@ -77,9 +78,13 @@ export const Atmosphere: React.FC = () => {
   );
 
   useEffect(() => {
-    material.uniforms.uSunDirection.value.copy(sun.direction);
+    worldSunDirection(sun.direction, material.uniforms.uSunDirection.value);
     invalidate();
   }, [material, sun.direction, sun.timestamp, invalidate]);
+  // Acompanha a rotação do globo no Cosmos (D21).
+  useFrame(() => {
+    worldSunDirection(sun.direction, material.uniforms.uSunDirection.value);
+  });
 
   useEffect(() => () => material.dispose(), [material]);
 

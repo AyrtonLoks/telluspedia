@@ -7,6 +7,7 @@ import { Cloud, CloudSun, Sun } from "lucide-react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { EarthSphere } from "./EarthSphere";
+import { EarthOrientationGroup } from "./EarthOrientationGroup";
 import { Atmosphere } from "./Atmosphere";
 import { CloudLayer } from "./CloudLayer";
 import { CelestialLabelManager } from "./CelestialLabel";
@@ -173,29 +174,32 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
 
         {/* Earth Core Entities Group (Positioned at Origin in Earth View, or Orbit in Cosmic View) */}
         <group position={earthPosition} scale={earthGroupScale}>
-          {/* Realistic Moon Orbit */}
-          <OrbitingMoon />
+          {/* Referencial fixo da Terra → eclíptica no Cosmos: eixo inclinado e lado dia voltado ao Sol (D21) */}
+          <EarthOrientationGroup cosmic={isCosmicMode} earthPosition={earthPosition}>
+            {/* Realistic Moon Orbit */}
+            <OrbitingMoon />
 
-          {/* 3D Earth Mesh with Shader */}
-          <EarthSphere studyLighting={studyLighting} atmosphere={showAtmosphere} />
-          <CloudLayer enabled={showClouds} geological={isGeological} studyLighting={studyLighting} />
-          {showAtmosphere && <Atmosphere />}
+            {/* 3D Earth Mesh with Shader */}
+            <EarthSphere studyLighting={studyLighting} atmosphere={showAtmosphere} />
+            <CloudLayer enabled={showClouds} geological={isGeological} studyLighting={studyLighting} />
+            {showAtmosphere && <Atmosphere />}
 
-          {/* High-Resolution TopoJSON Borders */}
-          <CountryBorders />
+            {/* High-Resolution TopoJSON Borders */}
+            <CountryBorders />
 
-          {/* Paleogeographic Tectonic Plates & Suture Zones (Pangea) */}
-          {isGeological && <PaleoPlatesLayer />}
+            {/* Paleogeographic Tectonic Plates & Suture Zones (Pangea) */}
+            {isGeological && <PaleoPlatesLayer />}
 
-          {/* Player genérico de cenas (trajetórias de Magalhães, Apollo 11 e qualquer cena com dados) */}
-          {activeSceneData && <ScenePlayer scene={activeSceneData} />}
+            {/* Player genérico de cenas (trajetórias de Magalhães, Apollo 11 e qualquer cena com dados) */}
+            {activeSceneData && <ScenePlayer scene={activeSceneData} />}
 
-          {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
-          {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
-          {isContemporary && activeObservatoryLayers.includes("NASA_EONET") && <NasaEonetLayer />}
-          {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && <IssOrbitLayer />}
-          {isContemporary && activeObservatoryLayers.includes("FLIGHTS_OPENSKY") && <AirTrafficLayer />}
-          {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
+            {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
+            {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
+            {isContemporary && activeObservatoryLayers.includes("NASA_EONET") && <NasaEonetLayer />}
+            {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && <IssOrbitLayer />}
+            {isContemporary && activeObservatoryLayers.includes("FLIGHTS_OPENSKY") && <AirTrafficLayer />}
+            {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
+          </EarthOrientationGroup>
         </group>
       </Canvas>
 

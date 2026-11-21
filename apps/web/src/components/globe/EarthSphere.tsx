@@ -21,6 +21,7 @@ import {
 } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
+import { worldSunDirection } from "@/lib/earth-orientation";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import {
   loadHistoricalTopology,
@@ -368,9 +369,13 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
 
   // Astronomical Sun Synchronization (RN10, T14 — single source of truth via useSunDirection)
   useEffect(() => {
-    earthMaterial.uniforms.uSunDirection.value.copy(sun.direction);
+    worldSunDirection(sun.direction, earthMaterial.uniforms.uSunDirection.value);
     invalidate();
   }, [earthMaterial, sun.direction, sun.timestamp, invalidate]);
+  // No Cosmos o globo gira para a eclíptica (D21): a direção do Sol acompanha a rotação a cada quadro.
+  useFrame(() => {
+    worldSunDirection(sun.direction, earthMaterial.uniforms.uSunDirection.value);
+  });
 
   // Helper to resolve ISO / canonical historical entity from picked TopoJSON feature
   const resolveIsoFromFeature = (feature: CountryProperties | null): string | null => {
@@ -405,7 +410,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
     }
     if (!e.point || !activeSpatialIndex) return;
 
-    const { lat, lng } = vector3ToLatLng(e.point);
+    const { lat, lng } = vector3ToLatLng(e.object.worldToLocal(e.point.clone()));
     const feature = activeSpatialIndex([lng, lat]);
     const iso = resolveIsoFromFeature(feature);
 
@@ -440,7 +445,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
     }
     if (!e.point || !activeSpatialIndex) return;
 
-    const { lat, lng } = vector3ToLatLng(e.point);
+    const { lat, lng } = vector3ToLatLng(e.object.worldToLocal(e.point.clone()));
     const feature = activeSpatialIndex([lng, lat]);
     const iso = resolveIsoFromFeature(feature);
 

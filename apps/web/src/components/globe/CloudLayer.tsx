@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
+import { worldSunDirection } from "@/lib/earth-orientation";
 import { loadGlobeTexture } from "@/lib/textures/globeTextures";
 import { pickEarthTextureSet } from "./EarthSphere";
 
@@ -98,9 +99,13 @@ export const CloudLayer: React.FC<{ enabled: boolean; geological: boolean; study
   }, [gl, material, invalidate]);
 
   useEffect(() => {
-    material.uniforms.uSunDirection.value.copy(sun.direction);
+    worldSunDirection(sun.direction, material.uniforms.uSunDirection.value);
     invalidate();
   }, [material, sun.direction, sun.timestamp, invalidate]);
+  // Acompanha a rotação do globo no Cosmos (D21).
+  useFrame(() => {
+    worldSunDirection(sun.direction, material.uniforms.uSunDirection.value);
+  });
 
   useEffect(() => () => material.dispose(), [material]);
 
