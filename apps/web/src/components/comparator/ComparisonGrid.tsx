@@ -14,9 +14,14 @@ interface ComparisonCardProps {
 
 const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRemove }) => {
   const [flagError, setFlagError] = React.useState(false);
-  const gdp = c.indicators.find((i) => i.indicatorCode === "NY.GDP.MKTP.CD")?.value;
-  const hdi = c.indicators.find((i) => i.indicatorCode === "UNDP.HDI")?.value;
-  const lifeExp = c.indicators.find((i) => i.indicatorCode === "SP.DYN.LE00.IN")?.value;
+  const popInd = c.indicators.find((i) => i.indicatorCode === "SP.POP.TOTL");
+  const areaInd = c.indicators.find((i) => i.indicatorCode === "AG.SRF.TOTL.K2");
+  const gdpInd = c.indicators.find((i) => i.indicatorCode === "NY.GDP.MKTP.CD");
+  const hdiInd = c.indicators.find((i) => i.indicatorCode === "UNDP.HDI");
+  const lifeInd = c.indicators.find((i) => i.indicatorCode === "SP.DYN.LE00.IN");
+  const gdp = gdpInd?.value;
+  const hdi = hdiInd?.value;
+  const lifeExp = lifeInd?.value;
 
   const formatPop = (num: number | null) => {
     if (num === null) return "Dado indisponível";
@@ -74,35 +79,45 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">População</span>
+          <span className="text-[10px] text-slate-400 block">
+            População{popInd?.year ? ` (${popInd.year})` : ""}
+          </span>
           <span className={c.population !== null ? "font-semibold text-cyan-300" : "text-slate-500"}>
             {formatPop(c.population)}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">Área Territorial</span>
+          <span className="text-[10px] text-slate-400 block">
+            Área Territorial{areaInd?.year ? ` (${areaInd.year})` : ""}
+          </span>
           <span className={c.areaKm2 !== null ? "font-medium text-slate-200" : "text-slate-500"}>
             {c.areaKm2 !== null ? `${c.areaKm2.toLocaleString("pt-BR")} km²` : "Dado indisponível"}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">PIB Nominal</span>
+          <span className="text-[10px] text-slate-400 block">
+            PIB Nominal{gdpInd?.year ? ` (${gdpInd.year})` : ""}
+          </span>
           <span className={gdp !== undefined ? "font-semibold text-amber-300" : "text-slate-500"}>
             {formatGdp(gdp)}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">IDH</span>
+          <span className="text-[10px] text-slate-400 block">
+            IDH{hdiInd?.year ? ` (${hdiInd.year})` : ""}
+          </span>
           <span className={hdi !== undefined ? "font-semibold text-purple-300" : "text-slate-500"}>
             {hdi !== undefined ? hdi.toFixed(3) : "Dado indisponível"}
           </span>
         </div>
 
         <div>
-          <span className="text-[10px] text-slate-400 block">Expectativa de Vida</span>
+          <span className="text-[10px] text-slate-400 block">
+            Expectativa de Vida{lifeInd?.year ? ` (${lifeInd.year})` : ""}
+          </span>
           <span className={lifeExp !== undefined ? "font-medium text-slate-200" : "text-slate-500"}>
             {lifeExp !== undefined ? `${lifeExp} anos` : "Dado indisponível"}
           </span>

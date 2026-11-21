@@ -227,18 +227,46 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
             data-testid="inspector-summary-unavailable"
             className="text-label text-fg-secondary"
           >
-            Resumo descritivo indisponível para {currentCountry.nameCommon}. Identificação
-            geográfica e coordenadas fornecidas por{" "}
-            <a
-              href={currentCountry.sourceUrl || getSourceUrl("Natural Earth")}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-accent hover:text-accent-hover hover:underline"
-            >
-              Natural Earth (1:110m)
-            </a>
-            {currentCountry.referenceDate ? ` (ref. ${currentCountry.referenceDate})` : ""}.
+            Resumo descritivo indisponível para {currentCountry.nameCommon}.{" "}
+            {currentCountry.indicators.length > 0 ? (
+              <>
+                Indicadores oficiais obtidos do{" "}
+                <a
+                  href={`https://data.worldbank.org/country/${encodeURIComponent(currentCountry.isoCode)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-accent hover:text-accent-hover hover:underline"
+                >
+                  Banco Mundial (WDI)
+                </a>{" "}
+                e geografia de{" "}
+                <a
+                  href={getSourceUrl("Natural Earth")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-accent hover:text-accent-hover hover:underline"
+                >
+                  Natural Earth (1:110m)
+                </a>
+                {currentCountry.referenceDate ? ` (ref. ${currentCountry.referenceDate})` : ""}.
+              </>
+            ) : (
+              <>
+                Identificação geográfica e coordenadas fornecidas por{" "}
+                <a
+                  href={currentCountry.sourceUrl || getSourceUrl("Natural Earth")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-accent hover:text-accent-hover hover:underline"
+                >
+                  Natural Earth (1:110m)
+                </a>
+                {currentCountry.referenceDate ? ` (ref. ${currentCountry.referenceDate})` : ""}.
+              </>
+            )}
           </p>
         )}
       </div>

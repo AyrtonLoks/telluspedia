@@ -1,10 +1,33 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { PILOT_COUNTRIES } from "@/lib/country-data";
+import { getAllCountries } from "@/lib/country-data";
 
 export async function GET() {
+  const catalogCountries = getAllCountries();
+  const dbByIso = new Map<
+    string,
+    {
+      isoCode: string;
+      iso2: string;
+      nameCommon: string;
+      nameOfficial: string;
+      capital: string;
+      continent: string;
+      region: string;
+      population: bigint;
+      areaKm2: number;
+      latitude: number;
+      longitude: number;
+      timezone: string;
+      flagSvgUrl: string | null;
+      currencyCode: string;
+      governmentType: string;
+      headOfState: string;
+    }
+  >();
+
   try {
-    const countries = await prisma.country.findMany({
+    const dbCountries = await prisma.country.findMany({
       select: {
         isoCode: true,
         iso2: true,
@@ -25,35 +48,45 @@ export async function GET() {
       },
     });
 
-    if (countries && countries.length > 0) {
-      const serialized = countries.map((c) => ({
-        ...c,
-        population: Number(c.population),
-      }));
-      return NextResponse.json(serialized);
+    for (const c of dbCountries) {
+      dbByIso.set(c.isoCode, c);
     }
-  } catch (err) {
-    // Database not running or table empty -> use pilot fallback
+  } catch {
+    // Database not running or table empty -> use ingested catalog dataset
   }
 
-  const fallback = Object.values(PILOT_COUNTRIES).map((c) => ({
-    isoCode: c.isoCode,
-    iso2: c.iso2,
-    nameCommon: c.nameCommon,
-    nameOfficial: c.nameOfficial,
-    capital: c.capital,
-    continent: c.continent,
-    region: c.region,
-    population: c.population,
-    areaKm2: c.areaKm2,
-    latitude: c.latitude,
-    longitude: c.longitude,
-    timezone: c.timezone,
-    flagSvgUrl: c.flagSvgUrl,
-    currencyCode: c.currencyCode,
-    governmentType: c.governmentType,
-    headOfState: c.headOfState,
-  }));
+  const response = catalogCountries.map((c) => {
+    const db = dbByIso.get(c.isoCode);
+    const population =
+      db && db.population !== null && db.population !== undefined
+        ? Number(db.population)
+        : c.population;
 
-  return NextResponse.json(fallback);
+    return {
+      isoCode: c.isoCode,
+      iso2: db?.iso2 || c.iso2,
+      nameCommon: db?.nameCommon || c.nameCommon,
+      nameOfficial: db?.nameOfficial || c.nameOfficial,
+      capital: db?.capital || c.capital,
+      continent: db?.continent || c.continent,
+      region: db?.region || c.region,
+      population,
+      areaKm2: db?.areaKm2 ?? c.areaKm2,
+      latitude: db?.latitude ?? c.latitude,
+      longitude: db?.longitude ?? c.longitude,
+      timezone: db?.timezone || c.timezone,
+      flagSvgUrl: db?.flagSvgUrl || c.flagSvgUrl,
+      currencyCode: db?.currencyCode || c.currencyCode,
+      currencyName: c.currencyName,
+      governmentType: db?.governmentType || c.governmentType,
+      headOfState: db?.headOfState || c.headOfState,
+      completeness: c.completeness,
+      dataSource: c.dataSource,
+      referenceDate: c.referenceDate,
+      sourceUrl: c.sourceUrl,
+      indicators: c.indicators,
+    };
+  });
+
+  return NextResponse.json(response);
 }

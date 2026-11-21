@@ -4,8 +4,48 @@ import {
   HistoricalEraId,
 } from "./historical-entities";
 import worldCountriesDataset from "../../public/data/countries-ne-110m.json";
+import worldBankDataset from "../../public/data/countries-worldbank-indicators.json";
 
 export type DataCompleteness = "full" | "partial" | "none";
+
+export type CountryIndicatorCategory =
+  | "ECONOMY"
+  | "DEMOGRAPHY"
+  | "GEOGRAPHY"
+  | "HEALTH"
+  | "MILITARY";
+
+export interface CountryIndicator {
+  indicatorCode: string;
+  indicatorName: string;
+  category: CountryIndicatorCategory;
+  year: number;
+  value: number;
+  unit: string;
+  sourcePrimary: string;
+  sourceUrl?: string;
+  referenceDate?: string;
+}
+
+export interface WorldBankIndicatorSpec {
+  code: string;
+  name: string;
+  category: CountryIndicatorCategory;
+  unit: string;
+  sourcePrimary: string;
+  sourceUrl: string;
+  lastUpdated: string;
+}
+
+export interface WorldBankCountryEntry {
+  nameOfficial: string | null;
+  capital: string | null;
+  continent: string | null;
+  region: string | null;
+  currencyCode: string | null;
+  currencyName: string | null;
+  indicators: Record<string, { value: number; year: number }>;
+}
 
 export interface WorldCountryCatalogEntry {
   isoCode: string;
@@ -21,6 +61,42 @@ export interface WorldCountryCatalogEntry {
 export const WORLD_COUNTRIES_METADATA = worldCountriesDataset.metadata;
 export const WORLD_COUNTRIES_CATALOG: Record<string, WorldCountryCatalogEntry> =
   worldCountriesDataset.countries;
+
+export const WORLD_BANK_METADATA = worldBankDataset.metadata;
+export const WORLD_BANK_INDICATOR_SPECS: WorldBankIndicatorSpec[] =
+  worldBankDataset.metadata.indicators as WorldBankIndicatorSpec[];
+export const WORLD_BANK_COUNTRIES: Record<string, WorldBankCountryEntry> =
+  worldBankDataset.countries as Record<string, WorldBankCountryEntry>;
+
+function buildWorldBankIndicatorUrl(indicatorCode: string, iso2?: string): string {
+  const base = `https://data.worldbank.org/indicator/${encodeURIComponent(indicatorCode)}`;
+  return iso2 ? `${base}?locations=${encodeURIComponent(iso2)}` : base;
+}
+
+function hydrateWorldBankIndicators(isoCode: string, iso2?: string): CountryIndicator[] {
+  const entry = WORLD_BANK_COUNTRIES[isoCode];
+  if (!entry?.indicators) return [];
+
+  const result: CountryIndicator[] = [];
+  for (const spec of WORLD_BANK_INDICATOR_SPECS) {
+    const reading = entry.indicators[spec.code];
+    if (!reading || typeof reading.value !== "number" || !Number.isFinite(reading.value)) {
+      continue;
+    }
+    result.push({
+      indicatorCode: spec.code,
+      indicatorName: spec.name,
+      category: spec.category,
+      year: reading.year,
+      value: reading.value,
+      unit: spec.unit,
+      sourcePrimary: spec.sourcePrimary,
+      sourceUrl: buildWorldBankIndicatorUrl(spec.code, iso2),
+      referenceDate: spec.lastUpdated,
+    });
+  }
+  return result;
+}
 
 export interface CountryData {
   isoCode: string;
@@ -56,15 +132,7 @@ export interface CountryData {
   successorIsos?: string[];
   predecessorIsos?: string[];
   isHistoricalEntity?: boolean;
-  indicators: {
-    indicatorCode: string;
-    indicatorName: string;
-    category: "ECONOMY" | "DEMOGRAPHY" | "HEALTH" | "MILITARY";
-    year: number;
-    value: number;
-    unit: string;
-    sourcePrimary: string;
-  }[];
+  indicators: CountryIndicator[];
   dossierSections: {
     dimension:
       | "GEOGRAPHY"
@@ -1030,11 +1098,20 @@ export function getCountryData(iso: string, year?: number | null): CountryData |
 
   if (PILOT_COUNTRIES[resolvedIso]) {
     const pilot = PILOT_COUNTRIES[resolvedIso];
+    const wbIndicators = hydrateWorldBankIndicators(pilot.isoCode, pilot.iso2);
+    const existingCodes = new Set(pilot.indicators.map((i) => i.indicatorCode));
+    const mergedIndicators: CountryIndicator[] = [
+      ...pilot.indicators,
+      ...wbIndicators.filter((i) => !existingCodes.has(i.indicatorCode)),
+    ];
+
     return {
       ...pilot,
+      indicators: mergedIndicators,
       completeness: "full",
-      dataSource: "Banco Mundial / ONU / IBGE / Natural Earth",
-      referenceDate: "2024",
+      dataSource: "Banco Mundial (WDI) / ONU / IBGE / Natural Earth",
+      referenceDate: WORLD_BANK_METADATA.worldBankLastUpdated,
+      sourceUrl: `https://data.worldbank.org/country/${pilot.isoCode}`,
       milestones: pilot.milestones.map((m) => ({
         ...m,
         countryIso: m.countryIso || pilot.isoCode,
@@ -1044,75 +1121,92 @@ export function getCountryData(iso: string, year?: number | null): CountryData |
 
   const catalog = WORLD_COUNTRIES_CATALOG[normalized];
   const global = GLOBAL_COUNTRY_INFO[normalized];
+  const wb = WORLD_BANK_COUNTRIES[normalized];
 
-  if (global) {
-    const iso2 = global.iso2 || catalog?.iso2 || getIso2FromIso3(normalized) || "";
+  if (global || catalog || wb) {
+    const iso2 = global?.iso2 || catalog?.iso2 || getIso2FromIso3(normalized) || "";
+    const wbIndicators = hydrateWorldBankIndicators(normalized, iso2);
+    const wbPop = wb?.indicators?.["SP.POP.TOTL"]?.value ?? null;
+    const wbArea = wb?.indicators?.["AG.SRF.TOTL.K2"]?.value ?? null;
+
+    const population = wbPop !== null ? wbPop : (global?.population ?? null);
+    const areaKm2 = wbArea !== null ? wbArea : (global?.areaKm2 ?? null);
+    const nameOfficial = global?.nameOfficial ?? wb?.nameOfficial ?? null;
+    const capital = global?.capital ?? wb?.capital ?? null;
+    const continent = global?.continent ?? wb?.continent ?? null;
+    const region = global?.region ?? wb?.region ?? null;
+    const currencyCode = global?.currencyCode ?? wb?.currencyCode ?? null;
+    const currencyName = global?.currencyName ?? wb?.currencyName ?? null;
+    const governmentType = global?.governmentType ?? null;
+    const headOfState = global?.headOfState ?? null;
+    const summary = global?.summary ?? null;
+
+    const hasWorldBankData = wbIndicators.length > 0;
+    const hasPartialFacts =
+      hasWorldBankData ||
+      Boolean(global) ||
+      capital !== null ||
+      currencyCode !== null ||
+      population !== null ||
+      areaKm2 !== null;
+
     return {
       isoCode: normalized,
       iso2,
-      numericCode: global.numericCode ?? catalog?.numericCode ?? null,
-      nameCommon: global.nameCommon || catalog?.nameCommon || normalized,
-      nameOfficial: global.nameOfficial ?? null,
-      capital: global.capital ?? null,
-      continent: global.continent ?? null,
-      region: global.region ?? null,
-      population: global.population ?? null,
-      areaKm2: global.areaKm2 ?? null,
-      latitude: global.latitude ?? catalog?.latitude ?? null,
-      longitude: global.longitude ?? catalog?.longitude ?? null,
-      timezone: global.timezone ?? ISO3_TO_TIMEZONE[normalized] ?? null,
+      numericCode: global?.numericCode ?? catalog?.numericCode ?? null,
+      nameCommon: global?.nameCommon || catalog?.nameCommon || normalized,
+      nameOfficial,
+      capital,
+      continent,
+      region,
+      population,
+      areaKm2,
+      latitude: global?.latitude ?? catalog?.latitude ?? null,
+      longitude: global?.longitude ?? catalog?.longitude ?? null,
+      timezone: global?.timezone ?? ISO3_TO_TIMEZONE[normalized] ?? null,
       flagSvgUrl:
-        global.flagSvgUrl ||
+        global?.flagSvgUrl ||
         catalog?.flagSvgUrl ||
         (iso2 ? `https://flagcdn.com/${iso2.toLowerCase()}.svg` : ""),
-      currencyCode: global.currencyCode ?? null,
-      currencyName: global.currencyName ?? null,
-      governmentType: global.governmentType ?? null,
-      headOfState: global.headOfState ?? null,
-      summary: global.summary ?? null,
-      completeness: "partial",
-      dataSource: WORLD_COUNTRIES_METADATA.source,
-      referenceDate: WORLD_COUNTRIES_METADATA.referenceDate,
-      sourceUrl: WORLD_COUNTRIES_METADATA.sourceUrl,
-      wikidataQid: global.wikidataQid,
-      indicators: [],
-      dossierSections: [],
-      milestones: [],
-    };
-  }
-
-  if (catalog) {
-    return {
-      isoCode: catalog.isoCode,
-      iso2: catalog.iso2,
-      numericCode: catalog.numericCode,
-      nameCommon: catalog.nameCommon,
-      nameOfficial: null,
-      capital: null,
-      continent: null,
-      region: null,
-      population: null,
-      areaKm2: null,
-      latitude: catalog.latitude,
-      longitude: catalog.longitude,
-      timezone: ISO3_TO_TIMEZONE[catalog.isoCode] ?? null,
-      flagSvgUrl: catalog.flagSvgUrl,
-      currencyCode: null,
-      currencyName: null,
-      governmentType: null,
-      headOfState: null,
-      summary: null,
-      completeness: "none",
-      dataSource: WORLD_COUNTRIES_METADATA.source,
-      referenceDate: WORLD_COUNTRIES_METADATA.referenceDate,
-      sourceUrl: WORLD_COUNTRIES_METADATA.sourceUrl,
-      indicators: [],
+      currencyCode,
+      currencyName,
+      governmentType,
+      headOfState,
+      summary,
+      completeness: hasPartialFacts ? "partial" : "none",
+      dataSource: hasWorldBankData
+        ? "Banco Mundial (WDI) / REST Countries / Natural Earth"
+        : WORLD_COUNTRIES_METADATA.source,
+      referenceDate: hasWorldBankData
+        ? WORLD_BANK_METADATA.worldBankLastUpdated
+        : WORLD_COUNTRIES_METADATA.referenceDate,
+      sourceUrl: hasWorldBankData
+        ? `https://data.worldbank.org/country/${normalized}`
+        : WORLD_COUNTRIES_METADATA.sourceUrl,
+      wikidataQid: global?.wikidataQid,
+      indicators: wbIndicators,
       dossierSections: [],
       milestones: [],
     };
   }
 
   return null;
+}
+
+export function getAllCountries(): CountryData[] {
+  const allIsos = Array.from(
+    new Set([
+      ...Object.keys(WORLD_COUNTRIES_CATALOG),
+      ...Object.keys(PILOT_COUNTRIES),
+    ])
+  ).sort();
+
+  const countries: CountryData[] = [];
+  for (const iso of allIsos) {
+    const data = getCountryData(iso);
+    if (data) countries.push(data);
+  }
+  return countries;
 }
 
 export { getSourceUrl } from "./citations";

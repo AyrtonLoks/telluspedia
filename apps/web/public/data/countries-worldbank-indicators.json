@@ -1,0 +1,5206 @@
+{
+  "metadata": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-11-11",
+    "worldBankLastUpdated": "2026-11-11",
+    "sources": [
+      {
+        "id": "world-bank-wdi",
+        "name": "World Bank Indicators API v2 (World Development Indicators)",
+        "url": "https://data.worldbank.org/",
+        "apiUrl": "https://api.worldbank.org/v2/country/all/indicator/<CODE>?format=json&mrnev=1",
+        "license": "CC BY 4.0"
+      },
+      {
+        "id": "rest-countries",
+        "name": "REST Countries / mledoze/countries",
+        "url": "https://github.com/mledoze/countries",
+        "apiUrl": "https://raw.githubusercontent.com/mledoze/countries/master/countries.json",
+        "license": "ODbL 1.0"
+      }
+    ],
+    "indicators": [
+      {
+        "code": "SP.POP.TOTL",
+        "name": "População Total",
+        "category": "DEMOGRAPHY",
+        "unit": "habitantes",
+        "sourcePrimary": "Banco Mundial",
+        "sourceUrl": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+        "lastUpdated": "2026-11-11"
+      },
+      {
+        "code": "NY.GDP.MKTP.CD",
+        "name": "PIB a Preços Correntes",
+        "category": "ECONOMY",
+        "unit": "USD",
+        "sourcePrimary": "Banco Mundial",
+        "sourceUrl": "https://data.worldbank.org/indicator/NY.GDP.MKTP.CD",
+        "lastUpdated": "2026-11-11"
+      },
+      {
+        "code": "AG.SRF.TOTL.K2",
+        "name": "Área de Superfície",
+        "category": "GEOGRAPHY",
+        "unit": "km²",
+        "sourcePrimary": "Banco Mundial",
+        "sourceUrl": "https://data.worldbank.org/indicator/AG.SRF.TOTL.K2",
+        "lastUpdated": "2026-11-11"
+      },
+      {
+        "code": "SP.DYN.LE00.IN",
+        "name": "Expectativa de Vida ao Nascer",
+        "category": "HEALTH",
+        "unit": "anos",
+        "sourcePrimary": "Banco Mundial",
+        "sourceUrl": "https://data.worldbank.org/indicator/SP.DYN.LE00.IN",
+        "lastUpdated": "2026-11-11"
+      },
+      {
+        "code": "MS.MIL.XPND.GD.ZS",
+        "name": "Gastos Militares (% do PIB)",
+        "category": "MILITARY",
+        "unit": "%",
+        "sourcePrimary": "Banco Mundial",
+        "sourceUrl": "https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS",
+        "lastUpdated": "2026-11-11"
+      }
+    ],
+    "coverage": {
+      "totalCatalogCountries": 177,
+      "withPopulation": 170,
+      "withGdp": 169,
+      "withArea": 169,
+      "withLifeExpectancy": 170,
+      "withMilitaryExpenditure": 160,
+      "withRestCountriesMetadata": 176,
+      "withoutWorldBankData": [
+        "ATA",
+        "ATF",
+        "CYN",
+        "ESH",
+        "FLK",
+        "GUF",
+        "TWN"
+      ]
+    },
+    "notes": "Indicadores socioeconômicos e geográficos ingeridos diretamente da API oficial do Banco Mundial (mrnev=1: valor oficial mais recente não nulo) e metadados administrativos do dataset canônico REST Countries (mledoze/countries). Ausências reais nas fontes oficiais são mantidas como null."
+  },
+  "countries": {
+    "AFG": {
+      "nameOfficial": "República Islâmica do Afeganistão",
+      "capital": "Kabul",
+      "continent": "Asia",
+      "region": "Sul da Ásia",
+      "currencyCode": "AFN",
+      "currencyName": "Afegane afegão (؋)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 43844111,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 17778508876,
+          "year": 2024
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 652870,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 66.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.83,
+          "year": 2021
+        }
+      }
+    },
+    "AGO": {
+      "nameOfficial": "República de Angola",
+      "capital": "Luanda",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "AOA",
+      "currencyName": "Kwanza angolano (Kz)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 39040039,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 122174889424,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1246700,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 64.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.4,
+          "year": 2025
+        }
+      }
+    },
+    "ALB": {
+      "nameOfficial": "República da Albânia",
+      "capital": "Tirana",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "ALL",
+      "currencyName": "Lek albanês (L)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2349580,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 30540188271,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 28750,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 79.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.03,
+          "year": 2025
+        }
+      }
+    },
+    "ARE": {
+      "nameOfficial": "Emirados Árabes Unidos",
+      "capital": "Abu Dhabi",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "AED",
+      "currencyName": "Dirham dos Emirados Árabes Unidos (د.إ)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 11513149,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 552324919096,
+          "year": 2024
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 98647.9,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 5.64,
+          "year": 2014
+        }
+      }
+    },
+    "ARG": {
+      "nameOfficial": "República Argentina",
+      "capital": "Buenos Aires",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "ARS",
+      "currencyName": "Peso argentino ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 45851378,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 683097891619,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 2780400,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.56,
+          "year": 2025
+        }
+      }
+    },
+    "ARM": {
+      "nameOfficial": "República da Arménia",
+      "capital": "Yerevan",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "AMD",
+      "currencyName": "Dram armênio (֏)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3086700,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 29243452882,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 29740,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 6.09,
+          "year": 2025
+        }
+      }
+    },
+    "ATA": {
+      "nameOfficial": "Antártica",
+      "capital": null,
+      "continent": "Antarctic",
+      "region": "Antártida",
+      "currencyCode": null,
+      "currencyName": null,
+      "indicators": {}
+    },
+    "ATF": {
+      "nameOfficial": "Território do Sul e Antártica Francesa",
+      "capital": "Port-aux-Français",
+      "continent": "Antarctic",
+      "region": "Antártida",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {}
+    },
+    "AUS": {
+      "nameOfficial": "Comunidade da Austrália",
+      "capital": "Canberra",
+      "continent": "Oceania",
+      "region": "Austrália e Nova Zelândia",
+      "currencyCode": "AUD",
+      "currencyName": "Dólar australiano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 27614411,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1798518933689,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 7741220,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.92,
+          "year": 2025
+        }
+      }
+    },
+    "AUT": {
+      "nameOfficial": "República da Áustria",
+      "capital": "Vienna",
+      "continent": "Europe",
+      "region": "Europa Central",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 9208163,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 579470021095,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 83879,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.1,
+          "year": 2025
+        }
+      }
+    },
+    "AZE": {
+      "nameOfficial": "República do Azerbaijão",
+      "capital": "Baku",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "AZN",
+      "currencyName": "Manat azeri (₼)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10246996,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 75937647059,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 86600,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 6.47,
+          "year": 2025
+        }
+      }
+    },
+    "BDI": {
+      "nameOfficial": "República do Burundi",
+      "capital": "Gitega",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "BIF",
+      "currencyName": "Franco burundiano (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 14390003,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 3364713864,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 27834,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 63.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.24,
+          "year": 2025
+        }
+      }
+    },
+    "BEL": {
+      "nameOfficial": "Reino da Bélgica",
+      "capital": "Brussels",
+      "continent": "Europe",
+      "region": "Europa Ocidental",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 11941781,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 725466462860,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 30689.2,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.01,
+          "year": 2025
+        }
+      }
+    },
+    "BEN": {
+      "nameOfficial": "República do Benin",
+      "capital": "Porto-Novo",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "XOF",
+      "currencyName": "Franco CFA de BCEAO (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 14814460,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 24566420904,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 114760,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 61,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.89,
+          "year": 2025
+        }
+      }
+    },
+    "BFA": {
+      "nameOfficial": "Burkina Faso",
+      "capital": "Ouagadougou",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "XOF",
+      "currencyName": "Franco CFA de BCEAO (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 24074580,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 27627297461,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 274200,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 61.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.3,
+          "year": 2025
+        }
+      }
+    },
+    "BGD": {
+      "nameOfficial": "República Popular do Bangladesh",
+      "capital": "Dhaka",
+      "continent": "Asia",
+      "region": "Sul da Ásia",
+      "currencyCode": "BDT",
+      "currencyName": "Taka bengali (৳)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 175686899,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 456319229256,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 147570,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.81,
+          "year": 2025
+        }
+      }
+    },
+    "BGR": {
+      "nameOfficial": "República da Bulgária",
+      "capital": "Sofia",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 6433302,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 130777235530,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 111000,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 75.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.01,
+          "year": 2025
+        }
+      }
+    },
+    "BHS": {
+      "nameOfficial": "Comunidade das Bahamas",
+      "capital": "Nassau",
+      "continent": "Americas",
+      "region": "Caribe",
+      "currencyCode": "BSD",
+      "currencyName": "Dólar bahamense ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 403033,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 15832800000,
+          "year": 2024
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 13878,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74.7,
+          "year": 2024
+        }
+      }
+    },
+    "BIH": {
+      "nameOfficial": "Bósnia e Herzegovina",
+      "capital": "Sarajevo",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "BAM",
+      "currencyName": "Marco conversível da Bósnia e Herzegovina (KM)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3140095,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 32599982936,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 51210,
+          "year": 2023
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.73,
+          "year": 2025
+        }
+      }
+    },
+    "BLR": {
+      "nameOfficial": "República da Bielorrússia",
+      "capital": "Minsk",
+      "continent": "Europe",
+      "region": "Leste Europeu",
+      "currencyCode": "BYN",
+      "currencyName": "Rublo bielorrusso (Br)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 9085991,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 93397215864,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 207629,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.4,
+          "year": 2025
+        }
+      }
+    },
+    "BLZ": {
+      "nameOfficial": "Belize",
+      "capital": "Belmopan",
+      "continent": "Americas",
+      "region": "América Central",
+      "currencyCode": "BZD",
+      "currencyName": "Dólar belizenho ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 422924,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 3326500000,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 22966,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 73.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1,
+          "year": 2025
+        }
+      }
+    },
+    "BOL": {
+      "nameOfficial": "Estado Plurinacional da Bolívia",
+      "capital": "Sucre",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "BOB",
+      "currencyName": "Boliviano da Bolívia (Bs.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 12581843,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 64768947525,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1098580,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 68.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.21,
+          "year": 2025
+        }
+      }
+    },
+    "BRA": {
+      "nameOfficial": "República Federativa do Brasil",
+      "capital": "Brasília",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "BRL",
+      "currencyName": "Real brasileiro (R$)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 212812405,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 2279920092492,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 8510420,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.05,
+          "year": 2025
+        }
+      }
+    },
+    "BRN": {
+      "nameOfficial": "Nação do Brunei, Morada da Paz",
+      "capital": "Bandar Seri Begawan",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "BND",
+      "currencyName": "Dólar bruneano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 466330,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 15031980994,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 5770,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 75.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.65,
+          "year": 2024
+        }
+      }
+    },
+    "BTN": {
+      "nameOfficial": "Reino do Butão",
+      "capital": "Thimphu",
+      "continent": "Asia",
+      "region": "Sul da Ásia",
+      "currencyCode": "BTN",
+      "currencyName": "Ngultrum butanês (Nu.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 796682,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 3579320145,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 38390,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 73.3,
+          "year": 2024
+        }
+      }
+    },
+    "BWA": {
+      "nameOfficial": "República do Botswana",
+      "capital": "Gaborone",
+      "continent": "Africa",
+      "region": "África Austral",
+      "currencyCode": "BWP",
+      "currencyName": "Pula botsuanesa (P)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2562122,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 19928479839,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 581730,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 69.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.11,
+          "year": 2025
+        }
+      }
+    },
+    "CAF": {
+      "nameOfficial": "República Centro-Africano",
+      "capital": "Bangui",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "XAF",
+      "currencyName": "Franco CFA de BEAC (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5513282,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 3066109226,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 622980,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 57.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.33,
+          "year": 2025
+        }
+      }
+    },
+    "CAN": {
+      "nameOfficial": "Canadá",
+      "capital": "Ottawa",
+      "continent": "Americas",
+      "region": "América do Norte",
+      "currencyCode": "CAD",
+      "currencyName": "Dólar canadense ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 41651653,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 2319899772426,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 15634410,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.63,
+          "year": 2025
+        }
+      }
+    },
+    "CHE": {
+      "nameOfficial": "Confederação Suíça",
+      "capital": "Bern",
+      "continent": "Europe",
+      "region": "Europa Ocidental",
+      "currencyCode": "CHF",
+      "currencyName": "Franco suíço (Fr.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 9092436,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1043529899251,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 41290.7,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 84.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.76,
+          "year": 2025
+        }
+      }
+    },
+    "CHL": {
+      "nameOfficial": "República do Chile",
+      "capital": "Santiago",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "CLP",
+      "currencyName": "Peso chileno ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 19859921,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 357371159575,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 756556.4,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 81.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.52,
+          "year": 2025
+        }
+      }
+    },
+    "CHN": {
+      "nameOfficial": "República Popular da China",
+      "capital": "Beijing",
+      "continent": "Asia",
+      "region": "Leste Asiático",
+      "currencyCode": "CNY",
+      "currencyName": "Yuan chinês (¥)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1406585000,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 19498039388043,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 9562910,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.72,
+          "year": 2025
+        }
+      }
+    },
+    "CIV": {
+      "nameOfficial": "República da Côte d'Ivoire",
+      "capital": "Yamoussoukro",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "XOF",
+      "currencyName": "Franco CFA de BCEAO (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 32711547,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 99773555666,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 322460,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 62.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.77,
+          "year": 2025
+        }
+      }
+    },
+    "CMR": {
+      "nameOfficial": "República dos Camarões",
+      "capital": "Yaoundé",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "XAF",
+      "currencyName": "Franco CFA de BEAC (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 29879337,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 58933453924,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 475442,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 64,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.06,
+          "year": 2025
+        }
+      }
+    },
+    "COD": {
+      "nameOfficial": "República Democrática do Congo",
+      "capital": "Kinshasa",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "CDF",
+      "currencyName": "Franco congolês (FC)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 112832473,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 91030531317,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 2345410,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 62.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.38,
+          "year": 2025
+        }
+      }
+    },
+    "COG": {
+      "nameOfficial": "República do Congo",
+      "capital": "Brazzaville",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "XAF",
+      "currencyName": "Franco CFA de BEAC (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 6484437,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 16306633779,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 342000,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 66,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.31,
+          "year": 2025
+        }
+      }
+    },
+    "COL": {
+      "nameOfficial": "República da Colômbia",
+      "capital": "Bogotá",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "COP",
+      "currencyName": "Peso colombiano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 53425635,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 457410034203,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1140619.1,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.2,
+          "year": 2025
+        }
+      }
+    },
+    "CRI": {
+      "nameOfficial": "República da Costa Rica",
+      "capital": "San José",
+      "continent": "Americas",
+      "region": "América Central",
+      "currencyCode": "CRC",
+      "currencyName": "Colón costarriquenho (₡)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5152950,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 102904921157,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 51100,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 81,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0,
+          "year": 2025
+        }
+      }
+    },
+    "CUB": {
+      "nameOfficial": "República de Cuba",
+      "capital": "Havana",
+      "continent": "Americas",
+      "region": "Caribe",
+      "currencyCode": "CUP",
+      "currencyName": "Peso cubano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10937203,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 107352000000,
+          "year": 2020
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 109884,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.88,
+          "year": 2018
+        }
+      }
+    },
+    "CYN": {
+      "nameOfficial": null,
+      "capital": null,
+      "continent": null,
+      "region": null,
+      "currencyCode": null,
+      "currencyName": null,
+      "indicators": {}
+    },
+    "CYP": {
+      "nameOfficial": "República de Chipre",
+      "capital": "Nicosia",
+      "continent": "Europe",
+      "region": "Sul da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1370754,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 41225787247,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 9250,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 81.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.61,
+          "year": 2025
+        }
+      }
+    },
+    "CZE": {
+      "nameOfficial": "República Checa",
+      "capital": "Prague",
+      "continent": "Europe",
+      "region": "Europa Central",
+      "currencyCode": "CZK",
+      "currencyName": "Coroa tcheca (Kč)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10886878,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 391026962800,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 78871.4,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 80,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.84,
+          "year": 2025
+        }
+      }
+    },
+    "DEU": {
+      "nameOfficial": "República Federal da Alemanha",
+      "capital": "Berlin",
+      "continent": "Europe",
+      "region": "Europa Ocidental",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 83491249,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 5050922925047,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 357680,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 80.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.27,
+          "year": 2025
+        }
+      }
+    },
+    "DJI": {
+      "nameOfficial": "República do Djibouti",
+      "capital": "Djibouti",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "DJF",
+      "currencyName": "Franco djiboutiano (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1184076,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 4624533092,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 23200,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 66.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.63,
+          "year": 2008
+        }
+      }
+    },
+    "DNK": {
+      "nameOfficial": "Reino da Dinamarca",
+      "capital": "Copenhagen",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "DKK",
+      "currencyName": "Coroa dinamarquesa (kr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 6009169,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 462526660468,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 42920,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.25,
+          "year": 2025
+        }
+      }
+    },
+    "DOM": {
+      "nameOfficial": "República Dominicana",
+      "capital": "Santo Domingo",
+      "continent": "Americas",
+      "region": "Caribe",
+      "currencyCode": "DOP",
+      "currencyName": "Peso dominicano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 11520487,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 127407463759,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 146839.5,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 73.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.8,
+          "year": 2025
+        }
+      }
+    },
+    "DZA": {
+      "nameOfficial": "República Argelina Democrática e Popular",
+      "capital": "Algiers",
+      "continent": "Africa",
+      "region": "Norte da África",
+      "currencyCode": "DZD",
+      "currencyName": "Dinar argelino (د.ج)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 47435312,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 287031225988,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 2381740,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 8.83,
+          "year": 2025
+        }
+      }
+    },
+    "ECU": {
+      "nameOfficial": "República do Equador",
+      "capital": "Quito",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "USD",
+      "currencyName": "Dólar americano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 18289896,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 130320560400,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 256370,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.1,
+          "year": 2025
+        }
+      }
+    },
+    "EGY": {
+      "nameOfficial": "República Árabe do Egipto",
+      "capital": "Cairo",
+      "continent": "Africa",
+      "region": "Norte da África",
+      "currencyCode": "EGP",
+      "currencyName": "Libra egípcia (£)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 118365995,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 365254630180,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1001450,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 71.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.61,
+          "year": 2025
+        }
+      }
+    },
+    "ERI": {
+      "nameOfficial": "Estado da Eritreia",
+      "capital": "Asmara",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "ERN",
+      "currencyName": "Nakfa da Eritreia (Nfk)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3607003,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 2065001626,
+          "year": 2011
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 121630,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 68.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 20.87,
+          "year": 2003
+        }
+      }
+    },
+    "ESH": {
+      "nameOfficial": "República Árabe Saharaui Democrática",
+      "capital": "El Aaiún",
+      "continent": "Africa",
+      "region": "Norte da África",
+      "currencyCode": "DZD",
+      "currencyName": "Dinar argelino (دج)",
+      "indicators": {}
+    },
+    "ESP": {
+      "nameOfficial": "Reino de Espanha",
+      "capital": "Madrid",
+      "continent": "Europe",
+      "region": "Sul da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 49355143,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1906453309986,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 505981.3,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.13,
+          "year": 2025
+        }
+      }
+    },
+    "EST": {
+      "nameOfficial": "República da Estónia",
+      "capital": "Tallinn",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1366475,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 47030833799,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 45340,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 79.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.37,
+          "year": 2025
+        }
+      }
+    },
+    "ETH": {
+      "nameOfficial": "República Federal Democrática da Etiópia",
+      "capital": "Addis Ababa",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "ETB",
+      "currencyName": "Birr etíope (Br)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 135472051,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 126358758448,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1129818.8,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 67.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.49,
+          "year": 2025
+        }
+      }
+    },
+    "FIN": {
+      "nameOfficial": "República da Finlândia",
+      "capital": "Helsinki",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5646436,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 317039368820,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 338485,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.57,
+          "year": 2025
+        }
+      }
+    },
+    "FJI": {
+      "nameOfficial": "República de Fiji",
+      "capital": "Suva",
+      "continent": "Oceania",
+      "region": "Melanésia",
+      "currencyCode": "FJD",
+      "currencyName": "Dólar fijiano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 933154,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 6198013062,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 18333,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 67.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.33,
+          "year": 2025
+        }
+      }
+    },
+    "FLK": {
+      "nameOfficial": "Ilhas Malvinas",
+      "capital": "Stanley",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "FKP",
+      "currencyName": "Libra malvinense (£)",
+      "indicators": {}
+    },
+    "FRA": {
+      "nameOfficial": "República Francesa",
+      "capital": "Paris",
+      "continent": "Europe",
+      "region": "Europa Ocidental",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 68720337,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 3366315927447,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 606410,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.03,
+          "year": 2025
+        }
+      }
+    },
+    "GAB": {
+      "nameOfficial": "República do Gabão",
+      "capital": "Libreville",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "XAF",
+      "currencyName": "Franco CFA de BEAC (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2593130,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 21427119323,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 267670,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 68.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.66,
+          "year": 2025
+        }
+      }
+    },
+    "GBR": {
+      "nameOfficial": "Reino Unido da Grã-Bretanha e Irlanda do Norte",
+      "capital": "London",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "GBP",
+      "currencyName": "Libra esterlina (£)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 69487000,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 4002587541846,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 243610,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 81.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.35,
+          "year": 2025
+        }
+      }
+    },
+    "GEO": {
+      "nameOfficial": "Georgia",
+      "capital": "Tbilisi",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "GEL",
+      "currencyName": "Lari georgiano (₾)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3935766,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 38143612855,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 69700,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.75,
+          "year": 2025
+        }
+      }
+    },
+    "GHA": {
+      "nameOfficial": "República do Gana",
+      "capital": "Accra",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "GHS",
+      "currencyName": "Cedi ganês (₵)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 35064272,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 114209905279,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 238539,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 65.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.48,
+          "year": 2025
+        }
+      }
+    },
+    "GIN": {
+      "nameOfficial": "República da Guiné",
+      "capital": "Conakry",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "GNF",
+      "currencyName": "Franco guineano (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 15099727,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 28346024753,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 245857,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 60.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.03,
+          "year": 2025
+        }
+      }
+    },
+    "GMB": {
+      "nameOfficial": "República da Gâmbia",
+      "capital": "Banjul",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "GMD",
+      "currencyName": "Dalasi gambiano (D)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2822093,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 2593673988,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 11295,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 66.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.57,
+          "year": 2025
+        }
+      }
+    },
+    "GNB": {
+      "nameOfficial": "República da Guiné-Bissau",
+      "capital": "Bissau",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "XOF",
+      "currencyName": "Franco CFA de BCEAO (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2249515,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 2527930273,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 36125,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 64.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.89,
+          "year": 2025
+        }
+      }
+    },
+    "GNQ": {
+      "nameOfficial": "República da Guiné Equatorial",
+      "capital": "Ciudad de la Paz",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "XAF",
+      "currencyName": "Franco CFA de BEAC (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1938431,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 12823210426,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 28051.5,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 63.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.9,
+          "year": 2025
+        }
+      }
+    },
+    "GRC": {
+      "nameOfficial": "República Helénica",
+      "capital": "Athens",
+      "continent": "Europe",
+      "region": "Sul da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10413962,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 280635521324,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 131960,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 81.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.99,
+          "year": 2025
+        }
+      }
+    },
+    "GRL": {
+      "nameOfficial": "Groenlândia",
+      "capital": "Nuuk",
+      "continent": "Americas",
+      "region": "América do Norte",
+      "currencyCode": "DKK",
+      "currencyName": "Coroa dinamarquesa (kr.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 56831,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 3326543974,
+          "year": 2023
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 410449,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 70.3,
+          "year": 2024
+        }
+      }
+    },
+    "GTM": {
+      "nameOfficial": "República da Guatemala",
+      "capital": "Guatemala City",
+      "continent": "Americas",
+      "region": "América Central",
+      "currencyCode": "GTQ",
+      "currencyName": "Quetzal guatemalteco (Q)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 18687881,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 123306008821,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 108889,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.52,
+          "year": 2025
+        }
+      }
+    },
+    "GUF": {
+      "nameOfficial": "Guiana Francesa",
+      "capital": "Cayenne",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {}
+    },
+    "GUY": {
+      "nameOfficial": "Co -operative República da Guiana",
+      "capital": "Georgetown",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "GYD",
+      "currencyName": "Dólar guianense ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 835986,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 27097477218,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 214970,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 70.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.99,
+          "year": 2025
+        }
+      }
+    },
+    "HND": {
+      "nameOfficial": "República de Honduras",
+      "capital": "Tegucigalpa",
+      "continent": "Americas",
+      "region": "América Central",
+      "currencyCode": "HNL",
+      "currencyName": "Lempira hondurenha (L)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 11005850,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 39601409103,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 112492,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 73,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.46,
+          "year": 2025
+        }
+      }
+    },
+    "HRV": {
+      "nameOfficial": "República da Croácia",
+      "capital": "Zagreb",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3876200,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 105060182186,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 88070,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.02,
+          "year": 2025
+        }
+      }
+    },
+    "HTI": {
+      "nameOfficial": "República do Haiti",
+      "capital": "Port-au-Prince",
+      "continent": "Americas",
+      "region": "Caribe",
+      "currencyCode": "HTG",
+      "currencyName": "Gourde haitiano (G)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 11906095,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 32077278409,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 27750,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 65.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.12,
+          "year": 2025
+        }
+      }
+    },
+    "HUN": {
+      "nameOfficial": "Hungria",
+      "capital": "Budapest",
+      "continent": "Europe",
+      "region": "Europa Central",
+      "currencyCode": "HUF",
+      "currencyName": "Florim húngaro (Ft)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 9514251,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 246490213513,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 93030,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.04,
+          "year": 2025
+        }
+      }
+    },
+    "IDN": {
+      "nameOfficial": "República da Indonésia",
+      "capital": "Jakarta",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "IDR",
+      "currencyName": "Rupia indonésia (Rp)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 285721236,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1445642584164,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1916906.8,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 71.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.04,
+          "year": 2025
+        }
+      }
+    },
+    "IND": {
+      "nameOfficial": "República da Índia",
+      "capital": "New Delhi",
+      "continent": "Asia",
+      "region": "Sul da Ásia",
+      "currencyCode": "INR",
+      "currencyName": "Rupia indiana (₹)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1463865525,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 3956067115772,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 3287263,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.3,
+          "year": 2025
+        }
+      }
+    },
+    "IRL": {
+      "nameOfficial": "República da Irlanda",
+      "capital": "Dublin",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5484367,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 721701359046,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 70280,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.22,
+          "year": 2025
+        }
+      }
+    },
+    "IRN": {
+      "nameOfficial": "República Islâmica do Irã",
+      "capital": "Tehran",
+      "continent": "Asia",
+      "region": "Sul da Ásia",
+      "currencyCode": "IRR",
+      "currencyName": "Rial iraniano (﷼)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 92417681,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 362682115433,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1745150,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.09,
+          "year": 2025
+        }
+      }
+    },
+    "IRQ": {
+      "nameOfficial": "República do Iraque",
+      "capital": "Baghdad",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "IQD",
+      "currencyName": "Dinar iraquiano (ع.د)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 47020774,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 254367293538,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 435050,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.45,
+          "year": 2025
+        }
+      }
+    },
+    "ISL": {
+      "nameOfficial": "Islândia",
+      "capital": "Reykjavik",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "ISK",
+      "currencyName": "Coroa islandesa (kr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 392404,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 38582528789,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 103000,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0,
+          "year": 2025
+        }
+      }
+    },
+    "ISR": {
+      "nameOfficial": "Estado de Israel",
+      "capital": "Jerusalem",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "ILS",
+      "currencyName": "Novo shekel israelense (₪)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10122800,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 610777842874,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 22070,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 7.81,
+          "year": 2025
+        }
+      }
+    },
+    "ITA": {
+      "nameOfficial": "República Italiana",
+      "capital": "Rome",
+      "continent": "Europe",
+      "region": "Sul da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 58915656,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 2551556954100,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 302070,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 84,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.89,
+          "year": 2025
+        }
+      }
+    },
+    "JAM": {
+      "nameOfficial": "Jamaica",
+      "capital": "Kingston",
+      "continent": "Americas",
+      "region": "Caribe",
+      "currencyCode": "JMD",
+      "currencyName": "Dólar jamaicano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2837077,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 22704903218,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 10991,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 71.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.37,
+          "year": 2025
+        }
+      }
+    },
+    "JOR": {
+      "nameOfficial": "Reino Hachemita da Jordânia",
+      "capital": "Amman",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "JOD",
+      "currencyName": "Dinar jordaniano (د.ا)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 11520684,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 61610052535,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 89318,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 4.56,
+          "year": 2025
+        }
+      }
+    },
+    "JPN": {
+      "nameOfficial": "Japão",
+      "capital": "Tokyo",
+      "continent": "Asia",
+      "region": "Leste Asiático",
+      "currencyCode": "JPY",
+      "currencyName": "Iene japonês (¥)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 123366734,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 4435162999977,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 377974.7,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 84,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.41,
+          "year": 2025
+        }
+      }
+    },
+    "KAZ": {
+      "nameOfficial": "República do Cazaquistão",
+      "capital": "Astana",
+      "continent": "Asia",
+      "region": "Ásia Central",
+      "currencyCode": "KZT",
+      "currencyName": "Tenge cazaque (₸)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 20843754,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 306239209650,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 2724902,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.43,
+          "year": 2025
+        }
+      }
+    },
+    "KEN": {
+      "nameOfficial": "República do Quénia",
+      "capital": "Nairobi",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "KES",
+      "currencyName": "Xelim queniano (Sh)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 57532493,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 135941278879,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 591970,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 63.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.07,
+          "year": 2025
+        }
+      }
+    },
+    "KGZ": {
+      "nameOfficial": "República do Quirguistão",
+      "capital": "Bishkek",
+      "continent": "Asia",
+      "region": "Ásia Central",
+      "currencyCode": "KGS",
+      "currencyName": "Som quirguiz (с)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 7343064,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 22623752095,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 199950,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.92,
+          "year": 2025
+        }
+      }
+    },
+    "KHM": {
+      "nameOfficial": "Reino do Camboja",
+      "capital": "Phnom Penh",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "KHR",
+      "currencyName": "Riel cambojano (៛)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 17847982,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 51267065843,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 181035,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 70.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.45,
+          "year": 2025
+        }
+      }
+    },
+    "KOR": {
+      "nameOfficial": "República da Coreia",
+      "capital": "Seoul",
+      "continent": "Asia",
+      "region": "Leste Asiático",
+      "currencyCode": "KRW",
+      "currencyName": "Won sul-coreano (₩)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 51684564,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1872374961553,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 100460,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.6,
+          "year": 2025
+        }
+      }
+    },
+    "KWT": {
+      "nameOfficial": "Estado do Kuwait",
+      "capital": "Kuwait City",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "KWD",
+      "currencyName": "Dinar kuwaitiano (د.ك)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 4865298,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 157209026926,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 17820,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 84.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 4.69,
+          "year": 2025
+        }
+      }
+    },
+    "LAO": {
+      "nameOfficial": "Laos, República Democrática",
+      "capital": "Vientiane",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "LAK",
+      "currencyName": "Kip laosiano (₭)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 7873046,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 18302970219,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 236800,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 69.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.19,
+          "year": 2013
+        }
+      }
+    },
+    "LBN": {
+      "nameOfficial": "República Libanesa",
+      "capital": "Beirut",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "LBP",
+      "currencyName": "Libra libanesa (ل.ل)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5849421,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 25971643441,
+          "year": 2024
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 10452,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.51,
+          "year": 2025
+        }
+      }
+    },
+    "LBR": {
+      "nameOfficial": "República da Libéria",
+      "capital": "Monrovia",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "LRD",
+      "currencyName": "Dólar liberiano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5731206,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 5245938900,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 111370,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 62.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.85,
+          "year": 2025
+        }
+      }
+    },
+    "LBY": {
+      "nameOfficial": "Estado da Líbia",
+      "capital": "Tripoli",
+      "continent": "Africa",
+      "region": "Norte da África",
+      "currencyCode": "LYD",
+      "currencyName": "Dinar líbio (ل.د)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 7458555,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 48098909614,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1759540,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 71.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.57,
+          "year": 2023
+        }
+      }
+    },
+    "LKA": {
+      "nameOfficial": "República Democrática Socialista do Sri Lanka",
+      "capital": "Colombo",
+      "continent": "Asia",
+      "region": "Sul da Ásia",
+      "currencyCode": "LKR",
+      "currencyName": "Rupia cingalesa (Rs රු)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 21756000,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 108825231671,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 65610,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.31,
+          "year": 2025
+        }
+      }
+    },
+    "LSO": {
+      "nameOfficial": "Reino do Lesoto",
+      "capital": "Maseru",
+      "continent": "Africa",
+      "region": "África Austral",
+      "currencyCode": "LSL",
+      "currencyName": "Loti lesotiano (L)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2363325,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 2573572920,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 30360,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 57.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.63,
+          "year": 2025
+        }
+      }
+    },
+    "LTU": {
+      "nameOfficial": "República da Lituânia",
+      "capital": "Vilnius",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2888774,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 95210150818,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 65290,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.08,
+          "year": 2025
+        }
+      }
+    },
+    "LUX": {
+      "nameOfficial": "Grão-Ducado do Luxemburgo",
+      "capital": "Luxembourg",
+      "continent": "Europe",
+      "region": "Europa Ocidental",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 686970,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 101157829491,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 2590,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.85,
+          "year": 2025
+        }
+      }
+    },
+    "LVA": {
+      "nameOfficial": "República da Letónia",
+      "capital": "Riga",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1847785,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 48618869160,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 64590,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.61,
+          "year": 2025
+        }
+      }
+    },
+    "MAR": {
+      "nameOfficial": "Reino de Marrocos",
+      "capital": "Rabat",
+      "continent": "Africa",
+      "region": "Norte da África",
+      "currencyCode": "MAD",
+      "currencyName": "Dirham marroquino (د.م.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 38430770,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 182374250612,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 446550,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 75.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.54,
+          "year": 2025
+        }
+      }
+    },
+    "MDA": {
+      "nameOfficial": "República da Moldávia",
+      "capital": "Chișinău",
+      "continent": "Europe",
+      "region": "Leste Europeu",
+      "currencyCode": "MDL",
+      "currencyName": "Leu moldávio (L)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2360527,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 20351796275,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 33849,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 71.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.56,
+          "year": 2025
+        }
+      }
+    },
+    "MDG": {
+      "nameOfficial": "República de Madagáscar",
+      "capital": "Antananarivo",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "MGA",
+      "currencyName": "Ariary malgaxe (Ar)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 32740678,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 19620352036,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 591896,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 63.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.62,
+          "year": 2025
+        }
+      }
+    },
+    "MEX": {
+      "nameOfficial": "Estados Unidos Mexicanos",
+      "capital": "Mexico City",
+      "continent": "Americas",
+      "region": "América do Norte",
+      "currencyCode": "MXN",
+      "currencyName": "Peso mexicano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 131946900,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1832641364776,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1957193.9,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 75.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.74,
+          "year": 2025
+        }
+      }
+    },
+    "MKD": {
+      "nameOfficial": "República da Macedônia do Norte",
+      "capital": "Skopje",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "MKD",
+      "currencyName": "Dinar macedônio (den)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1820909,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 19101199817,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 25713,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.97,
+          "year": 2025
+        }
+      }
+    },
+    "MLI": {
+      "nameOfficial": "República do Mali",
+      "capital": "Bamako",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "XOF",
+      "currencyName": "Franco CFA de BCEAO (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 25198821,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 30069148581,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1241238,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 60.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.87,
+          "year": 2025
+        }
+      }
+    },
+    "MMR": {
+      "nameOfficial": "República da União de Myanmar",
+      "capital": "Naypyidaw",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "MMK",
+      "currencyName": "Quiate mianmarense (Ks)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 54850648,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 81665773810,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 676578,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 67.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 6.6,
+          "year": 2024
+        }
+      }
+    },
+    "MNE": {
+      "nameOfficial": "Montenegro",
+      "capital": "Podgorica",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 623129,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 9232801465,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 13883,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.89,
+          "year": 2025
+        }
+      }
+    },
+    "MNG": {
+      "nameOfficial": "Mongólia",
+      "capital": "Ulan Bator",
+      "continent": "Asia",
+      "region": "Leste Asiático",
+      "currencyCode": "MNT",
+      "currencyName": "Tugrik mongol (₮)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3568978,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 25369107325,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1564115.7,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.88,
+          "year": 2025
+        }
+      }
+    },
+    "MOZ": {
+      "nameOfficial": "República de Moçambique",
+      "capital": "Maputo",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "MZN",
+      "currencyName": "Metical moçambicano (MT)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 35631653,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 22337997046,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 799380,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 63.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.87,
+          "year": 2025
+        }
+      }
+    },
+    "MRT": {
+      "nameOfficial": "República Islâmica da Mauritânia",
+      "capital": "Nouakchott",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "MRU",
+      "currencyName": "Ouguiya mauritana (UM)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5315065,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 11679910946,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1030700,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 68.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.75,
+          "year": 2025
+        }
+      }
+    },
+    "MWI": {
+      "nameOfficial": "República do Malawi",
+      "capital": "Lilongwe",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "MWK",
+      "currencyName": "Kwacha malauiana (MK)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 22216120,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 14918276698,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 118484,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 67.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.15,
+          "year": 2025
+        }
+      }
+    },
+    "MYS": {
+      "nameOfficial": "Malásia",
+      "capital": "Kuala Lumpur",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "MYR",
+      "currencyName": "Ringgit malaio (RM)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 35977838,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 472193128645,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 330534,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.04,
+          "year": 2025
+        }
+      }
+    },
+    "NAM": {
+      "nameOfficial": "República da Namíbia",
+      "capital": "Windhoek",
+      "continent": "Africa",
+      "region": "África Austral",
+      "currencyCode": "NAD",
+      "currencyName": "Dólar namibiano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3092816,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 15080340654,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 824292,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 67.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.77,
+          "year": 2025
+        }
+      }
+    },
+    "NCL": {
+      "nameOfficial": "New Caledonia",
+      "capital": "Nouméa",
+      "continent": "Oceania",
+      "region": "Melanésia",
+      "currencyCode": "XPF",
+      "currencyName": "Franco CFP (₣)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 295333,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 8548919387,
+          "year": 2024
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 18576,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.9,
+          "year": 2024
+        }
+      }
+    },
+    "NER": {
+      "nameOfficial": "República do Níger",
+      "capital": "Niamey",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "XOF",
+      "currencyName": "Franco CFA de BCEAO (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 27917831,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 21646191388,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1267000,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 61.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.14,
+          "year": 2025
+        }
+      }
+    },
+    "NGA": {
+      "nameOfficial": "República Federal da Nigéria",
+      "capital": "Abuja",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "NGN",
+      "currencyName": "Naira nigeriana (₦)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 237527782,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 290794361542,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 923768,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 54.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.91,
+          "year": 2025
+        }
+      }
+    },
+    "NIC": {
+      "nameOfficial": "República da Nicarágua",
+      "capital": "Managua",
+      "continent": "Americas",
+      "region": "América Central",
+      "currencyCode": "NIO",
+      "currencyName": "Córdoba nicaraguense (C$)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 7007502,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 22237167113,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 130370,
+          "year": 2023
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 75.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.56,
+          "year": 2025
+        }
+      }
+    },
+    "NLD": {
+      "nameOfficial": "Holanda",
+      "capital": "Amsterdam",
+      "continent": "Europe",
+      "region": "Europa Ocidental",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 18087633,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1332767651100,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 41540,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.19,
+          "year": 2025
+        }
+      }
+    },
+    "NOR": {
+      "nameOfficial": "Reino da Noruega",
+      "capital": "Oslo",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "NOK",
+      "currencyName": "Coroa norueguesa (kr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5610870,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 530755719439,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 624500,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 83.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.28,
+          "year": 2025
+        }
+      }
+    },
+    "NPL": {
+      "nameOfficial": "República Democrática Federal do Nepal",
+      "capital": "Kathmandu",
+      "continent": "Asia",
+      "region": "Sul da Ásia",
+      "currencyCode": "NPR",
+      "currencyName": "Rupia nepalesa (₨)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 29618118,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 45489810283,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 147181,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 70.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.97,
+          "year": 2025
+        }
+      }
+    },
+    "NZL": {
+      "nameOfficial": "nova Zelândia",
+      "capital": "Wellington",
+      "continent": "Oceania",
+      "region": "Austrália e Nova Zelândia",
+      "currencyCode": "NZD",
+      "currencyName": "Dólar neozelandês ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5324700,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 264057413740,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 267710,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.1,
+          "year": 2025
+        }
+      }
+    },
+    "OMN": {
+      "nameOfficial": "Sultanato de Omã",
+      "capital": "Muscat",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "OMR",
+      "currencyName": "Rial omanense (ر.ع.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5494691,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 109604780696,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 309500,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 80.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 5.68,
+          "year": 2025
+        }
+      }
+    },
+    "PAK": {
+      "nameOfficial": "República Islâmica do Paquistão",
+      "capital": "Islamabad",
+      "continent": "Asia",
+      "region": "Sul da Ásia",
+      "currencyCode": "PKR",
+      "currencyName": "Rupia paquistanesa (₨)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 255219554,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 407307214476,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 796100,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 67.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.91,
+          "year": 2025
+        }
+      }
+    },
+    "PAN": {
+      "nameOfficial": "República do Panamá",
+      "capital": "Panama City",
+      "continent": "Americas",
+      "region": "América Central",
+      "currencyCode": "PAB",
+      "currencyName": "Balboa panamenho (B/.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 4571189,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 90462600000,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 75320,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 79.8,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0,
+          "year": 2025
+        }
+      }
+    },
+    "PER": {
+      "nameOfficial": "República do Peru",
+      "capital": "Lima",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "PEN",
+      "currencyName": "Novo sol peruano (S/.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 34576665,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 334854659182,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1285215.6,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.81,
+          "year": 2025
+        }
+      }
+    },
+    "PHL": {
+      "nameOfficial": "República das Filipinas",
+      "capital": "Manila",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "PHP",
+      "currencyName": "Peso filipino (₱)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 116786962,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 487086123720,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 300000,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 69.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.3,
+          "year": 2025
+        }
+      }
+    },
+    "PNG": {
+      "nameOfficial": "Estado Independente da Papua Nova Guiné",
+      "capital": "Port Moresby",
+      "continent": "Oceania",
+      "region": "Melanésia",
+      "currencyCode": "PGK",
+      "currencyName": "Kina papuásia (K)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10762817,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 32498658654,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 462840,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 66.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.35,
+          "year": 2025
+        }
+      }
+    },
+    "POL": {
+      "nameOfficial": "República da Polónia",
+      "capital": "Warsaw",
+      "continent": "Europe",
+      "region": "Europa Central",
+      "currencyCode": "PLN",
+      "currencyName": "Zloty polonês (zł)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 36435861,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1035491784197,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 313940,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 4.5,
+          "year": 2025
+        }
+      }
+    },
+    "PRI": {
+      "nameOfficial": "Commonwealth of Puerto Rico",
+      "capital": "San Juan",
+      "continent": "Americas",
+      "region": "Caribe",
+      "currencyCode": "USD",
+      "currencyName": "Dólar americano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3184835,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 129368484000,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 8870,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 81.9,
+          "year": 2024
+        }
+      }
+    },
+    "PRK": {
+      "nameOfficial": "República Popular Democrática da Coreia",
+      "capital": "Pyongyang",
+      "continent": "Asia",
+      "region": "Leste Asiático",
+      "currencyCode": "KPW",
+      "currencyName": "Won norte-coreano (₩)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 26571036,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 120540,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 73.7,
+          "year": 2024
+        }
+      }
+    },
+    "PRT": {
+      "nameOfficial": "República português",
+      "capital": "Lisbon",
+      "continent": "Europe",
+      "region": "Sul da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10804871,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 346639825142,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 92230,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.71,
+          "year": 2025
+        }
+      }
+    },
+    "PRY": {
+      "nameOfficial": "República do Paraguai",
+      "capital": "Asunción",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "PYG",
+      "currencyName": "Guarani paraguaio (₲)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 7013078,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 49278227554,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 406752,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.88,
+          "year": 2025
+        }
+      }
+    },
+    "PSE": {
+      "nameOfficial": "Estado da Palestina",
+      "capital": "Ramallah",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "EGP",
+      "currencyName": "Libra egípcia (E£)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5413596,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 17167100000,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 6025,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 69.2,
+          "year": 2024
+        }
+      }
+    },
+    "QAT": {
+      "nameOfficial": "Estado do Qatar",
+      "capital": "Doha",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "QAR",
+      "currencyName": "Rial catariano (ر.ق)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2972215,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 215559615385,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 11636.8,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 6.5,
+          "year": 2022
+        }
+      }
+    },
+    "ROU": {
+      "nameOfficial": "Romênia",
+      "capital": "Bucharest",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "RON",
+      "currencyName": "Leu romeno (lei)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 19020271,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 428677977855,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 238397,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.28,
+          "year": 2025
+        }
+      }
+    },
+    "RUS": {
+      "nameOfficial": "Federação Russa",
+      "capital": "Moscow",
+      "continent": "Europe",
+      "region": "Leste Europeu",
+      "currencyCode": "RUB",
+      "currencyName": "Rublo russo (₽)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 143513328,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 2561310169359,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 17125190,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 73.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 7.5,
+          "year": 2025
+        }
+      }
+    },
+    "RWA": {
+      "nameOfficial": "República do Ruanda",
+      "capital": "Kigali",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "RWF",
+      "currencyName": "Franco ruandês (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 14569341,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 16372132990,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 26340,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 68,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.29,
+          "year": 2025
+        }
+      }
+    },
+    "SAU": {
+      "nameOfficial": "Reino da Arábia Saudita",
+      "capital": "Riyadh",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "SAR",
+      "currencyName": "Riyal saudita (ر.س)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 36973555,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1276942933333,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 2149690,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 79,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 6.48,
+          "year": 2025
+        }
+      }
+    },
+    "SDN": {
+      "nameOfficial": "República do Sudão",
+      "capital": "Khartoum",
+      "continent": "Africa",
+      "region": "Norte da África",
+      "currencyCode": "SDG",
+      "currencyName": "Libra sudanesa (PT)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 51662147,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 60162634574,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1878000,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 66.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.93,
+          "year": 2021
+        }
+      }
+    },
+    "SEN": {
+      "nameOfficial": "República do Senegal",
+      "capital": "Dakar",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "XOF",
+      "currencyName": "Franco CFA de BCEAO (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 18931966,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 37006536238,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 196710,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 68.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.56,
+          "year": 2025
+        }
+      }
+    },
+    "SLB": {
+      "nameOfficial": "Ilhas Salomão",
+      "capital": "Honiara",
+      "continent": "Oceania",
+      "region": "Melanésia",
+      "currencyCode": "SBD",
+      "currencyName": "Dólar das Ilhas Salomão ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 838645,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1749572443,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 28446,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 70.7,
+          "year": 2024
+        }
+      }
+    },
+    "SLE": {
+      "nameOfficial": "República da Serra Leoa",
+      "capital": "Freetown",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "SLE",
+      "currencyName": "Leone de Serra Leoa (Le)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 8819794,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 7464157904,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 72300,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 62,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.37,
+          "year": 2025
+        }
+      }
+    },
+    "SLV": {
+      "nameOfficial": "República de El Salvador",
+      "capital": "San Salvador",
+      "continent": "Americas",
+      "region": "América Central",
+      "currencyCode": "USD",
+      "currencyName": "Dólar americano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 6365503,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 36708110000,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 21040,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.34,
+          "year": 2025
+        }
+      }
+    },
+    "SOM": {
+      "nameOfficial": "República Federal da Somália",
+      "capital": "Mogadishu",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "SOS",
+      "currencyName": "Xelim somali (Sh)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 19654739,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 12995200000,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 637657,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 59,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.54,
+          "year": 2025
+        }
+      }
+    },
+    "SRB": {
+      "nameOfficial": "República da Sérvia",
+      "capital": "Belgrade",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "RSD",
+      "currencyName": "Dinar sérvio (дин.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 6549143,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 99953324473,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 88490,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.76,
+          "year": 2025
+        }
+      }
+    },
+    "SSD": {
+      "nameOfficial": "República do Sudão do Sul",
+      "capital": "Juba",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "SSP",
+      "currencyName": "Libra sul-sudanesa (£)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 12188788,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 11997800760,
+          "year": 2015
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 646883,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 57.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.42,
+          "year": 2025
+        }
+      }
+    },
+    "SUR": {
+      "nameOfficial": "República do Suriname",
+      "capital": "Paramaribo",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "SRD",
+      "currencyName": "Dólar surinamês ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 639850,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 4523657797,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 163820,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 73.8,
+          "year": 2024
+        }
+      }
+    },
+    "SVK": {
+      "nameOfficial": "República Eslovaca",
+      "capital": "Bratislava",
+      "continent": "Europe",
+      "region": "Europa Central",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 5413813,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 154530066507,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 49030,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.03,
+          "year": 2025
+        }
+      }
+    },
+    "SVN": {
+      "nameOfficial": "República da Eslovénia",
+      "capital": "Ljubljana",
+      "continent": "Europe",
+      "region": "Europa Central",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 2130986,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 79648204979,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 20480,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 82.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.54,
+          "year": 2025
+        }
+      }
+    },
+    "SWE": {
+      "nameOfficial": "Reino da Suécia",
+      "capital": "Stockholm",
+      "continent": "Europe",
+      "region": "Norte da Europa",
+      "currencyCode": "SEK",
+      "currencyName": "Coroa sueca (kr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10596620,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 668998664082,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 528860,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 84.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.47,
+          "year": 2025
+        }
+      }
+    },
+    "SWZ": {
+      "nameOfficial": "Reino de eSwatini",
+      "capital": "Lobamba",
+      "continent": "Africa",
+      "region": "África Austral",
+      "currencyCode": "SZL",
+      "currencyName": "Lilangeni suazi (L)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1256174,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 5160679613,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 17364,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 64.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.6,
+          "year": 2025
+        }
+      }
+    },
+    "SYR": {
+      "nameOfficial": "República Árabe Síria",
+      "capital": "Damascus",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "SYP",
+      "currencyName": "Libra síria (£)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 25620427,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 23737634644,
+          "year": 2022
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 185180,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 4.06,
+          "year": 2010
+        }
+      }
+    },
+    "TCD": {
+      "nameOfficial": "República do Chade",
+      "capital": "N'Djamena",
+      "continent": "Africa",
+      "region": "África Central",
+      "currencyCode": "XAF",
+      "currencyName": "Franco CFA de BEAC (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 21003705,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 21472835225,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1284000,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 55.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.19,
+          "year": 2025
+        }
+      }
+    },
+    "TGO": {
+      "nameOfficial": "República do Togo",
+      "capital": "Lomé",
+      "continent": "Africa",
+      "region": "África Ocidental",
+      "currencyCode": "XOF",
+      "currencyName": "Franco CFA de BCEAO (Fr)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 8591626,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 11889949067,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 56785,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 62.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.87,
+          "year": 2025
+        }
+      }
+    },
+    "THA": {
+      "nameOfficial": "Reino da Tailândia",
+      "capital": "Bangkok",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "THB",
+      "currencyName": "Baht tailandês (฿)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 71619863,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 577009981112,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 513115,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.04,
+          "year": 2025
+        }
+      }
+    },
+    "TJK": {
+      "nameOfficial": "República do Tajiquistão",
+      "capital": "Dushanbe",
+      "continent": "Asia",
+      "region": "Ásia Central",
+      "currencyCode": "TJS",
+      "currencyName": "Somoni tadjique (ЅМ)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 10786734,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 17660626562,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 141379,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 71.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.47,
+          "year": 2025
+        }
+      }
+    },
+    "TKM": {
+      "nameOfficial": "Turcomenistão",
+      "capital": "Ashgabat",
+      "continent": "Asia",
+      "region": "Ásia Central",
+      "currencyCode": "TMT",
+      "currencyName": "Manat turcomeno (m)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 7618847,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 49828621356,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 491209,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 70.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.11,
+          "year": 1999
+        }
+      }
+    },
+    "TLS": {
+      "nameOfficial": "República Democrática de Timor-Leste",
+      "capital": "Dili",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "USD",
+      "currencyName": "Dólar americano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1418517,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1902180258,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 14870,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 67.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.25,
+          "year": 2025
+        }
+      }
+    },
+    "TTO": {
+      "nameOfficial": "República de Trinidad e Tobago",
+      "capital": "Port of Spain",
+      "continent": "Americas",
+      "region": "Caribe",
+      "currencyCode": "TTD",
+      "currencyName": "Dólar de Trinidad e Tobago ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1367764,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 25942749718,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 5128,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 73.6,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.94,
+          "year": 2025
+        }
+      }
+    },
+    "TUN": {
+      "nameOfficial": "República da Tunísia",
+      "capital": "Tunis",
+      "continent": "Africa",
+      "region": "Norte da África",
+      "currencyCode": "TND",
+      "currencyName": "Dinar tunisiano (د.ت)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 12348573,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 57502836548,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 163610,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 76.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.49,
+          "year": 2025
+        }
+      }
+    },
+    "TUR": {
+      "nameOfficial": "República da Turquia",
+      "capital": "Ankara",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "TRY",
+      "currencyName": "Lira turca (₺)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 85878556,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1597293229287,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 785350,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 77.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.91,
+          "year": 2025
+        }
+      }
+    },
+    "TWN": {
+      "nameOfficial": "República da China",
+      "capital": "Taipei",
+      "continent": "Asia",
+      "region": "Leste Asiático",
+      "currencyCode": "TWD",
+      "currencyName": "Novo dólar taiwanês ($)",
+      "indicators": {}
+    },
+    "TZA": {
+      "nameOfficial": "República Unida da Tanzânia",
+      "capital": "Dodoma",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "TZS",
+      "currencyName": "Xelim tanzaniano (Sh)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 70545865,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 90143496090,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 945500,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 67.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.16,
+          "year": 2025
+        }
+      }
+    },
+    "UGA": {
+      "nameOfficial": "República do Uganda",
+      "capital": "Kampala",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "UGX",
+      "currencyName": "Xelim ugandense (Sh)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 51384894,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 61985829288,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 241551,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 68.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.96,
+          "year": 2025
+        }
+      }
+    },
+    "UKR": {
+      "nameOfficial": "Ucrânia",
+      "capital": "Kyiv",
+      "continent": "Europe",
+      "region": "Leste Europeu",
+      "currencyCode": "UAH",
+      "currencyName": "Hryvnia ucraniano (₴)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 38980376,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 214233312784,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 603550,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 39.56,
+          "year": 2025
+        }
+      }
+    },
+    "URY": {
+      "nameOfficial": "República Oriental do Uruguai",
+      "capital": "Montevideo",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "UYU",
+      "currencyName": "Peso uruguaio ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 3384688,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 85347696278,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 176215,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.28,
+          "year": 2025
+        }
+      }
+    },
+    "USA": {
+      "nameOfficial": "Estados Unidos da América",
+      "capital": "Washington D.C.",
+      "continent": "Americas",
+      "region": "América do Norte",
+      "currencyCode": "USD",
+      "currencyName": "Dólar americano ($)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 341784857,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 30769700000000,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 9831510,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.9,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.12,
+          "year": 2025
+        }
+      }
+    },
+    "UZB": {
+      "nameOfficial": "República do Usbequistão",
+      "capital": "Tashkent",
+      "continent": "Asia",
+      "region": "Ásia Central",
+      "currencyCode": "UZS",
+      "currencyName": "Som uzbeque (so'm)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 37053428,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 147038081129,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 448923,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.49,
+          "year": 2018
+        }
+      }
+    },
+    "VEN": {
+      "nameOfficial": "República Bolivariana da Venezuela",
+      "capital": "Caracas",
+      "continent": "Americas",
+      "region": "América do Sul",
+      "currencyCode": "VES",
+      "currencyName": "Bolívar venezuelano (Bs.S.)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 28516896,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 99661244156,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 912050,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 72.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.23,
+          "year": 2017
+        }
+      }
+    },
+    "VNM": {
+      "nameOfficial": "República Socialista do Vietname",
+      "capital": "Hanoi",
+      "continent": "Asia",
+      "region": "Sudeste Asiático",
+      "currencyCode": "VND",
+      "currencyName": "Dong vietnamita (₫)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 101598527,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 514697215165,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 331338.3,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 74.7,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 2.15,
+          "year": 2025
+        }
+      }
+    },
+    "VUT": {
+      "nameOfficial": "República de Vanuatu",
+      "capital": "Port Vila",
+      "continent": "Oceania",
+      "region": "Melanésia",
+      "currencyCode": "VUV",
+      "currencyName": "Vatu de Vanuatu (Vt)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 335169,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 1353658841,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 12189,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 71.7,
+          "year": 2024
+        }
+      }
+    },
+    "XKX": {
+      "nameOfficial": "República do Kosovo",
+      "capital": "Pristina",
+      "continent": "Europe",
+      "region": "Sudeste da Europa",
+      "currencyCode": "EUR",
+      "currencyName": "Euro (€)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 1576876,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 12456403307,
+          "year": 2025
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 78.2,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.85,
+          "year": 2025
+        }
+      }
+    },
+    "YEM": {
+      "nameOfficial": "República do Iêmen",
+      "capital": "Sana'a",
+      "continent": "Asia",
+      "region": "Oriente Médio / Ásia Ocidental",
+      "currencyCode": "YER",
+      "currencyName": "Rial iemenita (﷼)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 41773878,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 21606160663,
+          "year": 2018
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 527968,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 69.4,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 3.97,
+          "year": 2014
+        }
+      }
+    },
+    "ZAF": {
+      "nameOfficial": "República da África do Sul",
+      "capital": "Pretoria",
+      "continent": "Africa",
+      "region": "África Austral",
+      "currencyCode": "ZAR",
+      "currencyName": "Rand sul-africano (R)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 64747319,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 427184325997,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 1219602,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 66.3,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.74,
+          "year": 2025
+        }
+      }
+    },
+    "ZMB": {
+      "nameOfficial": "República da Zâmbia",
+      "capital": "Lusaka",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "ZMW",
+      "currencyName": "Kwacha zambiano (ZK)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 21913874,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 28879806220,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 752612,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 66.5,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 1.26,
+          "year": 2025
+        }
+      }
+    },
+    "ZWE": {
+      "nameOfficial": "República do Zimbabwe",
+      "capital": "Harare",
+      "continent": "Africa",
+      "region": "África Oriental",
+      "currencyCode": "BWP",
+      "currencyName": "Pula botsuanesa (P)",
+      "indicators": {
+        "SP.POP.TOTL": {
+          "value": 16950795,
+          "year": 2025
+        },
+        "NY.GDP.MKTP.CD": {
+          "value": 51215643906,
+          "year": 2025
+        },
+        "AG.SRF.TOTL.K2": {
+          "value": 390760,
+          "year": 2024
+        },
+        "SP.DYN.LE00.IN": {
+          "value": 63.1,
+          "year": 2024
+        },
+        "MS.MIL.XPND.GD.ZS": {
+          "value": 0.56,
+          "year": 2025
+        }
+      }
+    }
+  }
+}

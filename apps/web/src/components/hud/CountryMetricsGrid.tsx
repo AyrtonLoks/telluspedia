@@ -25,6 +25,8 @@ interface CountryMetricsGridProps {
     value: number;
     unit: string;
     sourcePrimary?: string;
+    sourceUrl?: string;
+    referenceDate?: string;
     year?: number;
     category?: string;
   }[];
@@ -67,17 +69,27 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
 
   const popIndicator = indicators?.find((i) => i.indicatorCode === "SP.POP.TOTL");
+  const areaIndicator = indicators?.find((i) => i.indicatorCode === "AG.SRF.TOTL.K2");
   const gdpIndicator = indicators?.find((i) => i.indicatorCode === "NY.GDP.MKTP.CD");
   const hdiIndicator = indicators?.find((i) => i.indicatorCode === "UNDP.HDI");
   const lifeExpectancy = indicators?.find((i) => i.indicatorCode === "SP.DYN.LE00.IN");
   const militaryExp = indicators?.find((i) => i.indicatorCode === "MS.MIL.XPND.GD.ZS");
 
   const popSource = popIndicator?.sourcePrimary || "Banco Mundial";
-  const areaSource = "Natural Earth";
+  const areaSource = areaIndicator?.sourcePrimary || "Natural Earth";
   const gdpSource = gdpIndicator?.sourcePrimary || "Banco Mundial";
   const hdiSource = hdiIndicator?.sourcePrimary || "PNUD";
   const lifeSource = lifeExpectancy?.sourcePrimary || "OMS";
   const milSource = militaryExp?.sourcePrimary || "SIPRI";
+
+  const popUrl = popIndicator?.sourceUrl || getSourceUrl(popSource, "SP.POP.TOTL");
+  const areaUrl =
+    areaIndicator?.sourceUrl ||
+    getSourceUrl(areaSource, areaIndicator ? "AG.SRF.TOTL.K2" : undefined);
+  const gdpUrl = gdpIndicator?.sourceUrl || getSourceUrl(gdpSource, "NY.GDP.MKTP.CD");
+  const hdiUrl = hdiIndicator?.sourceUrl || getSourceUrl(hdiSource, "UNDP.HDI");
+  const lifeUrl = lifeExpectancy?.sourceUrl || getSourceUrl(lifeSource, "SP.DYN.LE00.IN");
+  const milUrl = militaryExp?.sourceUrl || getSourceUrl(milSource, "MS.MIL.XPND.GD.ZS");
 
   const formatPop = (num: number) => {
     if (num >= 1e9) return `${(num / 1e9).toFixed(2)} bilhões`;
@@ -164,12 +176,12 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           {population !== null && (
             <div className="flex items-center gap-1 shrink-0">
               <a
-                href={getSourceUrl(popSource, "SP.POP.TOTL")}
+                href={popUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${popSource} (Abrir Repositório)`}
+                title={`Fonte Primária: ${popSource}${popIndicator?.year ? ` (${popIndicator.indicatorCode}, ${popIndicator.year})` : ""} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(popSource)}</span>
                 <ExternalLink aria-hidden="true" className="h-3 w-3" />
@@ -181,9 +193,9 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                   setCitationModalOpen(true, {
                     title: `População Total (${formatPop(population)})`,
                     countryName,
-                    url: getSourceUrl(popSource, "SP.POP.TOTL"),
+                    url: popUrl,
                     accessDate: new Date(),
-                    publicationYear: 2026,
+                    publicationYear: popIndicator?.year ?? 2026,
                   });
                 }}
                 className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
@@ -204,6 +216,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         >
           {population !== null ? formatPop(population) : "Dado indisponível"}
         </div>
+        {population !== null && popIndicator?.year && (
+          <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
+            {popIndicator.indicatorCode} · {popIndicator.year}
+          </div>
+        )}
       </div>
 
       {/* Área */}
@@ -216,12 +233,12 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           {areaKm2 !== null && (
             <div className="flex items-center gap-1 shrink-0">
               <a
-                href={getSourceUrl(areaSource)}
+                href={areaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${areaSource} (1:110m) (Abrir Repositório)`}
+                title={`Fonte Primária: ${areaSource}${areaIndicator?.year ? ` (${areaIndicator.indicatorCode}, ${areaIndicator.year})` : " (1:110m)"} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(areaSource)}</span>
                 <ExternalLink aria-hidden="true" className="h-3 w-3" />
@@ -233,9 +250,9 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                   setCitationModalOpen(true, {
                     title: `Área Territorial (${areaKm2.toLocaleString("pt-BR")} km²)`,
                     countryName,
-                    url: getSourceUrl(areaSource),
+                    url: areaUrl,
                     accessDate: new Date(),
-                    publicationYear: 2026,
+                    publicationYear: areaIndicator?.year ?? 2026,
                   });
                 }}
                 className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
@@ -256,6 +273,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         >
           {areaKm2 !== null ? `${areaKm2.toLocaleString("pt-BR")} km²` : "Dado indisponível"}
         </div>
+        {areaKm2 !== null && areaIndicator?.year && (
+          <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
+            {areaIndicator.indicatorCode} · {areaIndicator.year}
+          </div>
+        )}
       </div>
 
       {/* PIB */}
@@ -268,12 +290,12 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           {gdpIndicator !== undefined && (
             <div className="flex items-center gap-1 shrink-0">
               <a
-                href={getSourceUrl(gdpSource, "NY.GDP.MKTP.CD")}
+                href={gdpUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${gdpSource} (Abrir Repositório)`}
+                title={`Fonte Primária: ${gdpSource}${gdpIndicator.year ? ` (${gdpIndicator.indicatorCode}, ${gdpIndicator.year})` : ""} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(gdpSource)}</span>
                 <ExternalLink aria-hidden="true" className="h-3 w-3" />
@@ -285,9 +307,9 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                   setCitationModalOpen(true, {
                     title: `PIB Nominal (${formatGdp(gdpIndicator.value)})`,
                     countryName,
-                    url: getSourceUrl(gdpSource, "NY.GDP.MKTP.CD"),
+                    url: gdpUrl,
                     accessDate: new Date(),
-                    publicationYear: 2026,
+                    publicationYear: gdpIndicator.year ?? 2026,
                   });
                 }}
                 className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
@@ -308,6 +330,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         >
           {formatGdp(gdpIndicator?.value)}
         </div>
+        {gdpIndicator?.year && (
+          <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
+            {gdpIndicator.indicatorCode} · {gdpIndicator.year}
+          </div>
+        )}
       </div>
 
       {/* IDH */}
@@ -320,12 +347,12 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           {hdiIndicator !== undefined && (
             <div className="flex items-center gap-1 shrink-0">
               <a
-                href={getSourceUrl(hdiSource, "UNDP.HDI")}
+                href={hdiUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${hdiSource} (Abrir Repositório)`}
+                title={`Fonte Primária: ${hdiSource}${hdiIndicator.year ? ` (${hdiIndicator.indicatorCode}, ${hdiIndicator.year})` : ""} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(hdiSource)}</span>
                 <ExternalLink aria-hidden="true" className="h-3 w-3" />
@@ -337,9 +364,9 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                   setCitationModalOpen(true, {
                     title: `Índice de Desenvolvimento Humano (IDH: ${hdiIndicator.value.toFixed(3)})`,
                     countryName,
-                    url: getSourceUrl(hdiSource, "UNDP.HDI"),
+                    url: hdiUrl,
                     accessDate: new Date(),
-                    publicationYear: 2026,
+                    publicationYear: hdiIndicator.year ?? 2026,
                   });
                 }}
                 className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
@@ -360,9 +387,14 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         >
           {hdiIndicator?.value !== undefined ? hdiIndicator.value.toFixed(3) : "Dado indisponível"}
         </div>
+        {hdiIndicator?.year && (
+          <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
+            {hdiIndicator.indicatorCode} · {hdiIndicator.year}
+          </div>
+        )}
       </div>
 
-      {/* Indicadores Complementares de Saúde e Segurança (OMS / SIPRI) se presentes */}
+      {/* Indicadores Complementares de Saúde e Segurança (OMS / Banco Mundial / SIPRI) se presentes */}
       {lifeExpectancy && (
         <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
           <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
@@ -372,12 +404,12 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <a
-                href={getSourceUrl(lifeSource, "SP.DYN.LE00.IN")}
+                href={lifeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${lifeSource} (Abrir Repositório)`}
+                title={`Fonte Primária: ${lifeSource}${lifeExpectancy.year ? ` (${lifeExpectancy.indicatorCode}, ${lifeExpectancy.year})` : ""} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(lifeSource)}</span>
                 <ExternalLink aria-hidden="true" className="h-3 w-3" />
@@ -389,9 +421,9 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                   setCitationModalOpen(true, {
                     title: `Expectativa de Vida ao Nascer (${lifeExpectancy.value} ${lifeExpectancy.unit})`,
                     countryName,
-                    url: getSourceUrl(lifeSource, "SP.DYN.LE00.IN"),
+                    url: lifeUrl,
                     accessDate: new Date(),
-                    publicationYear: 2026,
+                    publicationYear: lifeExpectancy.year ?? 2026,
                   });
                 }}
                 className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
@@ -405,6 +437,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           <div className="font-mono text-body font-medium tabular-nums text-fg">
             {lifeExpectancy.value} {lifeExpectancy.unit}
           </div>
+          {lifeExpectancy.year && (
+            <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
+              {lifeExpectancy.indicatorCode} · {lifeExpectancy.year}
+            </div>
+          )}
         </div>
       )}
 
@@ -417,12 +454,12 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <a
-                href={getSourceUrl(milSource, "MS.MIL.XPND.GD.ZS")}
+                href={milUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${milSource} (Abrir Repositório)`}
+                title={`Fonte Primária: ${milSource}${militaryExp.year ? ` (${militaryExp.indicatorCode}, ${militaryExp.year})` : ""} (Abrir Repositório)`}
               >
                 <span>{formatSourceBadge(milSource)}</span>
                 <ExternalLink aria-hidden="true" className="h-3 w-3" />
@@ -434,9 +471,9 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
                   setCitationModalOpen(true, {
                     title: `Gastos Militares (% do PIB: ${militaryExp.value}%)`,
                     countryName,
-                    url: getSourceUrl(milSource, "MS.MIL.XPND.GD.ZS"),
+                    url: milUrl,
                     accessDate: new Date(),
-                    publicationYear: 2026,
+                    publicationYear: militaryExp.year ?? 2026,
                   });
                 }}
                 className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
@@ -450,6 +487,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           <div className="font-mono text-body font-medium tabular-nums text-fg">
             {militaryExp.value}% PIB
           </div>
+          {militaryExp.year && (
+            <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
+              {militaryExp.indicatorCode} · {militaryExp.year}
+            </div>
+          )}
         </div>
       )}
 

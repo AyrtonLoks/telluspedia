@@ -114,7 +114,8 @@ export function getSourceUrl(source?: string, indicatorCode?: string): string {
       s.includes("bm") ||
       indicatorCode.startsWith("NY.") ||
       indicatorCode.startsWith("SP.") ||
-      indicatorCode.startsWith("MS.")
+      indicatorCode.startsWith("MS.") ||
+      indicatorCode.startsWith("AG.")
     ) {
       return `https://data.worldbank.org/indicator/${indicatorCode}`;
     }

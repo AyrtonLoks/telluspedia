@@ -168,3 +168,34 @@ eixo Y invertido porque o `KTX2Loader` usa `flipY = false`.
 **Escolha de resolução:** 4096 px quando `maxTextureSize ≥ 8192`, senão 2048 px (`pickEarthTextureSet` em `EarthSphere.tsx`).
 
 **Limitações conhecidas:** as nuvens são de 2048 px (a versão de 8192 px do Blue Marble não está no novo acervo da NASA); o KTX2 diurno de 4K tem ~6 MB (UASTC, para preservar o degradê do oceano) contra ~1,4 MB do JPG, em troca de ~4× menos memória de vídeo e sem decodificação na thread principal; as suturas de `PaleoPlatesLayer` (`pangea-plates-250ma.json`) usam coordenadas atuais e não se alinham aos paleomapas reconstruídos.
+
+---
+
+## Anexo — Indicadores do Banco Mundial e Metadados de Países (T26, 2026-11-20)
+
+Arquivo versionado em `apps/web/public/data/countries-worldbank-indicators.json`, gerado de forma determinística e reproduzível pelo script `apps/web/scripts/ingest-worldbank-indicators.mjs` para todos os **177 países/territórios** do catálogo Natural Earth 1:110m (`apps/web/public/data/countries-ne-110m.json`).
+
+### Fontes primárias e licenças
+
+| Série / Conjunto | Código Oficial | Fonte Primária | Licença |
+|---|---|---|---|
+| População Total | `SP.POP.TOTL` | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/SP.POP.TOTL)) | CC BY 4.0 |
+| PIB a Preços Correntes (USD) | `NY.GDP.MKTP.CD` | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/NY.GDP.MKTP.CD)) | CC BY 4.0 |
+| Área de Superfície (km²) | `AG.SRF.TOTL.K2` | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/AG.SRF.TOTL.K2)) | CC BY 4.0 |
+| Expectativa de Vida ao Nascer (anos) | `SP.DYN.LE00.IN` | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/SP.DYN.LE00.IN)) | CC BY 4.0 |
+| Gastos Militares (% do PIB) | `MS.MIL.XPND.GD.ZS` | World Bank Indicators API v2 / SIPRI ([WDI](https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS)) | CC BY 4.0 |
+| Nome oficial (pt-BR), capital, região e moeda | ISO 3166-1 alpha-3 | REST Countries / [`mledoze/countries`](https://github.com/mledoze/countries) | ODbL 1.0 |
+
+### Como regenerar o dataset
+
+```sh
+node apps/web/scripts/ingest-worldbank-indicators.mjs
+# Para validar cobertura sem sobrescrever o arquivo:
+node apps/web/scripts/ingest-worldbank-indicators.mjs --dry-run
+```
+
+### Política de integridade e ausências reais (RN02 / T03)
+
+- A consulta à API do Banco Mundial usa `mrnev=1` (*most recent non-empty value*), registrando o ano exato de cada leitura e a data de atualização (`lastupdated`) do conjunto de dados.
+- **Nenhum valor é estimado ou inventado**: territórios sem publicação oficial no Banco Mundial (`ATA`, `ATF`, `CYN`, `ESH`, `FLK`, `GUF`, `TWN`) ou séries ausentes em países específicos (ex.: `NY.GDP.MKTP.CD` e `MS.MIL.XPND.GD.ZS` para `PRK`, `AG.SRF.TOTL.K2` para `XKX`) permanecem como `null` / omitidos e renderizam **"Dado indisponível"** na interface.
+- Cobertura atual: **170/177** população, **169/177** PIB nominal, **169/177** área territorial, **170/177** expectativa de vida, **160/177** gastos militares e **176/177** metadados administrativos (somente `CYN` ausente em ambas as fontes).

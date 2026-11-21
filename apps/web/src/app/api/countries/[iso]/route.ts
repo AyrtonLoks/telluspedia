@@ -31,7 +31,7 @@ export async function GET(
       if (country) {
         return NextResponse.json({
           ...country,
-          population: Number(country.population),
+          population: country.population !== null ? Number(country.population) : null,
         });
       }
     } catch {
