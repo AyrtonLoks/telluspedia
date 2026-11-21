@@ -1263,6 +1263,7 @@ A camada "Rotas Marítimas Globais" é só um conjunto de 5 polylines estáticas
 
 - 2026-11-20 · codex · IN_PROGRESS · Reaberta após revisão do Ayrton. Substituir as silhuetas individuais por miniaturas de navios com leitura visual semelhante à camada aérea.
 - 2026-11-20 · codex · REVIEW · Miniaturas 3D originais com seis variantes, orientação AIS e malhas instanciadas por classe. As capturas de Malaca mostram antes a seta individual e depois casco, cabine e convés visíveis junto ao agrupamento numerado. Chromium validou as seis variantes no globo, a seleção direta, a posição estimada e o agrupamento de 130 embarcações. Typecheck, lint, 483 testes e build passaram. Implementação em `bd54fc8`.
+- 2026-11-20 · codex · REVIEW · Ayrton aprovou as miniaturas 3D. A nova verificação com AIS Stream recebeu posições ao vivo em Malaca e no Canal da Mancha. Suez ficou sem leituras nas três amostras ao vivo. O critério de cobertura dos três corredores permanece pendente.
 
 ---
 
