@@ -68,6 +68,8 @@ describe("D17: painéis abrem e fecham animados", () => {
     }
     assert.match(read("src/components/layout/dockFrame.ts"), /animate-sheet-out lg:animate-panel-out" : "animate-sheet-in lg:animate-panel-in/);
     assert.match(read("src/components/ui/Dialog.tsx"), /data-\[state=closed\]:animate-pop-out/);
+    // Fragmento como filho do Portal faz o Radix desmontar sem esperar a saída.
+    assert.match(read("src/components/ui/Dialog.tsx"), /<RadixDialog\.Portal>\s*\{overlay\}\s*\{content\}\s*<\/RadixDialog\.Portal>/);
     assert.match(read("src/components/scenes/ScenePlayerOverlay.tsx"), /closing \? "animate-rise-out" : "animate-rise-in"/);
     // Um modal que retorna null antes do <Dialog> some sem animar: o Dialog precisa receber open={false}.
     for (const [f, flag] of [
