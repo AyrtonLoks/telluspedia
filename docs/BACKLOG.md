@@ -173,12 +173,12 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | DONE | antigravity | T13 | G-PAIS, G-ESTUDOS, G-SHELL |
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
-| T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | TODO | — | — | G-ESTUDOS |
+| T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | IN_PROGRESS | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
 | T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
-| T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | REVIEW | antigravity | T03 | G-PAIS, G-PIPELINE |
+| T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | DONE | antigravity | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | DONE | antigravity | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | DONE | claude | D01 | G-GLOBO, G-EPOCA |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
@@ -818,7 +818,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 
 ### T20 · Migrations Prisma e restrições do schema
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t20-prisma-migrations · **Worktree:** ../telluspedia-wt/antigravity-t20
 - **Prioridade:** P2 · **Área:** Backend · **Tamanho:** M · **Depende de:** — · **Grupos:** G-ESTUDOS
 
 **Contexto / problema**
@@ -836,6 +836,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (001e345). Grupo G-ESTUDOS livre; desbloqueia D12 (P1).
 
 ---
 
@@ -938,7 +939,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### T26 · Ingestão de indicadores reais do Banco Mundial (177 países)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t26-worldbank-indicators · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t26-worldbank-indicators · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Dados · **Tamanho:** G · **Depende de:** T03 · **Grupos:** G-PAIS, G-PIPELINE
 
 **Contexto / problema**
@@ -961,6 +962,7 @@ Após a remoção dos valores inventados na T03, os ~147 países fora de `PILOT_
 - 2026-11-20 · antigravity · TODO · Tarefa de follow-up aberta ao concluir T03.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (af782d1). Grupos G-PAIS e G-PIPELINE livres.
 - 2026-11-20 · antigravity · REVIEW · Criado script reproduzível `apps/web/scripts/ingest-worldbank-indicators.mjs` (suporta `--dry-run`, retry/paginação, zero dependências extras) consultando a World Bank Indicators API v2 (`mrnev=1`, `lastupdated: 2026-11-11`, CC BY 4.0) para `SP.POP.TOTL`, `NY.GDP.MKTP.CD`, `AG.SRF.TOTL.K2`, `SP.DYN.LE00.IN` e `MS.MIL.XPND.GD.ZS` e o dataset canônico REST Countries (`mledoze/countries`, ODbL 1.0, com alias `XKX→UNK` e localização pt-BR via `Intl.DisplayNames`), gerando o dataset versionado e normalizado `apps/web/public/data/countries-worldbank-indicators.json` (122 KB / 14 KB gzip; cobertura real sobre os 177 territórios do catálogo Natural Earth 1:110m: 170 população, 169 PIB, 169 área, 170 expectativa de vida, 160 gastos militares, 176 metadados administrativos; 7 territórios sem publicação no Banco Mundial mantidos como `null`: `ATA`, `ATF`, `CYN`, `ESH`, `FLK`, `GUF`, `TWN`). Integrado em `lib/country-data.ts` (`getCountryData`, `getAllCountries`, `WORLD_BANK_METADATA`/`WORLD_BANK_COUNTRIES`), `lib/citations.ts` (suporte a `AG.*` em `getSourceUrl`), `app/api/countries/route.ts` (retorna todos os 177 países preservando `null` sem converter para `0`), `components/hud/CountryMetricsGrid.tsx` (exibe código oficial + ano `{indicatorCode} · {year}` e link direto `data.worldbank.org/indicator/...?locations=<ISO2>` em tokens D14), `components/hud/InspectorHUD.tsx` e `components/comparator/ComparisonGrid.tsx`. Documentado em `docs/DATA_SOURCES.md`. Validação: `node apps/web/scripts/ingest-worldbank-indicators.mjs --dry-run`, `pnpm typecheck`, `pnpm lint`, `pnpm test` (459/459, com suite expandida em `test/country-data-integrity.test.tsx`), `pnpm build` e verificação HTTP ao vivo na porta 3003 (`/api/countries` 177 itens; `/api/countries/{COD,KAZ,PER,BRA,PRK,CYN,XYZ}` e SSR `/pais/{COD,KAZ,PER,BRA,CYN}` confirmando indicadores reais com ano/link e "Dado indisponível" para ausências reais como `CYN` e PIB de `PRK`). Commit: 5afb7c1.
+- 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
