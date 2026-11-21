@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { EONET_CATEGORIES, type EonetCategoryFilter } from "@/lib/observatory-data";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Crosshair } from "lucide-react";
 import { AIS_REGIONS, vesselIsMoving } from "@/lib/ais-data";
 import { useGlobeStore } from "@/stores/globeStore";

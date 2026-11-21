@@ -51,6 +51,87 @@ export function formatSourceBadge(source: string): string {
   return source.slice(0, 10) + "…";
 }
 
+
+type IconType = React.ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
+
+/**
+ * Rodapé de fonte (RN02): fonte primária com link para o repositório, código e ano do indicador, e
+ * a citação como ação secundária (aparece ao passar o mouse ou focar; sempre visível no toque).
+ */
+const SourceFooter: React.FC<{
+  source: string;
+  sourceUrl: string;
+  title: string;
+  detail?: string;
+  citeLabel: string;
+  onCite?: () => void;
+}> = ({ source, sourceUrl, title, detail, citeLabel, onCite }) => (
+  <div className="mt-auto flex min-w-0 items-center gap-1 pt-1 text-caption text-fg-muted">
+    <a
+      href={sourceUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="inline-flex shrink-0 items-center gap-0.5 text-accent hover:text-accent-hover hover:underline"
+      title={title}
+    >
+      <span>{formatSourceBadge(source)}</span>
+      <ExternalLink aria-hidden="true" className="h-3 w-3" />
+    </a>
+    {detail && <span className="min-w-0 truncate font-mono tabular-nums" title={detail}>· {detail}</span>}
+    {onCite && (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onCite();
+        }}
+        className="ml-auto shrink-0 rounded-control p-1 text-fg-muted opacity-0 transition-opacity duration-fast ease-out hover:bg-surface-hover hover:text-fg focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+        title={citeLabel}
+        aria-label={citeLabel}
+      >
+        <Quote aria-hidden="true" className="h-3 w-3" />
+      </button>
+    )}
+  </div>
+);
+
+/** Cartão de indicador: nome inteiro, valor e, embaixo, a fonte (D16). */
+const MetricCard: React.FC<{
+  icon: IconType;
+  label: string;
+  value: string | null;
+  source: string;
+  sourceUrl: string;
+  code?: string;
+  year?: number;
+  sourceNote?: string;
+  onCite?: () => void;
+}> = ({ icon: Icon, label, value, source, sourceUrl, code, year, sourceNote, onCite }) => {
+  const detail = [code, year].filter(Boolean).join(" · ") || sourceNote;
+  return (
+    <div className="group flex min-w-0 flex-col rounded-card border border-line bg-surface-raised p-2.5">
+      <div className="flex min-w-0 items-center gap-1.5 text-caption text-fg-secondary">
+        <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
+        <span className="truncate" title={label}>{label}</span>
+      </div>
+      <div className={value !== null ? "mt-1 font-mono text-body font-medium tabular-nums text-fg" : "mt-1 text-label text-fg-muted"}>
+        {value ?? "Dado indisponível"}
+      </div>
+      {value !== null && (
+        <SourceFooter
+          source={source}
+          sourceUrl={sourceUrl}
+          detail={detail}
+          title={`Fonte Primária: ${source}${code && year ? ` (${code}, ${year})` : sourceNote ? ` (${sourceNote})` : ""} (Abrir Repositório)`}
+          citeLabel="Gerar citação deste indicador"
+          onCite={onCite}
+        />
+      )}
+    </div>
+  );
+};
+
 export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   countryName = "TellusPedia",
   isoCode,
@@ -164,378 +245,83 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
     Boolean(currencyName) ||
     Boolean(currencyCode);
 
+  const cite = (title: string, url: string, year?: number) =>
+    setCitationModalOpen(true, { title, countryName, url, accessDate: new Date(), publicationYear: year ?? 2026 });
+
   return (
     <div className="grid grid-cols-2 gap-2 text-label">
-      {/* População */}
-      <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
-        <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
-          <div className="flex items-center gap-1.5 truncate">
-            <Users aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-            <span className="truncate">População</span>
-          </div>
-          {population !== null && (
-            <div className="flex items-center gap-1 shrink-0">
-              <a
-                href={popUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${popSource}${popIndicator?.year ? ` (${popIndicator.indicatorCode}, ${popIndicator.year})` : ""} (Abrir Repositório)`}
-              >
-                <span>{formatSourceBadge(popSource)}</span>
-                <ExternalLink aria-hidden="true" className="h-3 w-3" />
-              </a>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCitationModalOpen(true, {
-                    title: `População Total (${formatPop(population)})`,
-                    countryName,
-                    url: popUrl,
-                    accessDate: new Date(),
-                    publicationYear: popIndicator?.year ?? 2026,
-                  });
-                }}
-                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-                title="Gerar citação deste indicador"
-                aria-label="Gerar citação deste indicador"
-              >
-                <Quote aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </div>
-          )}
-        </div>
-        <div
-          className={
-            population !== null
-              ? "font-mono text-body font-medium tabular-nums text-fg"
-              : "text-label text-fg-muted"
-          }
-        >
-          {population !== null ? formatPop(population) : "Dado indisponível"}
-        </div>
-        {population !== null && popIndicator?.year && (
-          <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
-            {popIndicator.indicatorCode} · {popIndicator.year}
-          </div>
-        )}
-      </div>
-
-      {/* Área */}
-      <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
-        <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
-          <div className="flex items-center gap-1.5 truncate">
-            <Maximize2 aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-            <span className="truncate">Área Territorial</span>
-          </div>
-          {areaKm2 !== null && (
-            <div className="flex items-center gap-1 shrink-0">
-              <a
-                href={areaUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${areaSource}${areaIndicator?.year ? ` (${areaIndicator.indicatorCode}, ${areaIndicator.year})` : " (1:110m)"} (Abrir Repositório)`}
-              >
-                <span>{formatSourceBadge(areaSource)}</span>
-                <ExternalLink aria-hidden="true" className="h-3 w-3" />
-              </a>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCitationModalOpen(true, {
-                    title: `Área Territorial (${areaKm2.toLocaleString("pt-BR")} km²)`,
-                    countryName,
-                    url: areaUrl,
-                    accessDate: new Date(),
-                    publicationYear: areaIndicator?.year ?? 2026,
-                  });
-                }}
-                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-                title="Gerar citação deste indicador"
-                aria-label="Gerar citação deste indicador"
-              >
-                <Quote aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </div>
-          )}
-        </div>
-        <div
-          className={
-            areaKm2 !== null
-              ? "font-mono text-body font-medium tabular-nums text-fg"
-              : "text-label text-fg-muted"
-          }
-        >
-          {areaKm2 !== null ? `${areaKm2.toLocaleString("pt-BR")} km²` : "Dado indisponível"}
-        </div>
-        {areaKm2 !== null && areaIndicator?.year && (
-          <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
-            {areaIndicator.indicatorCode} · {areaIndicator.year}
-          </div>
-        )}
-      </div>
-
-      {/* PIB */}
-      <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
-        <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
-          <div className="flex items-center gap-1.5 truncate">
-            <DollarSign aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-            <span className="truncate">PIB Nominal</span>
-          </div>
-          {gdpIndicator !== undefined && (
-            <div className="flex items-center gap-1 shrink-0">
-              <a
-                href={gdpUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${gdpSource}${gdpIndicator.year ? ` (${gdpIndicator.indicatorCode}, ${gdpIndicator.year})` : ""} (Abrir Repositório)`}
-              >
-                <span>{formatSourceBadge(gdpSource)}</span>
-                <ExternalLink aria-hidden="true" className="h-3 w-3" />
-              </a>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCitationModalOpen(true, {
-                    title: `PIB Nominal (${formatGdp(gdpIndicator.value)})`,
-                    countryName,
-                    url: gdpUrl,
-                    accessDate: new Date(),
-                    publicationYear: gdpIndicator.year ?? 2026,
-                  });
-                }}
-                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-                title="Gerar citação deste indicador"
-                aria-label="Gerar citação deste indicador"
-              >
-                <Quote aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </div>
-          )}
-        </div>
-        <div
-          className={
-            gdpIndicator !== undefined
-              ? "font-mono text-body font-medium tabular-nums text-fg"
-              : "text-label text-fg-muted"
-          }
-        >
-          {formatGdp(gdpIndicator?.value)}
-        </div>
-        {gdpIndicator?.year && (
-          <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
-            {gdpIndicator.indicatorCode} · {gdpIndicator.year}
-          </div>
-        )}
-      </div>
-
-      {/* IDH */}
-      <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
-        <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
-          <div className="flex items-center gap-1.5 truncate">
-            <Award aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-            <span className="truncate">IDH Geral</span>
-          </div>
-          {hdiIndicator !== undefined && (
-            <div className="flex items-center gap-1 shrink-0">
-              <a
-                href={hdiUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${hdiSource}${hdiIndicator.year ? ` (${hdiIndicator.indicatorCode}, ${hdiIndicator.year})` : ""} (Abrir Repositório)`}
-              >
-                <span>{formatSourceBadge(hdiSource)}</span>
-                <ExternalLink aria-hidden="true" className="h-3 w-3" />
-              </a>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCitationModalOpen(true, {
-                    title: `Índice de Desenvolvimento Humano (IDH: ${hdiIndicator.value.toFixed(3)})`,
-                    countryName,
-                    url: hdiUrl,
-                    accessDate: new Date(),
-                    publicationYear: hdiIndicator.year ?? 2026,
-                  });
-                }}
-                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-                title="Gerar citação deste indicador"
-                aria-label="Gerar citação deste indicador"
-              >
-                <Quote aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </div>
-          )}
-        </div>
-        <div
-          className={
-            hdiIndicator !== undefined
-              ? "font-mono text-body font-medium tabular-nums text-fg"
-              : "text-label text-fg-muted"
-          }
-        >
-          {hdiIndicator?.value !== undefined ? hdiIndicator.value.toFixed(3) : "Dado indisponível"}
-        </div>
-        {hdiIndicator?.year && (
-          <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
-            {hdiIndicator.indicatorCode} · {hdiIndicator.year}
-          </div>
-        )}
-      </div>
-
-      {/* Indicadores Complementares de Saúde e Segurança (OMS / Banco Mundial / SIPRI) se presentes */}
+      <MetricCard
+        icon={Users}
+        label="População"
+        value={population !== null ? formatPop(population) : null}
+        source={popSource}
+        sourceUrl={popUrl}
+        code={popIndicator?.year ? popIndicator.indicatorCode : undefined}
+        year={popIndicator?.year}
+        onCite={population !== null ? () => cite(`População Total (${formatPop(population)})`, popUrl, popIndicator?.year) : undefined}
+      />
+      <MetricCard
+        icon={Maximize2}
+        label="Área territorial"
+        value={areaKm2 !== null ? `${areaKm2.toLocaleString("pt-BR")} km²` : null}
+        source={areaSource}
+        sourceUrl={areaUrl}
+        code={areaIndicator?.year ? areaIndicator.indicatorCode : undefined}
+        year={areaIndicator?.year}
+        sourceNote={areaIndicator?.year ? undefined : "1:110m"}
+        onCite={areaKm2 !== null ? () => cite(`Área Territorial (${areaKm2.toLocaleString("pt-BR")} km²)`, areaUrl, areaIndicator?.year) : undefined}
+      />
+      <MetricCard
+        icon={DollarSign}
+        label="PIB nominal"
+        value={gdpIndicator !== undefined ? formatGdp(gdpIndicator.value) : null}
+        source={gdpSource}
+        sourceUrl={gdpUrl}
+        code={gdpIndicator?.indicatorCode}
+        year={gdpIndicator?.year}
+        onCite={gdpIndicator ? () => cite(`PIB Nominal (${formatGdp(gdpIndicator.value)})`, gdpUrl, gdpIndicator.year) : undefined}
+      />
+      <MetricCard
+        icon={Award}
+        label="IDH"
+        value={hdiIndicator?.value !== undefined ? hdiIndicator.value.toFixed(3) : null}
+        source={hdiSource}
+        sourceUrl={hdiUrl}
+        code={hdiIndicator?.indicatorCode}
+        year={hdiIndicator?.year}
+        onCite={hdiIndicator ? () => cite(`Índice de Desenvolvimento Humano (IDH: ${hdiIndicator.value.toFixed(3)})`, hdiUrl, hdiIndicator.year) : undefined}
+      />
       {lifeExpectancy && (
-        <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
-          <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
-            <div className="flex items-center gap-1.5 truncate">
-              <HeartPulse aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-              <span className="truncate">Expectativa Vida</span>
-            </div>
-            <div className="flex items-center gap-1 shrink-0">
-              <a
-                href={lifeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${lifeSource}${lifeExpectancy.year ? ` (${lifeExpectancy.indicatorCode}, ${lifeExpectancy.year})` : ""} (Abrir Repositório)`}
-              >
-                <span>{formatSourceBadge(lifeSource)}</span>
-                <ExternalLink aria-hidden="true" className="h-3 w-3" />
-              </a>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCitationModalOpen(true, {
-                    title: `Expectativa de Vida ao Nascer (${lifeExpectancy.value} ${lifeExpectancy.unit})`,
-                    countryName,
-                    url: lifeUrl,
-                    accessDate: new Date(),
-                    publicationYear: lifeExpectancy.year ?? 2026,
-                  });
-                }}
-                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-                title="Gerar citação deste indicador"
-                aria-label="Gerar citação deste indicador"
-              >
-                <Quote aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </div>
-          </div>
-          <div className="font-mono text-body font-medium tabular-nums text-fg">
-            {lifeExpectancy.value} {lifeExpectancy.unit}
-          </div>
-          {lifeExpectancy.year && (
-            <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
-              {lifeExpectancy.indicatorCode} · {lifeExpectancy.year}
-            </div>
-          )}
-        </div>
+        <MetricCard
+          icon={HeartPulse}
+          label="Expectativa de vida"
+          value={`${lifeExpectancy.value} ${lifeExpectancy.unit}`}
+          source={lifeSource}
+          sourceUrl={lifeUrl}
+          code={lifeExpectancy.indicatorCode}
+          year={lifeExpectancy.year}
+          onCite={() => cite(`Expectativa de Vida ao Nascer (${lifeExpectancy.value} ${lifeExpectancy.unit})`, lifeUrl, lifeExpectancy.year)}
+        />
       )}
-
       {militaryExp && (
-        <div className="flex flex-col justify-between rounded-card border border-line bg-surface-raised p-2.5">
-          <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
-            <div className="flex items-center gap-1.5 truncate">
-              <Shield aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-              <span className="truncate">Gastos Militares</span>
-            </div>
-            <div className="flex items-center gap-1 shrink-0">
-              <a
-                href={milUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                title={`Fonte Primária: ${milSource}${militaryExp.year ? ` (${militaryExp.indicatorCode}, ${militaryExp.year})` : ""} (Abrir Repositório)`}
-              >
-                <span>{formatSourceBadge(milSource)}</span>
-                <ExternalLink aria-hidden="true" className="h-3 w-3" />
-              </a>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCitationModalOpen(true, {
-                    title: `Gastos Militares (% do PIB: ${militaryExp.value}%)`,
-                    countryName,
-                    url: milUrl,
-                    accessDate: new Date(),
-                    publicationYear: militaryExp.year ?? 2026,
-                  });
-                }}
-                className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-                title="Gerar citação deste indicador"
-                aria-label="Gerar citação deste indicador"
-              >
-                <Quote aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </div>
-          </div>
-          <div className="font-mono text-body font-medium tabular-nums text-fg">
-            {militaryExp.value}% PIB
-          </div>
-          {militaryExp.year && (
-            <div className="mt-0.5 truncate font-mono text-caption tabular-nums text-fg-muted">
-              {militaryExp.indicatorCode} · {militaryExp.year}
-            </div>
-          )}
-        </div>
+        <MetricCard
+          icon={Shield}
+          label="Gastos militares"
+          value={`${militaryExp.value}% do PIB`}
+          source={milSource}
+          sourceUrl={milUrl}
+          code={militaryExp.indicatorCode}
+          year={militaryExp.year}
+          onCite={() => cite(`Gastos Militares (% do PIB: ${militaryExp.value}%)`, milUrl, militaryExp.year)}
+        />
       )}
 
       {/* Governo & Moeda */}
       {hasGovernmentBlock && (
-        <div className="col-span-2 rounded-card border border-line bg-surface-raised p-2.5">
-          <div className="mb-1 flex items-center justify-between gap-1 text-caption text-fg-secondary">
-            <div className="flex items-center gap-1.5">
-              <Landmark aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-              <span>Regime Político & Chefia</span>
-            </div>
-            {(governmentType || headOfState) && (
-              <div className="flex items-center gap-1 shrink-0">
-                <a
-                  href={getSourceUrl("ONU")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-0.5 rounded-sm px-1 text-caption text-accent hover:text-accent-hover hover:underline"
-                  title="Fonte Primária: Constituições Nacionais e Divisão de Assuntos Políticos da ONU (Abrir Repositório)"
-                >
-                  <span>Constituições / ONU</span>
-                  <ExternalLink aria-hidden="true" className="h-3 w-3" />
-                </a>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCitationModalOpen(true, {
-                      title: `Regime Político: ${governmentType || "Indisponível"}${headOfState ? ` (${headOfState})` : ""}`,
-                      countryName,
-                      url: getSourceUrl("ONU"),
-                      accessDate: new Date(),
-                      publicationYear: 2026,
-                    });
-                  }}
-                  className="rounded-sm p-1 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-                  title="Gerar citação institucional"
-                  aria-label="Gerar citação institucional"
-                >
-                  <Quote aria-hidden="true" className="h-3 w-3" />
-                </button>
-              </div>
-            )}
+        <div className="group col-span-2 flex flex-col gap-1 rounded-card border border-line bg-surface-raised p-2.5">
+          <div className="flex items-center gap-1.5 text-caption text-fg-secondary">
+            <Landmark aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
+            <span>Regime político e chefia</span>
           </div>
           {governmentType || headOfState ? (
             <div className="font-medium text-fg">
@@ -550,16 +336,25 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             <div className="text-label text-fg-muted">Dado indisponível</div>
           )}
           {historicalLeader && (
-            <div className="mt-1 flex items-center gap-1 text-caption">
+            <div className="flex items-center gap-1 text-caption">
               <span className="text-fg-muted">{leaderTitle || "Líder da Época"}:</span>
               <strong className="font-medium text-fg">{historicalLeader}</strong>
             </div>
           )}
           {(currencyName || currencyCode) && (
-            <div className="mt-0.5 text-caption text-fg-muted">
+            <div className="text-caption text-fg-muted">
               Moeda: {currencyName || currencyCode}
               {currencyName && currencyCode ? ` (${currencyCode})` : ""}
             </div>
+          )}
+          {(governmentType || headOfState) && (
+            <SourceFooter
+              source="Constituições / ONU"
+              sourceUrl={getSourceUrl("ONU")}
+              title="Fonte Primária: Constituições Nacionais e Divisão de Assuntos Políticos da ONU (Abrir Repositório)"
+              citeLabel="Gerar citação institucional"
+              onCite={() => cite(`Regime Político: ${governmentType || "Indisponível"}${headOfState ? ` (${headOfState})` : ""}`, getSourceUrl("ONU"))}
+            />
           )}
         </div>
       )}

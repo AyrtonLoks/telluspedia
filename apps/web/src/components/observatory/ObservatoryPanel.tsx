@@ -2,7 +2,7 @@
 
 import { EonetLayerControls } from "./EonetLayerControls";
 import { StudyContext } from "@/components/tellus-bridge/StudyContext";
-import React from "react";
+import React, { useId, useState } from "react";
 import {
   X,
   Flame,
@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   RotateCcw,
   Layers,
+  ChevronDown,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
@@ -94,7 +95,44 @@ const LAYER_OPTIONS: LayerOption[] = [
   },
 ];
 
-export const ObservatoryPanel: React.FC = () => {
+/** Opacidade da camada no globo (o store guarda 0–1; as camadas já leem `layerOpacity`). */
+const LayerOpacity: React.FC<{ layer: LayerOption }> = ({ layer }) => {
+  const id = useId();
+  const storeValue = useObservatoryStore((s) => s.layerOpacity[layer.id] ?? 1);
+  const value = typeof window === "undefined" ? (useObservatoryStore.getState().layerOpacity[layer.id] ?? 1) : storeValue;
+  const setLayerOpacity = useObservatoryStore((s) => s.setLayerOpacity);
+  const pct = Math.round(value * 100);
+  return (
+    <div className="flex items-center gap-3">
+      <label htmlFor={id} className="w-16 shrink-0 text-caption text-fg-secondary">Opacidade</label>
+      <input
+        id={id}
+        data-testid={`layer-opacity-${layer.id}`}
+        type="range"
+        min={0.1}
+        max={1}
+        step={0.05}
+        value={value}
+        aria-valuetext={`${pct}%`}
+        onChange={(e) => setLayerOpacity(layer.id, Number(e.target.value))}
+        className="h-1 min-w-0 flex-1 cursor-pointer accent-accent"
+      />
+      <span className="w-9 shrink-0 text-right font-mono text-caption tabular-nums text-fg-secondary">{pct}%</span>
+    </div>
+  );
+};
+
+export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayerId[] }> = ({ initialExpanded }) => {
+  // Opções de cada camada (descrição, controles, opacidade, TellusLab) ficam recolhidas (D16).
+  const [expanded, setExpanded] = useState<ReadonlySet<ObservatoryLayerId>>(() => new Set(initialExpanded));
+  const toggleExpanded = (id: ObservatoryLayerId) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
   const storeIsPanelOpen = useObservatoryStore((s) => s.isPanelOpen);
   const isPanelOpen =
     typeof window === "undefined"
@@ -158,15 +196,17 @@ export const ObservatoryPanel: React.FC = () => {
       <ul className="min-h-0 flex-1 space-y-1 overflow-y-auto p-2">
         {LAYER_OPTIONS.map((layer) => {
           const isActive = activeLayers.includes(layer.id);
+          const isOpen = isActive && expanded.has(layer.id);
           const Icon = layer.icon;
-          const badge = layer.badgeText(storeState);
           const tone = TONES[layer.tone];
+          const optionsId = `layer-options-${layer.id}`;
 
           return (
             <li
               key={layer.id}
+              data-testid={`layer-card-${layer.id}`}
               className={cn(
-                "rounded-card p-3 transition-colors duration-base ease-out",
+                "rounded-card px-3 py-2 transition-colors duration-base ease-out",
                 isActive ? "bg-surface-raised" : "hover:bg-surface-hover/60"
               )}
             >
@@ -174,8 +214,31 @@ export const ObservatoryPanel: React.FC = () => {
                 <Icon aria-hidden className={cn("h-4 w-4 shrink-0", tone.text, !isActive && "opacity-60")} />
                 <div className="flex min-w-0 flex-1 flex-col" title={layer.description}>
                   <h3 className="truncate text-label font-medium text-fg">{layer.name}</h3>
-                  <span className="truncate text-caption text-fg-muted">{layer.source}</span>
+                  {isActive ? (
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="truncate font-mono text-caption tabular-nums text-fg-secondary">{layer.badgeText(storeState)}</span>
+                      <DataSourceBadge
+                        testId={`layer-source-${layer.id}`}
+                        meta={storeState.layerMeta[layer.id]}
+                        isLoading={storeState.isLoading[layer.id] && (layer.id !== "MARITIME_ROUTES" || !storeState.hasLoaded[layer.id])}
+                        isOffline={storeState.layerError[layer.id] && layer.id !== "MARITIME_ROUTES"}
+                      />
+                    </span>
+                  ) : (
+                    <span className="truncate text-caption text-fg-muted">{layer.source}</span>
+                  )}
                 </div>
+                {isActive && (
+                  <IconButton
+                    label={isOpen ? `Ocultar opções de ${layer.name}` : `Opções de ${layer.name}`}
+                    aria-expanded={isOpen}
+                    aria-controls={optionsId}
+                    data-testid={`layer-options-toggle-${layer.id}`}
+                    size="sm"
+                    icon={<ChevronDown className={cn("transition-transform duration-fast ease-out", isOpen && "rotate-180")} />}
+                    onClick={() => toggleExpanded(layer.id)}
+                  />
+                )}
                 <Switch
                   data-testid={`layer-toggle-${layer.id}`}
                   checked={isActive}
@@ -184,18 +247,11 @@ export const ObservatoryPanel: React.FC = () => {
                 />
               </div>
 
-              {isActive && (
-                <div className="mt-2 space-y-2 pl-7">
-                  <p className="text-caption text-fg-secondary">{layer.description}</p>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-caption tabular-nums text-fg-secondary">{badge}</span>
-                    <DataSourceBadge
-                      testId={`layer-source-${layer.id}`}
-                      meta={storeState.layerMeta[layer.id]}
-                      isLoading={storeState.isLoading[layer.id] && (layer.id !== "MARITIME_ROUTES" || !storeState.hasLoaded[layer.id])}
-                      isOffline={storeState.layerError[layer.id] && layer.id !== "MARITIME_ROUTES"}
-                    />
-                  </div>
+              {isOpen && (
+                <div id={optionsId} data-testid={optionsId} className="mt-2 space-y-3 border-t border-line pb-1 pl-7 pt-2">
+                  <p className="text-caption text-fg-secondary">
+                    {layer.description} <span className="text-fg-muted">Fonte: {layer.source}.</span>
+                  </p>
                   {layer.id === "NASA_EONET" && <EonetLayerControls />}
                   {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
                   {layer.id === "MARITIME_ROUTES" && isContemporary && <MaritimeLayerControls />}
@@ -205,6 +261,7 @@ export const ObservatoryPanel: React.FC = () => {
                       <FirmsLayerControls />
                     </>
                   )}
+                  <LayerOpacity layer={layer} />
                   <StudyContext entityId={`observatory:${layer.id}`} />
                 </div>
               )}
