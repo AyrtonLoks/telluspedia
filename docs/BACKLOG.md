@@ -176,7 +176,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | DONE | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
-| T23 | Limpezas menores | Qualidade | P2 | P | REVIEW | antigravity | — | G-TIMELINE, G-PAIS |
+| T23 | Limpezas menores | Qualidade | P2 | P | DONE | antigravity | — | G-TIMELINE, G-PAIS |
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | DONE | antigravity | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | DONE | antigravity | — | G-SHELL, G-INFRA |
@@ -898,7 +898,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### T23 · Limpezas menores
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t23-minor-cleanups · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t23-minor-cleanups · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Qualidade · **Tamanho:** P · **Depende de:** — · **Grupos:** G-TIMELINE, G-PAIS
 
 **Contexto / problema**
@@ -920,6 +920,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (a750555). Grupos G-TIMELINE e G-PAIS (para `lib/api-client.ts`) livres; `G-EPOCA`/`G-SHELL` reservados por D12.
 - 2026-11-21 · antigravity · REVIEW · Todos os 4 itens resolvidos/verificados sem alterar o comportamento visível: (1) `TimelineBar.tsx` deixou de checar `startYear === 1947 && endYear === 1991` e agora deriva o contexto de era a partir do seletor único `useEpochState()` via `resolveEraStudyEntityId` (`lib/timeline/era-study.ts`, sem importar o JSON do TellusBridge no bundle inicial da T25); (2) removida a opção server-only `{ next: { revalidate: 3600 } }` do `fetch("/api/countries")` de cliente em `lib/api-client.ts`; (3) auditado `EarthShaderMaterial.ts` — variáveis mortas `dayLit`/`paleoLit` já removidas na D02 (0 ocorrências); (4) auditado `IssOrbitLayer.tsx` — alocações de `Vector3`/`Matrix4` por quadro já eliminadas na D04 (`prevPos`/`nextPos`/`curPos`/`tmp` pré-alocados em `useMemo`). Adicionados 4 testes de regressão em `test/minor-cleanups.test.ts` cobrindo os 4 itens e validando todos os `ERA_STUDY_ENTITY_IDS` contra o manifesto do TellusBridge. Validação: `pnpm typecheck`, `pnpm lint`, `pnpm test` (540/540) e `pnpm build` (`/` em 223 kB) verdes. Commit: 59e7e34.
+- 2026-11-21 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
