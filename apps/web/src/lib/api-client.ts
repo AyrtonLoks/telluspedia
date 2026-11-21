@@ -72,7 +72,7 @@ export interface WeatherData {
 
 export async function fetchCountries(): Promise<CountrySummary[]> {
   try {
-    const res = await fetch("/api/countries", { next: { revalidate: 3600 } });
+    const res = await fetch("/api/countries");
     if (!res.ok) throw new Error("Failed to fetch countries");
     return await res.json();
   } catch (err) {

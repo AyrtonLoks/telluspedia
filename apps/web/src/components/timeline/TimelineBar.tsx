@@ -15,6 +15,7 @@ import { PresetSelector } from "./PresetSelector";
 import { CategoryFilterPills } from "./CategoryFilterPills";
 import { TimelineAxis } from "./TimelineAxis";
 import { useEpochState } from "@/lib/epoch/useEpochState";
+import { resolveEraStudyEntityId } from "@/lib/timeline/era-study";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
 import { useRightDock } from "@/components/layout/useRightDock";
@@ -44,7 +45,9 @@ export const TimelineBar: React.FC = () => {
   const playbackSpeed = isServer ? useCosmicStore.getState().playbackSpeed : storePlaybackSpeed;
 
   // Época ativa: fonte única (T12)
-  const isGeological = useEpochState().mode === "GEOLOGICAL";
+  const epoch = useEpochState();
+  const isGeological = epoch.mode === "GEOLOGICAL";
+  const eraStudyEntityId = resolveEraStudyEntityId(epoch);
 
   // Layout (D15): com o dock direito aberto, a timeline fica à esquerda dele (lg+) e some em telas
   // estreitas, onde o dock vira bottom sheet — nunca fica sob um painel.
@@ -211,8 +214,8 @@ export const TimelineBar: React.FC = () => {
 
       {/* Axis and Milestone Markers (collapsible) */}
       {isExpanded && <TimelineAxis />}
-      {isExpanded && !isGeological && startYear === 1947 && endYear === 1991 && (
-        <div className="max-w-xs"><StudyContext entityId="era:COLD_WAR" /></div>
+      {isExpanded && eraStudyEntityId && (
+        <div className="max-w-xs"><StudyContext entityId={eraStudyEntityId} /></div>
       )}
     </footer>
   );
