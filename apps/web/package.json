@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "node --import tsx --test test/*.test.ts test/*.test.tsx",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "textures:build": "node scripts/textures/build-earth-textures.mjs",
     "test:e2e": "playwright test",
     "scenes:wikidata": "tsx scripts/ingest-wikidata.ts"
@@ -34,7 +34,7 @@
     "framer-motion": "^11.11.0",
     "lucide-react": "^0.460.0",
     "nanoid": "^5.0.8",
-    "next": "15.1.0",
+    "next": "15.5.29",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.13.0",
@@ -49,7 +49,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "15.1.0",
+    "@next/bundle-analyzer": "15.5.29",
     "@playwright/test": "1.60.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/d3-geo": "^3.1.0",
@@ -62,7 +62,7 @@
     "adm-zip": "^0.6.1",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.16.0",
-    "eslint-config-next": "15.1.0",
+    "eslint-config-next": "15.5.29",
     "h5wasm": "^0.10.3",
     "ktx2-encoder": "0.6.0",
     "postcss": "^8.4.49",

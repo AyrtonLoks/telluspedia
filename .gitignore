@@ -9,6 +9,7 @@ pnpm-debug.log*
 # Next.js
 .next/
 .next-dev/
+/apps/web/next-env.d.ts
 out/
 build/
 dist/

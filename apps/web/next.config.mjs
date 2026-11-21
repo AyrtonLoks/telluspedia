@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
 
@@ -9,6 +10,7 @@ const withBundleAnalyzer = createBundleAnalyzer({
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: fileURLToPath(new URL("../..", import.meta.url)),
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },

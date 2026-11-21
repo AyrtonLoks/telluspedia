@@ -2,6 +2,10 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
+# Next 15 pins a PostCSS release below the patched security range.
+overrides:
+  'next@15.5.29>postcss': 8.5.30
+
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
