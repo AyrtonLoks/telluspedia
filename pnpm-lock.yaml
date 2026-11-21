@@ -7,6 +7,9 @@ settings:
 overrides:
   next@15.5.29>postcss: 8.5.30
 
+patchedDependencies:
+  '@react-three/drei@10.7.9': 7b14bedb6f7021d654e7cf2f6954c99b70bc98ed5ce2ae172d1c695eb4525e69
+
 importers:
 
   .:
@@ -46,7 +49,7 @@ importers:
         version: 1.4.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@react-three/drei':
         specifier: ^10.7.9
-        version: 10.7.9(@react-three/fiber@9.8.2(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0))(@types/react@19.3.0)(@types/three@0.170.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0)
+        version: 10.7.9(patch_hash=7b14bedb6f7021d654e7cf2f6954c99b70bc98ed5ce2ae172d1c695eb4525e69)(@react-three/fiber@9.8.2(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0))(@types/react@19.3.0)(@types/three@0.170.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0)
       '@react-three/fiber':
         specifier: ^9.8.2
         version: 9.8.2(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0)
@@ -4072,7 +4075,7 @@ snapshots:
 
   '@radix-ui/rect@1.1.3': {}
 
-  '@react-three/drei@10.7.9(@react-three/fiber@9.8.2(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0))(@types/react@19.3.0)(@types/three@0.170.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0)':
+  '@react-three/drei@10.7.9(patch_hash=7b14bedb6f7021d654e7cf2f6954c99b70bc98ed5ce2ae172d1c695eb4525e69)(@react-three/fiber@9.8.2(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0))(@types/react@19.3.0)(@types/three@0.170.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.170.0)':
     dependencies:
       '@babel/runtime': 7.29.10
       '@mediapipe/tasks-vision': 0.10.17
