@@ -1,0 +1,462 @@
+{
+ "_source": "Resposta real do Wikidata Query Service (2026-11-21): batalhas (P31=Q178561) de 1914–1918 e de -50 a -30, e os itens Q1048/Q43642 (sem data). Usada em test/scenes.test.ts (D12e).",
+ "head": {
+  "vars": [
+   "item",
+   "ptLabel",
+   "enLabel",
+   "ptDesc",
+   "time",
+   "timePrecision",
+   "start",
+   "startPrecision",
+   "end",
+   "endPrecision",
+   "coord",
+   "countryIso",
+   "article"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q16992"
+    },
+    "time": {
+     "type": "literal",
+     "value": "1918-01-01T00:00:00Z"
+    },
+    "timePrecision": {
+     "type": "literal",
+     "value": "9"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "POL"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Przemyśl"
+    },
+    "start": {
+     "type": "literal",
+     "value": "1918-11-02T00:00:00Z"
+    },
+    "startPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "end": {
+     "type": "literal",
+     "value": "1918-11-12T00:00:00Z"
+    },
+    "endPrecision": {
+     "type": "literal",
+     "value": "11"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q28205"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "POL"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of the Vistula River"
+    },
+    "start": {
+     "type": "literal",
+     "value": "1914-09-29T00:00:00Z"
+    },
+    "startPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "end": {
+     "type": "literal",
+     "value": "1914-10-31T00:00:00Z"
+    },
+    "endPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha do rio Vístula"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_do_rio_V%C3%ADstula"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q40144"
+    },
+    "time": {
+     "type": "literal",
+     "value": "1914-11-01T00:00:00Z"
+    },
+    "timePrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Coronel"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha de Coronel"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_de_Coronel"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(-73.813611111 -36.983611111)"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q129117"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Kitcheners' Wood"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(2.922 50.89)"
+    },
+    "start": {
+     "type": "literal",
+     "value": "1915-04-22T00:00:00Z"
+    },
+    "startPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "end": {
+     "type": "literal",
+     "value": "1915-04-25T00:00:00Z"
+    },
+    "endPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "BEL"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q130847"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Verdun"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(5.421944444 49.208055555)"
+    },
+    "start": {
+     "type": "literal",
+     "value": "1916-02-21T00:00:00Z"
+    },
+    "startPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "end": {
+     "type": "literal",
+     "value": "1916-12-18T00:00:00Z"
+    },
+    "endPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "FRA"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha de Verdun"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_de_Verdun"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q132568"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of the Somme"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(2.6975 50.015555555)"
+    },
+    "start": {
+     "type": "literal",
+     "value": "1916-07-01T00:00:00Z"
+    },
+    "startPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "end": {
+     "type": "literal",
+     "value": "1916-11-17T00:00:00Z"
+    },
+    "endPrecision": {
+     "type": "literal",
+     "value": "11"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "FRA"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha do Somme"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_do_Somme"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q145588"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Gumbinnen"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(22.2 54.6)"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "RUS"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha de Gumbinnen"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_de_Gumbinnen"
+    },
+    "time": {
+     "type": "literal",
+     "value": "1914-08-20T00:00:00Z"
+    },
+    "timePrecision": {
+     "type": "literal",
+     "value": "11"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q149560"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Stallupönen"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(22.573333333 54.630555555)"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "RUS"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha de Stallupönen"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_de_Stallup%C3%B6nen"
+    },
+    "time": {
+     "type": "literal",
+     "value": "1914-08-17T00:00:00Z"
+    },
+    "timePrecision": {
+     "type": "literal",
+     "value": "11"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1048"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/J%C3%BAlio_C%C3%A9sar"
+    },
+    "ptDesc": {
+     "type": "literal",
+     "value": "ditador romano (100 – 44 a.C.)"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Julius Caesar"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Júlio César"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q43642"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Quiu%C3%AD_(ave)"
+    },
+    "ptDesc": {
+     "type": "literal",
+     "value": "ordem de aves não-voadoras símbolo da Nova Zelândia"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Apteryx"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Quivi"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q203681"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(22.38333333 39.3)"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "GRC"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha de Farsalos"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Pharsalus"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_de_Farsalos"
+    },
+    "time": {
+     "type": "literal",
+     "value": "-0047-06-04T00:00:00Z"
+    },
+    "timePrecision": {
+     "type": "literal",
+     "value": "11"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q203681"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(22.38333333 39.3)"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "GRC"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha de Farsalos"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Pharsalus"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_de_Farsalos"
+    },
+    "time": {
+     "type": "literal",
+     "value": "-0047-06-27T00:00:00Z"
+    },
+    "timePrecision": {
+     "type": "literal",
+     "value": "11"
+    }
+   },
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q203681"
+    },
+    "coord": {
+     "type": "literal",
+     "value": "Point(22.38333333 39.3)"
+    },
+    "countryIso": {
+     "type": "literal",
+     "value": "GRC"
+    },
+    "ptLabel": {
+     "type": "literal",
+     "value": "Batalha de Farsalos"
+    },
+    "enLabel": {
+     "type": "literal",
+     "value": "Battle of Pharsalus"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://pt.wikipedia.org/wiki/Batalha_de_Farsalos"
+    },
+    "time": {
+     "type": "literal",
+     "value": "-0047-08-07T00:00:00Z"
+    },
+    "timePrecision": {
+     "type": "literal",
+     "value": "11"
+    }
+   }
+  ]
+ }
+}

@@ -8,7 +8,7 @@ ficam em JSON versionado em `apps/web/src/data/scenes/` e são validadas pelo sc
 > Estado: formato definido (D12a) e dados migrados (D12b) — os 43 marcos simples estão em
 > `milestones.json`, Magalhães em `magellan-1519.json` e a Apollo 11 em `glo-1969.json`. O player
 > genérico (D12c) está pronto — `ScenePlayer` (3D) e `ScenePlayerOverlay` (painel) — e a ativação
-> explícita (D12d) também. Falta a ingestão do Wikidata (D12e).
+> explícita (D12d) também, assim como a ingestão do Wikidata (D12e).
 
 ## Como adicionar um evento
 
@@ -73,6 +73,27 @@ abertura. Selecionar outro marco fecha a cena aberta por marco sem restaurar. O 
 reprodução fica num store único (`stores/sceneStore.ts`): passos, duração e progresso inicial vêm
 dos dados. `resolveEpoch` recebe o id da cena e decide modo e telemetria pelo período dela
 (antes de 1957 = histórico); cenas Terra–Lua travam o relógio astronômico no instante do pouso.
+
+## Importar do Wikidata (D12e)
+
+O script `apps/web/scripts/ingest-wikidata.ts` consulta o Wikidata por SPARQL e grava **rascunhos**
+(`published: false`) em `apps/web/src/data/scenes/drafts/wikidata.json`, com QID, datas na precisão
+do Wikidata, coordenadas, países e fontes (Wikidata e Wikipédia em português). Os rascunhos não entram
+no catálogo do site. QIDs que já existem em alguma cena não são importados de novo.
+
+```bash
+cd apps/web
+pnpm scenes:wikidata --qids Q130847,Q132568 --category WAR_MILITARY
+pnpm scenes:wikidata --class Q178561 --from 1914 --to 1918 --limit 30 --category WAR_MILITARY --dry-run
+```
+
+Revisão antes de publicar, para cada rascunho:
+
+1. Resolva cada item de `facts.aRevisar` — resumo em português com base em fonte citável, categoria,
+   título, coordenadas, datas divergentes e país (o P17 é o país **atual**; use a entidade da época,
+   ex.: `SUN`, `AHU`, quando for o caso) — e apague a chave `aRevisar`.
+2. Mova o objeto para `milestones.json` (ou um arquivo próprio listado em `SCENE_FILES`) sem o campo
+   `published` e rode `pnpm test`. O teste recusa cena publicada com `aRevisar` e rascunho publicado.
 
 ## Exemplo mínimo
 

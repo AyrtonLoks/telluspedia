@@ -200,3 +200,20 @@ node apps/web/scripts/ingest-worldbank-indicators.mjs --dry-run
 - A consulta à API do Banco Mundial usa `mrnev=1` (*most recent non-empty value*), registrando o ano exato de cada leitura e a data de atualização (`lastupdated`) do conjunto de dados.
 - **Nenhum valor é estimado ou inventado**: territórios sem publicação oficial no Banco Mundial (`ATA`, `ATF`, `CYN`, `ESH`, `FLK`, `GUF`, `TWN`) ou séries ausentes em países específicos (ex.: `NY.GDP.MKTP.CD` e `MS.MIL.XPND.GD.ZS` para `PRK`, `AG.SRF.TOTL.K2` para `XKX`) permanecem como `null` / omitidos e renderizam **"Dado indisponível"** na interface.
 - Cobertura atual: **170/177** população, **169/177** PIB nominal, **169/177** área territorial, **170/177** expectativa de vida, **160/177** gastos militares e **176/177** metadados administrativos (somente `CYN` ausente em ambas as fontes).
+
+## Anexo — Eventos da linha do tempo importados do Wikidata (D12e, 2026-11-21)
+
+- **Fonte:** Wikidata Query Service (`https://query.wikidata.org/sparql`). Dados estruturados do
+  Wikidata sob **CC0 1.0**; os artigos da Wikipédia citados como segunda fonte são CC BY-SA 4.0
+  (só o link e o título são guardados, nenhum texto é copiado).
+- **Propriedades lidas:** rótulo e descrição em português (rótulo em inglês como reserva), P585
+  (momento), P580/P582 (início/fim) com `wikibase:timePrecision`, P625 (coordenadas), P17 → P298
+  (país, ISO 3166-1 alfa-3) e o artigo da Wikipédia em português.
+- **Como gerar:** `pnpm --filter web scenes:wikidata --class <QID> --from <ano> --to <ano> --category <CATEGORIA>`
+  (ou `--qids Q1,Q2`); `--dry-run` mostra o resultado sem gravar; `--input` reprocessa uma resposta
+  SPARQL salva. Saída: `apps/web/src/data/scenes/drafts/wikidata.json`, sempre `published: false`.
+- **Integridade:** nada é inventado. O que falta ou é duvidoso fica em `facts.aRevisar` (título sem
+  rótulo em português, resumo ausente, categoria definida na importação, coordenadas ausentes, datas
+  divergentes, e o país do P17, que é o país atual do local e não a entidade da época). Datas a.C.:
+  o serviço usa ano astronômico (`-0047` = 48 a.C.), convertido para o ano histórico do projeto.
+- **Publicação:** só depois da revisão humana (docs/SCENES.md, "Importar do Wikidata").

@@ -340,3 +340,104 @@ describe("D12d: ativação de cenas pelos dados", () => {
     assert.match(read("src/components/shell/GlobeExperienceShell.tsx"), /<SceneLinkSync \/>/);
   });
 });
+
+import { execFileSync } from "node:child_process";
+import {
+  REVIEW_FACT,
+  bindingsToDrafts,
+  buildSparqlQuery,
+  parseWktPoint,
+  wikidataTimeToPartial,
+  type SparqlBinding,
+} from "../src/lib/scenes/wikidata";
+
+describe("D12e: ingestão do Wikidata como rascunhos", () => {
+  const fixturePath = path.join(__dirname, "fixtures/wikidata-sparql-sample.json");
+  const bindings = (JSON.parse(fs.readFileSync(fixturePath, "utf-8")) as { results: { bindings: SparqlBinding[] } }).results.bindings;
+  const run = (extra: Partial<Parameters<typeof bindingsToDrafts>[1]> = {}) =>
+    bindingsToDrafts(bindings, { category: "WAR_MILITARY", retrievedAt: "2026-11-21", ...extra });
+
+  test("datas do serviço SPARQL: precisão, sem sinal e ano astronômico para a.C.", () => {
+    assert.deepEqual(wikidataTimeToPartial("1916-02-21T00:00:00Z", 11), { date: "1916-02-21", precision: "day" });
+    assert.deepEqual(wikidataTimeToPartial("+1916-02-21T00:00:00Z", 10), { date: "1916-02", precision: "month" });
+    assert.deepEqual(wikidataTimeToPartial("1918-01-01T00:00:00Z", 9), { date: "1918", precision: "year" });
+    assert.deepEqual(wikidataTimeToPartial("1980-01-01T00:00:00Z", 8), { date: "1980", precision: "decade" });
+    assert.deepEqual(wikidataTimeToPartial("-0047-08-07T00:00:00Z", 11), { date: "-48-08-07", precision: "day" }, "-0047 astronômico = 48 a.C.");
+    assert.deepEqual(wikidataTimeToPartial("0000-01-01T00:00:00Z", 9), { date: "-1", precision: "year" });
+    assert.equal(wikidataTimeToPartial("1916-00-00T00:00:00Z", 6), null, "milênio: precisão insuficiente");
+    assert.deepEqual(parseWktPoint("Point(5.421944444 49.208055555)"), { lat: 49.2081, lng: 5.4219 });
+    assert.equal(parseWktPoint("Point(200 10)"), null);
+  });
+
+  test("resposta real vira rascunhos válidos, não publicados, com QID e fontes", () => {
+    const { drafts, skipped } = run();
+    assert.equal(drafts.length, 9);
+    assert.deepEqual(skipped.map((s) => s.qid).sort(), ["Q1048", "Q43642"], "itens sem data (pessoa, ave) são ignorados");
+    for (const d of drafts) {
+      const parsed = SceneSchema.parse(d);
+      assert.equal(parsed.published, false, d.id);
+      assert.match(parsed.wikidata ?? "", /^Q\d+$/);
+      assert.equal(parsed.sources[0].url, `https://www.wikidata.org/wiki/${parsed.wikidata}`);
+      assert.ok(String(parsed.facts?.[REVIEW_FACT]).includes("categoria"), "pendências anotadas");
+    }
+    const verdun = drafts.find((d) => d.wikidata === "Q130847")!;
+    assert.equal(verdun.id, "batalha-de-verdun-1916");
+    assert.deepEqual(verdun.date, { start: "1916-02-21", end: "1916-12-18", precision: "day" });
+    assert.equal(verdun.country, "FRA");
+    assert.deepEqual(verdun.location, { lat: 49.2081, lng: 5.4219 });
+    assert.ok(verdun.sources.some((s) => s.url === "https://pt.wikipedia.org/wiki/Batalha_de_Verdun"));
+
+    const przemysl = drafts.find((d) => d.wikidata === "Q16992")!;
+    assert.equal(przemysl.date.start, "1918-11-02", "intervalo por dia vence o P585 só com o ano");
+    assert.match(String(przemysl.facts?.[REVIEW_FACT]), /título em inglês/);
+    assert.match(String(przemysl.facts?.[REVIEW_FACT]), /coordenadas/);
+
+    const farsalos = drafts.find((d) => d.wikidata === "Q203681")!;
+    assert.equal(farsalos.id, "batalha-de-farsalos-48ac");
+    assert.match(String(farsalos.facts?.[REVIEW_FACT]), /datas divergentes/);
+    assert.match(String(farsalos.facts?.[REVIEW_FACT]), /país atual/, "P17 moderno é sinalizado");
+  });
+
+  test("não reimporta QID existente e evita colisão de id", () => {
+    const { drafts, skipped } = run({ existingQids: ["Q130847"], existingIds: ["batalha-do-somme-1916"] });
+    assert.ok(!drafts.some((d) => d.wikidata === "Q130847"));
+    assert.ok(skipped.some((s) => s.qid === "Q130847" && /já existe/.test(s.reason)));
+    assert.equal(drafts.find((d) => d.wikidata === "Q132568")?.id, "batalha-do-somme-1916-q132568");
+  });
+
+  test("consulta SPARQL por QIDs ou por classe e período", () => {
+    const byQid = buildSparqlQuery({ qids: ["Q130847", "invalido"] });
+    assert.match(byQid, /VALUES \?item \{ wd:Q130847 \}/);
+    assert.doesNotMatch(byQid, /LIMIT/);
+    const byClass = buildSparqlQuery({ classQid: "Q178561", fromYear: 1914, toYear: 1918, limit: 9999 });
+    assert.match(byClass, /wdt:P31 wd:Q178561/);
+    assert.match(byClass, /YEAR\(\?when\) >= 1914/);
+    assert.match(byClass, /LIMIT 500$/);
+    assert.throws(() => buildSparqlQuery({}), /QIDs ou uma classe/);
+  });
+
+  test("rascunhos ficam fora do site; cena publicada não tem pendência de revisão", () => {
+    const catalog = fs.readFileSync(path.join(__dirname, "../src/lib/scenes/catalog.ts"), "utf-8");
+    assert.doesNotMatch(catalog, /drafts/, "o catálogo do cliente não carrega rascunhos");
+    for (const s of ALL_SCENES) assert.ok(!(s.facts && REVIEW_FACT in s.facts), `${s.id} publicada com ${REVIEW_FACT}`);
+    const draftsFile = path.join(__dirname, "../src/data/scenes/drafts/wikidata.json");
+    if (fs.existsSync(draftsFile)) {
+      for (const d of parseSceneCollection(JSON.parse(fs.readFileSync(draftsFile, "utf-8")), "drafts/wikidata.json")) {
+        assert.equal(d.published, false, `${d.id}: rascunho publicado — mova para uma cena publicada`);
+      }
+    }
+  });
+
+  test("script: --input com resposta salva, --dry-run não grava", () => {
+    const draftsFile = path.join(__dirname, "../src/data/scenes/drafts/wikidata.json");
+    const before = fs.existsSync(draftsFile) ? fs.readFileSync(draftsFile, "utf-8") : null;
+    const out = execFileSync(
+      process.execPath,
+      ["--import", "tsx", "scripts/ingest-wikidata.ts", "--input", fixturePath, "--category", "WAR_MILITARY", "--dry-run"],
+      { cwd: path.join(__dirname, ".."), encoding: "utf-8" }
+    );
+    assert.match(out, /9 rascunho\(s\) novo\(s\), 2 ignorado\(s\)/);
+    assert.match(out, /Q130847  batalha-de-verdun-1916|Q130847  ignorado/);
+    assert.equal(fs.existsSync(draftsFile) ? fs.readFileSync(draftsFile, "utf-8") : null, before, "dry-run não altera os rascunhos");
+  });
+});

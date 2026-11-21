@@ -11,7 +11,8 @@
     "test": "node --import tsx --test test/*.test.ts test/*.test.tsx",
     "typecheck": "tsc --noEmit",
     "textures:build": "node scripts/textures/build-earth-textures.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "scenes:wikidata": "tsx scripts/ingest-wikidata.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
