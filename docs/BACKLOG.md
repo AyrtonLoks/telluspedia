@@ -33,17 +33,17 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 
 | Grupo | Escopo (arquivos/conceitos principais) | Tarefas |
 |---|---|---|
-| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18, T22 |
+| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18, T22, D19 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D23 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
-| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40 |
+| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19 |
 | `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26 |
 
 Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está listado nela: **pare**, adicione o grupo à tarefa no Quadro (commit + push, como na reivindicação) e reavalie se ela ainda pode seguir.
@@ -201,7 +201,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | DONE | claude | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | DONE | codex | D14 | G-SHELL, G-EPOCA, G-COSMOS |
-| D19 | Responsividade e contraste | Design | P2 | M | IN_PROGRESS | codex | D14, T19 | G-SHELL |
+| D19 | Responsividade e contraste | Design | P2 | M | IN_PROGRESS | codex | D14, T19 | G-SHELL, G-EPOCA, G-TIMELINE, G-OBS, G-INFRA |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
@@ -1926,7 +1926,7 @@ A busca da navbar cobre só países/ISO. Não há paleta de comandos, sugestões
 ### D19 · Responsividade e contraste
 
 - **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d19-responsividade · **Worktree:** ../telluspedia-wt/codex-d19
-- **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14, T19 · **Grupos:** G-SHELL
+- **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14, T19 · **Grupos:** G-SHELL, G-EPOCA, G-TIMELINE, G-OBS, G-INFRA
 
 **Contexto / problema**
 Layout quebra em larguras comuns (ver T02); textos ciano/cinza pequenos sobre azul escuro provavelmente abaixo do contraste AA; experiência mobile não definida.
@@ -1945,6 +1945,7 @@ Layout quebra em larguras comuns (ver T02); textos ciano/cinza pequenos sobre az
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa disponível da fase 8, com D14 e T19 concluídas e G-SHELL livre.
+- 2026-11-21 · codex · IN_PROGRESS · Reservados G-EPOCA, G-TIMELINE, G-OBS e G-INFRA para integrar controles do globo, timeline, telemetria e matriz Playwright. Grupos livres no remoto.
 
 ---
 
