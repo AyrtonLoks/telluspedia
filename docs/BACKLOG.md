@@ -200,7 +200,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | DONE | claude | D14 | G-SHELL |
-| D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | IN_PROGRESS | codex | D14 | G-SHELL, G-EPOCA, G-COSMOS |
+| D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | REVIEW | codex | D14 | G-SHELL, G-EPOCA, G-COSMOS |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
@@ -1883,7 +1883,7 @@ Painéis aparecem/somem sem transição coerente; troca Terra → Cosmos é um c
 
 ### D18 · Busca universal, ⌘K e estado na URL
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d18-busca-universal · **Worktree:** ../telluspedia-wt/codex-d18
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d18-busca-universal · **Worktree:** ../telluspedia-wt/codex-d18
 - **Prioridade:** P2 · **Área:** Frontend · **Tamanho:** G · **Depende de:** D14 · **Grupos:** G-SHELL, G-EPOCA, G-COSMOS
 
 **Contexto / problema**
@@ -1896,14 +1896,17 @@ A busca da navbar cobre só países/ISO. Não há paleta de comandos, sugestões
 4. Estado essencial sincronizado na URL (país, ano, camadas, modo, câmera) com `history.replaceState` debounced, para compartilhar a visão exata.
 
 **Critérios de aceite**
-- [ ] Buscar "Halley", "1969", "queimadas" e "Peru" retorna resultados corretos.
-- [ ] ⌘K funciona em qualquer tela.
-- [ ] Copiar a URL e abrir em outra aba reproduz a mesma visão.
+- [x] Buscar "Halley", "1969", "queimadas" e "Peru" retorna resultados corretos.
+- [x] ⌘K funciona em qualquer tela.
+- [x] Copiar a URL e abrir em outra aba reproduz a mesma visão.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa disponível na fase 7. D14 concluída e G-SHELL livre.
 - 2026-11-21 · codex · IN_PROGRESS · G-EPOCA e G-COSMOS reservados para integrar a captura e restauração da câmera ao canvas e às transições do Cosmos. Grupos livres no remoto.
+- 2026-11-21 · codex · REVIEW · Busca tolerante a erros com resultados agrupados, atalhos globais e sugestões no painel do país. A URL restaura país, época, camadas, modo e câmera. Comandos em estudos salvos abrem a exploração em uma página própria. Implementação: `93958fe`.
+- 2026-11-21 · codex · REVIEW · Capturas antes/depois: a busca de país na barra cedeu espaço ao botão de busca universal com o atalho. A paleta central agrupa Apollo 11 e o comando de ir a 1969 em 1366 e 390 px. Os dois snapshots da página inicial mudaram apenas na região do controle de busca.
+- 2026-11-21 · codex · REVIEW · Typecheck, lint, build e 591 testes passaram. No Chromium, verificados teclado, comparador a partir de Estudo, link do Peru após zoom e reabertura no Halley. No Playwright, 8 de 10 passaram, incluindo os quatro cenários da D18. Os dois testes existentes de clique no Brasil reproduzem no `050ae09` a mesma falha de CSP no worker KTX2, registrada na T30.
 
 ---
 
