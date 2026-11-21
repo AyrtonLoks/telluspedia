@@ -219,7 +219,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | TODO | — | T30 | G-ESTUDOS, G-SHELL |
-| D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | IN_PROGRESS | claude | — | G-CONTEUDO, G-EPOCA |
+| D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | IN_PROGRESS | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE |
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | TODO | — | — | G-OBS, G-GLOBO |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
 | D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
@@ -2064,7 +2064,7 @@ Hoje só é possível criar estudos (`POST /api/studies`) e abrir por link exato
 ### D24 · Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas)
 
 - **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d24-cenas-historicas · **Worktree:** ../telluspedia-wt/claude-d24
-- **Prioridade:** P1 · **Área:** Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-EPOCA
+- **Prioridade:** P1 · **Área:** Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-EPOCA, G-TIMELINE
 
 **Contexto / problema**
 O player genérico de cenas (D12) está pronto, mas o catálogo contém apenas 2 cenas (`magellan-1519.json` e `glo-1969.json`, esta última com `participants: 0` e `chronicle: 0`).
