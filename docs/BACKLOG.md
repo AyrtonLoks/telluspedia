@@ -177,7 +177,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
 | T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
-| T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | IN_PROGRESS | antigravity | — | G-SHELL, G-INFRA |
+| T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | IN_PROGRESS | antigravity | — | G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | DONE | antigravity | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | DONE | antigravity | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | DONE | claude | D01 | G-GLOBO, G-EPOCA |
@@ -920,7 +920,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 ### T25 · Reduzir bundle inicial (408 kB)
 
 - **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t25-reduce-initial-bundle · **Worktree:** ../telluspedia-wt/antigravity-t25
-- **Prioridade:** P2 · **Área:** Performance · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA
+- **Prioridade:** P2 · **Área:** Performance · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS
 
 **Contexto / problema**
 `pnpm build` reporta **408 kB** de First Load JS em `/` (e ~409 kB em `/pais`, `/compare`, `/study`). O `GlobeCanvas` já é dinâmico; a suspeita (não confirmada) é que `CountryComparator` (Recharts), `ReaderMode`, `StudyShareModal`, `CitationModal`, `ObservatoryPanel` e framer-motion, importados estaticamente em `app/page.tsx`, entram no bundle inicial.
@@ -939,6 +939,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (55e0e68). Grupos G-SHELL e G-INFRA livres.
+- 2026-11-21 · antigravity · IN_PROGRESS · Adicionados grupos G-TIMELINE, G-GLOBO, G-OBS e G-PAIS (todos livres, sem tarefas IN_PROGRESS/BLOCKED): diagnóstico do `@next/bundle-analyzer` mostrou `three` (166 kB gzip) entrando em `/` via `observatoryStore → satellites → astronomy.ts` (apenas por `calculateSubsolarPoint`) e `tellus-bridge/catalog` (30,7 kB gzip) entrando via `StudyContext` em `TimelineBar`/`MilestonePin`, além de pré-carregamento no hover do `InspectorHUD`.
 
 ---
 
