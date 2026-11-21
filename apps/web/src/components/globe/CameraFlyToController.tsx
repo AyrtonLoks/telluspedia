@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { latLngToVector3, slerpVectors } from "@/lib/geo-spatial";
 import { useGlobeStore, MIN_CAMERA_ALTITUDE } from "@/stores/globeStore";
+import { orbitTransition, prefersReducedMotion } from "@/lib/camera-transition";
 
 /**
  * Smooth cubic ease-in-out easing for natural cinematic camera flights.
@@ -68,7 +69,8 @@ export const CameraFlyToController: React.FC = () => {
   }, [controlsHook]);
 
   useEffect(() => {
-    if (flyToTrigger > 0) {
+    // A volta do Cosmos (ou um foco da Lua) está levando a câmera: não disputar com ela.
+    if (flyToTrigger > 0 && !orbitTransition.active) {
       // 1. Calculate safe destination coordinates (min altitude 1.5)
       const safeTargetAltitude = Math.max(MIN_CAMERA_ALTITUDE, cameraAltitude || 2.0);
       const targetVec = latLngToVector3(cameraLat, cameraLng, safeTargetAltitude);
@@ -100,8 +102,8 @@ export const CameraFlyToController: React.FC = () => {
 
       const altitudeDelta = Math.abs(safeTargetAltitude - safeStartAltitude);
 
-      // Fast-path: if already at the target within minimal threshold, settle immediately
-      if (angle < 0.002 && altitudeDelta < 0.02) {
+      // Fast-path: já no destino, ou movimento reduzido pedido pelo sistema: vai direto.
+      if ((angle < 0.002 && altitudeDelta < 0.02) || prefersReducedMotion()) {
         camera.position.copy(finalPosition.current);
         camera.lookAt(0, 0, 0);
         if (controlsHook) {

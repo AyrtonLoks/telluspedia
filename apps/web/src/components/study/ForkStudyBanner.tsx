@@ -43,7 +43,7 @@ export const ForkStudyBanner: React.FC<ForkStudyBannerProps> = ({
   };
 
   return (
-    <Panel className="fixed left-1/2 top-4 z-30 flex -translate-x-1/2 items-center gap-4 px-5 py-2.5 text-label animate-in slide-in-from-top-4">
+    <Panel className="fixed left-1/2 top-4 z-30 flex -translate-x-1/2 items-center gap-4 px-5 py-2.5 text-label animate-fade-in">
       <div className="flex items-center gap-2.5">
         <GitFork aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
         <div>

@@ -24,7 +24,7 @@ export function Tooltip({ content, children, side = "top", delayDuration = 300, 
             sideOffset={6}
             className={cn(
               "z-50 max-w-xs rounded-card border border-line-strong bg-surface-hover px-3 py-2 text-caption text-fg shadow-e2",
-              "data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in",
+              "data-[state=delayed-open]:animate-fade-in data-[state=instant-open]:animate-fade-in",
               className
             )}
           >

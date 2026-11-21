@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { PanelFooter, PanelHeader } from "@/components/ui/Panel";
 import { Switch } from "@/components/ui/Switch";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { TONES, type Tone } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
 
@@ -219,7 +220,11 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayerId[]
                   <h3 className="truncate text-label font-medium text-fg">{layer.name}</h3>
                   {isActive ? (
                     <span className="flex min-w-0 items-center gap-2">
-                      <span className="truncate font-mono text-caption tabular-nums text-fg-secondary">{layer.badgeText(storeState)}</span>
+                      {storeState.isLoading[layer.id] && !storeState.hasLoaded[layer.id] ? (
+                        <Skeleton className="h-3 w-20" />
+                      ) : (
+                        <span className="truncate font-mono text-caption tabular-nums text-fg-secondary">{layer.badgeText(storeState)}</span>
+                      )}
                       <DataSourceBadge
                         testId={`layer-source-${layer.id}`}
                         meta={storeState.layerMeta[layer.id]}

@@ -94,6 +94,32 @@ const config: Config = {
       backdropBlur: {
         xs: "2px",
       },
+      // Movimento (D17): entradas em ease-out, saídas mais curtas em ease-in-out. Usa as
+      // propriedades individuais `translate`/`scale` para não brigar com as classes de transform.
+      keyframes: {
+        "fade-in": { from: { opacity: "0" } },
+        "fade-out": { to: { opacity: "0" } },
+        "panel-in": { from: { opacity: "0", translate: "16px 0" } },
+        "panel-out": { to: { opacity: "0", translate: "16px 0" } },
+        "sheet-in": { from: { opacity: "0", translate: "0 24px" } },
+        "sheet-out": { to: { opacity: "0", translate: "0 24px" } },
+        "pop-in": { from: { opacity: "0", scale: "0.96" } },
+        "pop-out": { to: { opacity: "0", scale: "0.96" } },
+        "rise-in": { from: { opacity: "0", translate: "0 8px" } },
+        "rise-out": { to: { opacity: "0", translate: "0 8px" } },
+      },
+      animation: {
+        "fade-in": "fade-in var(--duration-base) var(--ease-out) both",
+        "fade-out": "fade-out var(--duration-fast) var(--ease-in-out) both",
+        "panel-in": "panel-in var(--duration-slow) var(--ease-out) both",
+        "panel-out": "panel-out var(--duration-fast) var(--ease-in-out) both",
+        "sheet-in": "sheet-in var(--duration-slow) var(--ease-out) both",
+        "sheet-out": "sheet-out var(--duration-fast) var(--ease-in-out) both",
+        "pop-in": "pop-in var(--duration-base) var(--ease-out) both",
+        "pop-out": "pop-out var(--duration-fast) var(--ease-in-out) both",
+        "rise-in": "rise-in var(--duration-base) var(--ease-out) both",
+        "rise-out": "rise-out var(--duration-fast) var(--ease-in-out) both",
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],

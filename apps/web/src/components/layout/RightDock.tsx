@@ -10,6 +10,8 @@ import { CosmicInspectorHUD } from "@/components/hud/CosmicInspectorHUD";
 import { ObservatoryPanel } from "@/components/observatory/ObservatoryPanel";
 import { cn } from "@/components/ui/cn";
 import { useRightDock } from "./useRightDock";
+import { DOCK_FRAME_CLASSES, dockMotionClasses } from "./dockFrame";
+import { useLastDefined } from "@/components/ui/motion";
 
 const TAB_ICON: Record<RightPanelId, React.ReactNode> = {
   country: <MapPin />,
@@ -23,8 +25,10 @@ const TAB_ICON: Record<RightPanelId, React.ReactNode> = {
  * Abrir um painel novo ativa a aba dele. Em telas estreitas vira bottom sheet.
  * A timeline e os overlays desviam do dock via `useRightDock().visible`.
  */
-export const RightDock: React.FC = () => {
+export const RightDock: React.FC<{ closing?: boolean }> = ({ closing = false }) => {
   const dock = useRightDock();
+  // Durante a saída (D17) o dock continua mostrando o último painel até a animação terminar.
+  const active = useLastDefined(dock.active, closing);
   const setActive = useLayoutStore((s) => s.setActiveRightPanel);
   const storeIso = useGlobeStore((s) => s.selectedIso);
   const selectedIso = typeof window === "undefined" ? useGlobeStore.getState().selectedIso : storeIso;
@@ -37,7 +41,7 @@ export const RightDock: React.FC = () => {
     prevOpen.current = dock.open;
   }, [dock.open, setActive]);
 
-  if (!dock.visible || !dock.active) return null;
+  if ((!dock.visible && !closing) || !active) return null;
 
   const label = (id: RightPanelId) =>
     id === "country" ? (selectedIso && getCountryData(selectedIso)?.nameCommon) || "País" : id === "observatory" ? "Observatório" : "Cosmos";
@@ -46,20 +50,16 @@ export const RightDock: React.FC = () => {
     <section
       aria-label="Painel lateral"
       data-right-dock="true"
-      data-active-panel={dock.active}
-      className={cn(
-        "fixed z-30 flex flex-col overflow-hidden rounded-panel border border-line bg-surface/86 shadow-e2 backdrop-blur-md",
-        // Telas estreitas: bottom sheet. lg+: coluna direita entre a navbar e o rodapé.
-        "inset-x-2 bottom-2 max-h-[62vh]",
-        "lg:inset-x-auto lg:bottom-4 lg:right-5 lg:top-[4.75rem] lg:max-h-none lg:w-96"
-      )}
+      data-active-panel={active}
+      data-state={closing ? "closed" : "open"}
+      className={cn(DOCK_FRAME_CLASSES, dockMotionClasses(closing))}
     >
       <div aria-hidden="true" className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-line-strong lg:hidden" />
 
       {dock.open.length > 1 && (
         <div role="tablist" aria-label="Painéis abertos" className="flex shrink-0 gap-1 border-b border-line p-1.5">
           {dock.open.map((id) => {
-            const isActive = id === dock.active;
+            const isActive = id === active;
             return (
               <button
                 key={id}
@@ -84,9 +84,9 @@ export const RightDock: React.FC = () => {
       )}
 
       <div role={dock.open.length > 1 ? "tabpanel" : undefined} className="flex min-h-0 flex-1 flex-col">
-        {dock.active === "country" && <InspectorHUD />}
-        {dock.active === "observatory" && <ObservatoryPanel />}
-        {dock.active === "cosmos" && <CosmicInspectorHUD placement="dock" />}
+        {active === "country" && <InspectorHUD />}
+        {active === "observatory" && <ObservatoryPanel />}
+        {active === "cosmos" && <CosmicInspectorHUD placement="dock" />}
       </div>
     </section>
   );

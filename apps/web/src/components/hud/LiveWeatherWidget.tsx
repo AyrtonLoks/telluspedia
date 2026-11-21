@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { Cloud, CloudRain, Sun, Wind, Droplets } from "lucide-react";
 import { fetchWeather, WeatherData } from "@/lib/api-client";
 
@@ -86,7 +87,7 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-1.5 rounded-card border border-line bg-surface-raised px-3 py-2">
+    <div aria-busy={loading} className="flex min-w-0 flex-col gap-1.5 rounded-card border border-line bg-surface-raised px-3 py-2">
       <div>
         <div className="text-caption font-medium text-fg-secondary">Clima local · {referenceName ?? "Ponto de referência"}</div>
         <div className="font-mono text-caption tabular-nums text-fg-muted" title="Latitude e longitude do ponto consultado">
@@ -97,7 +98,7 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
         {getWeatherIcon(current?.weather_code)}
         <div>
           <div className="font-mono text-body font-medium tabular-nums text-fg">
-            {loading ? "..." : formatMeasurement(current?.temperature, "°C")}
+            {loading ? <Skeleton className="my-1 h-4 w-12" /> : formatMeasurement(current?.temperature, "°C")}
           </div>
           <div className="text-caption text-fg-muted">
             {current ? `Sensação ${formatMeasurement(current.apparent_temperature, "°C")}` : "Clima local"}
@@ -108,11 +109,11 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-caption tabular-nums text-fg-secondary">
         <div className="flex items-center gap-1" title="Umidade Relativa">
           <Droplets aria-hidden="true" className="h-3 w-3 text-fg-muted" />
-          <span>{formatMeasurement(current?.relative_humidity, "%")}</span>
+          {loading ? <Skeleton className="h-3 w-8" /> : <span>{formatMeasurement(current?.relative_humidity, "%")}</span>}
         </div>
         <div className="flex items-center gap-1" title="Velocidade do Vento">
           <Wind aria-hidden="true" className="h-3 w-3 text-fg-muted" />
-          <span>{formatMeasurement(current?.wind_speed, " km/h")}</span>
+          {loading ? <Skeleton className="h-3 w-12" /> : <span>{formatMeasurement(current?.wind_speed, " km/h")}</span>}
         </div>
       </div>
       <p className="text-caption text-fg-muted">

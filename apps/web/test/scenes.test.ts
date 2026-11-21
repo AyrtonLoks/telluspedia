@@ -262,7 +262,7 @@ describe("D12c: painel genérico do player", () => {
     assert.ok(!fs.existsSync(path.join(__dirname, "../src/components/globe/HistoricalRouteOverlay.tsx")));
     const overlay = fs.readFileSync(path.join(__dirname, "../src/components/scenes/ScenePlayerOverlay.tsx"), "utf-8");
     assert.doesNotMatch(overlay, /magellan|apollo 11|1519|1969|km\/h/i, "o painel não conhece eventos pelo nome");
-    assert.match(fs.readFileSync(path.join(__dirname, "../src/components/shell/GlobeExperienceShell.tsx"), "utf-8"), /<ScenePlayerOverlay \/>/);
+    assert.match(fs.readFileSync(path.join(__dirname, "../src/components/shell/GlobeExperienceShell.tsx"), "utf-8"), /<ScenePlayerOverlay sceneId=\{sceneId\} closing=\{scenePresence.closing\} \/>/);
   });
 });
 

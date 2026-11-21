@@ -47,7 +47,7 @@ export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
     <Panel
       data-testid="paleo-era-badge"
       className={cn(
-        "pointer-events-auto fixed left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border-warning/40 px-4 py-2 animate-in fade-in slide-in-from-top-2 duration-slow",
+        "pointer-events-auto fixed left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border-warning/40 px-4 py-2 animate-rise-in",
         positionClass
       )}
     >

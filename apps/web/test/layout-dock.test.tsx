@@ -136,7 +136,7 @@ describe("D15: invariantes de layout no código", () => {
 
   test("a página não renderiza painéis laterais fora do dock", () => {
     const shell = read("src/components/shell/GlobeExperienceShell.tsx");
-    assert.match(shell, /<RightDock \/>/);
+    assert.match(shell, /<RightDock closing=\{dockPresence.closing\} \/>/);
     assert.doesNotMatch(shell, /<InspectorHUD\b/);
     assert.doesNotMatch(shell, /<ObservatoryPanel\b/);
     assert.match(shell, /<CosmicInspectorHUD placement="floating" \/>/);

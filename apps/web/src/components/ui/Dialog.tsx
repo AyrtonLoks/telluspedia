@@ -23,12 +23,12 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
 ) {
   const content = (
     <>
-      <RadixDialog.Overlay className="fixed inset-0 z-50 bg-bg/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in" />
+      <RadixDialog.Overlay className="fixed inset-0 z-50 bg-bg/70 backdrop-blur-sm data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out" />
       <RadixDialog.Content
         ref={ref}
         className={cn(
           "fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] w-[min(92vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-panel border border-line bg-surface shadow-e2",
-          "data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:zoom-in-95",
+          "data-[state=open]:animate-pop-in data-[state=closed]:animate-pop-out",
           className
         )}
         {...props}

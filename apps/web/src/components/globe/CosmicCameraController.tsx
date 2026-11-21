@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useLayoutEffect } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useCosmicStore } from "@/stores/cosmicStore";
@@ -12,8 +12,18 @@ import {
   ASTROPHYSICAL_CATALOG,
   CelestialBodyId,
   currentMoonWorldPos,
+  calculatePlanetaryPosition,
 } from "@/lib/astronomy-planets";
-import { bodySceneRadius, scaledViewDistance, type CosmicScaleMode } from "@/lib/cosmic-scale";
+import { bodySceneRadius, earthSystemScale, scaledViewDistance, type CosmicScaleMode } from "@/lib/cosmic-scale";
+import {
+  easeInOutCubic,
+  interpolateOrbit,
+  orbitTransition,
+  orbitTransitionDuration,
+  prefersReducedMotion,
+  reanchorOrbit,
+  type OrbitState,
+} from "@/lib/camera-transition";
 
 function resetControlsDeltas(ctrl: any) {
   if (!ctrl) return;
@@ -112,97 +122,114 @@ export const CosmicCameraController: React.FC = () => {
   const scaleMode = useCosmicStore((s) => s.scaleMode);
   const selectedYear = useTimelineStore((s) => s.selectedYear) || new Date().getUTCFullYear();
 
-  // Animation state
-  const isTransitioning = useRef<boolean>(false);
-  const startCameraPos = useRef<THREE.Vector3>(new THREE.Vector3());
-  const targetCameraPos = useRef<THREE.Vector3>(new THREE.Vector3());
-  const startControlsTarget = useRef<THREE.Vector3>(new THREE.Vector3());
-  const targetControlsTarget = useRef<THREE.Vector3>(new THREE.Vector3());
-  const transitionProgress = useRef<number>(1.0);
-  const transitionDuration = useRef<number>(1.5); // seconds
+  // Transição em andamento (D17): estados inicial/final, tempo e limites de zoom a aplicar no fim.
+  const transition = useRef<{
+    from: OrbitState;
+    to: OrbitState;
+    /** Corpo que a câmera orbita durante o voo (a Terra ao entrar no Cosmos; o destino nos demais). */
+    pivot: THREE.Vector3;
+    elapsed: number;
+    duration: number;
+    limits: { min: number; max: number };
+  } | null>(null);
   const prevCosmicMode = useRef<boolean>(false);
   const prevFocusedId = useRef<CelestialBodyId | null>(null);
   const prevScaleMode = useRef<CosmicScaleMode>(scaleMode);
 
-  // Detect state transitions
-  useEffect(() => {
+  // Layout effect: a reancoragem precisa acontecer antes do próximo quadro, senão a troca de
+  // cena aparece por um quadro (o grupo da Terra já mudou de centro e de escala).
+  useLayoutEffect(() => {
     if (!controlsHook) return;
 
     const cosmicModeChanged = prevCosmicMode.current !== isCosmicMode;
     const focusChanged = prevFocusedId.current !== focusedBodyId;
     // Trocar a escala com um corpo focado reenquadra a câmera no novo tamanho.
     const scaleChanged = prevScaleMode.current !== scaleMode && isCosmicMode && focusedBodyId !== null;
+    const previousScale = prevScaleMode.current;
     prevScaleMode.current = scaleMode;
+    if (!cosmicModeChanged && !focusChanged && !scaleChanged) return;
+    prevCosmicMode.current = isCosmicMode;
+    prevFocusedId.current = focusedBodyId;
 
-    if (cosmicModeChanged || focusChanged || scaleChanged) {
-      prevCosmicMode.current = isCosmicMode;
-      prevFocusedId.current = focusedBodyId;
+    resetControlsDeltas(controlsHook);
+    let from: OrbitState = { target: controlsHook.target.clone(), camera: camera.position.clone() };
+    let pivot: THREE.Vector3 | null = null;
 
-      resetControlsDeltas(controlsHook);
-
-      startCameraPos.current.copy(camera.position);
-      startControlsTarget.current.copy(controlsHook.target);
-
-      if (!isCosmicMode && !focusedBodyId) {
-        // Returning to default Earth view
-        controlsHook.minDistance = MIN_CAMERA_ALTITUDE;
-        controlsHook.maxDistance = MAX_CAMERA_ALTITUDE;
-        targetControlsTarget.current.set(0, 0, 0);
-        targetCameraPos.current.set(0, 0, 2.5);
-      } else if (!isCosmicMode && focusedBodyId === "MOON") {
-        // Normal Mode: Moon inspection focus
-        controlsHook.minDistance = 0.4;
-        controlsHook.maxDistance = 6.0;
-
-        const bodyPos = getBodyPosition("MOON", selectedYear, false);
-        const offset = getBodyViewOffset("MOON");
-
-        targetControlsTarget.current.copy(bodyPos);
-        targetCameraPos.current.copy(bodyPos).add(offset);
-      } else {
-        // In Cosmic View
-        controlsHook.minDistance = cosmicMinDistance(focusedBodyId, scaleMode);
-        controlsHook.maxDistance = 1200.0;
-
-        const bodyPos = getBodyPosition(focusedBodyId, selectedYear, isCosmicMode);
-        const offset = getScaledBodyViewOffset(focusedBodyId, scaleMode);
-
-        targetControlsTarget.current.copy(bodyPos);
-        targetCameraPos.current.copy(bodyPos).add(offset);
-      }
-
-      transitionProgress.current = 0.0;
-      isTransitioning.current = true;
+    // Terra ↔ Cosmos: o grupo da Terra troca de centro (origem ↔ órbita) e de escala no mesmo
+    // quadro. Leva câmera e alvo junto, para a Terra continuar igual na tela — sem corte seco.
+    if (cosmicModeChanged) {
+      const home = { center: new THREE.Vector3(), scale: 1 };
+      const orbit = {
+        center: calculatePlanetaryPosition("EARTH", selectedYear).scenePosition.clone(),
+        scale: earthSystemScale(isCosmicMode ? scaleMode : previousScale),
+      };
+      from = isCosmicMode ? reanchorOrbit(from, home, orbit) : reanchorOrbit(from, orbit, home);
+      // Entrando: afasta-se da Terra (na órbita). Saindo: aproxima-se da Terra (na origem).
+      pivot = isCosmicMode ? orbit.center : home.center;
     }
-  }, [isCosmicMode, focusedBodyId, scaleMode, controlsHook, camera.position, selectedYear]);
 
-  // Frame update
+    let to: OrbitState;
+    let limits: { min: number; max: number };
+    if (!isCosmicMode && !focusedBodyId) {
+      // Volta à vista padrão da Terra
+      limits = { min: MIN_CAMERA_ALTITUDE, max: MAX_CAMERA_ALTITUDE };
+      to = { target: new THREE.Vector3(0, 0, 0), camera: new THREE.Vector3(0, 0, 2.5) };
+    } else if (!isCosmicMode && focusedBodyId === "MOON") {
+      // Modo normal: inspeção da Lua
+      limits = { min: 0.4, max: 6.0 };
+      const bodyPos = getBodyPosition("MOON", selectedYear, false);
+      to = { target: bodyPos.clone(), camera: bodyPos.clone().add(getBodyViewOffset("MOON")) };
+    } else {
+      // Vista cósmica
+      limits = { min: cosmicMinDistance(focusedBodyId, scaleMode), max: 1200.0 };
+      const bodyPos = getBodyPosition(focusedBodyId, selectedYear, isCosmicMode);
+      to = { target: bodyPos.clone(), camera: bodyPos.clone().add(getScaledBodyViewOffset(focusedBodyId, scaleMode)) };
+    }
+
+    const duration = prefersReducedMotion() ? 0 : orbitTransitionDuration(from, to);
+    if (duration === 0) {
+      controlsHook.minDistance = limits.min;
+      controlsHook.maxDistance = limits.max;
+      controlsHook.target.copy(to.target);
+      camera.position.copy(to.camera);
+      controlsHook.update();
+      transition.current = null;
+      orbitTransition.active = false;
+      return;
+    }
+
+    // Durante o voo os limites de zoom ficam abertos, senão o OrbitControls puxaria a câmera.
+    controlsHook.minDistance = 1e-3;
+    controlsHook.maxDistance = Infinity;
+    controlsHook.target.copy(from.target);
+    camera.position.copy(from.camera);
+    controlsHook.update();
+    transition.current = { from, to, pivot: pivot ?? to.target.clone(), elapsed: 0, duration, limits };
+    orbitTransition.active = true;
+  }, [isCosmicMode, focusedBodyId, scaleMode, controlsHook, camera, selectedYear]);
+
   useFrame((_, delta) => {
     if (!controlsHook) return;
 
-    if (isTransitioning.current) {
-      transitionProgress.current += delta / transitionDuration.current;
-      const t = Math.min(1.0, transitionProgress.current);
-      // Smooth cubic easing
-      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-      // Interpolate controls.target smoothly
-      controlsHook.target.lerpVectors(startControlsTarget.current, targetControlsTarget.current, ease);
-
-      // Interpolate camera.position smoothly
-      camera.position.lerpVectors(startCameraPos.current, targetCameraPos.current, ease);
-
-      if (t >= 1.0) {
-        isTransitioning.current = false;
-        resetControlsDeltas(controlsHook);
+    const tr = transition.current;
+    if (tr) {
+      tr.elapsed += delta;
+      const t = Math.min(1, tr.elapsed / tr.duration);
+      const state = interpolateOrbit(tr.from, tr.to, easeInOutCubic(t), tr.pivot);
+      controlsHook.target.copy(state.target);
+      camera.position.copy(state.camera);
+      resetControlsDeltas(controlsHook);
+      if (t >= 1) {
+        controlsHook.minDistance = tr.limits.min;
+        controlsHook.maxDistance = tr.limits.max;
+        transition.current = null;
+        orbitTransition.active = false;
       }
       controlsHook.update();
     } else if (focusedBodyId && focusedBodyId !== "SUN") {
-      // Smoothly track orbiting target in real time
+      // Acompanha o alvo em órbita em tempo real
       const currentTargetPos = getBodyPosition(focusedBodyId, selectedYear, isCosmicMode);
       const deltaTarget = currentTargetPos.clone().sub(controlsHook.target);
-
-      // Move target and camera in tandem with orbital motion
       controlsHook.target.copy(currentTargetPos);
       camera.position.add(deltaTarget);
       controlsHook.update();

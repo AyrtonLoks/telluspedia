@@ -153,7 +153,7 @@ export const HoverCitationCard: React.FC<HoverCitationCardProps> = ({
 
       {isOpen && (
         <span
-          className={`pointer-events-auto absolute z-50 block w-80 text-left font-sans animate-in fade-in zoom-in-95 duration-fast ${
+          className={`pointer-events-auto absolute z-50 block w-80 text-left font-sans animate-pop-in ${
             placement === "bottom" ? "top-full pt-1.5" : "bottom-full pb-1.5"
           } ${
             align === "left"

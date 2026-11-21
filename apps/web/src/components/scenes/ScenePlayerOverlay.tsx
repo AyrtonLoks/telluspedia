@@ -63,16 +63,16 @@ const fmtDate = (iso: string) => {
   return `${d}/${m}/${y}`;
 };
 
-export const ScenePlayerOverlay: React.FC<{ sceneId?: string }> = ({ sceneId }) => {
+export const ScenePlayerOverlay: React.FC<{ sceneId?: string; closing?: boolean }> = ({ sceneId, closing = false }) => {
   const activeScene = useEpochState().activeScene;
   const id = sceneId ?? activeScene ?? undefined;
   const scene = id ? getScene(id) : undefined;
   const trajectory = scene?.trajectories[0];
   if (!scene || !trajectory || !scene.hud) return null;
-  return <SceneHud scene={scene} trajectory={trajectory} />;
+  return <SceneHud scene={scene} trajectory={trajectory} closing={closing} />;
 };
 
-const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory }> = ({ scene, trajectory }) => {
+const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: boolean }> = ({ scene, trajectory, closing }) => {
   const hud = scene.hud!;
   const pb = usePlayback();
   const flyTo = useGlobeStore((s) => s.flyTo);
@@ -99,7 +99,9 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory }> = ({ sce
       data-scene-player-overlay="true"
       data-scene-id={scene.id}
       data-testid="scene-player-overlay"
+      data-state={closing ? "closed" : "open"}
       className={cn(
+        closing ? "animate-rise-out" : "animate-rise-in",
         "fixed left-3 top-[7.5rem] z-20 max-h-[calc(100vh-18.5rem)] max-w-[calc(100vw-1.5rem)] select-none overflow-y-auto p-4 text-fg",
         pb.minimized ? "w-80" : "w-96"
       )}

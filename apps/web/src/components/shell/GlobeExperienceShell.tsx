@@ -6,6 +6,9 @@ import { useSearchParams } from "next/navigation";
 import { TopNavBar } from "@/components/nav/TopNavBar";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
 import { useRightDock } from "@/components/layout/useRightDock";
+import { DockSkeleton } from "@/components/layout/DockSkeleton";
+import { ModalSkeleton } from "@/components/ui/Skeleton";
+import { usePresence, useLastDefined } from "@/components/ui/motion";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import type { StudyRecord } from "@/lib/studies-store";
 import { restoreStudySnapshot, selectCountry } from "@/stores/actions";
@@ -51,7 +54,7 @@ const ScenePlayerOverlay = dynamic(
 );
 const RightDock = dynamic(
   () => import("@/components/layout/RightDock").then((m) => m.RightDock),
-  { ssr: false }
+  { ssr: false, loading: () => <DockSkeleton /> }
 );
 const CosmicInspectorHUD = dynamic(
   () => import("@/components/hud/CosmicInspectorHUD").then((m) => m.CosmicInspectorHUD),
@@ -59,19 +62,19 @@ const CosmicInspectorHUD = dynamic(
 );
 const ReaderMode = dynamic(
   () => import("@/components/reader/ReaderMode").then((m) => m.ReaderMode),
-  { ssr: false }
+  { ssr: false, loading: () => <ModalSkeleton label="Carregando o dossiê" /> }
 );
 const CountryComparator = dynamic(
   () => import("@/components/comparator/CountryComparator").then((m) => m.CountryComparator),
-  { ssr: false }
+  { ssr: false, loading: () => <ModalSkeleton label="Carregando o comparador" /> }
 );
 const StudyShareModal = dynamic(
   () => import("@/components/study/StudyShareModal").then((m) => m.StudyShareModal),
-  { ssr: false }
+  { ssr: false, loading: () => <ModalSkeleton label="Carregando o compartilhamento" /> }
 );
 const CitationModal = dynamic(
   () => import("@/components/reader/CitationModal").then((m) => m.CitationModal),
-  { ssr: false }
+  { ssr: false, loading: () => <ModalSkeleton label="Carregando a citação" /> }
 );
 const ForkStudyBanner = dynamic(
   () => import("@/components/study/ForkStudyBanner").then((m) => m.ForkStudyBanner),
@@ -170,8 +173,15 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const showHistoricalBadge =
     epoch.mode !== "GEOLOGICAL" && epoch.historicalEraId !== "CONTEMPORARY";
   const showPaleoBadge = epoch.mode === "GEOLOGICAL";
+  // Abertura e fechamento animados (D17): cada painel fica montado durante a saída.
   // Painel do player de cenas (D12c): só com uma cena ativa (carregado sob demanda — T25).
-  const showScenePlayer = epoch.activeScene !== null;
+  const scenePresence = usePresence(epoch.activeScene !== null);
+  const sceneId = useLastDefined(epoch.activeScene, scenePresence.closing);
+  const dockPresence = usePresence(dock.visible);
+  const readerPresence = usePresence(isReaderOpen && Boolean(selectedIso));
+  const comparatorPresence = usePresence(isComparatorOpen);
+  const sharePresence = usePresence(isShareModalOpen);
+  const citationPresence = usePresence(isCitationModalOpen);
 
   return (
     <>
@@ -201,10 +211,10 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         {showPaleoBadge && <PaleoEraBadge />}
 
         {/* Floating Historical Expedition / Magellan Route HUD Overlay (RN12) */}
-        {showScenePlayer && <ScenePlayerOverlay />}
+        {scenePresence.mounted && sceneId && <ScenePlayerOverlay sceneId={sceneId} closing={scenePresence.closing} />}
 
         {/* Dock direito (D15): Inspector do país, Observatório e Inspector cósmico num único lugar */}
-        {dock.visible && <RightDock />}
+        {dockPresence.mounted && <RightDock closing={dockPresence.closing} />}
 
         {/* Botão flutuante de camadas cósmicas (quando nenhum corpo está focado) */}
         {isCosmicMode && <CosmicInspectorHUD placement="floating" />}
@@ -213,16 +223,16 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         <TimelineBar />
 
         {/* Camada 2: Deep Reading Mode Overlay with TOC & Academic Citations */}
-        {isReaderOpen && Boolean(selectedIso) && <ReaderMode />}
+        {readerPresence.mounted && <ReaderMode />}
 
         {/* Multidimensional Country Comparator (Up to 4 Nations & Recharts) */}
-        {isComparatorOpen && <CountryComparator />}
+        {comparatorPresence.mounted && <CountryComparator />}
 
         {/* Shareable Study Snapshot & Fork Modal */}
-        {isShareModalOpen && <StudyShareModal />}
+        {sharePresence.mounted && <StudyShareModal />}
 
         {/* Citation Generator Modal (Global) */}
-        {isCitationModalOpen && <CitationModal />}
+        {citationPresence.mounted && <CitationModal />}
       </main>
     </>
   );
