@@ -208,7 +208,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | DONE | claude | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | DONE | antigravity | — | G-SHELL, G-GLOBO |
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | DONE | antigravity | T29 | G-PAIS, G-PIPELINE |
-| T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | IN_PROGRESS | antigravity | — | G-SHELL, G-PAIS |
+| T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | REVIEW | antigravity | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | DONE | antigravity | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
 | T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | TODO | — | — | G-PAIS, G-OBS, G-SHELL |
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | TODO | — | — | G-PAIS, G-COSMOS, G-INFRA |
@@ -1168,7 +1168,7 @@ O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `G
 
 ### T33 · SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t33-seo-pwa-jsonld · **Worktree:** ../telluspedia-wt/antigravity-t33
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t33-seo-pwa-jsonld · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Frontend · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL, G-PAIS
 
 **Contexto / problema**
@@ -1179,11 +1179,12 @@ As páginas SSR (`/pais/[iso]`, `/dossies/[slug]`, `/compare`, `/telluslab`) já
 2. Adicionar JSON-LD (`WebApplication` na home, `Country`/`Place` em `/pais/[iso]`, `Article` em `/dossies/[slug]`).
 
 **Critérios de aceite**
-- [ ] `/robots.txt`, `/sitemap.xml` e `/manifest.webmanifest` respondem `200` no build de produção com URLs válidas e sem `/dev/ui`.
+- [x] `/robots.txt`, `/sitemap.xml` e `/manifest.webmanifest` respondem `200` no build de produção com URLs válidas e sem `/dev/ui`.
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (6afbf61). Última P1 pendente da Fase 10; grupos G-SHELL e G-PAIS livres (D24 do claude ocupa G-CONTEUDO e G-EPOCA).
+- 2026-11-21 · antigravity · REVIEW · Implementação em `8732d8b`. **Rotas SEO e PWA:** criados `apps/web/src/app/robots.ts` (libera `/`, bloqueia `/api/`, `/dev/ui` e `/dev/`, declara `sitemap` e `host`), `apps/web/src/app/sitemap.ts` (189 URLs válidas sem `/dev/ui`: `/`, `/compare`, `/telluslab`, os 177 países de `WORLD_COUNTRIES_CATALOG` e os 9 dossiês publicados em `src/lib/dossiers-catalog.ts`, com `lastModified` determinístico de `WORLD_BANK_METADATA`), `apps/web/src/app/manifest.ts` (PWA `standalone` `pt-BR` com `theme_color`/`background_color` `#05070B`, também em `viewport.themeColor` no `layout.tsx`) e `apps/web/src/app/icon.svg`. **JSON-LD seguro (`src/lib/seo.ts`, `src/components/seo/JsonLdScript.tsx`):** Server Component (0 bytes no JS do cliente) com `serializeJsonLd` escapando `<`, `>`, `&`, U+2028 e U+2029 contra script breakout XSS; integrado em `page.tsx` (`WebApplication`), `pais/[iso]/page.tsx` (`["Country", "Place"]` com `GeoCoordinates` e propriedades reais) e `dossies/[slug]/page.tsx` (`Article` + `generateMetadata`). **Testes e validação pós-rebase em `f3ee581`:** 7 novos testes em `apps/web/test/seo-pwa.test.tsx`; `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 664/665 ok (0 falhas, 1 skip), `pnpm build` ok (`/` = 232 kB, `bundle-budget.test.ts` pós-build verde < 250 kB); smoke no build de produção (`next start` em `127.0.0.1:3003`) confirmou `200` em `/robots.txt`, `/manifest.webmanifest`, `/sitemap.xml` (189 `<loc>`, 0 `/dev/ui`), `/icon.svg` (`image/svg+xml`) e JSON-LD renderizado em `/`, `/pais/BRA` e `/dossies/astronomia-optica`.
 
 ---
 
