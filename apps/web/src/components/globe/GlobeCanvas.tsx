@@ -19,7 +19,6 @@ import { CountryBorders } from "./CountryBorders";
 import { OrbitingMoon } from "./OrbitingMoon";
 import { SkyStars } from "./SkyStars";
 import { CameraFlyToController } from "./CameraFlyToController";
-import { Apollo11TelemetryOverlay } from "./Apollo11TelemetryOverlay";
 import { ScenePlayer } from "@/components/scenes/ScenePlayer";
 import { getScene } from "@/lib/scenes/catalog";
 import { EPOCH_SCENE_DATA_IDS } from "@/lib/epoch/constants";
@@ -212,9 +211,6 @@ export const GlobeCanvas: React.FC = () => {
           Nuvens
         </button>
       </div>
-
-      {/* Floating Apollo 11 Space Flight Telemetry HUD Overlay */}
-      {activeScene === "APOLLO11" && <Apollo11TelemetryOverlay />}
 
       {/* Floating Planetary Observatory Telemetry HUD Overlay */}
       {isContemporary && <ObservatoryTelemetryHUD />}

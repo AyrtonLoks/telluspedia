@@ -7,7 +7,8 @@ ficam em JSON versionado em `apps/web/src/data/scenes/` e são validadas pelo sc
 
 > Estado: formato definido (D12a) e dados migrados (D12b) — os 43 marcos simples estão em
 > `milestones.json`, Magalhães em `magellan-1519.json` e a Apollo 11 em `glo-1969.json`. O player
-> genérico (D12c), a ativação explícita (D12d) e a ingestão do Wikidata (D12e) vêm a seguir.
+> O player genérico (D12c) está pronto: `ScenePlayer` (3D) e `ScenePlayerOverlay` (painel). A
+> ativação explícita (D12d) e a ingestão do Wikidata (D12e) vêm a seguir.
 
 ## Como adicionar um evento
 
@@ -42,6 +43,7 @@ nos testes.
 | `subtitle`, `facts` | não | Subtítulo e dados de resumo (pares chave → texto/número). |
 | `participants` | não | `{ name, role, description?, facts? }` — navios de uma frota, unidades, tripulantes. |
 | `chronicle` | não | Diário/crônica: `{ date, place?, text, quote? }`. |
+| `hud` | não | Painel do player: `badge`, `subtitle`, `period`, `startLabel`, `endLabel`, `progressLabel`, `stepStats` (fatos do passo exibidos como estatística: `fact`, `label`, `unit?`, `note?`, `approx?`), `quoteTitle`/`quoteFact`, `cameras` (atalhos de câmera), `finalQuote` e `speeds`. Sem `hud`, a cena não abre o painel. |
 | `dossierMarkdown` | não | Texto longo para o modo leitura. |
 | `published` | não (padrão `true`) | Rascunhos (`false`) não aparecem na interface até a revisão humana. |
 | `wikidata` | não | QID de origem (`Q12345`). |

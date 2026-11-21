@@ -44,8 +44,8 @@ const PaleoEraBadge = dynamic(
   () => import("@/components/globe/PaleoEraBadge").then((m) => m.PaleoEraBadge),
   { ssr: false }
 );
-const HistoricalRouteOverlay = dynamic(
-  () => import("@/components/globe/HistoricalRouteOverlay").then((m) => m.HistoricalRouteOverlay),
+const ScenePlayerOverlay = dynamic(
+  () => import("@/components/scenes/ScenePlayerOverlay").then((m) => m.ScenePlayerOverlay),
   { ssr: false }
 );
 const RightDock = dynamic(
@@ -169,7 +169,8 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const showHistoricalBadge =
     epoch.mode !== "GEOLOGICAL" && epoch.historicalEraId !== "CONTEMPORARY";
   const showPaleoBadge = epoch.mode === "GEOLOGICAL";
-  const showHistoricalRoute = epoch.activeScene === "MAGELLAN";
+  // Painel do player de cenas (D12c): só com uma cena ativa (carregado sob demanda — T25).
+  const showScenePlayer = epoch.activeScene !== null;
 
   return (
     <>
@@ -197,7 +198,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         {showPaleoBadge && <PaleoEraBadge />}
 
         {/* Floating Historical Expedition / Magellan Route HUD Overlay (RN12) */}
-        {showHistoricalRoute && <HistoricalRouteOverlay />}
+        {showScenePlayer && <ScenePlayerOverlay />}
 
         {/* Dock direito (D15): Inspector do país, Observatório e Inspector cósmico num único lugar */}
         {dock.visible && <RightDock />}

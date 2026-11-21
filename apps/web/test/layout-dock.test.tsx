@@ -144,13 +144,12 @@ describe("D15: invariantes de layout no código", () => {
 
   test("overlays da esquerda ficam abaixo do botão 'Iluminação de estudo' e acima da timeline", () => {
     for (const f of [
-      "src/components/globe/Apollo11TelemetryOverlay.tsx",
-      "src/components/globe/HistoricalRouteOverlay.tsx",
+      "src/components/scenes/ScenePlayerOverlay.tsx",
       "src/components/tellus-bridge/EntityLaunch.tsx",
     ]) {
       assert.match(read(f), /top-\[7\.5rem\]/, f);
     }
-    for (const f of ["src/components/globe/Apollo11TelemetryOverlay.tsx", "src/components/globe/HistoricalRouteOverlay.tsx"]) {
+    for (const f of ["src/components/scenes/ScenePlayerOverlay.tsx"]) {
       assert.match(read(f), /max-h-\[calc\(100vh-18\.5rem\)\]/, f);
     }
   });

@@ -612,5 +612,48 @@
       }
     }
   ],
-  "dossierMarkdown": "## A Primeira Circum-navegação da Terra (1519–1522)\n\n### 1. O Projeto e o Tratado de Tordesilhas\nNo início do século XVI, a riqueza do comércio mundial estava concentrada nas especiarias do sudeste asiático — principalmente o cravo-da-índia e a noz-moscada, especiarias raras valendo mais que o seu peso em ouro na Europa. Pelo **Tratado de Tordesilhas (1494)**, a rota oriental contornando a África pertencia exclusivamente a Portugal.\n\nO navegador português **Fernão de Magalhães**, convencido de que as Ilhas Molucas situavam-se no hemisfério espanhol de Tordesilhas e de que existia um passo marítimo ligando o Atlântico ao Mar do Sul (Oceano Pacífico), apresentou sua proposta ao jovem rei Carlos I de Espanha (futuro imperador Carlos V), que financiou a **Armada das Molucas** composta por cinco navios.\n\n### 2. A Travessia dos Mares Desconhecidos\nA jornada enfrentou todos os limites físicos e psicológicos humanos:\n- **O Labirinto Patagônico**: Em outubro de 1520, Magalhães descobriu a passagem tempestuosa de 570 km que hoje ostenta seu nome, cortando os fiordes austrais da América do Sul.\n- **O Vazio do Pacífico**: Três meses e vinte dias de navegação ininterrupta pelo maior oceano do planeta, sem suprimentos frescos, culminando em mortes maciças por escorbuto.\n- **A Batalha de Mactan**: Nas Filipinas, o líder Magalhães foi morto ao tentar subjugar o cacique local Lapu-Lapu com armas de fogo em águas rasas desfavoráveis.\n\n### 3. O Retorno Heróico de Elcano\nSob o comando de **Juan Sebastián Elcano**, a solitária *Nau Victoria* carregou toneladas de cravo nas Molucas e empreendeu uma fuga desesperada pelo Oceano Índico meridional, navegando em segredo para não ser interceptada pelas frotas portuguesas. Três anos após a partida, dezoito sobreviventes retornaram a Sevilha, provando fisicamente pela primeira vez que a Terra é uma esfera contínua e navegável."
+  "dossierMarkdown": "## A Primeira Circum-navegação da Terra (1519–1522)\n\n### 1. O Projeto e o Tratado de Tordesilhas\nNo início do século XVI, a riqueza do comércio mundial estava concentrada nas especiarias do sudeste asiático — principalmente o cravo-da-índia e a noz-moscada, especiarias raras valendo mais que o seu peso em ouro na Europa. Pelo **Tratado de Tordesilhas (1494)**, a rota oriental contornando a África pertencia exclusivamente a Portugal.\n\nO navegador português **Fernão de Magalhães**, convencido de que as Ilhas Molucas situavam-se no hemisfério espanhol de Tordesilhas e de que existia um passo marítimo ligando o Atlântico ao Mar do Sul (Oceano Pacífico), apresentou sua proposta ao jovem rei Carlos I de Espanha (futuro imperador Carlos V), que financiou a **Armada das Molucas** composta por cinco navios.\n\n### 2. A Travessia dos Mares Desconhecidos\nA jornada enfrentou todos os limites físicos e psicológicos humanos:\n- **O Labirinto Patagônico**: Em outubro de 1520, Magalhães descobriu a passagem tempestuosa de 570 km que hoje ostenta seu nome, cortando os fiordes austrais da América do Sul.\n- **O Vazio do Pacífico**: Três meses e vinte dias de navegação ininterrupta pelo maior oceano do planeta, sem suprimentos frescos, culminando em mortes maciças por escorbuto.\n- **A Batalha de Mactan**: Nas Filipinas, o líder Magalhães foi morto ao tentar subjugar o cacique local Lapu-Lapu com armas de fogo em águas rasas desfavoráveis.\n\n### 3. O Retorno Heróico de Elcano\nSob o comando de **Juan Sebastián Elcano**, a solitária *Nau Victoria* carregou toneladas de cravo nas Molucas e empreendeu uma fuga desesperada pelo Oceano Índico meridional, navegando em segredo para não ser interceptada pelas frotas portuguesas. Três anos após a partida, dezoito sobreviventes retornaram a Sevilha, provando fisicamente pela primeira vez que a Terra é uma esfera contínua e navegável.",
+  "hud": {
+    "badge": "CIRCUM-NAVEGAÇÃO",
+    "subtitle": "Telemetria náutica e diário de bordo",
+    "period": "1519–1522",
+    "startLabel": "Sanlúcar (1519)",
+    "endLabel": "Retorno (1522)",
+    "progressLabel": "Progresso da circum-navegação de Magalhães",
+    "stepStats": [
+      {
+        "fact": "vessel",
+        "label": "Embarcação ativa",
+        "note": "Armada das Molucas"
+      },
+      {
+        "fact": "commander",
+        "label": "Comandante",
+        "note": "Bandeira de Castela"
+      },
+      {
+        "fact": "leaguesNavigated",
+        "label": "Léguas navegadas",
+        "unit": "léguas",
+        "approx": {
+          "factor": 4.18,
+          "unit": "km"
+        }
+      },
+      {
+        "fact": "daysAtSea",
+        "label": "Tempo em mar",
+        "unit": "dias",
+        "note": "de 1.082 dias totais"
+      }
+    ],
+    "quoteTitle": "Diário de Bordo — Antonio Pigafetta (1524)",
+    "quoteFact": "pigafettaDiary",
+    "speeds": [
+      0.5,
+      1,
+      2,
+      5
+    ]
+  }
 }

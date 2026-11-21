@@ -206,3 +206,52 @@ describe("D12c: player genérico (camadas 3D)", () => {
     assert.match(surface, /isShip \?/, "veículo conforme o tipo");
   });
 });
+
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { cislunarTelemetry } from "../src/lib/scenes/cislunar";
+import { ScenePlayerOverlay } from "../src/components/scenes/ScenePlayerOverlay";
+import { useApollo11Store } from "../src/stores/apollo11Store";
+import { useHistoricalRouteStore } from "../src/stores/historicalRouteStore";
+
+describe("D12c: painel genérico do player", () => {
+  const apollo = getScene("glo-1969")!.trajectories[0];
+
+  test("telemetria Terra–Lua derivada dos dados: GET pelas fases e distância até a Lua real", () => {
+    if (apollo.kind !== "cislunar") throw new Error();
+    const start = cislunarTelemetry(apollo, 0);
+    assert.equal(start.getFormatted, "000:00:00");
+    assert.equal(start.phaseIndex, 0);
+    assert.ok(start.distanceKm < 1000, "no lançamento, perto da Terra");
+    const end = cislunarTelemetry(apollo, 1);
+    assert.equal(end.getFormatted, "102:45:40", "GET do pouso (Mission Report)");
+    assert.equal(end.phaseIndex, 3);
+    assert.ok(end.distanceKm > 350_000 && end.distanceKm < 410_000, `distância no pouso ${end.distanceKm}`);
+    assert.equal(cislunarTelemetry(apollo, 0.6).phaseIndex, 2, "inserção em órbita lunar");
+    const mids = [0.2, 0.4, 0.6, 0.8].map((p) => cislunarTelemetry(apollo, p).getSeconds);
+    assert.deepEqual(mids, [...mids].sort((a, b) => a - b), "GET cresce com o progresso");
+  });
+
+  test("um só painel serve Magalhães e Apollo 11, com textos e estatísticas vindos dos dados", () => {
+    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
+    useHistoricalRouteStore.getState().jumpToWaypoint(6);
+    const mag = renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "magellan-1519" }));
+    for (const s of ["CIRCUM-NAVEGAÇÃO", "Léguas navegadas", "léguas", "Diário de Bordo — Antonio Pigafetta (1524)", "Fernão de Magalhães", 'data-scene-id="magellan-1519"']) assert.ok(mag.includes(s), s);
+    useHistoricalRouteStore.getState().setActiveRouteId(null);
+
+    useApollo11Store.getState().setProgress(0.97);
+    const apo = renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "glo-1969" }));
+    for (const s of ["APOLLO 11", "Telemetria de Voo Espacial NASA", "SATURN V / LEO", "TOUCHDOWN / EAGLE", "Distância da Terra", "Tempo de missão (GET)", "The Eagle has landed", "Visão ampla", "Lua"]) assert.ok(apo.includes(s), s);
+    useApollo11Store.getState().setProgress(0.5);
+    assert.ok(!renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "glo-1969" })).includes("The Eagle has landed"), "frase final só perto do fim");
+    assert.equal(renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "queda-muro-inexistente" })), "");
+  });
+
+  test("os painéis por evento foram removidos; velocidade sintética não é mais exibida", () => {
+    assert.ok(!fs.existsSync(path.join(__dirname, "../src/components/globe/Apollo11TelemetryOverlay.tsx")));
+    assert.ok(!fs.existsSync(path.join(__dirname, "../src/components/globe/HistoricalRouteOverlay.tsx")));
+    const overlay = fs.readFileSync(path.join(__dirname, "../src/components/scenes/ScenePlayerOverlay.tsx"), "utf-8");
+    assert.doesNotMatch(overlay, /magellan|apollo 11|1519|1969|km\/h/i, "o painel não conhece eventos pelo nome");
+    assert.match(fs.readFileSync(path.join(__dirname, "../src/components/shell/GlobeExperienceShell.tsx"), "utf-8"), /<ScenePlayerOverlay \/>/);
+  });
+});

@@ -116,5 +116,53 @@
         }
       ]
     }
-  ]
+  ],
+  "hud": {
+    "badge": "APOLLO 11",
+    "subtitle": "Telemetria de Voo Espacial NASA",
+    "period": "16–20 jul 1969",
+    "startLabel": "0% (Canaveral)",
+    "endLabel": "100% (Tranquilidade)",
+    "progressLabel": "Progresso da missão Apollo 11",
+    "stepStats": [
+      {
+        "fact": "badge",
+        "label": "Fase"
+      },
+      {
+        "fact": "historicalGET",
+        "label": "GET histórico da fase",
+        "unit": "HHH:MM:SS"
+      }
+    ],
+    "cameras": [
+      {
+        "label": "Visão ampla",
+        "lat": 12,
+        "lng": -148,
+        "altitude": 6.0
+      },
+      {
+        "label": "Canaveral",
+        "lat": 28.5721,
+        "lng": -80.648,
+        "altitude": 2.0
+      },
+      {
+        "label": "Lua",
+        "lat": -2.38,
+        "lng": -59.16,
+        "altitude": 4.8
+      }
+    ],
+    "finalQuote": {
+      "text": "Houston, Tranquility Base here. The Eagle has landed.",
+      "minProgress": 0.96
+    },
+    "speeds": [
+      0.5,
+      1,
+      2
+    ]
+  }
 }

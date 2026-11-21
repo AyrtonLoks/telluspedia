@@ -36,7 +36,9 @@ import {
   MOON_RADIUS_UNITS,
 } from "../src/lib/apollo11";
 import { useApollo11Store } from "../src/stores/apollo11Store";
-import { Apollo11TelemetryOverlay } from "../src/components/globe/Apollo11TelemetryOverlay";
+import { ScenePlayerOverlay } from "../src/components/scenes/ScenePlayerOverlay";
+// D12c: os painéis por evento foram substituídos pelo painel genérico do player de cenas.
+const Apollo11TelemetryOverlay: React.FC = () => React.createElement(ScenePlayerOverlay);
 import { useStudyStore } from "../src/stores/studyStore";
 import { getMemoryStudy, saveMemoryStudy, forkStudyRecord, restoreStudyRecord, StudyRecord } from "../src/lib/studies-store";
 import { HistoricalEraBadge } from "../src/components/globe/HistoricalEraBadge";
@@ -57,7 +59,8 @@ import {
   getContemporarySpatialIndex,
 } from "../src/lib/historical-topology";
 import { useHistoricalRouteStore } from "../src/stores/historicalRouteStore";
-import { HistoricalRouteOverlay } from "../src/components/globe/HistoricalRouteOverlay";
+const HistoricalRouteOverlay: React.FC<{ forceActive?: boolean }> = ({ forceActive }) =>
+  React.createElement(ScenePlayerOverlay, forceActive ? { sceneId: "magellan-1519" } : {});
 import { PaleoEraBadge } from "../src/components/globe/PaleoEraBadge";
 import { PresetSelector } from "../src/components/timeline/PresetSelector";
 import {
@@ -1672,7 +1675,7 @@ describe("Apollo 11 3D Trajectory, Telemetry & Space Flight Dynamics (RN12.1)", 
     // Active state via explicit milestone selection
     useTimelineStore.getState().selectMilestone("glo-1969");
     html = renderToStaticMarkup(React.createElement(Apollo11TelemetryOverlay));
-    assert.ok(html.includes("data-apollo-telemetry-overlay=\"true\""), "Should render HUD container");
+    assert.ok(html.includes("data-scene-player-overlay=\"true\""), "Should render HUD container");
     assert.ok(html.includes("APOLLO 11"), "Should display Apollo 11 badge");
     assert.ok(html.includes("Telemetria de Voo Espacial NASA"), "Should display subtitle");
     assert.ok(html.includes("SATURN V / LEO"), "Should display phase badges");
@@ -2548,7 +2551,7 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
     useHistoricalRouteStore.getState().jumpToWaypoint(6); // Estreito de Magalhães
 
     const html = renderToStaticMarkup(React.createElement(HistoricalRouteOverlay, { forceActive: true }));
-    assert.ok(html.includes("data-historical-route-overlay=\"true\""));
+    assert.ok(html.includes("data-scene-player-overlay=\"true\""));
     assert.ok(html.includes("CIRCUM-NAVEGAÇÃO"));
     assert.ok(html.includes("Nau Trinidad") || html.includes("Victoria") || html.includes("Embarcação"));
     assert.ok(html.includes("Fernão de Magalhães"));

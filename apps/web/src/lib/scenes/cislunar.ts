@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { latLngToVector3 } from "../geo-spatial";
-import { getMoonScenePosition } from "../astronomy";
+import { calculateLunarPosition, getMoonScenePosition } from "../astronomy";
 import type { SceneTrajectory } from "./schema";
 
 /**
@@ -103,3 +103,62 @@ export function createCislunarCurve(traj: Cislunar, moonPos: THREE.Vector3 = cis
   return new THREE.CatmullRomCurve3(cislunarControlPoints(traj, moonPos), false, "centripetal", 0.5);
 }
 
+
+const EARTH_RADIUS_KM = 6378.1;
+const curveCache = new WeakMap<object, { curve: THREE.CatmullRomCurve3; moonPos: THREE.Vector3; moonDistanceKm: number }>();
+
+function cached(traj: Cislunar) {
+  let c = curveCache.get(traj);
+  if (!c) {
+    const moonPos = cislunarMoonPosition(traj);
+    c = { curve: createCislunarCurve(traj, moonPos), moonPos, moonDistanceKm: calculateLunarPosition(cislunarReferenceDate(traj)).distanceKm };
+    curveCache.set(traj, c);
+  }
+  return c;
+}
+
+const num = (v: unknown, fallback: number) => (typeof v === "number" ? v : fallback);
+
+/**
+ * Telemetria derivada dos dados da cena para um progresso 0–1: fase atual (pelas faixas
+ * `startProgress`/`endProgress` dos fatos, ou divisão igual), tempo de missão (GET) interpolado
+ * entre os instantes das fases e distância da Terra numa escala aproximada (a cena comprime a
+ * distância Terra–Lua; mapeia-se linearmente a altitude da nave até a distância real da Lua).
+ */
+export function cislunarTelemetry(traj: Cislunar, progress: number) {
+  const p = Math.max(0, Math.min(1, progress));
+  const n = traj.phases.length;
+  let phaseIndex = 0;
+  traj.phases.forEach((ph, i) => {
+    if (p >= num(ph.facts?.startProgress, i / n)) phaseIndex = i;
+  });
+
+  // GET: pontos (progresso-alvo, instante) de cada fase
+  const knots = traj.phases.map((ph, i) => ({ at: num(ph.facts?.targetProgress, n > 1 ? i / (n - 1) : 0), t: Date.parse(ph.time) }));
+  const launch = Date.parse(traj.phases[0].time);
+  let t = knots[0].t;
+  if (p >= knots[knots.length - 1].at) t = knots[knots.length - 1].t;
+  else
+    for (let i = 0; i < knots.length - 1; i++) {
+      if (p >= knots[i].at && p <= knots[i + 1].at) {
+        const f = (p - knots[i].at) / Math.max(1e-9, knots[i + 1].at - knots[i].at);
+        t = knots[i].t + f * (knots[i + 1].t - knots[i].t);
+        break;
+      }
+    }
+  const getSeconds = Math.max(0, Math.round((t - launch) / 1000));
+  const hh = Math.floor(getSeconds / 3600);
+  const mm = Math.floor((getSeconds % 3600) / 60);
+  const ss = getSeconds % 60;
+  const getFormatted = `${String(hh).padStart(3, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+
+  const { curve, moonPos, moonDistanceKm } = cached(traj);
+  const r = curve.getPoint(p).length();
+  const moonR = moonPos.length();
+  // Da superfície da Terra (r = 1) ao lado visível da Lua (r = |Lua| − raio lunar), linearmente.
+  const MOON_RADIUS_KM = 1737.4;
+  const span = Math.max(1e-9, moonR - MOON_RADIUS_SCENE - 1);
+  const distanceKm = Math.round(Math.max(0, Math.min(1, (r - 1) / span)) * (moonDistanceKm - EARTH_RADIUS_KM - MOON_RADIUS_KM));
+
+  return { progress: p, phaseIndex, getSeconds, getFormatted, distanceKm };
+}

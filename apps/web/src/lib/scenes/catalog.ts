@@ -34,6 +34,9 @@ export function normalizeScene(raw: unknown): Scene {
     participants: s.participants ?? [],
     chronicle: s.chronicle ?? [],
     published: s.published ?? true,
+    ...(s.hud
+      ? { hud: { ...s.hud, stepStats: s.hud.stepStats ?? [], cameras: s.hud.cameras ?? [], speeds: s.hud.speeds ?? [0.5, 1, 2] } }
+      : {}),
   } as Scene;
 }
 

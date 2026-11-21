@@ -132,6 +132,38 @@ export const SceneMediaSchema = z.object({
   license: z.string().min(1),
 });
 
+/** Configuração do painel (HUD) do player — textos e quais fatos dos passos viram estatísticas. */
+export const SceneHudSchema = z.object({
+  badge: z.string().min(1),
+  subtitle: z.string().optional(),
+  period: z.string().optional(),
+  startLabel: z.string().min(1),
+  endLabel: z.string().min(1),
+  /** Rótulo acessível da barra de progresso. */
+  progressLabel: z.string().min(1),
+  /** Estatísticas do passo atual: um fato do ponto/fase, com unidade e nota opcionais. */
+  stepStats: z
+    .array(
+      z.object({
+        fact: z.string().min(1),
+        label: z.string().min(1),
+        unit: z.string().optional(),
+        note: z.string().optional(),
+        /** Conversão aproximada exibida embaixo (ex.: léguas → km). */
+        approx: z.object({ factor: z.number().positive(), unit: z.string().min(1) }).optional(),
+      })
+    )
+    .default([]),
+  /** Título do bloco de citação e o fato do passo usado como texto (senão, `quote` do ponto). */
+  quoteTitle: z.string().optional(),
+  quoteFact: z.string().optional(),
+  /** Câmeras rápidas do painel. */
+  cameras: z.array(z.object({ label: z.string().min(1), lat: Lat, lng: Lng, altitude: z.number().min(MIN_CAMERA_ALTITUDE).max(MAX_CAMERA_ALTITUDE) })).default([]),
+  /** Frase exibida perto do fim (progresso ≥ minProgress). */
+  finalQuote: z.object({ text: z.string().min(1), minProgress: z.number().min(0).max(1) }).optional(),
+  speeds: z.array(z.number().positive()).default([0.5, 1, 2]),
+});
+
 const ERA_IDS = Object.keys(HISTORICAL_ERAS) as [string, ...string[]];
 
 export const SceneSchema = z
@@ -164,6 +196,7 @@ export const SceneSchema = z
     /** Dados de resumo específicos do evento (comandante, distância, sobreviventes…). */
     facts: Facts.optional(),
     subtitle: z.string().optional(),
+    hud: SceneHudSchema.optional(),
     /** Texto longo opcional (Markdown) para o modo leitura. */
     dossierMarkdown: z.string().optional(),
     /** Rascunhos (ingestão do Wikidata) ficam fora da UI até a revisão humana. */
