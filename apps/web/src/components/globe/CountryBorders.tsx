@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { BufferAttribute, BufferGeometry, MathUtils, Vector3, type Mesh, type MeshBasicMaterial, type Object3D } from "three";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { BufferAttribute, BufferGeometry, DynamicDrawUsage, InstancedInterleavedBuffer, InterleavedBufferAttribute, MathUtils, Sphere, Vector3, type Mesh, type MeshBasicMaterial, type Object3D } from "three";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useTimelineStore } from "@/stores/timelineStore";
@@ -115,19 +115,65 @@ const selectionHalo: BorderStroke = {
   order: 4,
 };
 
-function HighlightBorders({ positions, kind }: { positions: Float32Array; kind: HighlightKind }) {
-  const lines = useMemo(() => {
-    const geometry = new LineSegmentsGeometry().setPositions(positions);
+function makeHighlightBuffer(segmentCapacity: number) {
+  const geometry = new LineSegmentsGeometry();
+  const buffer = new InstancedInterleavedBuffer(new Float32Array(segmentCapacity * 6), 6);
+  buffer.setUsage(DynamicDrawUsage);
+  geometry.setAttribute("instanceStart", new InterleavedBufferAttribute(buffer, 3, 0));
+  geometry.setAttribute("instanceEnd", new InterleavedBufferAttribute(buffer, 3, 3));
+  geometry.instanceCount = 0;
+  // Every cached outline is at radius 1.004. Padding the buffer needn't affect culling.
+  geometry.boundingSphere = new Sphere(new Vector3(), 1.01);
+  return { geometry, buffer };
+}
+
+function HighlightBorders({ positions, kind }: { positions: Float32Array | null; kind: HighlightKind }) {
+  const invalidate = useThree((state) => state.invalidate);
+  const resource = useRef<ReturnType<typeof makeHighlightBuffer> | null>(null);
+  const { lines, center } = useMemo(() => {
     const strokes = kind === "selected" ? [selectionHalo, highlightStyles.selected] : [highlightStyles[kind]];
-    return strokes.map((stroke) => ({
-      stroke,
-      line: makeWideLine(geometry, stroke.color, stroke.width[0], stroke.opacity[0], stroke.order),
-    }));
-  }, [positions, kind]);
-  const center = useMemo(() => new Vector3(), []);
+    const geometry = new LineSegmentsGeometry();
+    geometry.instanceCount = 0;
+    return {
+      center: new Vector3(),
+      lines: strokes.map((stroke) => {
+        const line = makeWideLine(geometry, stroke.color, stroke.width[0], stroke.opacity[0], stroke.order);
+        line.visible = false;
+        return { stroke, line };
+      }),
+    };
+  }, [kind]);
+
+  useLayoutEffect(() => {
+    const first = lines[0].line;
+    const count = positions ? positions.length / 6 : 0;
+    if (!positions || !count) {
+      first.geometry.instanceCount = 0;
+      for (const { line } of lines) line.visible = false;
+      invalidate();
+      return;
+    }
+
+    let current = resource.current;
+    if (!current || count > current.buffer.count) {
+      const next = makeHighlightBuffer(Math.max(64, 2 ** Math.ceil(Math.log2(count))));
+      // Both selection strokes share a single buffer. Retire it once on growth.
+      first.geometry.dispose();
+      for (const { line } of lines) line.geometry = next.geometry;
+      resource.current = current = next;
+    }
+    current.buffer.array.set(positions);
+    current.buffer.clearUpdateRanges();
+    current.buffer.addUpdateRange(0, positions.length);
+    current.buffer.needsUpdate = true;
+    current.geometry.instanceCount = count;
+    invalidate();
+  }, [positions, lines, invalidate]);
 
   useFrame(({ camera }) => {
-    const zoom = getBorderZoom(lines[0].line, camera.position, center);
+    const first = lines[0].line;
+    if (first.geometry.instanceCount === 0) return;
+    const zoom = getBorderZoom(first, camera.position, center);
     for (const { line, stroke } of lines) {
       line.material.linewidth = MathUtils.lerp(...stroke.width, zoom);
       line.material.opacity = MathUtils.lerp(...stroke.opacity, zoom);
@@ -138,6 +184,7 @@ function HighlightBorders({ positions, kind }: { positions: Float32Array; kind: 
   useEffect(() => () => {
     lines[0].line.geometry.dispose();
     for (const { line } of lines) line.material.dispose();
+    resource.current = null;
   }, [lines]);
 
   return lines.map(({ line }) => <primitive key={line.renderOrder} object={line} />);
@@ -250,9 +297,9 @@ export function CountryBorders() {
         />
       )}
       {selectedFill && <SelectedCountryFill positions={selectedFill} />}
-      {relatedPositions && <HighlightBorders positions={relatedPositions} kind="related" />}
-      {hoverPositions && <HighlightBorders positions={hoverPositions} kind="hover" />}
-      {selectedPositions && <HighlightBorders positions={selectedPositions} kind="selected" />}
+      <HighlightBorders positions={relatedPositions} kind="related" />
+      <HighlightBorders positions={hoverPositions} kind="hover" />
+      <HighlightBorders positions={selectedPositions} kind="selected" />
     </group>
   );
 }
