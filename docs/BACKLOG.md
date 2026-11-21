@@ -173,7 +173,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | DONE | antigravity | T13 | G-PAIS, G-ESTUDOS, G-SHELL |
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
-| T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | IN_PROGRESS | antigravity | — | G-ESTUDOS |
+| T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | REVIEW | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
 | T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
@@ -818,7 +818,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 
 ### T20 · Migrations Prisma e restrições do schema
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t20-prisma-migrations · **Worktree:** ../telluspedia-wt/antigravity-t20
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t20-prisma-migrations · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Backend · **Tamanho:** M · **Depende de:** — · **Grupos:** G-ESTUDOS
 
 **Contexto / problema**
@@ -831,12 +831,13 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 4. Documentar no README o fluxo `docker:up → db:migrate → db:seed`.
 
 **Critérios de aceite**
-- [ ] `prisma migrate reset` num banco vazio aplica tudo e o seed roda.
-- [ ] Limites do banco iguais aos do zod.
+- [x] `prisma migrate reset` num banco vazio aplica tudo e o seed roda.
+- [x] Limites do banco iguais aos do zod.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (001e345). Grupo G-ESTUDOS livre; desbloqueia D12 (P1).
+- 2026-11-20 · antigravity · REVIEW · **Decisão sobre `Country.geometryJson`: removido** de `schema.prisma` e `prisma/seed.ts` (não era lido em nenhum endpoint, loader, frontend ou `data-pipeline` — fronteiras e picking vêm do `world-atlas`/TopoJSON; caso consultas espaciais no banco sejam necessárias futuramente, devem usar coluna PostGIS `geometry` dedicada em vez de blob JSON duplicado). **Restrições alinhadas ao Zod (T07):** adicionados `@db.VarChar` no modelo `Study` em `apps/web/prisma/schema.prisma` (`id`/`parentId` `VarChar(128)`, `title` `VarChar(200)`, `description` `VarChar(2000)`, `markdownNotes` `VarChar(50000)`, campos de enum `VarChar(64)` e arrays `VarChar(32|64)[]`), exportadas constantes `MAX_STUDY_SLUG_LENGTH` e `MAX_STUDY_ITEMS` em `src/lib/study-schema.ts`, e gerada/versionada a migration inicial `apps/web/prisma/migrations/20261121014158_init/migration.sql` (+ `migration_lock.toml`) com `CHECK` constraints PostgreSQL coerentes com o Zod (`timelineStartYear` ∈ `[-3000, 3000]` e `<= timelineEndYear`, `cameraLat` ∈ `[-90, 90]`, `cameraLng` ∈ `[-180, 180]`, `cameraAltitude` ∈ `[1.5, 6]`, `geologicalMa` ∈ `[0, 4600]`, cardinalidade dos arrays `<= 50`). **Documentação:** atualizado `README.md` com o fluxo completo `cp apps/web/.env.example apps/web/.env` → `pnpm docker:up` → `pnpm db:migrate` → `pnpm db:seed`, além de `prisma migrate reset` (dev) e `prisma migrate deploy` (prod/CI). **Validação:** testado em container efêmero `postgis/postgis:16-3.4` (`prisma migrate reset --force` aplicou `20261121014158_init` e executou o seed automaticamente: 6 países piloto, 36 indicadores, 11 dossiês, 45 marcos e 1 estudo; `prisma migrate status` e `prisma migrate dev` confirmaram zero drift; verificados 12 casos inválidos rejeitados pelo PostgreSQL + aceitação exata do limite máximo); `pnpm db:generate`, `pnpm typecheck`, `pnpm lint`, `pnpm test` (474/474, incluindo 4 novos testes de regressão em `test/prisma-schema.test.ts`) e `pnpm build` verdes. Desbloqueia `D12`. Commit: 67faa7a.
 
 ---
 
