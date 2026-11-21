@@ -1,27 +1,38 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Merriweather } from "next/font/google";
+import localFont from "next/font/local";
 import "@/styles/globals.css";
 
-// Fontes auto-hospedadas pelo next/font. As variáveis CSS abaixo são consumidas
-// pelo tailwind.config.ts (font-sans / font-mono / font-serif) e pelo globals.css.
-const geistSans = Geist({
-  subsets: ["latin", "latin-ext"],
+// Fontes auto-hospedadas localmente via next/font/local (T27: elimina dependência
+// do CDN do Google Fonts em build time e a falha intermitente do loader com Merriweather v33).
+// As variáveis CSS abaixo são consumidas pelo tailwind.config.ts e pelo globals.css.
+const geistSans = localFont({
+  src: "./fonts/Geist-Variable.woff2",
+  weight: "100 900",
+  style: "normal",
   variable: "--font-geist-sans",
   display: "swap",
+  adjustFontFallback: "Arial",
 });
 
-const geistMono = Geist_Mono({
-  subsets: ["latin", "latin-ext"],
+const geistMono = localFont({
+  src: "./fonts/GeistMono-Variable.woff2",
+  weight: "100 900",
+  style: "normal",
   variable: "--font-geist-mono",
   display: "swap",
+  adjustFontFallback: false,
 });
 
-const merriweather = Merriweather({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
+const merriweather = localFont({
+  src: [
+    { path: "./fonts/Merriweather-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Merriweather-Italic.woff2", weight: "400", style: "italic" },
+    { path: "./fonts/Merriweather-Bold.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/Merriweather-BoldItalic.woff2", weight: "700", style: "italic" },
+  ],
   variable: "--font-merriweather",
   display: "swap",
+  adjustFontFallback: "Times New Roman",
   // Usada só no modo leitura e nos dossiês: não precisa competir com o carregamento inicial.
   preload: false,
 });
