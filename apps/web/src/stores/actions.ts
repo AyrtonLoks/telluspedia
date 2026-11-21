@@ -1,7 +1,8 @@
 import { sceneHasTrajectoryKind, sceneOpenedBy } from "@/lib/scenes/catalog";
 import { HISTORICAL_ERAS } from "@/lib/historical-entities";
 import { MAGELLAN_ROUTE } from "@/lib/historical-routes";
-import type { ObservatoryLayerId } from "@/lib/observatory-data";
+import type { ObservatoryLayer } from "@/lib/observatory-data";
+import { readGibsView } from "@/lib/gibs";
 import type { CelestialBodyId } from "@/lib/astronomy-planets";
 import type { StudyRecord } from "@/lib/studies-store";
 import { normalizeStudyEpoch } from "@/lib/study-epoch";
@@ -155,7 +156,10 @@ export function restoreStudySnapshot(study: StudySnapshot) {
     cosmic.exitToEarthView();
   }
   // As rotas de estudos validam os IDs de camadas antes de retornar o snapshot.
-  useObservatoryStore.getState().setAllLayers(epoch.activeObservatoryLayers as ObservatoryLayerId[]);
+  const observatory = useObservatoryStore.getState();
+  // Produto e mês do GIBS antes de ligar as camadas, para a primeira carga já ser a do estudo (D25).
+  observatory.setGibsRequest(readGibsView(study.gibsProduct, study.gibsMonth) ?? { product: "ndvi", month: null });
+  observatory.setAllLayers(epoch.activeObservatoryLayers as ObservatoryLayer[]);
 
   const countries = study.selectedCountryIsos ?? [];
   selectCountry(countries[0] ?? null);

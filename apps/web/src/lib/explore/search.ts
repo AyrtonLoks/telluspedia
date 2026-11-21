@@ -3,7 +3,8 @@ import {
   GLOBAL_MILESTONES, PILOT_COUNTRIES, WORLD_COUNTRIES_CATALOG, findMilestoneById, getCountryData,
 } from "@/lib/country-data";
 import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "@/lib/historical-entities";
-import type { ObservatoryLayerId } from "@/lib/observatory-data";
+import type { ObservatoryLayer } from "@/lib/observatory-data";
+import { GIBS_PRODUCT_IDS, GIBS_PRODUCTS, isGibsProductId } from "@/lib/gibs";
 import { getEpochState } from "@/lib/epoch/useEpochState";
 import { applyTimelinePreset, restoreContemporaryTimeline, selectCountry } from "@/stores/actions";
 import { CHOROPLETH_INDICATOR_LIST, type ChoroplethIndicatorId } from "@/lib/choropleth";
@@ -16,12 +17,13 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useSceneStore } from "@/stores/sceneStore";
 import { useTimelineStore, type TimelinePreset } from "@/stores/timelineStore";
 
-const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayerId, { title: string; keywords: string }> = {
+const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywords: string }> = {
   NASA_FIRMS: { title: "Queimadas ativas", keywords: "focos de calor incêndios fogo FIRMS NASA" },
   NASA_EONET: { title: "Eventos severos", keywords: "EONET tempestades ciclones vulcões alertas eventos naturais" },
   ISS_SATELLITES: { title: "ISS e satélites artificiais", keywords: "estação espacial CelesTrak" },
   FLIGHTS_OPENSKY: { title: "Tráfego aéreo", keywords: "aviões aeronaves voos OpenSky" },
   MARITIME_ROUTES: { title: "Tráfego marítimo", keywords: "navios barcos embarcações AIS" },
+  NASA_GIBS: { title: "Imagens de satélite (GIBS)", keywords: "NASA GIBS MODIS satélite mapa mensal" },
 };
 
 const presets: Record<TimelinePreset, string> = {
@@ -86,6 +88,13 @@ const entries: SearchResult[] = [
   })),
   ...Object.entries(OBSERVATORY_SEARCH_LAYERS).map(([id, layer]) => ({
     id: `layer:${id}`, group: "layer" as const, title: layer.title, keywords: `ativar ${layer.keywords}`,
+  })),
+  ...GIBS_PRODUCT_IDS.map((id) => ({
+    id: `layer:NASA_GIBS:${id}`,
+    group: "layer" as const,
+    title: `Satélite: ${GIBS_PRODUCTS[id].name}`,
+    detail: "NASA GIBS",
+    keywords: `ativar imagem satelite GIBS ${GIBS_PRODUCTS[id].shortName} ${GIBS_PRODUCTS[id].gibsLayer} ${id}`,
   })),
   ...CHOROPLETH_INDICATOR_LIST.map((item) => ({
     id: `choropleth:${item.id}`,
@@ -267,7 +276,9 @@ export function runSearchResult(result: SearchResult) {
       showEarth();
       const observatory = useObservatoryStore.getState();
       observatory.setPanelOpen(true);
-      observatory.setLayerActive(value as ObservatoryLayerId, true);
+      const [layerId, gibsProduct] = value.split(":");
+      if (layerId === "NASA_GIBS" && isGibsProductId(gibsProduct)) observatory.setGibsRequest({ product: gibsProduct });
+      observatory.setLayerActive(layerId as ObservatoryLayer, true);
       useLayoutStore.getState().setActiveRightPanel("observatory");
       break;
     }

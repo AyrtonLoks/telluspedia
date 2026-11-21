@@ -132,6 +132,8 @@ model Study {
   focusedCelestialBody    String?  @db.VarChar(64)
   activeCosmicLayers      String[] @default([]) @db.VarChar(64)
   choroplethIndicator     String?  @db.VarChar(64)
+  gibsProduct             String?  @db.VarChar(16)
+  gibsMonth               String?  @db.VarChar(7)
   createdAt               DateTime @default(now())
 
   parent                  Study?   @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)

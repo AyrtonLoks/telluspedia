@@ -17,6 +17,7 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { CHOROPLETH_INDICATORS } from "@/lib/choropleth";
+import { GIBS_PRODUCTS, formatGibsMonth } from "@/lib/gibs";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 
@@ -89,6 +90,11 @@ export const StudyShareModal: React.FC = () => {
       ? (useChoroplethStore.getState().activeIndicator ?? null)
       : storeChoroplethIndicator;
 
+  const storeGibsProduct = useObservatoryStore((s) => s.gibsProduct);
+  const storeGibsShown = useObservatoryStore((s) => s.gibs);
+  const gibsProduct = typeof window === "undefined" ? useObservatoryStore.getState().gibsProduct : storeGibsProduct;
+  const gibsShown = typeof window === "undefined" ? useObservatoryStore.getState().gibs : storeGibsShown;
+
   const [shareUrl, setShareUrl] = useState<string>("");
   const [temporaryShare, setTemporaryShare] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -112,6 +118,12 @@ export const StudyShareModal: React.FC = () => {
   const choroplethMeta = effectiveChoroplethIndicator
     ? CHOROPLETH_INDICATORS[effectiveChoroplethIndicator]
     : null;
+
+  // O estudo é um snapshot imutável: congela o mês mostrado agora, não "o mais recente" (D25).
+  const gibsOn = effectiveObservatoryLayers.includes("NASA_GIBS");
+  const gibsSnapshot = gibsOn
+    ? { gibsProduct, gibsMonth: gibsShown?.product === gibsProduct ? gibsShown.month : null }
+    : { gibsProduct: null, gibsMonth: null };
 
   const handleGenerateLink = async () => {
     setLoading(true);
@@ -140,6 +152,7 @@ export const StudyShareModal: React.FC = () => {
       focusedCelestialBody: focusedBodyId,
       activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
       choroplethIndicator: effectiveChoroplethIndicator,
+      ...gibsSnapshot,
     };
 
     try {
@@ -339,6 +352,22 @@ export const StudyShareModal: React.FC = () => {
                 <div className="font-semibold text-fg">Mapa Temático Coroplético Capturado</div>
                 <div className="text-caption text-accent">
                   {choroplethMeta.label} ({choroplethMeta.sourcePrimary}) — restaurado automaticamente ao abrir o link.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {gibsOn && (
+            <div
+              data-testid="modal-gibs-badge"
+              className="flex items-center gap-2.5 rounded-card border border-line bg-surface p-3 text-label"
+            >
+              <span aria-hidden="true" className="select-none text-title">🛰️</span>
+              <div className="flex-1">
+                <div className="font-semibold text-fg">Imagem de Satélite Capturada</div>
+                <div className="text-caption text-fg-secondary">
+                  {GIBS_PRODUCTS[gibsProduct].name}
+                  {gibsSnapshot.gibsMonth ? ` · ${formatGibsMonth(gibsSnapshot.gibsMonth)}` : ""} (NASA GIBS) — restaurada ao abrir o link.
                 </div>
               </div>
             </div>

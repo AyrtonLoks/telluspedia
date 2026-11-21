@@ -179,6 +179,35 @@ export function parseGibsRequest(
   return { ok: true, value: { product, month, time: `${month}-${String(product.day).padStart(2, "0")}` } };
 }
 
+export function isGibsProductId(value: unknown): value is GibsProductId {
+  return typeof value === "string" && (GIBS_PRODUCT_IDS as string[]).includes(value);
+}
+
+/** Mês bem formado e não anterior ao início do produto (o limite superior depende da data atual). */
+export function isGibsMonthFor(productId: GibsProductId, month: unknown): month is string {
+  return typeof month === "string" && MONTH.test(month) && month >= GIBS_PRODUCTS[productId].firstMonth;
+}
+
+/**
+ * Lê o estado salvo da camada (URL compartilhável `gibs=produto[,AAAA-MM]` e estudos): produto
+ * desconhecido descarta tudo; mês inválido, anterior ao produto ou ainda não processado vira null
+ * (último mês disponível), em vez de quebrar a restauração.
+ */
+export function readGibsView(
+  product: unknown,
+  month: unknown,
+  now: Date = new Date()
+): { product: GibsProductId; month: string | null } | null {
+  if (!isGibsProductId(product)) return null;
+  const ok = isGibsMonthFor(product, month) && month <= latestGibsMonth(now);
+  return { product, month: ok ? (month as string) : null };
+}
+
+/** Valor do parâmetro `gibs` da URL. */
+export function encodeGibsView(product: GibsProductId, month: string | null): string {
+  return month ? `${product},${month}` : product;
+}
+
 /** URL do GetMap do WMS 1.3.0 (em EPSG:4326 a ordem do BBOX é latitude, longitude). */
 export function gibsGetMapUrl(product: GibsProduct, time: string, width: number = GIBS_IMAGE_WIDTH): string {
   const q = new URLSearchParams({

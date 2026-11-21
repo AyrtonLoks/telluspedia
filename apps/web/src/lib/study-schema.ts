@@ -4,7 +4,8 @@ import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "./historical-entities";
 import { HISTORICAL_ROUTES } from "./historical-routes";
 import { PILOT_COUNTRIES, WORLD_COUNTRIES_CATALOG } from "./country-data";
 import { TIMELINE_MAX_YEAR, TIMELINE_MIN_YEAR, VALID_CELESTIAL_BODIES } from "./cosmos-validation";
-import type { ObservatoryLayerId } from "./observatory-data";
+import type { ObservatoryLayer } from "./observatory-data";
+import { GIBS_PRODUCT_IDS, isGibsMonthFor, isGibsProductId } from "./gibs";
 import { normalizeStudyEpoch, MAX_STUDY_GEOLOGICAL_MA } from "./study-epoch";
 import { ALL_COSMIC_LAYERS } from "../stores/cosmicStore";
 import { MAX_CAMERA_ALTITUDE, MIN_CAMERA_ALTITUDE } from "../stores/globeStore";
@@ -32,8 +33,10 @@ const body = z.enum([...VALID_CELESTIAL_BODIES]);
 const cosmicLayer = z.enum(ALL_COSMIC_LAYERS);
 const choroplethIndicator = z.enum(CHOROPLETH_INDICATOR_IDS);
 const observatoryLayer = z.enum([
-  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES",
-] satisfies ObservatoryLayerId[]);
+  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES", "NASA_GIBS",
+] satisfies ObservatoryLayer[]);
+const gibsProduct = z.enum(GIBS_PRODUCT_IDS);
+const gibsMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
 const year = z.number().int().min(TIMELINE_MIN_YEAR).max(TIMELINE_MAX_YEAR);
 const latitude = z.number().min(-90).max(90);
 const longitude = z.number().min(-180).max(180);
@@ -61,6 +64,8 @@ export const studyInput = z.object({
   isApollo11Active: z.boolean().nullish(),
   isCosmicMode: z.boolean().nullish(),
   choroplethIndicator: choroplethIndicator.nullish(),
+  gibsProduct: gibsProduct.nullish(),
+  gibsMonth: gibsMonth.nullish(),
 }).refine(
   ({ timelineStartYear, timelineEndYear }) =>
     timelineStartYear === undefined || timelineEndYear === undefined || timelineStartYear <= timelineEndYear,
@@ -90,6 +95,21 @@ export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
   const firstYear = start ?? Math.min(defaultStart, end ?? defaultEnd);
   const lastYear = end ?? Math.max(defaultEnd, firstYear);
   const timelineEndYear = Math.max(firstYear, lastYear);
+  const epoch = normalizeStudyEpoch({
+    timelineEndYear,
+    geologicalMa: input.geologicalMa,
+    historicalEra: valid(era, input.historicalEra),
+    activeRouteId,
+    isApollo11Active: input.isApollo11Active,
+    activeObservatoryLayers: knownItems(observatoryLayer, input.activeObservatoryLayers),
+  });
+  // Produto e mês do GIBS só valem com a camada ligada; mês sem produto válido é descartado.
+  const product =
+    epoch.activeObservatoryLayers.includes("NASA_GIBS") && isGibsProductId(input.gibsProduct) ? input.gibsProduct : null;
+  const gibs = {
+    gibsProduct: product,
+    gibsMonth: product && isGibsMonthFor(product, input.gibsMonth) ? input.gibsMonth : null,
+  };
 
   return {
     parentId: valid(slug, input.parentId) ?? null,
@@ -103,17 +123,11 @@ export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
     cameraAltitude: valid(altitude, input.cameraAltitude) ?? 2.5,
     selectedCountryIsos: knownItems(country, input.selectedCountryIsos),
     activeCategories: knownItems(category, input.activeCategories),
-    ...normalizeStudyEpoch({
-      timelineEndYear,
-      geologicalMa: input.geologicalMa,
-      historicalEra: valid(era, input.historicalEra),
-      activeRouteId,
-      isApollo11Active: input.isApollo11Active,
-      activeObservatoryLayers: knownItems(observatoryLayer, input.activeObservatoryLayers),
-    }),
+    ...epoch,
     isCosmicMode: Boolean(input.isCosmicMode),
     focusedCelestialBody: valid(body, input.focusedCelestialBody) ?? null,
     activeCosmicLayers: knownItems(cosmicLayer, input.activeCosmicLayers),
     choroplethIndicator: valid(choroplethIndicator, input.choroplethIndicator) ?? null,
+    ...gibs,
   };
 }

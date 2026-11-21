@@ -2,7 +2,8 @@ import { CELESTIAL_BODY_IDS } from "@/lib/celestial-bodies";
 import { GEOLOGICAL_MILESTONE_MA } from "@/lib/epoch/constants";
 import { WORLD_COUNTRIES_CATALOG, findMilestoneById } from "@/lib/country-data";
 import { HISTORICAL_ENTITIES } from "@/lib/historical-entities";
-import type { ObservatoryLayerId } from "@/lib/observatory-data";
+import type { ObservatoryLayer } from "@/lib/observatory-data";
+import { encodeGibsView, readGibsView } from "@/lib/gibs";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "@/stores/cosmicStore";
 import { selectCountry } from "@/stores/actions";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -12,12 +13,12 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { ALL_CATEGORIES, useTimelineStore } from "@/stores/timelineStore";
 import { parseCameraOffset, DEFAULT_CAMERA_OFFSET, type ViewCamera } from "./view-camera";
 
-const layerIds: readonly ObservatoryLayerId[] = [
-  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES",
+const layerIds: readonly ObservatoryLayer[] = [
+  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES", "NASA_GIBS",
 ];
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
-  "camadas", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
+  "camadas", "gibs", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
 ];
 
 function numberIn(value: string | null, min: number, max: number) {
@@ -56,6 +57,10 @@ export function encodeView(view: ViewCamera) {
     params.set("camadasCosmos", cosmic.activeCosmicLayers.join(","));
   }
   if (observatory.activeLayers.length) params.set("camadas", observatory.activeLayers.join(","));
+  // Produto e mês da camada GIBS (D25); sem mês = o último processado quando o link for aberto.
+  if (observatory.activeLayers.includes("NASA_GIBS")) {
+    params.set("gibs", encodeGibsView(observatory.gibsProduct, observatory.gibsMonth));
+  }
   if (observatory.isPanelOpen) params.set("observatorio", "1");
   if (panel) params.set("painel", panel);
   if (comparator.isOpen) params.set("comparar", comparator.selectedIsos.join(","));
@@ -111,6 +116,10 @@ export function restoreView(search: string, view: ViewCamera) {
 
   const observatory = useObservatoryStore.getState();
   const layers = members(params.get("camadas"), layerIds);
+  const [gibsProduct, gibsMonth] = (params.get("gibs") ?? "").split(",");
+  const gibs = readGibsView(gibsProduct, gibsMonth ?? null);
+  // Antes de ligar as camadas, para a primeira carga já pedir o produto e o mês do link.
+  observatory.setGibsRequest(gibs ?? { product: "ndvi", month: null });
   if (layers.length !== observatory.activeLayers.length || layers.some((id) => !observatory.activeLayers.includes(id))) {
     observatory.setAllLayers(layers);
   }

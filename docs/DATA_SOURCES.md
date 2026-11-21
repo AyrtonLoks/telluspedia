@@ -276,4 +276,4 @@ SHA-256:
 557c62477d7f57388ea4345a2119d3dda1128b388830f1f06204dd2936df6711  lst-scale.png
 ```
 
-**Fora do escopo por enquanto:** a camada não entra na busca ⌘K, na URL compartilhável nem nos estudos salvos (arquivos dos grupos G-SHELL/G-ESTUDOS); fica como acompanhamento.
+**Busca, URL e estudos:** a camada aparece na busca ⌘K (genérica e um atalho por produto); a URL compartilhável grava `camadas=NASA_GIBS&gibs=<produto>[,AAAA-MM]` (sem mês = o mais recente ao abrir); os estudos salvam `gibsProduct` e `gibsMonth` (migração `20261121220000_add_study_gibs_view`), congelando o mês mostrado no momento do snapshot, e a exportação acadêmica cita a camada GIBS usada.

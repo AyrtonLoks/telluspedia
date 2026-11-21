@@ -1,5 +1,6 @@
 import { formatABNT, formatAPA, getSourceUrl } from "./citations";
 import { CHOROPLETH_INDICATORS, isChoroplethIndicatorId } from "./choropleth";
+import { GIBS_PRODUCTS, formatGibsMonth, isGibsProductId } from "./gibs";
 import { getCountryData, type CountryIndicator } from "./country-data";
 import { HISTORICAL_ERAS, type HistoricalEraId } from "./historical-entities";
 import type { StudyLineageInfo, StudyRecord } from "./studies-store";
@@ -75,6 +76,9 @@ export function collectStudyPrimarySources(study: StudyRecord): PrimarySourceEnt
   if (study.choroplethIndicator && isChoroplethIndicatorId(study.choroplethIndicator)) {
     const meta = CHOROPLETH_INDICATORS[study.choroplethIndicator];
     add(`${meta.sourcePrimary} (${meta.id})`, meta.sourceUrl);
+  }
+  if (isGibsProductId(study.gibsProduct)) {
+    add(`NASA GIBS (${GIBS_PRODUCTS[study.gibsProduct].gibsLayer})`, "https://nasa-gibs.github.io/gibs-api-docs/");
   }
   if (study.isCosmicMode) {
     add("NASA JPL / IAU — Efemérides e Parâmetros Planetários", "https://ssd.jpl.nasa.gov/");
@@ -152,6 +156,11 @@ export function buildStudyAcademicMarkdown(
   if (study.choroplethIndicator && isChoroplethIndicatorId(study.choroplethIndicator)) {
     const meta = CHOROPLETH_INDICATORS[study.choroplethIndicator];
     lines.push(`- **Camada coroplética:** ${meta.label} (\`${meta.id}\` · ${meta.sourcePrimary})`);
+  }
+  if (isGibsProductId(study.gibsProduct)) {
+    const product = GIBS_PRODUCTS[study.gibsProduct];
+    const month = study.gibsMonth ? formatGibsMonth(study.gibsMonth) : "mês mais recente";
+    lines.push(`- **Imagem de satélite:** ${product.name}, ${month} (\`${product.gibsLayer}\` · NASA GIBS)`);
   }
   if (study.activeCosmicLayers && study.activeCosmicLayers.length > 0) {
     lines.push(`- **Camadas Cósmicas:** ${study.activeCosmicLayers.join(", ")}`);

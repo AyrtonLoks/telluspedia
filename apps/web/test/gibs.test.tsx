@@ -8,13 +8,22 @@ import {
   GIBS_BLANK_MAX_BYTES,
   GIBS_PRODUCTS,
   GIBS_PRODUCT_IDS,
+  encodeGibsView,
   formatGibsMonth,
   gibsGetMapUrl,
   gibsImagePath,
   isBlankGibsImage,
   latestGibsMonth,
   parseGibsRequest,
+  readGibsView,
 } from "../src/lib/gibs";
+import { findSearchResult, runSearchResult, searchExplore } from "../src/lib/explore/search";
+import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "../src/lib/explore/view-camera";
+import { encodeView, mergeView, restoreView } from "../src/lib/explore/view-url";
+import { sanitizeStudy, studyInput } from "../src/lib/study-schema";
+import { forkStudyRecord, type StudyRecord } from "../src/lib/studies-store";
+import { restoreStudySnapshot } from "../src/stores/actions";
+import { buildStudyAcademicMarkdown, collectStudyPrimarySources } from "../src/lib/study-export";
 import { __resetGibsCache, fetchGibsImage, gibsEnvelope } from "../src/lib/gibs-source";
 import { SourceUnavailableError } from "../src/lib/observatory-source";
 import { GET as gibsRoute } from "../src/app/api/observatory/gibs/route";
@@ -277,5 +286,93 @@ describe("D25 — store e painel", () => {
     assert.match(layer, /useEffect\(\(\) => \(\) => texture\?\.dispose\(\), \[texture\]\)/);
     assert.match(layer, /toneMapped=\{false\}/, "cores fiéis à legenda");
     assert.match(layer, /raycast=\{noRaycast\}/, "clique passa para o país");
+  });
+});
+
+describe("D25 — busca ⌘K, URL compartilhável e estudos", () => {
+  const realFetch = globalThis.fetch;
+  beforeEach(() => {
+    globalThis.fetch = (async () => new Response("x", { status: 503 })) as typeof fetch;
+  });
+  afterEach(() => {
+    globalThis.fetch = realFetch;
+    useObservatoryStore.getState().resetObservatory();
+    useObservatoryStore.setState({ gibs: null, gibsMonth: null, gibsProduct: "ndvi" });
+  });
+
+  test("leitura tolerante do estado salvo", () => {
+    assert.deepEqual(readGibsView("lst", "2024-07", NOW), { product: "lst", month: "2024-07" });
+    assert.deepEqual(readGibsView("seaice", "2001-01", NOW), { product: "seaice", month: null }, "antes do produto");
+    assert.deepEqual(readGibsView("ndvi", "2026-11", NOW), { product: "ndvi", month: null }, "ainda não processado");
+    assert.deepEqual(readGibsView("ndvi", "julho", NOW), { product: "ndvi", month: null });
+    assert.equal(readGibsView("MODIS_Terra_L3_NDVI_Monthly", "2024-07", NOW), null);
+    assert.equal(encodeGibsView("snow", null), "snow");
+    assert.equal(encodeGibsView("snow", "2024-01"), "snow,2024-01");
+  });
+
+  test("busca: camada genérica e um atalho por produto, que já escolhe o produto", () => {
+    assert.ok(searchExplore("imagens de satélite").some(({ id }) => id === "layer:NASA_GIBS"));
+    assert.equal(searchExplore("gelo marinho")[0]?.id, "layer:NASA_GIBS:seaice");
+    assert.ok(searchExplore("ndvi").some(({ id }) => id === "layer:NASA_GIBS:ndvi"));
+    runSearchResult(findSearchResult("layer:NASA_GIBS:lst")!);
+    const st = useObservatoryStore.getState();
+    assert.equal(st.gibsProduct, "lst");
+    assert.ok(st.activeLayers.includes("NASA_GIBS"));
+  });
+
+  test("URL: grava produto e mês, restaura antes de ligar e descarta valores inválidos", () => {
+    const view: ViewCamera = { offset: DEFAULT_CAMERA_OFFSET, restore: null, onChange: null };
+    assert.equal(restoreView("?visao=1&camadas=NASA_GIBS,NASA_FIRMS&gibs=snow,2024-01", view), true);
+    let st = useObservatoryStore.getState();
+    assert.deepEqual([...st.activeLayers].sort(), ["NASA_FIRMS", "NASA_GIBS"]);
+    assert.deepEqual([st.gibsProduct, st.gibsMonth], ["snow", "2024-01"]);
+    const params = new URLSearchParams(encodeView(view));
+    assert.equal(params.get("gibs"), "snow,2024-01");
+
+    useObservatoryStore.getState().setGibsRequest({ month: null });
+    assert.equal(new URLSearchParams(encodeView(view)).get("gibs"), "snow", "sem mês = mais recente");
+
+    restoreView("?visao=1&camadas=NASA_GIBS&gibs=xpto,2024-01", view);
+    st = useObservatoryStore.getState();
+    assert.deepEqual([st.gibsProduct, st.gibsMonth], ["ndvi", null]);
+
+    restoreView("?visao=1&camadas=NASA_FIRMS&gibs=lst", view);
+    assert.equal(new URLSearchParams(encodeView(view)).get("gibs"), null, "sem a camada, sem o parâmetro");
+    assert.ok(new URLSearchParams(mergeView("?gibs=lst&x=1", encodeView(view))).get("gibs") === null);
+  });
+
+  test("estudo: valida, congela produto e mês, sobrevive ao fork, restaura e entra na exportação", () => {
+    assert.equal(studyInput.safeParse({ title: "t", gibsProduct: "xpto" }).success, false);
+    assert.equal(studyInput.safeParse({ title: "t", gibsMonth: "2024-13" }).success, false);
+    const off = sanitizeStudy({ title: "sem camada", gibsProduct: "lst", gibsMonth: "2024-07", activeObservatoryLayers: ["NASA_FIRMS"] });
+    assert.deepEqual([off.gibsProduct, off.gibsMonth], [null, null], "produto só vale com a camada ligada");
+    const oldMonth = sanitizeStudy({ title: "t", gibsProduct: "seaice", gibsMonth: "2001-01", activeObservatoryLayers: ["NASA_GIBS"] });
+    assert.deepEqual([oldMonth.gibsProduct, oldMonth.gibsMonth], ["seaice", null]);
+    const historic = sanitizeStudy({ title: "t", timelineStartYear: 1940, timelineEndYear: 1945, gibsProduct: "lst", activeObservatoryLayers: ["NASA_GIBS"] });
+    assert.equal(historic.gibsProduct, null, "época histórica não tem camadas do Observatório");
+
+    const sanitized = sanitizeStudy({ title: "Calor de julho", gibsProduct: "lst", gibsMonth: "2024-07", activeObservatoryLayers: ["NASA_GIBS"] });
+    assert.deepEqual([sanitized.gibsProduct, sanitized.gibsMonth, sanitized.activeObservatoryLayers], ["lst", "2024-07", ["NASA_GIBS"]]);
+    const record: StudyRecord = { ...sanitized, id: "estudo-gibs", createdAt: NOW.toISOString() };
+    const fork = forkStudyRecord(record, "fork-gibs");
+    assert.deepEqual([fork.gibsProduct, fork.gibsMonth], ["lst", "2024-07"]);
+
+    restoreStudySnapshot(record);
+    const st = useObservatoryStore.getState();
+    assert.deepEqual([st.gibsProduct, st.gibsMonth], ["lst", "2024-07"]);
+    assert.ok(st.activeLayers.includes("NASA_GIBS"));
+
+    const md = buildStudyAcademicMarkdown(record);
+    assert.match(md, /Imagem de satélite:\*\* Temperatura da superfície \(dia\), julho de 2024/);
+    assert.ok(collectStudyPrimarySources(record).some((s) => s.source.includes("MODIS_Terra_L3_Land_Surface_Temp_Monthly_Day")));
+  });
+
+  test("migração do Prisma acompanha o schema", () => {
+    const schema = fs.readFileSync(path.join(root, "prisma/schema.prisma"), "utf-8");
+    assert.match(schema, /gibsProduct\s+String\?\s+@db\.VarChar\(16\)/);
+    assert.match(schema, /gibsMonth\s+String\?\s+@db\.VarChar\(7\)/);
+    const sql = fs.readFileSync(path.join(root, "prisma/migrations/20261121220000_add_study_gibs_view/migration.sql"), "utf-8");
+    assert.match(sql, /ADD COLUMN "gibsProduct" VARCHAR\(16\)/);
+    assert.match(sql, /ADD COLUMN "gibsMonth" VARCHAR\(7\)/);
   });
 });

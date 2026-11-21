@@ -27,6 +27,9 @@ export interface StudyRecord {
   focusedCelestialBody?: string | null;
   activeCosmicLayers?: string[];
   choroplethIndicator?: string | null;
+  /** Camada NASA GIBS (D25): produto e mês congelados no snapshot. */
+  gibsProduct?: string | null;
+  gibsMonth?: string | null;
   createdAt: string;
 }
 
@@ -73,6 +76,8 @@ Este estudo examina as repercussões da bipolaridade EUA-URSS nas instituições
   focusedCelestialBody: null,
   activeCosmicLayers: [],
   choroplethIndicator: null,
+  gibsProduct: null,
+  gibsMonth: null,
   createdAt: new Date("2026-10-19T00:00:00Z").toISOString(),
 });
 

@@ -54,7 +54,12 @@ export function ExplorerUrlSync({ view, immutable }: { view: ViewCamera; immutab
       useTimelineStore.subscribe(sync),
       useCosmicStore.subscribe(sync),
       useObservatoryStore.subscribe((state, previous) => {
-        if (state.activeLayers !== previous.activeLayers || state.isPanelOpen !== previous.isPanelOpen) sync();
+        if (
+          state.activeLayers !== previous.activeLayers ||
+          state.isPanelOpen !== previous.isPanelOpen ||
+          state.gibsProduct !== previous.gibsProduct ||
+          state.gibsMonth !== previous.gibsMonth
+        ) sync();
       }),
       useLayoutStore.subscribe(sync),
       useComparatorStore.subscribe(sync),
