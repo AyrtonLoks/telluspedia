@@ -38,12 +38,12 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D23 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27 |
-| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40 |
+| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
-| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37 |
+| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40 |
 | `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26 |
 
 Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está listado nela: **pare**, adicione o grupo à tarefa no Quadro (commit + push, como na reivindicação) e reavalie se ela ainda pode seguir.
@@ -215,6 +215,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | TODO | — | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
+| T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | IN_PROGRESS | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | TODO | — | — | G-COSMOS |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | TODO | — | T30 | G-ESTUDOS, G-SHELL |
@@ -1291,6 +1292,20 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 ---
 
 ## 5. Tarefas — Design, visual e experiência (D)
+
+### T40 · Corrigir desmontagem dos rótulos HTML no WebGL
+
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t40-drei-html · **Worktree:** ../telluspedia-wt/codex-t40
+- **Prioridade:** P1 · **Área:** 3D/Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA, G-COSMOS, G-OBS
+
+**Critérios de aceite**
+- [ ] Em desenvolvimento com Strict Mode, entrar no Cosmos, voltar à Terra e reentrar funciona sem aviso de desmontagem de raiz React.
+- [ ] Rótulos celestes aparecem, são removidos na saída e reaparecem na reentrada.
+
+**Log**
+- 2026-11-21 · codex · IN_PROGRESS · Erro informado pelo Ayrton ao montar os rótulos celestes com Next.js 15.5.29 e React 19.
+
+---
 
 ### D01 · Globo escuro: color space + tone mapping
 
