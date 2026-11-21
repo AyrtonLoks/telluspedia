@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
-import { BarChart2, Plus } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { BarChart2, Plus, Search, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useComparatorStore } from "@/stores/comparatorStore";
-import { PILOT_COUNTRIES } from "@/lib/country-data";
+import { getAllCountries } from "@/lib/country-data";
+import { searchComparableCountries } from "@/lib/comparator-data";
 import { ComparisonGrid } from "./ComparisonGrid";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
@@ -15,15 +16,32 @@ const ComparisonCharts = dynamic(
 );
 
 export const CountryComparator: React.FC = () => {
-  const isOpen = useComparatorStore((s) => s.isOpen);
+  const storeIsOpen = useComparatorStore((s) => s.isOpen);
+  const storeSelectedIsos = useComparatorStore((s) => s.selectedIsos);
   const closeComparator = useComparatorStore((s) => s.closeComparator);
-  const selectedIsos = useComparatorStore((s) => s.selectedIsos);
   const addCountry = useComparatorStore((s) => s.addCountry);
 
+  const isOpen =
+    typeof window === "undefined" ? useComparatorStore.getState().isOpen : storeIsOpen;
+  const selectedIsos =
+    typeof window === "undefined"
+      ? useComparatorStore.getState().selectedIsos
+      : storeSelectedIsos;
+
+  const [query, setQuery] = useState("");
+  const totalCatalogCount = useMemo(() => getAllCountries().length, []);
+  const isFull = selectedIsos.length >= 4;
+
   // Sem retorno antecipado: com `open` falso o Dialog não renderiza nada e anima a saída (D17).
-  const availableCountries = Object.values(PILOT_COUNTRIES).filter(
-    (c) => !selectedIsos.includes(c.isoCode)
+  const suggestions = useMemo(
+    () => (isFull ? [] : searchComparableCountries(query, selectedIsos, query.trim() ? 10 : 8)),
+    [query, selectedIsos, isFull]
   );
+
+  const handleAdd = (iso: string) => {
+    addCountry(iso);
+    setQuery("");
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) closeComparator(); }}>
@@ -35,28 +53,81 @@ export const CountryComparator: React.FC = () => {
             <span>Comparador multidimensional de países (até 4 nações)</span>
           </span>
         }
-        description="Compare indicadores demográficos, econômicos e institucionais lado a lado."
+        description={`Compare indicadores oficiais lado a lado entre todos os ${totalCatalogCount} países do catálogo.`}
       >
-        {/* Subheader: Add country quick chips */}
-        <div className="mb-5 flex items-center gap-2 overflow-x-auto border-b border-line pb-3 text-caption">
-          <span className="shrink-0 text-fg-muted">Adicionar nação:</span>
-          {availableCountries.length > 0 && selectedIsos.length < 4 ? (
-            availableCountries.map((c) => (
-              <Button
-                key={c.isoCode}
-                variant="secondary"
-                size="sm"
-                className="shrink-0"
-                onClick={() => addCountry(c.isoCode)}
-              >
-                <Plus aria-hidden="true" className="h-3 w-3" />
-                <span>{c.nameCommon}</span>
-              </Button>
-            ))
-          ) : (
-            <span className="italic text-fg-muted">
-              {selectedIsos.length >= 4 ? "Limite de 4 países atingido." : "Todos os países adicionados."}
+        {/* Subheader: busca entre os 177 países + atalhos de adição */}
+        <div className="mb-5 space-y-3 border-b border-line pb-3 text-caption">
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="relative flex h-9 min-w-[16rem] flex-1 items-center gap-2 rounded-control border border-line bg-surface-sunken px-3 text-label">
+              <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
+              <span className="sr-only">Buscar país para adicionar ao comparador</span>
+              <input
+                type="text"
+                value={query}
+                disabled={isFull}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && suggestions.length > 0 && !isFull) {
+                    e.preventDefault();
+                    handleAdd(suggestions[0].isoCode);
+                  } else if (e.key === "Escape" && query.length > 0) {
+                    e.stopPropagation();
+                    setQuery("");
+                  }
+                }}
+                placeholder={
+                  isFull
+                    ? "Limite de 4 países atingido — remova um para trocar"
+                    : `Buscar entre ${totalCatalogCount} países ou código ISO…`
+                }
+                data-testid="comparator-country-search"
+                className="w-full min-w-0 border-none bg-transparent text-fg placeholder:text-fg-muted focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              {query && (
+                <button
+                  type="button"
+                  aria-label="Limpar busca de país"
+                  onClick={() => setQuery("")}
+                  className="rounded-sm p-0.5 text-fg-muted hover:text-fg"
+                >
+                  <X aria-hidden="true" className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </label>
+
+            <span className="font-mono tabular-nums text-fg-muted">
+              {selectedIsos.length}/4 selecionados
             </span>
+          </div>
+
+          {!isFull && (
+            <div
+              className="flex flex-wrap items-center gap-1.5"
+              data-testid="comparator-country-suggestions"
+            >
+              <span className="shrink-0 text-fg-muted">
+                {query.trim() ? "Resultados:" : "Sugestões:"}
+              </span>
+              {suggestions.length > 0 ? (
+                suggestions.map((c) => (
+                  <Button
+                    key={c.isoCode}
+                    variant="secondary"
+                    size="sm"
+                    className="shrink-0"
+                    onClick={() => handleAdd(c.isoCode)}
+                  >
+                    <Plus aria-hidden="true" className="h-3 w-3" />
+                    <span>{c.nameCommon}</span>
+                    <span className="font-mono text-caption text-fg-muted">{c.isoCode}</span>
+                  </Button>
+                ))
+              ) : (
+                <span className="italic text-fg-muted">
+                  Nenhum país disponível encontrado para “{query.trim()}”.
+                </span>
+              )}
+            </div>
           )}
         </div>
 
