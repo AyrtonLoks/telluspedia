@@ -189,7 +189,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | IN_PROGRESS | codex | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
-| D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
+| D11 | Política de escala e labels do sistema solar | 3D | P2 | M | IN_PROGRESS | claude | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
@@ -1331,7 +1331,7 @@ Observação: a posição (≈ 35 UA em 2026) está **correta** — o afélio fo
 
 ### D11 · Política de escala e labels do sistema solar
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d11-escala-labels · **Worktree:** ../telluspedia-wt/claude-d11
 - **Prioridade:** P2 · **Área:** 3D · **Tamanho:** M · **Depende de:** D10 · **Grupos:** G-COSMOS
 
 **Contexto / problema**
@@ -1350,6 +1350,7 @@ Cada corpo do modo Cosmos decide o próprio tamanho e estilo de label (`Planetar
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 
+- 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada. É a única TODO elegível da fase 6 (D10 em DONE); G-COSMOS sem tarefas em andamento (em andamento: T26 em G-PAIS/G-PIPELINE e D08 em G-OBS).
 ---
 
 ### D12 · Eventos históricos dirigidos por dados (player de cenas)
