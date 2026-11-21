@@ -1,0 +1,955 @@
+[
+  {
+    "id": "elcano-1522",
+    "title": "Retorno da Nau Victoria e Conclusão da Circum-navegação",
+    "summary": "Juan Sebastián Elcano e 17 sobreviventes a bordo da Nau Victoria chegam a Sanlúcar de Barrameda, comprovando a esfericidade e navegabilidade contínua da Terra.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1522-09-06",
+      "precision": "day"
+    },
+    "country": "ESP",
+    "countries": [
+      "ESP"
+    ],
+    "location": {
+      "lat": 36.7786,
+      "lng": -6.3533
+    },
+    "sources": [
+      {
+        "label": "Arquivo Geral das Índias / Antonio Pigafetta"
+      }
+    ]
+  },
+  {
+    "id": "ahu-1867",
+    "title": "Compromisso Austro-Húngaro (Ausgleich)",
+    "summary": "Criação da Monarquia Dual soberana entre a Áustria e a Hungria sob Francisco José I.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1867-06-08",
+      "precision": "day"
+    },
+    "country": "AHU",
+    "countries": [
+      "AHU",
+      "AUT",
+      "HUN"
+    ],
+    "location": {
+      "lat": 48.2082,
+      "lng": 16.3738
+    },
+    "sources": [
+      {
+        "label": "Österreichisches Staatsarchiv"
+      }
+    ]
+  },
+  {
+    "id": "glo-1870",
+    "title": "Batalha de Sedan e Guerra Franco-Prussiana",
+    "summary": "Capitulação do imperador francês Napoleão III perante as forças prussianas e confederadas, abrindo caminho para a unificação.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1870-09-02",
+      "precision": "day"
+    },
+    "country": "FRA",
+    "countries": [
+      "PRU",
+      "FRA",
+      "DEU"
+    ],
+    "location": {
+      "lat": 49.7022,
+      "lng": 4.9436
+    },
+    "sources": [
+      {
+        "label": "Bundesarchiv / SHD"
+      }
+    ]
+  },
+  {
+    "id": "pru-1871",
+    "title": "Unificação Alemã e Proclamação do Reich em Versalhes",
+    "summary": "Príncipes alemães aclamam Guilherme I da Prússia como Imperador Alemão na Galeria dos Espelhos no Palácio de Versalhes.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1871-01-18",
+      "precision": "day"
+    },
+    "country": "PRU",
+    "countries": [
+      "PRU",
+      "DEU"
+    ],
+    "location": {
+      "lat": 48.8049,
+      "lng": 2.1204
+    },
+    "sources": [
+      {
+        "label": "Preußisches Geheimes Staatsarchiv"
+      }
+    ]
+  },
+  {
+    "id": "tur-1908",
+    "title": "Revolução dos Jovens Turcos",
+    "summary": "Movimento constitucionalista restaura o Parlamento e a Constituição de 1876 na Sublime Porta.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1908-07-24",
+      "precision": "day"
+    },
+    "country": "TUR_HIST",
+    "countries": [
+      "TUR_HIST"
+    ],
+    "location": {
+      "lat": 41.0082,
+      "lng": 28.9784
+    },
+    "sources": [
+      {
+        "label": "Başbakanlık Osmanlı Arşivi"
+      }
+    ]
+  },
+  {
+    "id": "glo-1914",
+    "title": "Eclosão da Primeira Guerra Mundial",
+    "summary": "Assassinato do Arquiduque Francisco Ferdinando em Sarajevo deflagra o primeiro conflito em escala global.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1914-07-28",
+      "precision": "day"
+    },
+    "country": "BIH",
+    "countries": [
+      "AHU",
+      "DEU",
+      "RUS",
+      "FRA",
+      "GBR",
+      "TUR_HIST"
+    ],
+    "location": {
+      "lat": 43.8563,
+      "lng": 18.4131
+    },
+    "sources": [
+      {
+        "label": "Imperial War Museum"
+      }
+    ]
+  },
+  {
+    "id": "glo-1919",
+    "title": "Tratado de Versalhes e Liga das Nações",
+    "summary": "Assinatura do tratado de paz no Salão dos Espelhos em Versalhes e fundação da primeira organização internacional de segurança coletiva.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1919-06-28",
+      "precision": "day"
+    },
+    "country": "FRA",
+    "location": {
+      "lat": 48.8049,
+      "lng": 2.1204
+    },
+    "sources": [
+      {
+        "label": "Liga das Nações / Arquivo de Versalhes"
+      }
+    ]
+  },
+  {
+    "id": "glo-1939",
+    "title": "Início da Segunda Guerra Mundial",
+    "summary": "Invasão da Polônia por forças da Alemanha nazista deflagra a Segunda Guerra Mundial na Europa.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1939-09-01",
+      "precision": "day"
+    },
+    "country": "POL",
+    "countries": [
+      "DEU",
+      "POL",
+      "SUN",
+      "GBR",
+      "FRA"
+    ],
+    "location": {
+      "lat": 54.4069,
+      "lng": 18.6738
+    },
+    "sources": [
+      {
+        "label": "Bundesarchiv / Polish Institute"
+      }
+    ]
+  },
+  {
+    "id": "glo-1944",
+    "title": "Desembarque da Normandia (Dia D)",
+    "summary": "A Operação Overlord desembarca mais de 150 mil soldados aliados na Normandia, abrindo a frente ocidental decisiva contra o Eixo.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1944-06-06",
+      "precision": "day"
+    },
+    "country": "FRA",
+    "location": {
+      "lat": 49.3364,
+      "lng": -0.8653
+    },
+    "sources": [
+      {
+        "label": "US National Archives (NARA)"
+      }
+    ]
+  },
+  {
+    "id": "glo-1945",
+    "title": "Fundação das Nações Unidas (ONU)",
+    "summary": "Criação da organização internacional com o objetivo de manter a paz e cooperação global.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1945-10-24",
+      "precision": "day"
+    },
+    "country": "USA",
+    "location": {
+      "lat": 40.7489,
+      "lng": -73.968
+    },
+    "sources": [
+      {
+        "label": "UN Archives"
+      }
+    ]
+  },
+  {
+    "id": "glo-1947",
+    "title": "Doutrina Truman e Plano Marshall",
+    "summary": "Lançamento do plano maciço de assistência econômica dos EUA para a reconstrução da Europa Ocidental e contenção da Guerra Fria.",
+    "category": "ECONOMY",
+    "date": {
+      "start": "1947-06-05",
+      "precision": "day"
+    },
+    "country": "USA",
+    "location": {
+      "lat": 38.8951,
+      "lng": -77.0364
+    },
+    "sources": [
+      {
+        "label": "US Department of State"
+      }
+    ]
+  },
+  {
+    "id": "glo-1957",
+    "title": "Lançamento do Sputnik 1",
+    "summary": "Primeiro satélite artificial em órbita terrestre, inaugurando a Era Espacial.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1957-10-04",
+      "precision": "day"
+    },
+    "country": "KAZ",
+    "countries": [
+      "SUN"
+    ],
+    "location": {
+      "lat": 45.9646,
+      "lng": 63.3052
+    },
+    "sources": [
+      {
+        "label": "Roscosmos / NASA"
+      }
+    ]
+  },
+  {
+    "id": "sun-1961",
+    "title": "Vostok 1: Primeiro Voo Humano no Espaço",
+    "summary": "O cosmonauta soviético Yuri Gagarin realiza a primeira órbita tripulada ao redor da Terra.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1961-04-12",
+      "precision": "day"
+    },
+    "country": "SUN",
+    "countries": [
+      "SUN"
+    ],
+    "location": {
+      "lat": 45.9646,
+      "lng": 63.3052
+    },
+    "sources": [
+      {
+        "label": "Roscosmos / RGANTD"
+      }
+    ]
+  },
+  {
+    "id": "yug-1961",
+    "title": "Conferência de Belgrado dos Países Não-Alinhados",
+    "summary": "Fundação do Movimento dos Não-Alinhados liderado por Tito, Nasser e Nehru como alternativa à bipolaridade EUA-URSS.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1961-09-01",
+      "precision": "day"
+    },
+    "country": "YUG",
+    "countries": [
+      "YUG"
+    ],
+    "location": {
+      "lat": 44.8176,
+      "lng": 20.4633
+    },
+    "sources": [
+      {
+        "label": "Diplomatski arhiv MSP Srbije"
+      }
+    ]
+  },
+  {
+    "id": "gdr-1961",
+    "title": "Construção do Muro de Berlim",
+    "summary": "O governo da RDA inicia o fechamento e fortificação da fronteira entre Berlim Oriental e Ocidental.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1961-08-13",
+      "precision": "day"
+    },
+    "country": "GDR",
+    "countries": [
+      "GDR",
+      "FRG",
+      "SUN",
+      "USA"
+    ],
+    "location": {
+      "lat": 52.5163,
+      "lng": 13.3777
+    },
+    "sources": [
+      {
+        "label": "Stiftung Berliner Mauer"
+      }
+    ]
+  },
+  {
+    "id": "glo-1962",
+    "title": "Crise dos Mísseis de Cuba",
+    "summary": "Confronto de treze dias entre EUA e URSS sobre mísseis nucleares soviéticos instalados em Cuba, ápice de tensão na Guerra Fria.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1962-10-16",
+      "precision": "day"
+    },
+    "country": "CUB",
+    "location": {
+      "lat": 23.1136,
+      "lng": -82.3666
+    },
+    "sources": [
+      {
+        "label": "JFK Presidential Library"
+      }
+    ]
+  },
+  {
+    "id": "csk-1968",
+    "title": "Primavera de Praga e Invasão do Pacto de Varsóvia",
+    "summary": "Abertura política do 'socialismo com rosto humano' sob Alexander Dubček e subsequente ocupação militar soviética.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1968-08-20",
+      "precision": "day"
+    },
+    "country": "CSK",
+    "countries": [
+      "CSK",
+      "SUN"
+    ],
+    "location": {
+      "lat": 50.0755,
+      "lng": 14.4378
+    },
+    "sources": [
+      {
+        "label": "Národní archiv Praha"
+      }
+    ]
+  },
+  {
+    "id": "glo-1973",
+    "title": "Primeiro Choque do Petróleo",
+    "summary": "Embargo da OPEP desencadeia quadruplicação dos preços do barril e reorientação energética mundial.",
+    "category": "ECONOMY",
+    "date": {
+      "start": "1973-10-17",
+      "precision": "day"
+    },
+    "country": "SAU",
+    "location": {
+      "lat": 24.7136,
+      "lng": 46.6753
+    },
+    "sources": [
+      {
+        "label": "IEA"
+      }
+    ]
+  },
+  {
+    "id": "glo-1989",
+    "title": "Queda do Muro de Berlim",
+    "summary": "Abertura dos postos de controle entre Berlim Oriental e Ocidental, sinalizando o fim da Guerra Fria.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1989-11-09",
+      "precision": "day"
+    },
+    "country": "DEU",
+    "countries": [
+      "GDR",
+      "FRG"
+    ],
+    "location": {
+      "lat": 52.5163,
+      "lng": 13.3777
+    },
+    "sources": [
+      {
+        "label": "Bundesarchiv"
+      }
+    ]
+  },
+  {
+    "id": "glo-1991",
+    "title": "Criação da World Wide Web",
+    "summary": "Tim Berners-Lee publica a primeira página web no CERN, inaugurando a era da internet pública.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1991-08-06",
+      "precision": "day"
+    },
+    "country": "CHE",
+    "location": {
+      "lat": 46.233,
+      "lng": 6.0557
+    },
+    "sources": [
+      {
+        "label": "CERN"
+      }
+    ]
+  },
+  {
+    "id": "glo-1991-ussr",
+    "title": "Dissolução da União Soviética",
+    "summary": "Renúncia de Gorbachev e arriamento da bandeira soviética no Kremlin encerram formalmente a União Soviética e a Guerra Fria.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1991-12-26",
+      "precision": "day"
+    },
+    "country": "RUS",
+    "location": {
+      "lat": 55.752,
+      "lng": 37.6175
+    },
+    "sources": [
+      {
+        "label": "Arquivo Estatal da Federação Russa (GARF)"
+      }
+    ]
+  },
+  {
+    "id": "glo-1999",
+    "title": "Criação da Moeda Única Euro",
+    "summary": "Entrada em vigor do Euro nos mercados financeiros de 11 nações da União Europeia.",
+    "category": "ECONOMY",
+    "date": {
+      "start": "1999-01-01",
+      "precision": "day"
+    },
+    "country": "DEU",
+    "countries": [
+      "DEU",
+      "FRA",
+      "ITA",
+      "ESP",
+      "PRT",
+      "NLD",
+      "BEL",
+      "LUX",
+      "AUT",
+      "FIN",
+      "IRL"
+    ],
+    "location": {
+      "lat": 48.5,
+      "lng": 9
+    },
+    "camera": {
+      "lat": 48.5,
+      "lng": 9,
+      "altitude": 2.7
+    },
+    "sources": [
+      {
+        "label": "ECB"
+      }
+    ]
+  },
+  {
+    "id": "glo-2008",
+    "title": "Crise Financeira Global de 2008",
+    "summary": "Colapso do banco Lehman Brothers desencadeia a maior recessão global desde a Grande Depressão.",
+    "category": "ECONOMY",
+    "date": {
+      "start": "2008-09-15",
+      "precision": "day"
+    },
+    "country": "USA",
+    "location": {
+      "lat": 40.7128,
+      "lng": -74.006
+    },
+    "sources": [
+      {
+        "label": "Federal Reserve"
+      }
+    ]
+  },
+  {
+    "id": "glo-2015",
+    "title": "Acordo de Paris sobre o Clima",
+    "summary": "Tratado internacional assinado por 196 nações para limitar o aquecimento global abaixo de 2°C.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "2015-12-12",
+      "precision": "day"
+    },
+    "country": "FRA",
+    "location": {
+      "lat": 48.8566,
+      "lng": 2.3522
+    },
+    "sources": [
+      {
+        "label": "UNFCCC"
+      }
+    ]
+  },
+  {
+    "id": "glo-2020",
+    "title": "Declaração de Pandemia de COVID-19",
+    "summary": "OMS classifica a disseminação global do coronavírus SARS-CoV-2 como pandemia mundial.",
+    "category": "HEALTH_PANDEMICS",
+    "date": {
+      "start": "2020-03-11",
+      "precision": "day"
+    },
+    "country": "CHE",
+    "location": {
+      "lat": 46.2044,
+      "lng": 6.1432
+    },
+    "sources": [
+      {
+        "label": "OMS"
+      }
+    ]
+  },
+  {
+    "id": "glo-2021",
+    "title": "Lançamento do Telescópio Espacial James Webb",
+    "summary": "O mais avançado observatório astronômico espacial é lançado pelo foguete Ariane 5.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "2021-12-25",
+      "precision": "day"
+    },
+    "country": "FRA",
+    "location": {
+      "lat": 5.2372,
+      "lng": -52.7686
+    },
+    "sources": [
+      {
+        "label": "NASA / ESA"
+      }
+    ]
+  },
+  {
+    "id": "bra-1822",
+    "title": "Independência do Brasil",
+    "summary": "Rompe os laços coloniais com Portugal e funda o Império do Brasil.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1822-09-07",
+      "precision": "day"
+    },
+    "country": "BRA",
+    "timelineScope": "country",
+    "location": {
+      "lat": -23.585,
+      "lng": -46.609
+    },
+    "sources": [
+      {
+        "label": "IHGB"
+      }
+    ]
+  },
+  {
+    "id": "bra-1888",
+    "title": "Abolição da Escravidão (Lei Áurea)",
+    "summary": "Fim formal do regime escravocrata sancionado pela Princesa Isabel.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1888-05-13",
+      "precision": "day"
+    },
+    "country": "BRA",
+    "timelineScope": "country",
+    "location": {
+      "lat": -22.906,
+      "lng": -43.172
+    },
+    "sources": [
+      {
+        "label": "Arquivo Nacional"
+      }
+    ]
+  },
+  {
+    "id": "bra-1889",
+    "title": "Proclamação da República",
+    "summary": "Deposição do Imperador Dom Pedro II e instituição da República Federativa.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1889-11-15",
+      "precision": "day"
+    },
+    "country": "BRA",
+    "timelineScope": "country",
+    "location": {
+      "lat": -22.9068,
+      "lng": -43.1729
+    },
+    "sources": [
+      {
+        "label": "IHGB"
+      }
+    ]
+  },
+  {
+    "id": "bra-1960",
+    "title": "Inauguração de Brasília",
+    "summary": "Transferência da capital federal para o planalto central sob Juscelino Kubitschek.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1960-04-21",
+      "precision": "day"
+    },
+    "country": "BRA",
+    "timelineScope": "country",
+    "location": {
+      "lat": -15.7939,
+      "lng": -47.8828
+    },
+    "sources": [
+      {
+        "label": "IBGE"
+      }
+    ]
+  },
+  {
+    "id": "bra-1988",
+    "title": "Promulgação da Constituição Cidadã",
+    "summary": "Marco fundamental da redemocratização e garantia dos direitos fundamentais.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1988-10-05",
+      "precision": "day"
+    },
+    "country": "BRA",
+    "timelineScope": "country",
+    "location": {
+      "lat": -15.7998,
+      "lng": -47.8645
+    },
+    "sources": [
+      {
+        "label": "Congresso Nacional"
+      }
+    ]
+  },
+  {
+    "id": "deu-1871",
+    "title": "Unificação da Alemanha",
+    "summary": "Proclamação do Império Alemão no Palácio de Versalhes sob Bismarck e Guilherme I.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1871-01-18",
+      "precision": "day"
+    },
+    "country": "DEU",
+    "timelineScope": "country",
+    "location": {
+      "lat": 48.8049,
+      "lng": 2.1204
+    },
+    "sources": [
+      {
+        "label": "Bundesarchiv"
+      }
+    ]
+  },
+  {
+    "id": "deu-1949",
+    "title": "Promulgação da Lei Fundamental",
+    "summary": "Criação da República Federal da Alemanha e adoção da Grundgesetz.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1949-05-23",
+      "precision": "day"
+    },
+    "country": "DEU",
+    "timelineScope": "country",
+    "location": {
+      "lat": 50.7374,
+      "lng": 7.0982
+    },
+    "sources": [
+      {
+        "label": "Bundestag"
+      }
+    ]
+  },
+  {
+    "id": "deu-1989",
+    "title": "Queda do Muro de Berlim",
+    "summary": "Abertura das fronteiras entre Berlim Oriental e Ocidental, antecipando o fim da Guerra Fria.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1989-11-09",
+      "precision": "day"
+    },
+    "country": "DEU",
+    "timelineScope": "country",
+    "location": {
+      "lat": 52.5163,
+      "lng": 13.3777
+    },
+    "sources": [
+      {
+        "label": "Bundesarchiv"
+      }
+    ]
+  },
+  {
+    "id": "deu-1990",
+    "title": "Reunificação da Alemanha",
+    "summary": "Adesão formal dos novos estados da RDA à República Federal da Alemanha.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1990-10-03",
+      "precision": "day"
+    },
+    "country": "DEU",
+    "timelineScope": "country",
+    "location": {
+      "lat": 52.5186,
+      "lng": 13.3762
+    },
+    "sources": [
+      {
+        "label": "Bundestag"
+      }
+    ]
+  },
+  {
+    "id": "usa-1776",
+    "title": "Declaração de Independência",
+    "summary": "As Treze Colônias rompem com a Grã-Bretanha e estabelecem os Estados Unidos.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1776-07-04",
+      "precision": "day"
+    },
+    "country": "USA",
+    "timelineScope": "country",
+    "location": {
+      "lat": 39.9489,
+      "lng": -75.15
+    },
+    "sources": [
+      {
+        "label": "National Archives"
+      }
+    ]
+  },
+  {
+    "id": "usa-1865",
+    "title": "Fim da Guerra de Secessão e 13ª Emenda",
+    "summary": "Preservação da união federal e abolição formal da escravidão nos EUA.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1865-04-09",
+      "precision": "day"
+    },
+    "country": "USA",
+    "timelineScope": "country",
+    "location": {
+      "lat": 37.3775,
+      "lng": -78.7967
+    },
+    "sources": [
+      {
+        "label": "Library of Congress"
+      }
+    ]
+  },
+  {
+    "id": "usa-1969",
+    "title": "Apollo 11: Pouso Humano na Lua",
+    "summary": "Neil Armstrong e Buzz Aldrin tornam-se os primeiros humanos a caminhar no solo lunar.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1969-07-20",
+      "precision": "day"
+    },
+    "country": "USA",
+    "timelineScope": "country",
+    "location": {
+      "lat": 28.5721,
+      "lng": -80.648
+    },
+    "sources": [
+      {
+        "label": "NASA"
+      }
+    ]
+  },
+  {
+    "id": "jpn-1868",
+    "title": "Restauração Meiji",
+    "summary": "Queda do xogunato Tokugawa, restauração do poder imperial e rápida modernização do Japão.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1868-01-03",
+      "precision": "day"
+    },
+    "country": "JPN",
+    "timelineScope": "country",
+    "location": {
+      "lat": 35.0116,
+      "lng": 135.7681
+    },
+    "sources": [
+      {
+        "label": "Arquivo Histórico Nacional do Japão"
+      }
+    ]
+  },
+  {
+    "id": "jpn-1964",
+    "title": "Estreia do Trem Bala Shinkansen",
+    "summary": "Inauguração da primeira ferrovia comercial de alta velocidade conectando Tóquio e Osaka.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1964-10-01",
+      "precision": "day"
+    },
+    "country": "JPN",
+    "timelineScope": "country",
+    "location": {
+      "lat": 35.6812,
+      "lng": 139.7671
+    },
+    "sources": [
+      {
+        "label": "JR Central"
+      }
+    ]
+  },
+  {
+    "id": "zaf-1994",
+    "title": "Fim do Apartheid e Eleição de Nelson Mandela",
+    "summary": "Primeiras eleições multirraciais livres da África do Sul e posse de Nelson Mandela.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1994-04-27",
+      "precision": "day"
+    },
+    "country": "ZAF",
+    "timelineScope": "country",
+    "location": {
+      "lat": -25.7479,
+      "lng": 28.2293
+    },
+    "sources": [
+      {
+        "label": "Nelson Mandela Foundation"
+      }
+    ]
+  },
+  {
+    "id": "egy-1869",
+    "title": "Inauguração do Canal de Suez",
+    "summary": "Abertura da via aquática artificial de 193 km conectando a Europa e a Ásia.",
+    "category": "ECONOMY",
+    "date": {
+      "start": "1869-11-17",
+      "precision": "day"
+    },
+    "country": "EGY",
+    "timelineScope": "country",
+    "location": {
+      "lat": 31.2653,
+      "lng": 32.3019
+    },
+    "sources": [
+      {
+        "label": "Suez Canal Authority"
+      }
+    ]
+  },
+  {
+    "id": "egy-1952",
+    "title": "Revolução Egípcia de 1952",
+    "summary": "Queda da monarquia de Faruque I e proclamação da República Árabe do Egito.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1952-07-23",
+      "precision": "day"
+    },
+    "country": "EGY",
+    "timelineScope": "country",
+    "location": {
+      "lat": 30.0444,
+      "lng": 31.2357
+    },
+    "sources": [
+      {
+        "label": "Al-Ahram Archives"
+      }
+    ]
+  }
+]

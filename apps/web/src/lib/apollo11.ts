@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { latLngToVector3 } from "./geo-spatial";
 import { APOLLO11_LANDING_DATE, calculateLunarPosition, getMoonScenePosition } from "./astronomy";
+import { getScene, fact } from "./scenes/catalog";
 
 /**
  * Apollo 11 Mission Reference Coordinates
@@ -71,60 +72,23 @@ export interface Apollo11Phase {
   historicalGET: string;
 }
 
-export const APOLLO11_PHASES: Apollo11Phase[] = [
-  {
-    id: 1,
-    name: "Lançamento Saturn V & Órbita de Espera (EPO)",
-    code: "FASE 1 — LANÇAMENTO",
-    badge: "SATURN V / LEO",
-    description:
-      "Decolagem do Centro Espacial Kennedy (LC-39A) e inserção na órbita terrestre baixa a 185 km.",
-    startProgress: 0.0,
-    endProgress: 0.2,
-    targetProgress: 0.08,
-    historicalDate: "16/07/1969 13:32 UTC",
-    historicalGET: "000:00:00",
-  },
-  {
-    id: 2,
-    name: "Injeção Translunar (TLI) & Trajetória Cislunar",
-    code: "FASE 2 — INJEÇÃO TRANSLUNAR",
-    badge: "TLI / CISLUNAR",
-    description:
-      "Reignição do 3º estágio S-IVB atingindo ~39.240 km/h para escapar do campo gravitacional terrestre.",
-    startProgress: 0.2,
-    endProgress: 0.55,
-    targetProgress: 0.35,
-    historicalDate: "16/07/1969 16:22 UTC",
-    historicalGET: "002:50:13",
-  },
-  {
-    id: 3,
-    name: "Inserção em Órbita Lunar (CSM Columbia)",
-    code: "FASE 3 — ÓRBITA LUNAR",
-    badge: "LOI / CSM COLUMBIA",
-    description:
-      "Frenagem retrógrada com o motor SPS do Columbia e circularização orbital a ~110 km da superfície lunar.",
-    startProgress: 0.55,
-    endProgress: 0.82,
-    targetProgress: 0.65,
-    historicalDate: "19/07/1969 17:28 UTC",
-    historicalGET: "075:49:50",
-  },
-  {
-    id: 4,
-    name: "Pouso do Módulo Lunar Eagle no Mar da Tranquilidade",
-    code: "FASE 4 — POUSO LUNAR",
-    badge: "TOUCHDOWN / EAGLE",
-    description:
-      "Descida motorizada (PDI) e alunissagem: 'Houston, Tranquility Base here. The Eagle has landed.'",
-    startProgress: 0.82,
-    endProgress: 1.0,
-    targetProgress: 1.0,
-    historicalDate: "20/07/1969 20:17 UTC",
-    historicalGET: "102:45:40",
-  },
-];
+/** Fases da missão — vêm da cena `src/data/scenes/glo-1969.json` (D12b). */
+export const APOLLO11_PHASES: Apollo11Phase[] = (() => {
+  const traj = getScene("glo-1969")?.trajectories.find((t) => t.kind === "cislunar");
+  if (!traj || traj.kind !== "cislunar") throw new Error("cena glo-1969 sem trajetória Terra–Lua");
+  return traj.phases.map((p) => ({
+    id: fact<number>(p.facts, "phaseNumber"),
+    name: p.label,
+    code: fact<string>(p.facts, "code"),
+    badge: fact<string>(p.facts, "badge"),
+    description: p.description ?? "",
+    startProgress: fact<number>(p.facts, "startProgress"),
+    endProgress: fact<number>(p.facts, "endProgress"),
+    targetProgress: fact<number>(p.facts, "targetProgress"),
+    historicalDate: fact<string>(p.facts, "historicalDate"),
+    historicalGET: fact<string>(p.facts, "historicalGET"),
+  }));
+})();
 
 /**
  * Returns the active phase object given progress t in [0, 1].

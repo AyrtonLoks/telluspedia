@@ -5,6 +5,7 @@ import {
 } from "./historical-entities";
 import worldCountriesDataset from "../../public/data/countries-ne-110m.json";
 import worldBankDataset from "../../public/data/countries-worldbank-indicators.json";
+import { globalMilestones, countryMilestones } from "./scenes/catalog";
 
 export type DataCompleteness = "full" | "partial" | "none";
 
@@ -255,13 +256,7 @@ Em 15 de novembro de 1889, Marechal Deodoro da Fonseca liderou a Proclamação d
 A base industrial é diversificada, destacando-se na produção aeronáutica (Embraer), extração de petróleo em águas ultraprofundas (Camada Pré-Sal via Petrobras), mineração de ferro (Vale) e complexo automotivo [1][2].`,
       },
     ],
-    milestones: [
-      { id: "bra-1822", title: "Independência do Brasil", summary: "Rompe os laços coloniais com Portugal e funda o Império do Brasil.", year: 1822, exactDate: "1822-09-07", category: "POLITICS_REGIMES", sourcePrimary: "IHGB", latitude: -23.585, longitude: -46.609, countryIso: "BRA" },
-      { id: "bra-1888", title: "Abolição da Escravidão (Lei Áurea)", summary: "Fim formal do regime escravocrata sancionado pela Princesa Isabel.", year: 1888, exactDate: "1888-05-13", category: "POLITICS_REGIMES", sourcePrimary: "Arquivo Nacional", latitude: -22.906, longitude: -43.172, countryIso: "BRA" },
-      { id: "bra-1889", title: "Proclamação da República", summary: "Deposição do Imperador Dom Pedro II e instituição da República Federativa.", year: 1889, exactDate: "1889-11-15", category: "POLITICS_REGIMES", sourcePrimary: "IHGB", latitude: -22.9068, longitude: -43.1729, countryIso: "BRA" },
-      { id: "bra-1960", title: "Inauguração de Brasília", summary: "Transferência da capital federal para o planalto central sob Juscelino Kubitschek.", year: 1960, exactDate: "1960-04-21", category: "SCIENCE_CULTURE", sourcePrimary: "IBGE", latitude: -15.7939, longitude: -47.8828, countryIso: "BRA" },
-      { id: "bra-1988", title: "Promulgação da Constituição Cidadã", summary: "Marco fundamental da redemocratização e garantia dos direitos fundamentais.", year: 1988, exactDate: "1988-10-05", category: "POLITICS_REGIMES", sourcePrimary: "Congresso Nacional", latitude: -15.7998, longitude: -47.8645, countryIso: "BRA" },
-    ],
+    milestones: countryMilestones("BRA"),
   },
   DEU: {
     isoCode: "DEU",
@@ -312,12 +307,7 @@ O Poder Executivo tem a liderança política centralizada no Chanceler Federal (
 Após 1945, a Alemanha foi dividida entre a República Federal da Alemanha (RFA, ocidental) e a República Democrática Alemã (RDA, oriental) [1]. Em 9 de novembro de 1989, a pacífica queda do Muro de Berlim abriu caminho para a reunificação oficial em 3 de outubro de 1990 [1][2].`,
       },
     ],
-    milestones: [
-      { id: "deu-1871", title: "Unificação da Alemanha", summary: "Proclamação do Império Alemão no Palácio de Versalhes sob Bismarck e Guilherme I.", year: 1871, exactDate: "1871-01-18", category: "POLITICS_REGIMES", sourcePrimary: "Bundesarchiv", latitude: 48.8049, longitude: 2.1204, countryIso: "DEU" },
-      { id: "deu-1949", title: "Promulgação da Lei Fundamental", summary: "Criação da República Federal da Alemanha e adoção da Grundgesetz.", year: 1949, exactDate: "1949-05-23", category: "POLITICS_REGIMES", sourcePrimary: "Bundestag", latitude: 50.7374, longitude: 7.0982, countryIso: "DEU" },
-      { id: "deu-1989", title: "Queda do Muro de Berlim", summary: "Abertura das fronteiras entre Berlim Oriental e Ocidental, antecipando o fim da Guerra Fria.", year: 1989, exactDate: "1989-11-09", category: "POLITICS_REGIMES", sourcePrimary: "Bundesarchiv", latitude: 52.5163, longitude: 13.3777, countryIso: "DEU" },
-      { id: "deu-1990", title: "Reunificação da Alemanha", summary: "Adesão formal dos novos estados da RDA à República Federal da Alemanha.", year: 1990, exactDate: "1990-10-03", category: "POLITICS_REGIMES", sourcePrimary: "Bundestag", latitude: 52.5186, longitude: 13.3762, countryIso: "DEU" },
-    ],
+    milestones: countryMilestones("DEU"),
   },
   USA: {
     isoCode: "USA",
@@ -370,11 +360,7 @@ O sistema baseia-se em um rigoroso equilíbrio de freios e contrapesos (*checks 
 Após a Guerra de Secessão (1861–1865), o país acelerou seu processo de industrialização e emergiu como potência mundial decisiva na Primeira e Segunda Guerras Mundiais [1]. Durante a Guerra Fria, protagonizou a corrida espacial que culminou com o desembarque na Lua pelo programa Apollo em 1969 [1][2].`,
       },
     ],
-    milestones: [
-      { id: "usa-1776", title: "Declaração de Independência", summary: "As Treze Colônias rompem com a Grã-Bretanha e estabelecem os Estados Unidos.", year: 1776, exactDate: "1776-07-04", category: "POLITICS_REGIMES", sourcePrimary: "National Archives", latitude: 39.9489, longitude: -75.15, countryIso: "USA" },
-      { id: "usa-1865", title: "Fim da Guerra de Secessão e 13ª Emenda", summary: "Preservação da união federal e abolição formal da escravidão nos EUA.", year: 1865, exactDate: "1865-04-09", category: "WAR_MILITARY", sourcePrimary: "Library of Congress", latitude: 37.3775, longitude: -78.7967, countryIso: "USA" },
-      { id: "usa-1969", title: "Apollo 11: Pouso Humano na Lua", summary: "Neil Armstrong e Buzz Aldrin tornam-se os primeiros humanos a caminhar no solo lunar.", year: 1969, exactDate: "1969-07-20", category: "SCIENCE_CULTURE", sourcePrimary: "NASA", latitude: 28.5721, longitude: -80.648, countryIso: "USA" },
-    ],
+    milestones: countryMilestones("USA"),
   },
   JPN: {
     isoCode: "JPN",
@@ -416,10 +402,7 @@ Após a Guerra de Secessão (1861–1865), o país acelerou seu processo de indu
 O Poder Executivo é conduzido pelo Primeiro-Ministro e seu Gabinete, responsáveis perante a Dieta Nacional (*Kokkai*), o parlamento bicameral japonês [1]. O Artigo 9º da Constituição renuncia expressamente à guerra como direito soberano da nação [1].`,
       },
     ],
-    milestones: [
-      { id: "jpn-1868", title: "Restauração Meiji", summary: "Queda do xogunato Tokugawa, restauração do poder imperial e rápida modernização do Japão.", year: 1868, exactDate: "1868-01-03", category: "POLITICS_REGIMES", sourcePrimary: "Arquivo Histórico Nacional do Japão", latitude: 35.0116, longitude: 135.7681, countryIso: "JPN" },
-      { id: "jpn-1964", title: "Estreia do Trem Bala Shinkansen", summary: "Inauguração da primeira ferrovia comercial de alta velocidade conectando Tóquio e Osaka.", year: 1964, exactDate: "1964-10-01", category: "SCIENCE_CULTURE", sourcePrimary: "JR Central", latitude: 35.6812, longitude: 139.7671, countryIso: "JPN" },
-    ],
+    milestones: countryMilestones("JPN"),
   },
   ZAF: {
     isoCode: "ZAF",
@@ -460,9 +443,7 @@ O Poder Executivo é conduzido pelo Primeiro-Ministro e seu Gabinete, responsáv
 A Constituição de 1996 é considerada uma das mais progressistas do mundo, com uma Declaração de Direitos ampla que protege expressamente contra discriminação por raça, gênero, orientação sexual e crença [1][2].`,
       },
     ],
-    milestones: [
-      { id: "zaf-1994", title: "Fim do Apartheid e Eleição de Nelson Mandela", summary: "Primeiras eleições multirraciais livres da África do Sul e posse de Nelson Mandela.", year: 1994, exactDate: "1994-04-27", category: "POLITICS_REGIMES", sourcePrimary: "Nelson Mandela Foundation", latitude: -25.7479, longitude: 28.2293, countryIso: "ZAF" },
-    ],
+    milestones: countryMilestones("ZAF"),
   },
   EGY: {
     isoCode: "EGY",
@@ -503,10 +484,7 @@ A Constituição de 1996 é considerada uma das mais progressistas do mundo, com
 Na modernidade, a abertura do Canal de Suez em 1869 revolucionou o comércio marítimo mundial ao interligar diretamente o Mar Mediterrâneo ao Mar Vermelho [1][2].`,
       },
     ],
-    milestones: [
-      { id: "egy-1869", title: "Inauguração do Canal de Suez", summary: "Abertura da via aquática artificial de 193 km conectando a Europa e a Ásia.", year: 1869, exactDate: "1869-11-17", category: "ECONOMY", sourcePrimary: "Suez Canal Authority", latitude: 31.2653, longitude: 32.3019, countryIso: "EGY" },
-      { id: "egy-1952", title: "Revolução Egípcia de 1952", summary: "Queda da monarquia de Faruque I e proclamação da República Árabe do Egito.", year: 1952, exactDate: "1952-07-23", category: "POLITICS_REGIMES", sourcePrimary: "Al-Ahram Archives", latitude: 30.0444, longitude: 31.2357, countryIso: "EGY" },
-    ],
+    milestones: countryMilestones("EGY"),
   },
 };
 
@@ -525,73 +503,8 @@ export interface MilestoneItem {
   preferredAltitude?: number;
 }
 
-export const GLOBAL_MILESTONES: MilestoneItem[] = [
-  {
-    id: "magellan-1519",
-    title: "Primeira Circum-navegação da Terra (Magalhães–Elcano)",
-    summary: "A armada de cinco naus parte de Sanlúcar de Barrameda sob o comando de Fernão de Magalhães, realizando a primeira travessia global da história.",
-    year: 1519,
-    exactDate: "1519-09-20",
-    category: "SCIENCE_CULTURE" as const,
-    sourcePrimary: "Arquivo Geral das Índias / Antonio Pigafetta",
-    latitude: 36.7786,
-    longitude: -6.3533,
-    countryIso: "ESP",
-    blocIsos: ["ESP", "PRT"],
-  },
-  {
-    id: "elcano-1522",
-    title: "Retorno da Nau Victoria e Conclusão da Circum-navegação",
-    summary: "Juan Sebastián Elcano e 17 sobreviventes a bordo da Nau Victoria chegam a Sanlúcar de Barrameda, comprovando a esfericidade e navegabilidade contínua da Terra.",
-    year: 1522,
-    exactDate: "1522-09-06",
-    category: "SCIENCE_CULTURE" as const,
-    sourcePrimary: "Arquivo Geral das Índias / Antonio Pigafetta",
-    latitude: 36.7786,
-    longitude: -6.3533,
-    countryIso: "ESP",
-    blocIsos: ["ESP"],
-  },
-  { id: "ahu-1867", title: "Compromisso Austro-Húngaro (Ausgleich)", summary: "Criação da Monarquia Dual soberana entre a Áustria e a Hungria sob Francisco José I.", year: 1867, exactDate: "1867-06-08", category: "POLITICS_REGIMES" as const, sourcePrimary: "Österreichisches Staatsarchiv", latitude: 48.2082, longitude: 16.3738, countryIso: "AHU", blocIsos: ["AHU", "AUT", "HUN"] },
-  { id: "glo-1870", title: "Batalha de Sedan e Guerra Franco-Prussiana", summary: "Capitulação do imperador francês Napoleão III perante as forças prussianas e confederadas, abrindo caminho para a unificação.", year: 1870, exactDate: "1870-09-02", category: "WAR_MILITARY" as const, sourcePrimary: "Bundesarchiv / SHD", latitude: 49.7022, longitude: 4.9436, countryIso: "FRA", blocIsos: ["PRU", "FRA", "DEU"] },
-  { id: "pru-1871", title: "Unificação Alemã e Proclamação do Reich em Versalhes", summary: "Príncipes alemães aclamam Guilherme I da Prússia como Imperador Alemão na Galeria dos Espelhos no Palácio de Versalhes.", year: 1871, exactDate: "1871-01-18", category: "POLITICS_REGIMES" as const, sourcePrimary: "Preußisches Geheimes Staatsarchiv", latitude: 48.8049, longitude: 2.1204, countryIso: "PRU", blocIsos: ["PRU", "DEU"] },
-  { id: "tur-1908", title: "Revolução dos Jovens Turcos", summary: "Movimento constitucionalista restaura o Parlamento e a Constituição de 1876 na Sublime Porta.", year: 1908, exactDate: "1908-07-24", category: "POLITICS_REGIMES" as const, sourcePrimary: "Başbakanlık Osmanlı Arşivi", latitude: 41.0082, longitude: 28.9784, countryIso: "TUR_HIST", blocIsos: ["TUR_HIST"] },
-  { id: "glo-1914", title: "Eclosão da Primeira Guerra Mundial", summary: "Assassinato do Arquiduque Francisco Ferdinando em Sarajevo deflagra o primeiro conflito em escala global.", year: 1914, exactDate: "1914-07-28", category: "WAR_MILITARY" as const, sourcePrimary: "Imperial War Museum", latitude: 43.8563, longitude: 18.4131, countryIso: "BIH", blocIsos: ["AHU", "DEU", "RUS", "FRA", "GBR", "TUR_HIST"] },
-  { id: "glo-1919", title: "Tratado de Versalhes e Liga das Nações", summary: "Assinatura do tratado de paz no Salão dos Espelhos em Versalhes e fundação da primeira organização internacional de segurança coletiva.", year: 1919, exactDate: "1919-06-28", category: "POLITICS_REGIMES" as const, sourcePrimary: "Liga das Nações / Arquivo de Versalhes", latitude: 48.8049, longitude: 2.1204, countryIso: "FRA" },
-  { id: "glo-1939", title: "Início da Segunda Guerra Mundial", summary: "Invasão da Polônia por forças da Alemanha nazista deflagra a Segunda Guerra Mundial na Europa.", year: 1939, exactDate: "1939-09-01", category: "WAR_MILITARY" as const, sourcePrimary: "Bundesarchiv / Polish Institute", latitude: 54.4069, longitude: 18.6738, countryIso: "POL", blocIsos: ["DEU", "POL", "SUN", "GBR", "FRA"] },
-  { id: "glo-1944", title: "Desembarque da Normandia (Dia D)", summary: "A Operação Overlord desembarca mais de 150 mil soldados aliados na Normandia, abrindo a frente ocidental decisiva contra o Eixo.", year: 1944, exactDate: "1944-06-06", category: "WAR_MILITARY" as const, sourcePrimary: "US National Archives (NARA)", latitude: 49.3364, longitude: -0.8653, countryIso: "FRA" },
-  { id: "glo-1945", title: "Fundação das Nações Unidas (ONU)", summary: "Criação da organização internacional com o objetivo de manter a paz e cooperação global.", year: 1945, exactDate: "1945-10-24", category: "POLITICS_REGIMES" as const, sourcePrimary: "UN Archives", latitude: 40.7489, longitude: -73.968, countryIso: "USA" },
-  { id: "glo-1947", title: "Doutrina Truman e Plano Marshall", summary: "Lançamento do plano maciço de assistência econômica dos EUA para a reconstrução da Europa Ocidental e contenção da Guerra Fria.", year: 1947, exactDate: "1947-06-05", category: "ECONOMY" as const, sourcePrimary: "US Department of State", latitude: 38.8951, longitude: -77.0364, countryIso: "USA" },
-  { id: "glo-1957", title: "Lançamento do Sputnik 1", summary: "Primeiro satélite artificial em órbita terrestre, inaugurando a Era Espacial.", year: 1957, exactDate: "1957-10-04", category: "SCIENCE_CULTURE" as const, sourcePrimary: "Roscosmos / NASA", latitude: 45.9646, longitude: 63.3052, countryIso: "KAZ", blocIsos: ["SUN"] },
-  { id: "sun-1961", title: "Vostok 1: Primeiro Voo Humano no Espaço", summary: "O cosmonauta soviético Yuri Gagarin realiza a primeira órbita tripulada ao redor da Terra.", year: 1961, exactDate: "1961-04-12", category: "SCIENCE_CULTURE" as const, sourcePrimary: "Roscosmos / RGANTD", latitude: 45.9646, longitude: 63.3052, countryIso: "SUN", blocIsos: ["SUN"] },
-  { id: "yug-1961", title: "Conferência de Belgrado dos Países Não-Alinhados", summary: "Fundação do Movimento dos Não-Alinhados liderado por Tito, Nasser e Nehru como alternativa à bipolaridade EUA-URSS.", year: 1961, exactDate: "1961-09-01", category: "POLITICS_REGIMES" as const, sourcePrimary: "Diplomatski arhiv MSP Srbije", latitude: 44.8176, longitude: 20.4633, countryIso: "YUG", blocIsos: ["YUG"] },
-  { id: "gdr-1961", title: "Construção do Muro de Berlim", summary: "O governo da RDA inicia o fechamento e fortificação da fronteira entre Berlim Oriental e Ocidental.", year: 1961, exactDate: "1961-08-13", category: "POLITICS_REGIMES" as const, sourcePrimary: "Stiftung Berliner Mauer", latitude: 52.5163, longitude: 13.3777, countryIso: "GDR", blocIsos: ["GDR", "FRG", "SUN", "USA"] },
-  { id: "glo-1962", title: "Crise dos Mísseis de Cuba", summary: "Confronto de treze dias entre EUA e URSS sobre mísseis nucleares soviéticos instalados em Cuba, ápice de tensão na Guerra Fria.", year: 1962, exactDate: "1962-10-16", category: "WAR_MILITARY" as const, sourcePrimary: "JFK Presidential Library", latitude: 23.1136, longitude: -82.3666, countryIso: "CUB" },
-  { id: "csk-1968", title: "Primavera de Praga e Invasão do Pacto de Varsóvia", summary: "Abertura política do 'socialismo com rosto humano' sob Alexander Dubček e subsequente ocupação militar soviética.", year: 1968, exactDate: "1968-08-20", category: "WAR_MILITARY" as const, sourcePrimary: "Národní archiv Praha", latitude: 50.0755, longitude: 14.4378, countryIso: "CSK", blocIsos: ["CSK", "SUN"] },
-  { id: "glo-1969", title: "Apollo 11: Pouso Humano na Lua", summary: "Neil Armstrong e Buzz Aldrin tornam-se os primeiros humanos a caminhar na Lua.", year: 1969, exactDate: "1969-07-20", category: "SCIENCE_CULTURE" as const, sourcePrimary: "NASA", latitude: 28.5721, longitude: -80.648, countryIso: "USA", blocIsos: ["USA"] },
-  { id: "glo-1973", title: "Primeiro Choque do Petróleo", summary: "Embargo da OPEP desencadeia quadruplicação dos preços do barril e reorientação energética mundial.", year: 1973, exactDate: "1973-10-17", category: "ECONOMY" as const, sourcePrimary: "IEA", latitude: 24.7136, longitude: 46.6753, countryIso: "SAU" },
-  { id: "glo-1989", title: "Queda do Muro de Berlim", summary: "Abertura dos postos de controle entre Berlim Oriental e Ocidental, sinalizando o fim da Guerra Fria.", year: 1989, exactDate: "1989-11-09", category: "POLITICS_REGIMES" as const, sourcePrimary: "Bundesarchiv", latitude: 52.5163, longitude: 13.3777, countryIso: "DEU", blocIsos: ["GDR", "FRG"] },
-  { id: "glo-1991", title: "Criação da World Wide Web", summary: "Tim Berners-Lee publica a primeira página web no CERN, inaugurando a era da internet pública.", year: 1991, exactDate: "1991-08-06", category: "SCIENCE_CULTURE" as const, sourcePrimary: "CERN", latitude: 46.233, longitude: 6.0557, countryIso: "CHE" },
-  { id: "glo-1991-ussr", title: "Dissolução da União Soviética", summary: "Renúncia de Gorbachev e arriamento da bandeira soviética no Kremlin encerram formalmente a União Soviética e a Guerra Fria.", year: 1991, exactDate: "1991-12-26", category: "POLITICS_REGIMES" as const, sourcePrimary: "Arquivo Estatal da Federação Russa (GARF)", latitude: 55.752, longitude: 37.6175, countryIso: "RUS" },
-  {
-    id: "glo-1999",
-    title: "Criação da Moeda Única Euro",
-    summary: "Entrada em vigor do Euro nos mercados financeiros de 11 nações da União Europeia.",
-    year: 1999,
-    exactDate: "1999-01-01",
-    category: "ECONOMY" as const,
-    sourcePrimary: "ECB",
-    latitude: 48.5,
-    longitude: 9.0,
-    preferredAltitude: 2.7,
-    countryIso: "DEU",
-    blocIsos: ["DEU", "FRA", "ITA", "ESP", "PRT", "NLD", "BEL", "LUX", "AUT", "FIN", "IRL"],
-  },
-  { id: "glo-2008", title: "Crise Financeira Global de 2008", summary: "Colapso do banco Lehman Brothers desencadeia a maior recessão global desde a Grande Depressão.", year: 2008, exactDate: "2008-09-15", category: "ECONOMY" as const, sourcePrimary: "Federal Reserve", latitude: 40.7128, longitude: -74.006, countryIso: "USA" },
-  { id: "glo-2015", title: "Acordo de Paris sobre o Clima", summary: "Tratado internacional assinado por 196 nações para limitar o aquecimento global abaixo de 2°C.", year: 2015, exactDate: "2015-12-12", category: "SCIENCE_CULTURE" as const, sourcePrimary: "UNFCCC", latitude: 48.8566, longitude: 2.3522, countryIso: "FRA" },
-  { id: "glo-2020", title: "Declaração de Pandemia de COVID-19", summary: "OMS classifica a disseminação global do coronavírus SARS-CoV-2 como pandemia mundial.", year: 2020, exactDate: "2020-03-11", category: "HEALTH_PANDEMICS" as const, sourcePrimary: "OMS", latitude: 46.2044, longitude: 6.1432, countryIso: "CHE" },
-  { id: "glo-2021", title: "Lançamento do Telescópio Espacial James Webb", summary: "O mais avançado observatório astronômico espacial é lançado pelo foguete Ariane 5.", year: 2021, exactDate: "2021-12-25", category: "SCIENCE_CULTURE" as const, sourcePrimary: "NASA / ESA", latitude: 5.2372, longitude: -52.7686, countryIso: "FRA" },
-];
+/** Marcos globais — agora vêm das cenas em `src/data/scenes/` (D12b). */
+export const GLOBAL_MILESTONES: MilestoneItem[] = globalMilestones();
 
 export function findMilestoneById(id: string): MilestoneItem | undefined {
   const global = GLOBAL_MILESTONES.find((m) => m.id === id);

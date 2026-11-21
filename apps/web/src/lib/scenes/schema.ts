@@ -16,8 +16,12 @@ const Instant = z.string().refine((s) => /^-?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2
 
 const Lat = z.number().min(-90).max(90);
 const Lng = z.number().min(-180).max(180);
-const Iso3 = z.string().regex(/^[A-Z]{3}$/, "ISO 3166-1 alfa-3");
+/** ISO 3166-1 alfa-3 ou código de entidade histórica do projeto (ex.: "SUN", "AHU", "TUR_HIST"). */
+const Iso3 = z.string().regex(/^[A-Z]{3}(_[A-Z]+)?$/, "ISO 3166-1 alfa-3 ou entidade histórica");
 const Slug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "id em kebab-case");
+/** Pares chave → texto/número exibidos como estão (dados específicos de cada evento). */
+const Facts = z.record(z.string(), z.union([z.string(), z.number()]));
+const Quote = z.object({ text: z.string().min(1), source: z.string().min(1) });
 
 export const SCENE_CATEGORIES = ["POLITICS_REGIMES", "ECONOMY", "WAR_MILITARY", "SCIENCE_CULTURE", "HEALTH_PANDEMICS"] as const;
 
@@ -57,8 +61,8 @@ export const SurfacePointSchema = z.object({
   time: Instant,
   description: z.string().optional(),
   /** Campos específicos do evento (dia de viagem, léguas, comandante…) exibidos como estão. */
-  facts: z.record(z.string(), z.union([z.string(), z.number()])).optional(),
-  quote: z.object({ text: z.string().min(1), source: z.string().min(1) }).optional(),
+  facts: Facts.optional(),
+  quote: Quote.optional(),
 });
 
 export const SurfaceTrajectorySchema = z
@@ -86,7 +90,7 @@ export const CislunarTrajectorySchema = z
     launchSite: z.object({ name: z.string(), lat: Lat, lng: Lng }),
     /** Local de pouso em coordenadas selenográficas. */
     landingSite: z.object({ name: z.string(), lat: Lat, lng: Lng }).optional(),
-    phases: z.array(z.object({ id: z.enum(CISLUNAR_PHASES), label: z.string().min(1), time: Instant, description: z.string().optional() })).min(2),
+    phases: z.array(z.object({ id: z.enum(CISLUNAR_PHASES), label: z.string().min(1), time: Instant, description: z.string().optional(), facts: Facts.optional() })).min(2),
   })
   .refine((t) => t.phases.every((p, i) => i === 0 || Date.parse(p.time) >= Date.parse(t.phases[i - 1].time)), {
     message: "fases fora de ordem cronológica",
@@ -102,6 +106,22 @@ export const PointOfInterestSchema = z.object({
   lng: Lng,
   date: PartialDate.optional(),
   description: z.string().optional(),
+});
+
+/** Participante: navio de uma frota, unidade militar, tripulante… */
+export const ParticipantSchema = z.object({
+  name: z.string().min(1),
+  role: z.string().min(1),
+  description: z.string().optional(),
+  facts: Facts.optional(),
+});
+
+/** Entrada datada de diário/crônica, com ou sem coordenada. */
+export const ChronicleEntrySchema = z.object({
+  date: PartialDate,
+  place: z.string().optional(),
+  text: z.string().min(1),
+  quote: Quote.optional(),
 });
 
 export const SceneMediaSchema = z.object({
@@ -121,9 +141,13 @@ export const SceneSchema = z
     summary: z.string().min(10),
     category: z.enum(SCENE_CATEGORIES),
     date: SceneDateSchema,
-    /** Países envolvidos (o primeiro é o principal) e bloco, quando houver. */
+    /** País/entidade principal do evento. */
+    country: Iso3.optional(),
+    /** Todos os países/entidades envolvidos (bloco), quando o evento não é de um só. */
     countries: z.array(Iso3).default([]),
     bloc: z.string().optional(),
+    /** "global": sempre na linha do tempo; "country": só quando `country` está selecionado. */
+    timelineScope: z.enum(["global", "country"]).default("global"),
     location: z.object({ lat: Lat, lng: Lng }).optional(),
     camera: SceneCameraSchema.optional(),
     /** Toda cena precisa de ao menos uma fonte citável (RN02). */
@@ -135,6 +159,11 @@ export const SceneSchema = z
     trajectories: z.array(SceneTrajectorySchema).default([]),
     pointsOfInterest: z.array(PointOfInterestSchema).default([]),
     media: z.array(SceneMediaSchema).default([]),
+    participants: z.array(ParticipantSchema).default([]),
+    chronicle: z.array(ChronicleEntrySchema).default([]),
+    /** Dados de resumo específicos do evento (comandante, distância, sobreviventes…). */
+    facts: Facts.optional(),
+    subtitle: z.string().optional(),
     /** Texto longo opcional (Markdown) para o modo leitura. */
     dossierMarkdown: z.string().optional(),
     /** Rascunhos (ingestão do Wikidata) ficam fora da UI até a revisão humana. */
@@ -148,10 +177,7 @@ export type SceneInput = z.input<typeof SceneSchema>;
 export type SceneSource = z.infer<typeof SceneSourceSchema>;
 export type SceneTrajectory = z.infer<typeof SceneTrajectorySchema>;
 
-/** Ano inteiro do início da cena. */
-export function sceneStartYear(scene: Pick<Scene, "date">): number {
-  return parseInt(scene.date.start, 10);
-}
+export { sceneStartYear } from "./catalog-utils";
 
 /** Valida uma coleção: ids únicos e cada cena pelo schema. Lança com o caminho do erro. */
 export function parseSceneCollection(input: unknown[], origin: string): Scene[] {

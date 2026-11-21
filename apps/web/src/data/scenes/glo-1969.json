@@ -1,0 +1,120 @@
+{
+  "id": "glo-1969",
+  "title": "Apollo 11: Pouso Humano na Lua",
+  "summary": "Neil Armstrong e Buzz Aldrin tornam-se os primeiros humanos a caminhar na Lua.",
+  "category": "SCIENCE_CULTURE",
+  "date": {
+    "start": "1969-07-20",
+    "precision": "day"
+  },
+  "country": "USA",
+  "countries": [
+    "USA"
+  ],
+  "location": {
+    "lat": 28.5721,
+    "lng": -80.648
+  },
+  "sources": [
+    {
+      "label": "NASA"
+    },
+    {
+      "label": "NASA — Apollo 11 Mission Report (SP-238)",
+      "authors": "NASA Manned Spacecraft Center",
+      "title": "Apollo 11 Mission Report",
+      "publication": "NASA SP-238",
+      "year": 1971,
+      "url": "https://www.hq.nasa.gov/alsj/a11/A11_MissionReport.pdf"
+    }
+  ],
+  "camera": {
+    "lat": 12,
+    "lng": -148,
+    "altitude": 6
+  },
+  "trajectories": [
+    {
+      "kind": "cislunar",
+      "id": "apollo-11",
+      "label": "Apollo 11 (Columbia / Eagle)",
+      "vehicle": "spacecraft",
+      "launchSite": {
+        "name": "Cabo Canaveral — Plataforma LC-39A (KSC)",
+        "lat": 28.5721,
+        "lng": -80.648
+      },
+      "landingSite": {
+        "name": "Base da Tranquilidade — Mare Tranquillitatis",
+        "lat": 0.674,
+        "lng": 23.4729
+      },
+      "phases": [
+        {
+          "id": "launch",
+          "label": "Lançamento Saturn V & Órbita de Espera (EPO)",
+          "time": "1969-07-16T13:32:00Z",
+          "description": "Decolagem do Centro Espacial Kennedy (LC-39A) e inserção na órbita terrestre baixa a 185 km.",
+          "facts": {
+            "phaseNumber": 1,
+            "code": "FASE 1 — LANÇAMENTO",
+            "badge": "SATURN V / LEO",
+            "startProgress": 0,
+            "endProgress": 0.2,
+            "targetProgress": 0.08,
+            "historicalDate": "16/07/1969 13:32 UTC",
+            "historicalGET": "000:00:00"
+          }
+        },
+        {
+          "id": "translunar-injection",
+          "label": "Injeção Translunar (TLI) & Trajetória Cislunar",
+          "time": "1969-07-16T16:22:13Z",
+          "description": "Reignição do 3º estágio S-IVB atingindo ~39.240 km/h para escapar do campo gravitacional terrestre.",
+          "facts": {
+            "phaseNumber": 2,
+            "code": "FASE 2 — INJEÇÃO TRANSLUNAR",
+            "badge": "TLI / CISLUNAR",
+            "startProgress": 0.2,
+            "endProgress": 0.55,
+            "targetProgress": 0.35,
+            "historicalDate": "16/07/1969 16:22 UTC",
+            "historicalGET": "002:50:13"
+          }
+        },
+        {
+          "id": "lunar-orbit-insertion",
+          "label": "Inserção em Órbita Lunar (CSM Columbia)",
+          "time": "1969-07-19T17:21:50Z",
+          "description": "Frenagem retrógrada com o motor SPS do Columbia e circularização orbital a ~110 km da superfície lunar.",
+          "facts": {
+            "phaseNumber": 3,
+            "code": "FASE 3 — ÓRBITA LUNAR",
+            "badge": "LOI / CSM COLUMBIA",
+            "startProgress": 0.55,
+            "endProgress": 0.82,
+            "targetProgress": 0.65,
+            "historicalDate": "19/07/1969 17:28 UTC",
+            "historicalGET": "075:49:50"
+          }
+        },
+        {
+          "id": "landing",
+          "label": "Pouso do Módulo Lunar Eagle no Mar da Tranquilidade",
+          "time": "1969-07-20T20:17:40Z",
+          "description": "Descida motorizada (PDI) e alunissagem: 'Houston, Tranquility Base here. The Eagle has landed.'",
+          "facts": {
+            "phaseNumber": 4,
+            "code": "FASE 4 — POUSO LUNAR",
+            "badge": "TOUCHDOWN / EAGLE",
+            "startProgress": 0.82,
+            "endProgress": 1,
+            "targetProgress": 1,
+            "historicalDate": "20/07/1969 20:17 UTC",
+            "historicalGET": "102:45:40"
+          }
+        }
+      ]
+    }
+  ]
+}
