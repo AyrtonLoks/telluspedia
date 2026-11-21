@@ -159,7 +159,7 @@ export const PresetSelector: React.FC = () => {
               type="button"
               onClick={() => applyTimelinePreset(p.id)}
               title={p.label}
-              aria-label={p.label}
+              aria-label={p.shortLabel === p.label ? p.label : `${p.shortLabel} (${p.label})`}
               aria-pressed={isSelected}
               className={presetClasses(isSelected)}
             >
@@ -179,7 +179,7 @@ export const PresetSelector: React.FC = () => {
               type="button"
               onClick={() => applyTimelinePreset(p.id)}
               title={p.label}
-              aria-label={p.label}
+              aria-label={p.shortLabel === p.label ? p.label : `${p.shortLabel} (${p.label})`}
               aria-pressed={isSelected}
               className={presetClasses(isSelected)}
             >
@@ -199,7 +199,7 @@ export const PresetSelector: React.FC = () => {
               type="button"
               onClick={() => applyTimelinePreset(p.id)}
               title={p.label}
-              aria-label={p.label}
+              aria-label={p.shortLabel === p.label ? p.label : `${p.shortLabel} (${p.label})`}
               aria-pressed={isSelected}
               className={presetClasses(isSelected)}
             >

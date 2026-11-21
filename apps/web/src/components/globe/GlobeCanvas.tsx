@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
 import { Cloud, CloudSun, Sun } from "lucide-react";
@@ -21,6 +21,7 @@ import { CountryBorders } from "./CountryBorders";
 import { OrbitingMoon } from "./OrbitingMoon";
 import { SkyStars } from "./SkyStars";
 import { CameraFlyToController } from "./CameraFlyToController";
+import { GlobeKeyboardControls } from "./GlobeKeyboardControls";
 import { CameraUrlBridge } from "./CameraUrlBridge";
 import type { ViewCamera } from "@/lib/explore/view-camera";
 import { ScenePlayer } from "@/components/scenes/ScenePlayer";
@@ -67,6 +68,8 @@ const SolarDirectionalLight: React.FC = () => {
 
 export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }) => {
   const lastEarthFlight = useRef(0);
+  const viewport = useRef<HTMLDivElement>(null);
+  const instructions = useId();
   const [studyLighting, setStudyLighting] = useState(false);
   // D02: atmosfera com espalhamento (ligada por padrão; desativável).
   const [showAtmosphere, setShowAtmosphere] = useState(true);
@@ -104,7 +107,17 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
   };
 
   return (
-    <div className="absolute inset-0 h-full w-full overflow-hidden bg-bg">
+    <div
+      ref={viewport}
+      role="region"
+      aria-label={isCosmicMode ? "Mapa do Sistema Solar" : "Globo interativo"}
+      aria-describedby={instructions}
+      aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight /"
+      data-globe-keyboard=""
+      tabIndex={0}
+      className="absolute inset-0 h-full w-full overflow-hidden bg-bg focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+    >
+      <p id={instructions} className="sr-only">Use as setas para girar, mais e menos para ajustar o zoom e barra para abrir a busca.</p>
       <Canvas
         camera={{ position: [0, 0, 2.5], fov: 45 }}
         frameloop={isThrottled ? "demand" : "always"}
@@ -141,6 +154,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
         {/* Cosmic Camera Target Handover Controller (Active in Cosmic Mode) */}
         <CosmicCameraController />
         <CameraUrlBridge view={viewCamera} />
+        <GlobeKeyboardControls viewport={viewport} />
 
         {/* Deep Space Celestial Vault (HYG 3,500+ Stars & IAU Constellations) */}
         <SkyStars />

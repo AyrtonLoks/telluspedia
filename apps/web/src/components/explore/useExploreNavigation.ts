@@ -9,6 +9,7 @@ export function useExploreNavigation() {
   const hasCountryContext = canApplyHere || /^\/study\/[^/]+\/?$/.test(pathname ?? "");
   return {
     hasCountryContext,
+    canApplyHere,
     navigate: (result: SearchResult) => {
       if (canApplyHere) runSearchResult(result);
       else window.location.assign(`/?${new URLSearchParams({ comando: result.id })}`);

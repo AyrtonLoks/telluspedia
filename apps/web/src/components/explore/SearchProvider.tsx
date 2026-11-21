@@ -22,7 +22,12 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const onShortcut = (event: KeyboardEvent) => {
-      if (event.repeat || (!event.ctrlKey && !event.metaKey) || event.altKey || event.shiftKey || event.key.toLowerCase() !== "k") return;
+      if (event.repeat || event.defaultPrevented || event.isComposing || event.altKey) return;
+      const modified = event.ctrlKey || event.metaKey;
+      const commandShortcut = modified && !event.shiftKey && event.key.toLowerCase() === "k";
+      const slashShortcut = !modified && event.key === "/" && event.target instanceof HTMLElement &&
+        event.target.matches("[data-globe-keyboard], #explore-search-trigger");
+      if (!commandShortcut && !slashShortcut) return;
       event.preventDefault();
       if (!open) openSearch();
     };

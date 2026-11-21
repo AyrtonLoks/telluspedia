@@ -196,14 +196,12 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         />
       )}
       <main className="relative h-screen w-screen overflow-hidden bg-bg select-none">
-        {/* 3D WebGL Canvas Layer */}
-        <GlobeCanvas viewCamera={viewCamera} />
-
         {/* Top Floating Navigation Bar */}
         <Suspense fallback={null}>
           <TopNavBar />
           <EntityLaunchGate />
         </Suspense>
+        <GlobeCanvas viewCamera={viewCamera} />
         {/* Link de cena (?cena=<id>) e endereço em sincronia com a cena aberta (D12d) */}
         <SceneLinkSync />
         <ExplorerUrlSync view={viewCamera} immutable={initialState.kind === "study"} />

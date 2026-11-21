@@ -12,10 +12,14 @@ export const RIGHT_PANEL_ORDER: RightPanelId[] = ["country", "observatory", "cos
 interface LayoutState {
   /** Aba ativa do dock; null = a mais recente entre as abertas. */
   activeRightPanel: RightPanelId | null;
+  pendingRightPanelFocus: RightPanelId | null;
+  requestRightPanelFocus: (id: RightPanelId | null) => void;
   setActiveRightPanel: (id: RightPanelId | null) => void;
 }
 
 export const useLayoutStore = create<LayoutState>((set) => ({
   activeRightPanel: null,
+  pendingRightPanelFocus: null,
+  requestRightPanelFocus: (id) => set({ pendingRightPanelFocus: id }),
   setActiveRightPanel: (id) => set({ activeRightPanel: id }),
 }));

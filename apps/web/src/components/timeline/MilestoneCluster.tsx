@@ -62,36 +62,37 @@ export const MilestoneCluster: React.FC<{
 
       {/* Prévia: título, data e categoria de cada marco do grupo */}
       <div
-        role="list"
         className={cn(
           "absolute bottom-7 w-60 rounded-card border border-line bg-surface p-2 shadow-e2 transition-opacity duration-base ease-out",
           align,
           pinned
             ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
+            : "invisible pointer-events-none opacity-0 group-hover:visible group-focus-within:visible group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
         )}
       >
         <div className="mb-1 px-1 font-mono text-caption tabular-nums text-fg-muted">
           {members.length} eventos · {range}
         </div>
-        {members.slice(0, 6).map((m) => {
-          const t = TONES[CATEGORY_TONE[m.category] ?? "cat-politics"];
-          return (
-            <button
-              key={m.id}
-              type="button"
-              role="listitem"
-              onClick={() => open(m)}
-              className="flex w-full items-start gap-2 rounded-control px-1 py-1 text-left transition-colors duration-fast ease-out hover:bg-surface-hover"
-            >
-              <span className={cn("mt-1 h-2 w-2 shrink-0 rounded-full", t.dot)} aria-hidden="true" />
-              <span className="min-w-0">
-                <span className={cn("mr-1 font-mono text-caption tabular-nums", t.text)}>{m.exactDate ?? m.year}</span>
-                <span className="line-clamp-1 text-caption text-fg">{m.title}</span>
-              </span>
-            </button>
-          );
-        })}
+        <ul>
+          {members.slice(0, 6).map((m) => {
+            const t = TONES[CATEGORY_TONE[m.category] ?? "cat-politics"];
+            return (
+              <li key={m.id}>
+                <button
+                  type="button"
+                  onClick={() => open(m)}
+                  className="flex w-full items-start gap-2 rounded-control px-1 py-1 text-left transition-colors duration-fast ease-out hover:bg-surface-hover"
+                >
+                  <span className={cn("mt-1 h-2 w-2 shrink-0 rounded-full", t.dot)} aria-hidden="true" />
+                  <span className="min-w-0">
+                    <span className={cn("mr-1 font-mono text-caption tabular-nums", t.text)}>{m.exactDate ?? m.year}</span>
+                    <span className="line-clamp-1 text-caption text-fg">{m.title}</span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
         {members.length > 6 && (
           <div className="px-1 pt-1 text-caption text-fg-muted">+{members.length - 6} — aproxime o zoom para ver todos</div>
         )}

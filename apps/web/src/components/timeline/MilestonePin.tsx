@@ -62,6 +62,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   percent,
 }) => {
   const pinRef = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
   const selectMilestone = useTimelineStore((s) => s.selectMilestone);
   const selectYear = useTimelineStore((s) => s.selectYear);
@@ -81,7 +82,8 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   useEffect(() => {
     if (!isSelected) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !e.defaultPrevented && !document.activeElement?.closest("[role=dialog]")) {
+        if (pinRef.current?.contains(document.activeElement)) trigger.current?.focus();
         selectMilestone(null);
       }
     };
@@ -142,7 +144,6 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
       className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 group cursor-pointer ${
         isSelected ? "z-50" : "z-20 hover:z-40"
       }`}
-      onClick={handleClick}
     >
       {/* Invisible hover bridge & visible connector line: pops upward only */}
       <div
@@ -159,9 +160,14 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
       </div>
 
       {/* Pin node on axis */}
-      <div
+      <button
+        type="button"
+        ref={trigger}
+        aria-label={`${title}, ${year}`}
+        aria-expanded={isSelected}
+        onClick={handleClick}
         className={cn(
-          "h-3.5 w-3.5 rounded-full border-2 transition-transform duration-fast ease-out group-hover:scale-125",
+          "block h-3.5 w-3.5 rounded-full border-2 transition-transform duration-fast ease-out group-hover:scale-125",
           tone.ring,
           isSelected ? cn("scale-125", tone.dot) : "bg-surface"
         )}
@@ -174,7 +180,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
         } ${
           isSelected
             ? "pointer-events-auto z-50 border-line-strong opacity-100"
-            : "opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto z-30 group-hover:z-50"
+            : "invisible opacity-0 group-hover:visible group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto z-30 group-hover:z-50"
         }`}
         onClick={handleCardClick}
       >
@@ -189,10 +195,11 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
               onClick={(e) => {
                 e.stopPropagation();
                 selectMilestone(null);
+                trigger.current?.focus();
               }}
               className="ml-auto rounded-sm p-0.5 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
               title="Fechar (Esc)"
-              aria-label="Fechar milestone"
+              aria-label="Fechar evento"
             >
               <X aria-hidden="true" className="h-3.5 w-3.5" />
             </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "./cn";
@@ -18,15 +18,32 @@ export interface DialogContentProps extends Omit<React.ComponentPropsWithoutRef<
 
 /** Modal com título e descrição acessíveis, foco preso e Esc para fechar (Radix). */
 export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(function DialogContent(
-  { title, description, footer, className, children, ...props },
+  { title, description, footer, className, children, onOpenAutoFocus, onCloseAutoFocus, ...props },
   ref
 ) {
+  const previousFocus = useRef<HTMLElement | null>(null);
   const overlay = (
     <RadixDialog.Overlay className="fixed inset-0 z-50 bg-bg/70 backdrop-blur-sm data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out" />
   );
   const content = (
       <RadixDialog.Content
         ref={ref}
+        onOpenAutoFocus={(event) => {
+          const active = document.activeElement;
+          previousFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+          onOpenAutoFocus?.(event);
+        }}
+        onCloseAutoFocus={(event) => {
+          onCloseAutoFocus?.(event);
+          if (event.defaultPrevented) return;
+          const target = previousFocus.current?.isConnected
+            ? previousFocus.current
+            : document.getElementById("explore-search-trigger");
+          if (target) {
+            event.preventDefault();
+            target.focus({ preventScroll: true });
+          }
+        }}
         className={cn(
           "fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] w-[min(92vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-panel border border-line bg-surface shadow-e2",
           "data-[state=open]:animate-pop-in data-[state=closed]:animate-pop-out",

@@ -43,9 +43,13 @@ export const TopNavBar: React.FC = () => {
   const dock = useRightDock();
   const setActiveRightPanel = useLayoutStore((s) => s.setActiveRightPanel);
   // Aberto mas atrás de outra aba do dock → traz para frente; senão abre/fecha (D15).
-  const toggleObservatoryPanel = () => {
-    if (panelButtonAction("observatory", isObservatoryPanelOpen, dock) === "focus") setActiveRightPanel("observatory");
+  const toggleObservatoryPanel = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const focus = panelButtonAction("observatory", isObservatoryPanelOpen, dock) === "focus";
+    if (focus) setActiveRightPanel("observatory");
     else togglePanel();
+    if (event.detail === 0 && (focus || !isObservatoryPanelOpen)) {
+      useLayoutStore.getState().requestRightPanelFocus("observatory");
+    }
   };
   const storeActiveLayers = useObservatoryStore((s) => s.activeLayers);
   const activeObservatoryLayers =
@@ -74,7 +78,7 @@ export const TopNavBar: React.FC = () => {
 
         <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
 
-        <Link href="/telluslab" className={navItemClasses(false)}>
+        <Link href="/telluslab" aria-label="Estudo" className={navItemClasses(false)}>
           <BookOpen aria-hidden="true" className="h-4 w-4" />
           <span className="hidden sm:inline">Estudo</span>
         </Link>
@@ -84,6 +88,7 @@ export const TopNavBar: React.FC = () => {
           onClick={toggleCosmicMode}
           onMouseEnter={() => { preloadCosmicHud(); preloadRightDock(); }}
           onFocus={() => { preloadCosmicHud(); preloadRightDock(); }}
+          aria-label={isCosmicMode ? "Sistema Solar" : "Cosmos"}
           data-testid="top-nav-cosmos-button"
           aria-pressed={isCosmicMode}
           className={navItemClasses(isCosmicMode)}
@@ -95,6 +100,8 @@ export const TopNavBar: React.FC = () => {
 
         <button
           type="button"
+          id="observatory-trigger"
+          aria-label="Observatório"
           onClick={toggleObservatoryPanel}
           onMouseEnter={preloadRightDock}
           onFocus={preloadRightDock}
@@ -115,6 +122,7 @@ export const TopNavBar: React.FC = () => {
 
         <button
           type="button"
+          aria-label="Comparador"
           onClick={openComparator}
           onMouseEnter={preloadCountryComparator}
           onFocus={preloadCountryComparator}
@@ -124,23 +132,27 @@ export const TopNavBar: React.FC = () => {
           <span className="hidden sm:inline">Comparador</span>
         </button>
 
-        <button
-          type="button"
-          aria-label="Buscar no TellusPedia"
-          aria-keyshortcuts="Control+k Meta+k"
-          aria-haspopup="dialog"
-          onClick={openSearch}
-          className={buttonClasses("secondary", "md", "ml-1 gap-2 sm:w-56 sm:justify-start sm:bg-surface-sunken")}
-        >
-          <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-          <span className="hidden text-fg-secondary sm:inline">Buscar no TellusPedia</span>
-          <kbd aria-hidden="true" className="ml-auto hidden rounded border border-line px-1 font-mono text-caption text-fg-muted sm:inline">⌘/Ctrl K</kbd>
-        </button>
+        <div className="relative ml-1">
+          <button
+            type="button"
+            id="explore-search-trigger"
+            aria-label="Buscar no TellusPedia"
+            aria-keyshortcuts="/ Control+k Meta+k"
+            aria-haspopup="dialog"
+            onClick={openSearch}
+            className={buttonClasses("secondary", "md", "gap-2 sm:w-56 sm:justify-start sm:bg-surface-sunken")}
+          >
+            <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
+            <span className="hidden text-fg-secondary sm:inline">Buscar</span>
+          </button>
+          <kbd aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded border border-line px-1 font-mono text-caption text-fg-muted sm:block">⌘/Ctrl K</kbd>
+        </div>
 
         <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
 
         <button
           type="button"
+          aria-label="Compartilhar"
           onClick={() => setShareModalOpen(true)}
           onMouseEnter={preloadStudyShareModal}
           onFocus={preloadStudyShareModal}
