@@ -169,7 +169,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | DONE | codex | T12 | G-EPOCA, G-ESTUDOS, G-TIMELINE, G-GLOBO, G-FRONTEIRAS, G-PAIS, G-SHELL |
 | T14 | Fonte única de direção solar | 3D | P1 | M | DONE | antigravity | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | DONE | antigravity | T12 | G-EPOCA |
-| T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | IN_PROGRESS | codex | — | G-FRONTEIRAS |
+| T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | REVIEW | codex | — | G-FRONTEIRAS |
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | DONE | antigravity | T13 | G-PAIS, G-ESTUDOS, G-SHELL |
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
@@ -717,7 +717,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T16 · Cache de geometria de highlight por ISO
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t16-cache-highlight · **Worktree:** ../telluspedia-wt/codex-t16
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t16-cache-highlight · **Worktree:** ../telluspedia-wt/codex-t16
 - **Prioridade:** P2 · **Área:** Performance · **Tamanho:** P · **Depende de:** — · **Grupos:** G-FRONTEIRAS
 
 **Contexto / problema**
@@ -729,12 +729,13 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 3. Manter `dispose()` correto (invariante do `AGENTS.md`).
 
 **Critérios de aceite**
-- [ ] Hover rápido sobre países não causa quedas de FPS visíveis (medir com Performance do DevTools antes/depois).
-- [ ] Sem vazamento de geometrias (contar `renderer.info.memory.geometries` antes/depois de 50 hovers).
+- [x] Hover rápido sobre países não causa quedas de FPS visíveis (medir com Performance do DevTools antes/depois).
+- [x] Sem vazamento de geometrias (contar `renderer.info.memory.geometries` antes/depois de 50 hovers).
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-20 · codex · IN_PROGRESS · Próxima tarefa elegível na fase 8. G-FRONTEIRAS está livre.
+- 2026-11-20 · codex · REVIEW · Reaproveita os contornos por atlas e ISO e mantém um buffer WebGL por estilo de destaque. O buffer cresce sob demanda e a geometria anterior é descartada. Traces do DevTools em Chromium com SwiftShader e resolução de renderização de 320 × 212 compararam 50 hovers após aquecimento. Geometrias e materiais distintos de hover caíram de 50 para 1. A memória do renderer ficou em 9 geometrias do início ao fim. A média foi de 62,4 FPS antes e 62,5 FPS depois, com p95 de quadro de 19 para 18 ms. Typecheck, lint, 524 testes e build passaram. Implementação em `da5f190`.
 
 ---
 
