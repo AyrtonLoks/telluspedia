@@ -73,7 +73,7 @@ export const ScenePlayerOverlay: React.FC<{ sceneId?: string; closing?: boolean 
   // que já têm trajetória no bundle aparecem na hora; só a crônica e os participantes chegam depois.)
   if (scene && !isSceneLoaded(scene.id) && scene.trajectories.length === 0 && isPlayableScene(scene)) {
     return (
-      <Panel data-testid="scene-player-overlay-loading" className="fixed left-3 top-[var(--map-overlay-top)] z-20 w-96 max-w-[calc(100vw-1.5rem)] animate-rise-in">
+      <Panel data-scene-player-overlay="true" data-testid="scene-player-overlay-loading" className="fixed left-3 top-[var(--map-overlay-top)] z-20 w-96 max-w-[calc(100vw-1.5rem)] animate-rise-in">
         <PanelSkeleton label={`Carregando ${scene.title}`} rows={3} />
       </Panel>
     );

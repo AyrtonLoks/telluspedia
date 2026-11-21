@@ -139,7 +139,8 @@
             "stage": "Ida",
             "yearsAway": 0,
             "region": "Itália",
-            "dateNote": "data aproximada"
+            "dateNote": "data aproximada",
+            "highlight": 1
           },
           "quote": {
             "text": "Grandes príncipes, imperadores e reis, duques e marqueses…",
@@ -241,7 +242,8 @@
             "stage": "Ida",
             "yearsAway": 3,
             "region": "Afeganistão / Tadjiquistão",
-            "dateNote": "data aproximada"
+            "dateNote": "data aproximada",
+            "highlight": 1
           }
         },
         {
@@ -311,7 +313,8 @@
             "stage": "Na corte do Grão-Cã",
             "yearsAway": 4,
             "region": "China",
-            "dateNote": "data aproximada"
+            "dateNote": "data aproximada",
+            "highlight": 1
           }
         },
         {
@@ -339,7 +342,8 @@
             "stage": "Volta por mar",
             "yearsAway": 20,
             "region": "China",
-            "dateNote": "data aproximada"
+            "dateNote": "data aproximada",
+            "highlight": 1
           }
         },
         {
@@ -409,7 +413,8 @@
             "stage": "Regresso",
             "yearsAway": 24,
             "region": "Itália",
-            "dateNote": "data aproximada"
+            "dateNote": "data aproximada",
+            "highlight": 1
           }
         }
       ]

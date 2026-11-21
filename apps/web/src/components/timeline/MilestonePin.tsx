@@ -91,8 +91,11 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
       const target = e.target as HTMLElement;
       if (!target) return;
       if (pinRef.current && pinRef.current.contains(target)) return;
-      // Do not dismiss when interacting with HUD or timeline bar
-      if (target.closest("[data-inspector-hud]") || target.closest("[data-timeline-bar]")) return;
+      // No globo quem decide é o R3F (onPointerMissed já ignora arrastes): o `click` do DOM também
+      // dispara ao soltar o botão depois de girar o globo, e não pode desmarcar nada (D24).
+      if (target.closest("canvas")) return;
+      // Do not dismiss when interacting with HUD, timeline bar or the scene player the pin opened (D24)
+      if (target.closest("[data-inspector-hud]") || target.closest("[data-timeline-bar]") || target.closest("[data-scene-player-overlay]")) return;
       selectMilestone(null);
     };
     window.addEventListener("keydown", handleKeyDown);

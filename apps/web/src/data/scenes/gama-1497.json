@@ -166,7 +166,8 @@
           "facts": {
             "dayOfVoyage": 0,
             "fleet": "4 navios",
-            "region": "Portugal"
+            "region": "Portugal",
+            "highlight": 1
           },
           "quote": {
             "text": "Em nome de Deus, amém. Na era de 1497, mandou el-rei D. Manuel descobrir…",
@@ -223,7 +224,8 @@
           "facts": {
             "dayOfVoyage": 137,
             "fleet": "4 navios",
-            "region": "África do Sul"
+            "region": "África do Sul",
+            "highlight": 1
           }
         },
         {
@@ -301,7 +303,8 @@
           "facts": {
             "dayOfVoyage": 316,
             "fleet": "3 navios",
-            "region": "Índia"
+            "region": "Índia",
+            "highlight": 1
           },
           "quote": {
             "text": "Vimos buscar cristãos e especiaria.",
@@ -370,7 +373,8 @@
           "facts": {
             "dayOfVoyage": 732,
             "fleet": "Bérrio",
-            "region": "Portugal"
+            "region": "Portugal",
+            "highlight": 1
           }
         }
       ]

@@ -186,9 +186,9 @@ export const useSceneStore = create<SceneState>((set, get) => {
 
 /**
  * Selecionar um marco que abre cena (pin, timeline, busca) abre a cena e guarda o estado de antes do
- * clique; selecionar outro marco fecha a cena aberta por marco sem restaurar (o usuário navegou).
+ * clique. A cena só fecha pelo botão de fechar ou ao abrir outra cena (D24): desmarcar o marco,
+ * clicar no globo, num país ou num marco simples não interrompe a cena.
  */
-let openedByMilestone = false;
 useTimelineStore.subscribe((state, prev) => {
   if (state.selectedMilestoneId === prev.selectedMilestoneId) return;
   const scenes = useSceneStore.getState();
@@ -207,14 +207,7 @@ useTimelineStore.subscribe((state, prev) => {
       }))(useGlobeStore.getState()),
     };
     scenes.openScene(target.id, { snapshot });
-    openedByMilestone = true;
-  } else if (openedByMilestone && scenes.activeSceneId) {
-    openedByMilestone = false;
-    useSceneStore.setState({ activeSceneId: null, previous: null, isPlaying: false });
   }
-});
-useSceneStore.subscribe((s, prev) => {
-  if (prev.activeSceneId && !s.activeSceneId) openedByMilestone = false;
 });
 
 export const sceneActions = {

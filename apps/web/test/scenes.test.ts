@@ -347,7 +347,7 @@ describe("D12d: ativação de cenas pelos dados", () => {
     assert.deepEqual([t.startYear, t.endYear, t.selectedYear], [1947, 1991, null]);
   });
 
-  test("marco que abre cena (pin/busca) guarda o estado anterior; outro marco fecha sem restaurar", () => {
+  test("marco que abre cena (pin/busca) guarda o estado anterior; a cena só fecha pelo fechar ou por outra cena (D24)", () => {
     useTimelineStore.setState({ selectedYear: 2001, selectedMilestoneId: null, geologicalMa: null });
     useTimelineStore.getState().selectYear(1969);
     useTimelineStore.getState().selectMilestone("usa-1969");
@@ -357,9 +357,18 @@ describe("D12d: ativação de cenas pelos dados", () => {
 
     useTimelineStore.getState().selectMilestone("glo-1969");
     assert.equal(useSceneStore.getState().activeSceneId, "glo-1969");
+    // Clicar fora (vazio do globo, país, outro botão) desmarca o marco: a cena continua.
+    useTimelineStore.getState().selectMilestone(null);
+    assert.equal(useSceneStore.getState().activeSceneId, "glo-1969", "desmarcar o marco não fecha a cena");
+    // Um marco simples também não interrompe a cena.
     useTimelineStore.getState().selectMilestone("elcano-1522");
-    assert.equal(useSceneStore.getState().activeSceneId, null, "navegou para outro marco");
+    assert.equal(useSceneStore.getState().activeSceneId, "glo-1969", "marco simples não fecha a cena");
     assert.equal(useTimelineStore.getState().selectedMilestoneId, "elcano-1522");
+    // Um marco que abre outra cena troca de cena.
+    useTimelineStore.getState().selectMilestone("magellan-1519");
+    assert.equal(useSceneStore.getState().activeSceneId, "magellan-1519", "outra cena substitui a aberta");
+    useSceneStore.getState().closeScene({ restore: false });
+    assert.equal(useSceneStore.getState().activeSceneId, null, "o botão de fechar fecha");
   });
 
   test("link ?cena=<id>: leitura e escrita preservam os outros parâmetros", () => {

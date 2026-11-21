@@ -164,7 +164,8 @@
           "facts": {
             "theater": "Europa",
             "phase": "Invasão da Polônia",
-            "warDay": 0
+            "warDay": 0,
+            "highlight": 1
           }
         },
         {
@@ -285,7 +286,8 @@
           "facts": {
             "theater": "Frente Oriental",
             "phase": "Virada",
-            "warDay": 1175
+            "warDay": 1175,
+            "highlight": 1
           }
         },
         {
@@ -311,7 +313,8 @@
           "facts": {
             "theater": "Europa",
             "phase": "Avanço aliado",
-            "warDay": 1740
+            "warDay": 1740,
+            "highlight": 1
           }
         },
         {
@@ -337,7 +340,8 @@
           "facts": {
             "theater": "Pacífico",
             "phase": "Fim no Pacífico",
-            "warDay": 2166
+            "warDay": 2166,
+            "highlight": 1
           }
         },
         {
@@ -350,7 +354,8 @@
           "facts": {
             "theater": "Pacífico",
             "phase": "Rendição do Japão",
-            "warDay": 2193
+            "warDay": 2193,
+            "highlight": 1
           },
           "quote": {
             "text": "Proclamamos a rendição incondicional às Potências Aliadas…",

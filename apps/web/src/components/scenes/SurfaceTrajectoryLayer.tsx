@@ -6,6 +6,8 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { createSurfaceTrajectoryCurve, ROUTE_ALTITUDE } from "@/lib/scenes/surface";
 import type { SceneTrajectory } from "@/lib/scenes/schema";
+import { getScene } from "@/lib/scenes/catalog";
+import { isDragRelease } from "@/lib/pointer-intent";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useSceneStore } from "@/stores/sceneStore";
@@ -29,6 +31,13 @@ export const SurfaceTrajectoryLayer: React.FC<{ sceneId: string; trajectory: Sur
 
   // Construct trajectory curve and waypoints
   const { curve, waypoints3D } = useMemo(() => createSurfaceTrajectoryCurve(trajectory.points), [trajectory]);
+  const anyHighlight = useMemo(() => trajectory.points.some((p) => p.facts?.highlight === 1), [trajectory]);
+
+  // Ao abrir a cena, enquadra pela câmera inicial dos dados (como a camada Terra–Lua; D24).
+  useEffect(() => {
+    const camera = getScene(sceneId)?.camera;
+    if (camera) useGlobeStore.getState().flyTo(camera.lat, camera.lng, camera.altitude);
+  }, [sceneId]);
   const isShip = trajectory.vehicle === "ship";
 
   // Geometries for the trajectory line and glowing aura
@@ -289,13 +298,8 @@ export const SurfaceTrajectoryLayer: React.FC<{ sceneId: string; trajectory: Sur
           (index === 0 && selectedMilestoneId === sceneId) ||
           (index === 6 && selectedMilestoneId === "magellan-strait");
 
-        const isKeyMilestone =
-          index === 0 || // Sanlúcar
-          index === 3 || // Guanabara
-          index === 6 || // Estreito de Magalhães
-          index === 10 || // Mactan
-          index === 11 || // Tidore
-          index === 14; // Cabo da Boa Esperança
+        // Pontos de destaque vêm dos dados (`facts.highlight`); sem nenhum marcado, o primeiro e o último.
+        const isKeyMilestone = anyHighlight ? trajectory.points[index]?.facts?.highlight === 1 : index === 0 || index === trajectory.points.length - 1;
 
         return (
           <group
@@ -303,6 +307,7 @@ export const SurfaceTrajectoryLayer: React.FC<{ sceneId: string; trajectory: Sur
             position={point}
             onClick={(e) => {
               e.stopPropagation();
+              if (isDragRelease(e)) return;
               flyTo(waypoint.lat, waypoint.lng, 1.8);
             }}
             onPointerOver={(e) => {

@@ -156,7 +156,8 @@
           "facts": {
             "front": "Bálcãs",
             "phase": "Crise de julho",
-            "warDay": 0
+            "warDay": 0,
+            "highlight": 1
           }
         },
         {
@@ -212,7 +213,8 @@
           "facts": {
             "front": "Ocidental",
             "phase": "Fim da guerra de movimento",
-            "warDay": 40
+            "warDay": 40,
+            "highlight": 1
           }
         },
         {
@@ -238,7 +240,8 @@
           "facts": {
             "front": "Ocidental",
             "phase": "Guerra de atrito",
-            "warDay": 573
+            "warDay": 573,
+            "highlight": 1
           }
         },
         {
@@ -277,7 +280,8 @@
           "facts": {
             "front": "Ocidental",
             "phase": "Guerra de atrito",
-            "warDay": 704
+            "warDay": 704,
+            "highlight": 1
           }
         },
         {
@@ -342,7 +346,8 @@
           "facts": {
             "front": "Ocidental",
             "phase": "Armistício",
-            "warDay": 1567
+            "warDay": 1567,
+            "highlight": 1
           },
           "quote": {
             "text": "Cessação das operações em terra e no ar seis horas após a assinatura do armistício.",

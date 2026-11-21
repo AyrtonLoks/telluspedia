@@ -173,3 +173,40 @@ describe("D24 — bundle e painel", () => {
     assert.equal(fmtPartialDate("1295"), "1295");
   });
 });
+
+describe("D24 — camada de superfície genérica", () => {
+  test("destaques vêm dos dados e a câmera inicial da cena é aplicada ao abrir", () => {
+    const layer = fs.readFileSync(path.join(__dirname, "../src/components/scenes/SurfaceTrajectoryLayer.tsx"), "utf-8");
+    assert.doesNotMatch(layer, /index === 3 \|\||Guanabara|Mactan|Tidore/, "sem índices da Magalhães no código");
+    assert.match(layer, /facts\?\.highlight === 1/);
+    assert.match(layer, /getScene\(sceneId\)\?\.camera/);
+    for (const file of ["magellan-1519.json", ...LAZY_SCENE_FILES]) {
+      const points = read(file).trajectories[0].points as Array<{ facts?: { highlight?: number } }>;
+      const n = points.filter((p) => p.facts?.highlight === 1).length;
+      assert.ok(n >= 4 && n <= 6, `${file}: ${n} destaques`);
+    }
+  });
+});
+
+describe("D24 — o player aberto por um marco não fecha ao ser usado", () => {
+  test("o clique fora do pino poupa o painel do player (inclusive o esqueleto)", () => {
+    const pin = fs.readFileSync(path.join(__dirname, "../src/components/timeline/MilestonePin.tsx"), "utf-8");
+    assert.match(pin, /closest\("\[data-scene-player-overlay\]"\)/);
+    const overlay = fs.readFileSync(path.join(__dirname, "../src/components/scenes/ScenePlayerOverlay.tsx"), "utf-8");
+    assert.equal((overlay.match(/data-scene-player-overlay="true"/g) ?? []).length, 2, "painel e esqueleto marcados");
+  });
+});
+
+describe("D24 — arrastar o globo não é clique", () => {
+  test("tolerância de arraste e onde ela é aplicada", async () => {
+    const { isDragRelease, CLICK_DRAG_TOLERANCE_PX } = await import("../src/lib/pointer-intent");
+    assert.equal(isDragRelease({ delta: 0 }), false);
+    assert.equal(isDragRelease({ delta: CLICK_DRAG_TOLERANCE_PX }), false);
+    assert.equal(isDragRelease({ delta: CLICK_DRAG_TOLERANCE_PX + 1 }), true);
+    assert.equal(isDragRelease({}), false);
+    const src = (f: string) => fs.readFileSync(path.join(__dirname, "../src/components", f), "utf-8");
+    assert.match(src("globe/EarthSphere.tsx"), /handleClick = \(e: ThreeEvent<MouseEvent>\) => \{\n    e\.stopPropagation\(\);\n[^\n]*\n    if \(isDragRelease\(e\)\) return;/, "país só por clique de verdade");
+    assert.match(src("scenes/SurfaceTrajectoryLayer.tsx"), /if \(isDragRelease\(e\)\) return;/);
+    assert.match(src("timeline/MilestonePin.tsx"), /if \(target\.closest\("canvas"\)\) return;/, "clique fora do pino ignora o globo (o R3F decide)");
+  });
+});

@@ -137,7 +137,8 @@
             "historicalEvent": "Zarpada oficial da Armada das Molucas sob o comando do capitão-mor Fernão de Magalhães.",
             "milestoneTitle": "Partida de Sanlúcar de Barrameda (1519)",
             "pigafettaDiary": "Descemos o rio Guadalquivir até Sanlúcar... Por fim, a vinte de setembro de 1519, largamos as amarras e nos fizemos ao mar oceano sob ventos favoráveis.",
-            "vesselStatus": "5 naus em formação (Trinidad, San Antonio, Concepción, Victoria, Santiago)."
+            "vesselStatus": "5 naus em formação (Trinidad, San Antonio, Concepción, Victoria, Santiago).",
+            "highlight": 1
           },
           "quote": {
             "text": "Descemos o rio Guadalquivir até Sanlúcar... onde nos detivemos vários dias para abastecer as naus. Por fim, a vinte de setembro do mesmo ano de 1519, largamos as amarras e nos fizemos ao mar oceano.",
@@ -212,7 +213,8 @@
             "historicalEvent": "Escala de 14 dias no litoral do Brasil para calafetagem e recuperação dos marinheiros.",
             "milestoneTitle": "Aporte na Baía de Guanabara (Brasil)",
             "pigafettaDiary": "Neste lugar tivemos abundância de refrescos, tais como galinhas, batatas doces e ananás... Por um espelho deram-nos cinco ou seis galinhas.",
-            "vesselStatus": "5 naus ancoradas na Guanabara."
+            "vesselStatus": "5 naus ancoradas na Guanabara.",
+            "highlight": 1
           },
           "quote": {
             "text": "Neste lugar tivemos abundância de refrescos, tais como galinhas, batatas doces, uma fruta parecida com pinhas de pinheiro mas de extraordinária doçura chamada ananás... Por um espelho deram-nos cinco ou seis galinhas.",
@@ -287,7 +289,8 @@
             "historicalEvent": "Passagem vitoriosa do Estreito de Todos os Santos; deserção da San Antonio.",
             "milestoneTitle": "Travessia do Estreito e Ingresso no Mar do Sul",
             "pigafettaDiary": "Quarta-feira, 28 de novembro de 1520, desembocamos pelo estreito que chamamos de Todos os Santos e entramos no grande mar, ao qual demos o nome de Pacífico, porque durante três meses e vinte dias não sofremos tempestade alguma.",
-            "vesselStatus": "3 naus restantes (Trinidad, Concepción, Victoria); San Antonio desertou rumo à Espanha."
+            "vesselStatus": "3 naus restantes (Trinidad, Concepción, Victoria); San Antonio desertou rumo à Espanha.",
+            "highlight": 1
           },
           "quote": {
             "text": "Quarta-feira, 28 de novembro de 1520, desembocamos pelo estreito que chamamos de Todos os Santos e entramos no grande mar, ao qual demos o nome de Pacífico.",
@@ -387,7 +390,8 @@
             "historicalEvent": "Aliança política e primeiras conversões católicas registradas nas Filipinas.",
             "milestoneTitle": "Aliança e Batismo em Cebu",
             "pigafettaDiary": "Foram batizadas centenas de almas no porto de Cebu e o rei local jurou lealdade ao imperador Carlos.",
-            "vesselStatus": "3 naus no porto de Cebu."
+            "vesselStatus": "3 naus no porto de Cebu.",
+            "highlight": 1
           },
           "quote": {
             "text": "No domingo, 14 de abril, foram batizadas mais de oitocentas almas entre homens, mulheres e crianças.",
@@ -412,7 +416,8 @@
             "historicalEvent": "Batalha de Mactan e morte em combate do capitão-mor Fernão de Magalhães.",
             "milestoneTitle": "A Morte de Magalhães na Batalha de Mactan",
             "pigafettaDiary": "Reconhecendo o capitão, tantos se arremessaram sobre ele que lhe derrubaram o capacete... Foi assim que mataram o nosso espelho, a nossa luz, o nosso conforto e o nosso verdadeiro guia.",
-            "vesselStatus": "Morte do capitão-mor; queima da Concepción; restam Trinidad e Victoria."
+            "vesselStatus": "Morte do capitão-mor; queima da Concepción; restam Trinidad e Victoria.",
+            "highlight": 1
           },
           "quote": {
             "text": "Reconhecendo o capitão, tantos se arremessaram sobre ele que lhe derrubaram o capacete duas vezes... Foi assim que mataram o nosso espelho, a nossa luz, o nosso conforto e o nosso verdadeiro guia.",
@@ -487,7 +492,8 @@
             "historicalEvent": "Navegação evasiva através dos mares austrais frios do Índico.",
             "milestoneTitle": "A Rota Solitária do Oceano Índico",
             "pigafettaDiary": "Navegamos semanas seguidas em alto mar sem aportar, suportando ventos furiosos e a escassez de pão.",
-            "vesselStatus": "Nau Victoria com mastro avariado e marinheiros exaustos."
+            "vesselStatus": "Nau Victoria com mastro avariado e marinheiros exaustos.",
+            "highlight": 1
           },
           "quote": {
             "text": "Navegamos nove semanas seguidas sem aportar em terra alguma, suportando ventos furiosos e frio imenso.",

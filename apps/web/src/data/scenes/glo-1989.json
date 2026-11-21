@@ -191,7 +191,8 @@
           "description": "Cerca de 70 mil pessoas marcham pelo anel viário de Leipzig sem que o regime use a força. O lema 'Wir sind das Volk' — 'Nós somos o povo' — se espalha pela RDA.",
           "facts": {
             "place": "Leipzig, RDA",
-            "actor": "Manifestantes"
+            "actor": "Manifestantes",
+            "highlight": 1
           },
           "quote": {
             "text": "Nós somos o povo!",
@@ -219,7 +220,8 @@
           "description": "Ao fim de uma coletiva transmitida ao vivo, o porta-voz do Politburo, Günter Schabowski, lê a nova regra de viagens e, perguntado sobre quando ela vale, responde que imediatamente. A notícia corre pela televisão ocidental.",
           "facts": {
             "place": "Berlim Oriental",
-            "actor": "Günter Schabowski"
+            "actor": "Günter Schabowski",
+            "highlight": 1
           },
           "quote": {
             "text": "Isso entra em vigor, pelo que sei… imediatamente, sem demora.",
@@ -235,7 +237,8 @@
           "description": "Diante de milhares de pessoas e sem ordens superiores, o oficial Harald Jäger manda abrir a barreira. Os outros postos de Berlim abrem nas horas seguintes.",
           "facts": {
             "place": "Berlim",
-            "actor": "Harald Jäger e a multidão"
+            "actor": "Harald Jäger e a multidão",
+            "highlight": 1
           }
         },
         {
@@ -259,7 +262,8 @@
           "description": "À meia-noite, a RDA deixa de existir e seus estados passam a integrar a República Federal da Alemanha.",
           "facts": {
             "place": "Berlim",
-            "actor": "As duas Alemanhas"
+            "actor": "As duas Alemanhas",
+            "highlight": 1
           }
         }
       ]

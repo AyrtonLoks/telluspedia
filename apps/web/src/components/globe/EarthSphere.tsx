@@ -22,6 +22,7 @@ import {
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { worldSunDirection } from "@/lib/earth-orientation";
+import { isDragRelease } from "@/lib/pointer-intent";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import {
   loadHistoricalTopology,
@@ -427,6 +428,8 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
   // Handle Click & FlyTo
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
+    // Soltar o botão depois de girar o globo não é clique: não seleciona nem desmarca nada (D24).
+    if (isDragRelease(e)) return;
     // In Cosmic Mode, clicking Earth selects Earth as a celestial body
     if (useCosmicStore.getState().isCosmicMode) {
       useCosmicStore.getState().focusBody("EARTH");
