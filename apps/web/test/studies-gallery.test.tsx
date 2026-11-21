@@ -9,10 +9,12 @@ import { describe, test, type TestContext } from "node:test";
 import { NextRequest } from "next/server";
 import { GET as listStudiesGET } from "../src/app/api/studies/route";
 import StudiesGalleryPage from "../src/app/studies/page";
+import { TopNavBar } from "../src/components/nav/TopNavBar";
 import { ForkStudyBannerView } from "../src/components/study/ForkStudyBanner";
+import { searchExplore } from "../src/lib/explore/search";
 import { CACHE_POLICY } from "../src/lib/http-cache";
 import { prisma } from "../src/lib/prisma";
-import { loadStudyWithLineage } from "../src/lib/server-loaders";
+import { loadStudyBySlug, loadStudyWithLineage } from "../src/lib/server-loaders";
 import { saveMemoryStudy, type StudyLineageInfo, type StudyRecord } from "../src/lib/studies-store";
 import {
   buildSafeExportFilename,
@@ -154,10 +156,13 @@ describe("D23 · Filtros, paginação e GET /api/studies", () => {
     assert.equal(findManyMock.mock.callCount(), 1);
   });
 
-  test("GET /api/studies retorna 503 em produção e fallback em memória em desenvolvimento quando DB falha", async (t) => {
+  test("GET /api/studies e loaders SSR usam console.warn (nunca console.error) no fallback em dev e 503 em produção", async (t) => {
     const log = t.mock.method(console, "error", () => undefined);
     const warn = t.mock.method(console, "warn", () => undefined);
     mockPrismaStudy(t, "count", async () => {
+      throw new Error("DB offline");
+    });
+    mockPrismaStudy(t, "findUnique", async () => {
       throw new Error("DB offline");
     });
 
@@ -165,10 +170,13 @@ describe("D23 · Filtros, paginação e GET /api/studies", () => {
     const prodRes = await listStudiesGET(new NextRequest("http://localhost/api/studies"));
     assert.equal(prodRes.status, 503);
     assert.equal(prodRes.headers.get("Cache-Control"), "no-store");
+    assert.equal(log.mock.callCount(), 1, "produção deve registrar console.error");
 
     setNodeEnv(t, "development");
     saveMemoryStudy(SAMPLE_ROOT_STUDY);
     saveMemoryStudy(SAMPLE_FORK_STUDY);
+    const errorCallsBeforeDev = log.mock.callCount();
+
     const devRes = await listStudiesGET(
       new NextRequest("http://localhost/api/studies?cosmic=true&q=Saturno")
     );
@@ -180,8 +188,30 @@ describe("D23 · Filtros, paginação e GET /api/studies", () => {
     );
     const cosmicData = await cosmicRes.json();
     assert.ok(cosmicData.items.some((item: StudyRecord) => item.id === SAMPLE_FORK_STUDY.id));
-    assert.ok(log.mock.callCount() >= 2);
-    assert.ok(warn.mock.callCount() >= 1);
+
+    const devLoaded = await loadStudyBySlug(SAMPLE_ROOT_STUDY.id);
+    assert.equal(devLoaded?.id, SAMPLE_ROOT_STUDY.id);
+    const devLineage = await loadStudyWithLineage(SAMPLE_FORK_STUDY.id);
+    assert.equal(devLineage?.lineage.parent?.id, SAMPLE_ROOT_STUDY.id);
+
+    assert.equal(
+      log.mock.callCount(),
+      errorCallsBeforeDev,
+      "fallback em desenvolvimento não pode disparar console.error (evita overlay Next.js 15)"
+    );
+    assert.ok(warn.mock.callCount() >= 4);
+  });
+
+  test("TopNavBar e Busca Universal expõem acesso direto à Galeria /studies sem digitar URL", () => {
+    const navHtml = renderToStaticMarkup(<TopNavBar />);
+    assert.match(navHtml, /data-testid="top-nav-studies-link"/);
+    assert.match(navHtml, /href="\/studies"/);
+
+    const hits = searchExplore("galeria estudos");
+    assert.ok(
+      hits.some((item) => item.id === "route:/studies"),
+      "busca universal deve oferecer comando direto para /studies"
+    );
   });
 });
 
@@ -226,6 +256,8 @@ describe("D23 · Linhagem de forks e página SSR /studies", () => {
     assert.match(bannerHtml, new RegExp(`/study/${SAMPLE_ROOT_STUDY.id}`));
     assert.match(bannerHtml, /data-testid="study-forks-toggle"/);
     assert.match(bannerHtml, /1 fork derivado/);
+    assert.match(bannerHtml, /data-testid="study-notes-toggle"/);
+    assert.match(bannerHtml, /data-testid="study-open-comparator"/);
     assert.match(bannerHtml, /href="\/studies"/);
     assert.match(bannerHtml, /data-testid="study-export-actions"/);
   });

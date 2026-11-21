@@ -11,6 +11,10 @@ export function useExploreNavigation() {
     hasCountryContext,
     canApplyHere,
     navigate: (result: SearchResult) => {
+      if (result.id.startsWith("route:/")) {
+        window.location.assign(result.id.slice("route:".length));
+        return;
+      }
       if (canApplyHere) runSearchResult(result);
       else window.location.assign(`/?${new URLSearchParams({ comando: result.id })}`);
     },

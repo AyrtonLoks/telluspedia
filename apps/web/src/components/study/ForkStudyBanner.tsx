@@ -2,12 +2,22 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowUpLeft, Check, ChevronDown, ChevronUp, GitFork, Library } from "lucide-react";
+import {
+  ArrowUpLeft,
+  BarChart2,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  GitFork,
+  Library,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { StudyExportActions } from "@/components/study/StudyExportActions";
 import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
+import { useComparatorStore } from "@/stores/comparatorStore";
 
 export interface ForkStudyBannerProps {
   studyId: string;
@@ -32,11 +42,23 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
   const [forking, setForking] = useState<boolean>(false);
   const [forkSuccess, setForkSuccess] = useState<boolean>(false);
   const [showForks, setShowForks] = useState<boolean>(false);
+  const [showNotes, setShowNotes] = useState<boolean>(false);
 
   const effectiveParentId = lineage?.parent?.id ?? parentId ?? null;
   const effectiveParentTitle = lineage?.parent?.title ?? effectiveParentId;
   const forks = lineage?.forks ?? [];
   const forkCount = lineage?.forkCount ?? forks.length;
+  const studyIsos = study?.selectedCountryIsos ?? [];
+  const hasNotes = Boolean(study?.description?.trim() || study?.markdownNotes?.trim());
+  const predatesWorldBank = Boolean(study && study.timelineStartYear < 1990);
+
+  const handleOpenComparator = () => {
+    const comparator = useComparatorStore.getState();
+    if (studyIsos.length > 0) {
+      comparator.setSelectedIsos(studyIsos.slice(0, 4));
+    }
+    comparator.openComparator();
+  };
 
   const handleFork = async () => {
     setForking(true);
@@ -62,7 +84,7 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
   return (
     <Panel
       data-testid="fork-study-banner"
-      className="pointer-events-auto max-w-[min(94vw,46rem)] flex-col gap-2 px-3 py-2 text-label animate-fade-in sm:px-4"
+      className="pointer-events-auto max-w-[min(94vw,52rem)] flex-col gap-2 px-3 py-2 text-label animate-fade-in sm:px-4"
     >
       <div className="flex flex-wrap items-center justify-between gap-2.5">
         <div className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -103,11 +125,37 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                   )}
                 </button>
               )}
+
+              {hasNotes && (
+                <button
+                  type="button"
+                  data-testid="study-notes-toggle"
+                  aria-expanded={showNotes}
+                  onClick={() => setShowNotes((open) => !open)}
+                  className="inline-flex items-center gap-1 text-caption text-fg-secondary transition-colors duration-fast ease-out hover:text-fg"
+                >
+                  <FileText aria-hidden="true" className="size-3" />
+                  <span>{showNotes ? "Ocultar notas" : "Notas do estudo"}</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
+          {studyIsos.length >= 2 && (
+            <Button
+              variant="secondary"
+              size="sm"
+              data-testid="study-open-comparator"
+              onClick={handleOpenComparator}
+              title="Abrir comparador multidimensional com os países deste estudo (inclui séries reais 1990–2024)"
+            >
+              <BarChart2 aria-hidden="true" className="size-3.5" />
+              <span>Comparar ({Math.min(studyIsos.length, 4)})</span>
+            </Button>
+          )}
+
           <Link
             href="/studies"
             className="inline-flex h-8 items-center gap-1.5 rounded-control border border-line bg-surface-raised px-2.5 text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:border-line-strong hover:text-fg"
@@ -140,6 +188,26 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
           </Button>
         </div>
       </div>
+
+      {showNotes && study && (
+        <div
+          data-testid="study-notes-panel"
+          className="space-y-1.5 border-t border-line pt-2 text-caption text-fg-secondary"
+        >
+          {study.description?.trim() && <p className="text-fg">{study.description.trim()}</p>}
+          {study.markdownNotes?.trim() && (
+            <p className="whitespace-pre-line text-fg-secondary">{study.markdownNotes.trim()}</p>
+          )}
+          {predatesWorldBank && (
+            <p className="text-fg-muted">
+              Nota de cobertura (RN02): o recorte inicia em{" "}
+              <span className="font-mono tabular-nums">{study.timelineStartYear}</span>, enquanto as
+              séries quantitativas do Banco Mundial no comparador cobrem leituras anuais reais a
+              partir de <span className="font-mono tabular-nums">1990</span>.
+            </p>
+          )}
+        </div>
+      )}
 
       {showForks && forks.length > 0 && (
         <div

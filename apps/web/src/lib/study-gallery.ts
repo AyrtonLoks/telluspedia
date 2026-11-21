@@ -157,6 +157,13 @@ export function buildStudyWhereInput(query: StudyListQuery): Prisma.StudyWhereIn
   return where;
 }
 
+function safeErrorSummary(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message.split("\n")[0]?.trim() || error.name;
+  }
+  return String(error);
+}
+
 export async function listStudies(query: StudyListQuery): Promise<StudyListResult> {
   const where = buildStudyWhereInput(query);
 
@@ -188,8 +195,9 @@ export async function listStudies(query: StudyListQuery): Promise<StudyListResul
       persistence: "database",
     };
   } catch (error) {
-    console.error("[studies] Database operation failed", { operation: "list", error });
+    const reason = safeErrorSummary(error);
     if (!memoryAllowed()) {
+      console.error("[studies] Database operation failed", { operation: "list", reason });
       return {
         items: [],
         pagination: { page: query.page, pageSize: query.pageSize, total: 0, totalPages: 1 },
@@ -198,7 +206,8 @@ export async function listStudies(query: StudyListQuery): Promise<StudyListResul
       };
     }
 
-    console.warn("[studies] Using temporary in-memory storage", { operation: "list" });
+    // Em dev, evitar console.error no Server Component (dispara o overlay de erro do Next.js 15).
+    console.warn("[studies] Using temporary in-memory storage", { operation: "list", reason });
     return listFromMemory(query);
   }
 }

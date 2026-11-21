@@ -91,6 +91,7 @@ const entries: SearchResult[] = [
     id: `preset:${id}`, group: "preset" as const, title,
   })),
   { id: "compare:", group: "command", title: "Abrir comparador", keywords: "comparar países" },
+  { id: "route:/studies", group: "command", title: "Abrir Galeria de Estudos", detail: "/studies", keywords: "estudos públicos galeria forks snapshots" },
   { id: "year:2024", group: "command", title: "Ir para 2024", keywords: "época presente ano" },
 ];
 

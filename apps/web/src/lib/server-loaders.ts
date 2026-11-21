@@ -14,6 +14,27 @@ import { getCountryData, type CountryData } from "./country-data";
 const MAX_COMPARE_COUNTRIES = 4;
 const SAFE_FLAG_FILENAME = /^[a-z0-9_-]+\.svg$/i;
 
+function safeDbErrorSummary(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message.split("\n")[0]?.trim() || error.name;
+  }
+  return String(error);
+}
+
+function logStudyDatabaseReadFailure(scope: string, slug: string, error: unknown): void {
+  const reason = safeDbErrorSummary(error);
+  if (process.env.NODE_ENV === "production") {
+    console.error(`[ssr/study] Failed to load ${scope} from database`, { slug, reason });
+    return;
+  }
+  // Em dev, evita console.error em Server Components para não disparar o overlay do Next.js 15
+  // quando o fallback em memória está ativo sem PostgreSQL local.
+  console.warn(`[ssr/study] Database unavailable in development (${scope}); falling back to memory`, {
+    slug,
+    reason,
+  });
+}
+
 /**
  * Loads an immutable study snapshot on the server by its slug/ID.
  * Uses PostgreSQL (Prisma) first and only falls back to development memory storage
@@ -31,7 +52,7 @@ export async function loadStudyBySlug(slug: string): Promise<StudyRecord | null>
       return restoreStudyRecord(study);
     }
   } catch (error) {
-    console.error("[ssr/study] Failed to load study from database", { slug: cleanSlug, error });
+    logStudyDatabaseReadFailure("study", cleanSlug, error);
   }
 
   const devStudy = readDevelopmentStudy(cleanSlug, "read");
@@ -85,7 +106,7 @@ export async function loadStudyWithLineage(slug: string): Promise<LoadedStudyWit
       };
     }
   } catch (error) {
-    console.error("[ssr/study] Failed to load study lineage from database", { slug: cleanSlug, error });
+    logStudyDatabaseReadFailure("study lineage", cleanSlug, error);
   }
 
   const devStudy = readDevelopmentStudy(cleanSlug, "read");

@@ -4,7 +4,7 @@ import { resetGlobeView } from "@/stores/actions";
 
 import Link from "next/link";
 import React from "react";
-import { Globe, Search, BarChart2, Share2, RotateCcw, Radio, Orbit, BookOpen } from "lucide-react";
+import { Globe, Search, BarChart2, Share2, RotateCcw, Radio, Orbit, BookOpen, Library } from "lucide-react";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
@@ -25,7 +25,7 @@ import { cn } from "@/components/ui/cn";
 /** Botão de navegação da barra: neutro; selecionado = tinta do acento. */
 function navItemClasses(isActive: boolean) {
   return cn(
-    buttonClasses("ghost", "md", "relative w-8 gap-1.5 px-0 min-[360px]:w-9 xl:w-auto xl:px-3"),
+    buttonClasses("ghost", "md", "relative w-7 gap-1.5 px-0 min-[360px]:w-8 sm:w-9 xl:w-auto xl:px-3"),
     isActive && "bg-accent/15 text-fg hover:bg-accent/20"
   );
 }
@@ -71,7 +71,7 @@ export const TopNavBar: React.FC = () => {
         <Link
           href="/"
           aria-label="TellusPedia"
-          className="flex h-9 w-8 items-center justify-center gap-2 min-[360px]:w-9 rounded-control xl:w-auto xl:px-2 text-fg transition-colors duration-base ease-out hover:bg-surface-hover"
+          className="flex h-9 w-7 items-center justify-center gap-2 min-[360px]:w-8 sm:w-9 rounded-control xl:w-auto xl:px-2 text-fg transition-colors duration-base ease-out hover:bg-surface-hover"
         >
           <Globe aria-hidden="true" className="h-5 w-5 text-accent" />
           <h1 className="sr-only text-body font-semibold leading-none xl:not-sr-only">TellusPedia</h1>
@@ -82,6 +82,17 @@ export const TopNavBar: React.FC = () => {
         <Link href="/telluslab" aria-label="Estudo" className={navItemClasses(false)}>
           <BookOpen aria-hidden="true" className="h-4 w-4" />
           <span className="hidden xl:inline">Estudo</span>
+        </Link>
+
+        <Link
+          href="/studies"
+          aria-label="Galeria de estudos"
+          data-testid="top-nav-studies-link"
+          title="Explorar Galeria de Estudos Públicos"
+          className={navItemClasses(false)}
+        >
+          <Library aria-hidden="true" className="h-4 w-4" />
+          <span className="hidden xl:inline">Galeria</span>
         </Link>
 
         <button
@@ -141,7 +152,7 @@ export const TopNavBar: React.FC = () => {
             aria-keyshortcuts="/ Control+k Meta+k"
             aria-haspopup="dialog"
             onClick={openSearch}
-            className={buttonClasses("secondary", "md", "gap-2 w-8 justify-center min-[360px]:w-9 px-0 xl:w-56 xl:justify-start xl:bg-surface-sunken xl:px-4")}
+            className={buttonClasses("secondary", "md", "gap-2 w-7 justify-center min-[360px]:w-8 sm:w-9 px-0 xl:w-56 xl:justify-start xl:bg-surface-sunken xl:px-4")}
           >
             <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span className="hidden text-fg-secondary xl:inline">Buscar</span>
@@ -157,7 +168,7 @@ export const TopNavBar: React.FC = () => {
           onClick={() => setShareModalOpen(true)}
           onMouseEnter={preloadStudyShareModal}
           onFocus={preloadStudyShareModal}
-          className={buttonClasses("secondary", "md", "w-8 gap-1.5 px-0 min-[360px]:w-9 xl:w-auto xl:px-3")}
+          className={buttonClasses("secondary", "md", "w-7 gap-1.5 px-0 min-[360px]:w-8 sm:w-9 xl:w-auto xl:px-3")}
         >
           <Share2 aria-hidden="true" className="h-4 w-4" />
           <span className="hidden xl:inline">Compartilhar</span>
