@@ -38,8 +38,8 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19 |
-| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24 |
+| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
@@ -219,7 +219,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | DONE | antigravity | T30 | G-ESTUDOS, G-SHELL |
-| D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | REVIEW | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO |
+| D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | IN_PROGRESS | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS |
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | TODO | — | — | G-OBS, G-GLOBO |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
 | D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
@@ -2075,8 +2075,8 @@ Hoje só é possível criar estudos (`POST /api/studies`) e abrir por link exato
 
 ### D24 · Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas)
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d24-cenas-historicas · **Worktree:** ../telluspedia-wt/claude-d24
-- **Prioridade:** P1 · **Área:** Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d24-cenas-historicas · **Worktree:** ../telluspedia-wt/claude-d24
+- **Prioridade:** P1 · **Área:** Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS
 
 **Contexto / problema**
 O player genérico de cenas (D12) está pronto, mas o catálogo contém apenas 2 cenas (`magellan-1519.json` e `glo-1969.json`, esta última com `participants: 0` e `chronicle: 0`).
@@ -2096,6 +2096,7 @@ O player genérico de cenas (D12) está pronto, mas o catálogo contém apenas 2
 - 2026-11-21 · claude · IN_PROGRESS · **Verificação no navegador e correções de interação** (`fix(cenas): cena não fecha ao interagir com o globo; arrastar não seleciona; câmera e destaques pelos dados [D24]`). No navegador: `?cena=gama-1497` e o pino de 1914 abrem as cenas, com o JSON baixado à parte (< 250 ms) e o painel completo. Achados e correções: (1) **a cena fechava ao usar o próprio player** — o clique fora do `MilestonePin` não poupava o painel; (2) **o Ayrton notou que mexer no globo fechava a cena e que girar e soltar selecionava país**: o `sceneStore` fechava a cena aberta por marco sempre que o marco mudava (e clicar no vazio, num país ou em botões desmarca o marco); o `click` do DOM dispara ao soltar o botão depois de girar, e o `onClick` do R3F não descarta arrastes (só o `onPointerMissed` descarta). Agora a cena só fecha pelo botão de fechar ou ao abrir outra cena; o clique fora do pino ignora o canvas (o R3F decide); o clique no globo e nos pontos da rota exige clique de verdade (`isDragRelease`, tolerância de 4 px). G-TIMELINE e G-GLOBO adicionados antes de editar. (3) A câmera inicial das cenas de superfície não era aplicada (só a camada Terra–Lua aplicava); (4) a camada de superfície tinha índices da Magalhães fixos no código para os destaques — agora vêm de `facts.highlight` nos dados (Magalhães com os mesmos 6 pontos). Testes atualizados de forma explícita (`scenes.test.ts`: desmarcar ou marco simples não fecham; outra cena troca; fechar fecha) e novos em `scenes-lazy.test.ts`. **Falta:** reverificar no navegador.
 - 2026-11-21 · claude · IN_PROGRESS · **Reverificação no navegador (painel visível, 1440×900)** e correção do cartão do marco (`fix(timeline): cartão do marco some com a cena aberta e fecha de verdade pelo X [D24]`). Conferido com mouse real: pino de 1914 abre a cena com a câmera na Europa e a rota visível; **arrastar o globo não fecha a cena nem seleciona país**; clicar nos controles do player, num país (Rússia) e no vazio mantém a cena; reprodução até o armistício com a citação; `?cena=glo-1969` mostra 7 participantes e 9 entradas de crônica (arquivo de detalhes baixado à parte). Achado: o cartão do marco cobria os controles do player (“Frente Ocidental”/“Frente Oriental”) e, depois do X, reaparecia porque o mouse continuava sobre o pino (`group-hover`) — o Ayrton notou o cartão “impossível de fechar”. Agora, com a cena do marco aberta, o cartão some (inclusive no hover) e quem controla o evento é o painel do player, cujo X encerra a cena; fora disso, o X do cartão suspende o hover até o mouse sair do pino.
 - 2026-11-21 · claude · REVIEW · Ayrton conferiu no navegador o cartão do marco e as interações da cena (“de acordo”). Critérios atendidos: 7 cenas completas e tocáveis (Magalhães, Apollo 11, Marco Polo, Vasco da Gama, Primeira e Segunda Guerras, Muro de Berlim), todas validadas pelo schema D12, com fontes auditáveis; First Load JS de `/` +1,5 kB gzip, sem conteúdo pesado no chunk inicial. Validação: typecheck e lint ok; testes só com as 5 falhas de ambiente do Prisma.
+- 2026-11-21 · claude · IN_PROGRESS · Reaberta a pedido do Ayrton para estender “arrastar não é clique” (`isDragRelease`) aos cliques 3D do Cosmos (planetas, Sol, Lua, cometa Halley) e das camadas do Observatório (aviões, navios, rotas marítimas, EONET, FIRMS, ISS e satélites). G-COSMOS e G-OBS adicionados (livres; D04 e D08 em REVIEW não bloqueiam).
 
 ---
 
