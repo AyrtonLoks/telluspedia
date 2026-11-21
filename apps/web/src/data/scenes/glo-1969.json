@@ -163,6 +163,11 @@
       0.5,
       1,
       2
-    ]
-  }
+    ],
+    "durationSeconds": 45.45,
+    "startProgress": 0.15
+  },
+  "openedBy": [
+    "usa-1969"
+  ]
 }

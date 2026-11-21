@@ -23,6 +23,7 @@ import { SatelliteLayerControls } from "./SatelliteLayerControls";
 import { useGlobeStore } from "@/stores/globeStore";
 import { ObservatoryLayerId } from "@/lib/observatory-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
+import { getScene } from "@/lib/scenes/catalog";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { PanelFooter, PanelHeader } from "@/components/ui/Panel";
@@ -112,6 +113,7 @@ export const ObservatoryPanel: React.FC = () => {
 
   // Época ativa: fonte única (T12)
   const epoch = useEpochState();
+  const activeSceneData = epoch.activeScene ? getScene(epoch.activeScene) : undefined;
 
   // País selecionado: mostra o resumo de focos do país na seção de queimadas.
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
@@ -143,8 +145,8 @@ export const ObservatoryPanel: React.FC = () => {
             <div className="text-caption text-fg-secondary">
               {effectiveMa
                 ? `A era geológica ativa (${effectiveMa} Ma atrás) precede a formação da atmosfera moderna e da civilização.`
-                : epoch.activeScene === "MAGELLAN"
-                ? "A expedição de Magalhães (1519–1522) precede a Era Espacial (1957)."
+                : activeSceneData
+                ? `${activeSceneData.title} precede a Era Espacial (1957).`
                 : `O ano selecionado (${epoch.effectiveYear}) precede a Era Espacial (1957).`}
               {" "}Satélites artificiais, queimadas orbitais e tráfego aéreo estão suprimidos nesta época.
             </div>

@@ -9,7 +9,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ScenePlayerOverlay } from "../src/components/scenes/ScenePlayerOverlay";
 import { useStudyStore } from "../src/stores/studyStore";
-import { useHistoricalRouteStore } from "../src/stores/historicalRouteStore";
+import { useSceneStore } from "../src/stores/sceneStore";
 import { PaleoEraBadge } from "../src/components/globe/PaleoEraBadge";
 import { PresetSelector } from "../src/components/timeline/PresetSelector";
 import { resolveGeologicalEra } from "../src/lib/paleo-data";
@@ -31,71 +31,71 @@ const createMagellanTrajectoryCurve = () => {
 };
 
 describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Naval (RN10, RN11 & RN12)", () => {
-  test("1. useHistoricalRouteStore gerencia ciclo de vida, navegação passo-a-passo e progresso", () => {
-    const store = useHistoricalRouteStore.getState();
-    store.setActiveRouteId(null);
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
+  test("1. useSceneStore gerencia ciclo de vida, navegação passo-a-passo e progresso", () => {
+    const store = useSceneStore.getState();
+    store.closeScene();
+    assert.equal(useSceneStore.getState().activeSceneId, null);
+    assert.equal(useSceneStore.getState().isPlaying, false);
 
     // Ativar rota de Magalhães
-    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, true);
-    assert.equal(useHistoricalRouteStore.getState().progress, 0.0);
-    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 0);
+    useSceneStore.getState().openScene("magellan-1519");
+    assert.equal(useSceneStore.getState().activeSceneId, "magellan-1519");
+    assert.equal(useSceneStore.getState().isPlaying, true);
+    assert.equal(useSceneStore.getState().progress, 0.0);
+    assert.equal(useSceneStore.getState().stepIndex, 0);
 
     // Controles play / pause
-    useHistoricalRouteStore.getState().pause();
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
-    useHistoricalRouteStore.getState().play();
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, true);
-    useHistoricalRouteStore.getState().togglePlay();
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
+    useSceneStore.getState().pause();
+    assert.equal(useSceneStore.getState().isPlaying, false);
+    useSceneStore.getState().play();
+    assert.equal(useSceneStore.getState().isPlaying, true);
+    useSceneStore.getState().togglePlay();
+    assert.equal(useSceneStore.getState().isPlaying, false);
 
     // Navegar para próximo waypoint
     const totalWaypoints = MAGELLAN_ROUTE.waypoints.length;
-    useHistoricalRouteStore.getState().nextWaypoint();
-    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 1);
-    assert.ok(useHistoricalRouteStore.getState().progress > 0);
+    useSceneStore.getState().nextStep();
+    assert.equal(useSceneStore.getState().stepIndex, 1);
+    assert.ok(useSceneStore.getState().progress > 0);
 
     // Retroceder waypoint
-    useHistoricalRouteStore.getState().prevWaypoint();
-    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 0);
-    assert.equal(useHistoricalRouteStore.getState().progress, 0.0);
+    useSceneStore.getState().prevStep();
+    assert.equal(useSceneStore.getState().stepIndex, 0);
+    assert.equal(useSceneStore.getState().progress, 0.0);
 
     // Impedir índice negativo no prevWaypoint
-    useHistoricalRouteStore.getState().prevWaypoint();
-    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 0);
+    useSceneStore.getState().prevStep();
+    assert.equal(useSceneStore.getState().stepIndex, 0);
 
     // Testar seek com clamping
-    useHistoricalRouteStore.getState().seek(0.5);
-    assert.equal(useHistoricalRouteStore.getState().progress, 0.5);
-    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, Math.floor(0.5 * (totalWaypoints - 1) + 0.5));
+    useSceneStore.getState().seek(0.5);
+    assert.equal(useSceneStore.getState().progress, 0.5);
+    assert.equal(useSceneStore.getState().stepIndex, Math.floor(0.5 * (totalWaypoints - 1) + 0.5));
 
-    useHistoricalRouteStore.getState().seek(-0.5);
-    assert.equal(useHistoricalRouteStore.getState().progress, 0.0);
+    useSceneStore.getState().seek(-0.5);
+    assert.equal(useSceneStore.getState().progress, 0.0);
 
-    useHistoricalRouteStore.getState().seek(1.5);
-    assert.equal(useHistoricalRouteStore.getState().progress, 1.0);
-    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, totalWaypoints - 1);
+    useSceneStore.getState().seek(1.5);
+    assert.equal(useSceneStore.getState().progress, 1.0);
+    assert.equal(useSceneStore.getState().stepIndex, totalWaypoints - 1);
 
     // Reset
-    useHistoricalRouteStore.getState().reset();
-    assert.equal(useHistoricalRouteStore.getState().progress, 0.0);
-    assert.equal(useHistoricalRouteStore.getState().currentWaypointIndex, 0);
+    useSceneStore.getState().reset();
+    assert.equal(useSceneStore.getState().progress, 0.0);
+    assert.equal(useSceneStore.getState().stepIndex, 0);
 
     // Velocidade e minimização
-    useHistoricalRouteStore.getState().setPlaybackSpeed(2.0);
-    assert.equal(useHistoricalRouteStore.getState().playbackSpeed, 2.0);
-    useHistoricalRouteStore.getState().toggleMinimized();
-    assert.equal(useHistoricalRouteStore.getState().isMinimized, true);
-    useHistoricalRouteStore.getState().toggleMinimized();
-    assert.equal(useHistoricalRouteStore.getState().isMinimized, false);
+    useSceneStore.getState().setPlaybackSpeed(2.0);
+    assert.equal(useSceneStore.getState().playbackSpeed, 2.0);
+    useSceneStore.getState().toggleMinimized();
+    assert.equal(useSceneStore.getState().isMinimized, true);
+    useSceneStore.getState().toggleMinimized();
+    assert.equal(useSceneStore.getState().isMinimized, false);
   });
 
   test("2. HistoricalRouteOverlay renderiza HUD completo com navio, comandante e Diário de Pigafetta", () => {
-    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
-    useHistoricalRouteStore.getState().jumpToWaypoint(6); // Estreito de Magalhães
+    useSceneStore.getState().openScene("magellan-1519");
+    useSceneStore.getState().jumpToStep(6); // Estreito de Magalhães
 
     const html = renderToStaticMarkup(React.createElement(HistoricalRouteOverlay, { forceActive: true }));
     assert.ok(html.includes("data-scene-player-overlay=\"true\""));
@@ -110,14 +110,14 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
 
     // Waypoint final de Elcano
     const totalWaypoints = MAGELLAN_ROUTE.waypoints.length;
-    useHistoricalRouteStore.getState().jumpToWaypoint(totalWaypoints - 1); // Retorno Sanlúcar
+    useSceneStore.getState().jumpToStep(totalWaypoints - 1); // Retorno Sanlúcar
     const htmlEnd = renderToStaticMarkup(React.createElement(HistoricalRouteOverlay, { forceActive: true }));
     assert.ok(htmlEnd.includes("Victoria"));
     assert.ok(htmlEnd.includes("Juan Sebastián Elcano"));
     assert.ok(htmlEnd.includes("dezoito homens"));
 
     // Quando inativo e sem forceActive, não renderiza nada
-    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useSceneStore.getState().closeScene();
     const htmlInactive = renderToStaticMarkup(React.createElement(HistoricalRouteOverlay, { forceActive: false }));
     assert.equal(htmlInactive, "");
   });
@@ -157,7 +157,7 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
     // Inicializar no presente
     applyTimelinePreset("LAST_50_YEARS");
     assert.equal(useTimelineStore.getState().geologicalMa, null);
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
+    assert.equal(useSceneStore.getState().activeSceneId, null);
     assert.equal(useTimelineStore.getState().startYear, 1974);
     assert.equal(useTimelineStore.getState().endYear, 2024);
 
@@ -176,13 +176,13 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
     // Preset Circum-navegação de Magalhães
     applyTimelinePreset("MAGELLAN_1519");
     assert.equal(useTimelineStore.getState().geologicalMa, null);
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
+    assert.equal(useSceneStore.getState().activeSceneId, "magellan-1519");
     assert.equal(useTimelineStore.getState().startYear, 1519);
     assert.equal(useTimelineStore.getState().endYear, 1522);
 
     // Retorno ao contemporâneo
     applyTimelinePreset("21ST_CENTURY");
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
+    assert.equal(useSceneStore.getState().activeSceneId, null);
     assert.equal(useTimelineStore.getState().startYear, 2000);
     assert.equal(useTimelineStore.getState().endYear, 2026);
   });
@@ -482,30 +482,30 @@ describe("Componente 2: Três Dimensões WebGL & Shaders (R3F) (RN11 & RN12)", (
     }
   });
 
-  test("12. useHistoricalRouteStore: integração de reprodução, velocidade e waypoints sincronizados", () => {
-    const store = useHistoricalRouteStore.getState();
+  test("12. useSceneStore: integração de reprodução, velocidade e waypoints sincronizados", () => {
+    const store = useSceneStore.getState();
 
     // Ativação da rota
-    store.setActiveRouteId("magellan-1519");
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, true);
+    store.openScene("magellan-1519");
+    assert.equal(useSceneStore.getState().activeSceneId, "magellan-1519");
+    assert.equal(useSceneStore.getState().isPlaying, true);
 
     // Alteração de velocidade
     store.setPlaybackSpeed(2.0);
-    assert.equal(useHistoricalRouteStore.getState().playbackSpeed, 2.0);
+    assert.equal(useSceneStore.getState().playbackSpeed, 2.0);
 
     // Seek / alteração de progresso
     store.seek(0.5);
-    assert.equal(useHistoricalRouteStore.getState().progress, 0.5);
-    assert.ok(useHistoricalRouteStore.getState().currentWaypointIndex > 0);
+    assert.equal(useSceneStore.getState().progress, 0.5);
+    assert.ok(useSceneStore.getState().stepIndex > 0);
 
     // Pause / Play
     store.pause();
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
+    assert.equal(useSceneStore.getState().isPlaying, false);
     store.play();
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, true);
+    assert.equal(useSceneStore.getState().isPlaying, true);
 
     // Cleanup
-    store.setActiveRouteId(null);
+    store.closeScene();
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
+import { sceneLockedInstant } from "../scenes/catalog";
 import * as THREE from "three";
 import {
   calculateSubsolarPoint,
@@ -10,7 +11,6 @@ import {
 } from "../astronomy";
 import { findMilestoneById } from "../country-data";
 import { useTimelineStore } from "../../stores/timelineStore";
-import type { EpochScene } from "./constants";
 import { getEpochState, useEpochState } from "./useEpochState";
 
 /** Distance (in scene units) at which the scene's directional sunlight sits from Earth's origin. */
@@ -22,7 +22,7 @@ export const SOLAR_CLOCK_INTERVAL_MS = 60_000;
 export interface SunDirectionInput {
   effectiveYear: number | null;
   selectedMilestoneId: string | null;
-  activeScene: EpochScene | null;
+  activeScene: string | null;
   now?: Date;
 }
 
@@ -137,7 +137,7 @@ export function computeSunDirection(input: SunDirectionInput): SunDirectionState
     Math.floor(input.effectiveYear) === now.getUTCFullYear();
 
   const isLiveClock =
-    input.activeScene !== "APOLLO11" &&
+    sceneLockedInstant(input.activeScene) === null &&
     !milestone?.exactDate &&
     milestone?.year == null &&
     (input.effectiveYear === null || isCurrentIntegerYear);

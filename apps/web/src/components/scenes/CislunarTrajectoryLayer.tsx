@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { cislunarControlPoints, cislunarMoonPosition, createCislunarCurve } from "@/lib/scenes/cislunar";
 import type { Scene, SceneTrajectory } from "@/lib/scenes/schema";
-import { useApollo11Store } from "@/stores/apollo11Store";
+import { useSceneStore } from "@/stores/sceneStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 
@@ -17,9 +17,6 @@ type CislunarTrajectory = Extract<SceneTrajectory, { kind: "cislunar" }>;
  * Substitui o antigo `Apollo11Trajectory`.
  */
 export const CislunarTrajectoryLayer: React.FC<{ scene: Scene; trajectory: CislunarTrajectory }> = ({ scene, trajectory }) => {
-  const isPlaying = useApollo11Store((s) => s.isPlaying);
-  const playbackSpeed = useApollo11Store((s) => s.playbackSpeed);
-  const setProgress = useApollo11Store((s) => s.setProgress);
 
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
@@ -28,21 +25,7 @@ export const CislunarTrajectoryLayer: React.FC<{ scene: Scene; trajectory: Cislu
   const thrustRef = useRef<THREE.Mesh>(null);
   const strobeRef = useRef<THREE.PointLight>(null);
 
-  // Local progress accumulator for 60 FPS smooth rendering
-  const progressRef = useRef<number>(useApollo11Store.getState().progress);
-  const lastStoreSyncTime = useRef<number>(0);
-  const isSyncingToStore = useRef<boolean>(false);
   const hasFlownToOrbit = useRef<boolean>(false);
-
-  // Keep local progress updated instantaneously whenever user scrubs the UI slider or jumps phase
-  useEffect(() => {
-    const unsub = useApollo11Store.subscribe((state) => {
-      if (!isSyncingToStore.current) {
-        progressRef.current = state.progress;
-      }
-    });
-    return () => unsub();
-  }, []);
 
   // Ao abrir a cena, enquadra pela câmera inicial dos dados (lançamento, arco translunar e Lua)
   const camera = scene.camera;
@@ -121,34 +104,10 @@ export const CislunarTrajectoryLayer: React.FC<{ scene: Scene; trajectory: Cislu
   }, [coreLineGeometry, tubeGeometry, glowTubeGeometry, coreLineObject]);
 
   // Animation frame loop
-  useFrame((state, delta) => {
-    // 1. Advance mission progress along the Catmull-Rom spline
-    if (isPlaying) {
-      // ~45 seconds for full flight at 1.0x speed
-      const speedRate = 0.022 * playbackSpeed;
-      const nextP = progressRef.current + delta * speedRate;
-
-      if (nextP >= 1.0) {
-        progressRef.current = 1.0;
-        isSyncingToStore.current = true;
-        setProgress(1.0);
-        useApollo11Store.getState().setPlaying(false);
-        isSyncingToStore.current = false;
-      } else {
-        progressRef.current = nextP;
-
-        // Throttle Zustand store sync to 15 Hz to keep UI performant
-        const now = state.clock.getElapsedTime();
-        if (now - lastStoreSyncTime.current > 0.066) {
-          lastStoreSyncTime.current = now;
-          isSyncingToStore.current = true;
-          setProgress(progressRef.current);
-          isSyncingToStore.current = false;
-        }
-      }
-    }
-
-    const currentP = progressRef.current;
+  useFrame((state) => {
+    // 1. Progresso vem do store único de cenas (o ScenePlayer avança a reprodução).
+    const store = useSceneStore.getState();
+    const currentP = store.activeSceneId === scene.id ? store.progress : 0;
 
     // 2. Position and orient spacecraft along the curve tangent
     if (spacecraftRef.current && curve) {

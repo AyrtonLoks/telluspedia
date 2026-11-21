@@ -13,7 +13,7 @@ import {
   MOON_DEFAULT_POSITION,
   MOON_RADIUS_UNITS,
 } from "../src/lib/apollo11";
-import { useApollo11Store } from "../src/stores/apollo11Store";
+import { useSceneStore } from "../src/stores/sceneStore";
 import { ScenePlayerOverlay } from "../src/components/scenes/ScenePlayerOverlay";
 
 // D12c: os painéis por evento foram substituídos pelo painel genérico do player de cenas.
@@ -134,31 +134,33 @@ describe("Apollo 11 3D Trajectory, Telemetry & Space Flight Dynamics (RN12.1)", 
     assert.equal(p4.getFormatted, "102:46:40");
   });
 
-  test("Apollo 11 store controls playback, scrubbing and jumping to mission phases", () => {
-    // Jump to Phase 2 (TLI)
-    useApollo11Store.getState().jumpToPhase(2);
-    assert.equal(useApollo11Store.getState().progress, 0.2);
-    assert.equal(useApollo11Store.getState().isPlaying, true);
+  test("store único de cenas controla reprodução, barra e salto para as fases da missão", () => {
+    const scenes = useSceneStore.getState();
+    scenes.closeScene();
+    assert.equal(scenes.openScene("glo-1969"), true);
+    assert.equal(useSceneStore.getState().progress, 0.15, "abre no progresso inicial dos dados");
+    assert.equal(useSceneStore.getState().isPlaying, true);
 
-    // Jump to Phase 4 (Touchdown)
-    useApollo11Store.getState().jumpToPhase(4);
-    assert.equal(useApollo11Store.getState().progress, 0.82);
+    // Fase 2 (TLI) e fase 4 (pouso): início vindo dos fatos da fase
+    useSceneStore.getState().jumpToStep(1);
+    assert.equal(useSceneStore.getState().progress, 0.2);
+    useSceneStore.getState().jumpToStep(3);
+    assert.equal(useSceneStore.getState().progress, 0.82);
+    assert.equal(useSceneStore.getState().stepIndex, 3);
 
-    // Play/Pause toggle
-    useApollo11Store.getState().setPlaying(true);
-    useApollo11Store.getState().togglePlay();
-    assert.equal(useApollo11Store.getState().isPlaying, false);
+    useSceneStore.getState().play();
+    useSceneStore.getState().togglePlay();
+    assert.equal(useSceneStore.getState().isPlaying, false);
 
-    // Progress clamping bounds
-    useApollo11Store.getState().setProgress(-0.5);
-    assert.equal(useApollo11Store.getState().progress, 0.0);
-    useApollo11Store.getState().setProgress(1.5);
-    assert.equal(useApollo11Store.getState().progress, 1.0);
+    useSceneStore.getState().seek(-0.5);
+    assert.equal(useSceneStore.getState().progress, 0.0);
+    useSceneStore.getState().seek(1.5);
+    assert.equal(useSceneStore.getState().progress, 1.0);
 
-    // Reset mission
-    useApollo11Store.getState().resetMission();
-    assert.equal(useApollo11Store.getState().progress, 0.0);
-    assert.equal(useApollo11Store.getState().isPlaying, true);
+    useSceneStore.getState().reset();
+    assert.equal(useSceneStore.getState().progress, 0.0);
+    useSceneStore.getState().closeScene();
+    assert.equal(useSceneStore.getState().activeSceneId, null);
   });
 
   test("Apollo11TelemetryOverlay renders only when an Apollo milestone is explicitly active (never by year alone — T12)", () => {

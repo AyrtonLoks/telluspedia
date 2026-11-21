@@ -152,12 +152,12 @@ describe("T15 · Lua com posição astronômica real (Meeus Cap. 47, SLERP orbit
 
   test("4. Apollo 11: OrbitingMoon e Apollo11Trajectory coincidem exatamente em 1969-07-20T20:17:40Z (mesmo com exactDate sem hora) e câmeras enquadram Lua + Terra", () => {
     // Regressão crítica: o marco usa-1969 tem exactDate: "1969-07-20" (sem hora).
-    // activeScene: "APOLLO11" DEVE prevalecer para não deslocar a Lua em 124°!
+    // activeScene: "glo-1969" DEVE prevalecer para não deslocar a Lua em 124°!
     const resolvedWithDateOnlyMilestone = resolveAstronomicalDate({
       selectedYear: 1969,
       selectedMilestoneExactDate: "1969-07-20",
       selectedMilestoneYear: 1969,
-      activeScene: "APOLLO11",
+      activeScene: "glo-1969",
     });
     assert.equal(resolvedWithDateOnlyMilestone.toISOString(), "1969-07-20T20:17:40.000Z");
 

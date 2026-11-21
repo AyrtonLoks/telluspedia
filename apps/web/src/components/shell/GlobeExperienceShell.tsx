@@ -9,6 +9,7 @@ import { useRightDock } from "@/components/layout/useRightDock";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import type { StudyRecord } from "@/lib/studies-store";
 import { restoreStudySnapshot, selectCountry } from "@/stores/actions";
+import { SceneLinkSync } from "@/components/scenes/SceneLinkSync";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -190,6 +191,8 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
           <TopNavBar />
           <EntityLaunchGate />
         </Suspense>
+        {/* Link de cena (?cena=<id>) e endereço em sincronia com a cena aberta (D12d) */}
+        <SceneLinkSync />
 
         {/* Floating Historical Era Badge */}
         {showHistoricalBadge && <HistoricalEraBadge />}

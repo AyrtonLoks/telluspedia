@@ -27,13 +27,13 @@ const CASES: Case[] = [
   ["ano selecionado tem precedência sobre o ano do marco", { selectedYear: 2000, milestoneYear: 1889, selectedMilestoneId: "bra-1889" }, { effectiveYear: 2000 }],
 
   // ---- Cenas explícitas
-  ["marco usa-1969 ativa Apollo", { selectedMilestoneId: "usa-1969", milestoneYear: 1969 }, { activeScene: "APOLLO11", isContemporary: true }],
-  ["marco glo-1969 ativa Apollo", { selectedMilestoneId: "glo-1969", milestoneYear: 1969 }, { activeScene: "APOLLO11" }],
-  ["rota de Magalhães no player ativa a cena", { activeRouteId: "magellan-1519", selectedYear: 1519 }, { activeScene: "MAGELLAN", mode: "HISTORICAL", isContemporary: false }],
-  ["marco esp-1519 ativa Magalhães", { selectedMilestoneId: "esp-1519", milestoneYear: 1519 }, { activeScene: "MAGELLAN" }],
-  ["Magalhães tem precedência sobre Apollo", { activeRouteId: "magellan-1519", selectedMilestoneId: "glo-1969" }, { activeScene: "MAGELLAN" }],
-  ["Magalhães suprime telemetria mesmo com ano contemporâneo", { activeRouteId: "magellan-1519", selectedYear: 2020 }, { isContemporary: false }],
-  ["rota desconhecida não ativa cena", { activeRouteId: "outra-rota" }, { activeScene: null }],
+  ["marco usa-1969 ativa Apollo", { selectedMilestoneId: "usa-1969", milestoneYear: 1969 }, { activeScene: "glo-1969", isContemporary: true }],
+  ["marco glo-1969 ativa Apollo", { selectedMilestoneId: "glo-1969", milestoneYear: 1969 }, { activeScene: "glo-1969" }],
+  ["rota de Magalhães no player ativa a cena", { activeSceneId: "magellan-1519", selectedYear: 1519 }, { activeScene: "magellan-1519", mode: "HISTORICAL", isContemporary: false }],
+  ["marco esp-1519 ativa Magalhães", { selectedMilestoneId: "esp-1519", milestoneYear: 1519 }, { activeScene: "magellan-1519" }],
+  ["Magalhães tem precedência sobre Apollo", { activeSceneId: "magellan-1519", selectedMilestoneId: "glo-1969" }, { activeScene: "magellan-1519" }],
+  ["Magalhães suprime telemetria mesmo com ano contemporâneo", { activeSceneId: "magellan-1519", selectedYear: 2020 }, { isContemporary: false }],
+  ["rota desconhecida não ativa cena", { activeSceneId: "outra-rota" }, { activeScene: null }],
 
   // ---- Geológico (precedência máxima)
   ["idade geológica de 150 Ma", { geologicalMa: 150 }, { mode: "GEOLOGICAL", geologicalMa: 150 }],
@@ -43,7 +43,7 @@ const CASES: Case[] = [
   ["marco kpg-66ma ativa geológico", { selectedMilestoneId: "kpg-66ma" }, { geologicalMa: 66 }],
   ["marco breakup-200ma ativa geológico", { selectedMilestoneId: "breakup-200ma" }, { geologicalMa: 200 }],
   ["marco contemporary-0ma NÃO ativa geológico", { selectedMilestoneId: "contemporary-0ma" }, { mode: "CONTEMPORARY", geologicalMa: null }],
-  ["geológico vence rota de Magalhães", { geologicalMa: 250, activeRouteId: "magellan-1519" }, { mode: "GEOLOGICAL", activeScene: null }],
+  ["geológico vence rota de Magalhães", { geologicalMa: 250, activeSceneId: "magellan-1519" }, { mode: "GEOLOGICAL", activeScene: null }],
   ["geológico vence Apollo", { geologicalMa: 150, selectedMilestoneId: "glo-1969" }, { activeScene: null }],
   ["geológico vence ano contemporâneo", { geologicalMa: 66, selectedYear: 2024 }, { isContemporary: false, mode: "GEOLOGICAL" }],
   ["idade negativa é ignorada", { geologicalMa: -5 }, { mode: "CONTEMPORARY", geologicalMa: null }],
@@ -61,7 +61,7 @@ describe("T12: resolveEpoch (tabela de casos)", () => {
   }
 
   test("é pura: mesma entrada → mesma saída, sem mutar a entrada", () => {
-    const input: EpochInput = { ...DEFAULT, selectedYear: 1969, activeRouteId: "x", geologicalMa: null };
+    const input: EpochInput = { ...DEFAULT, selectedYear: 1969, activeSceneId: "x", geologicalMa: null };
     const frozen = JSON.stringify(input);
     assert.deepEqual(resolveEpoch(input), resolveEpoch(input));
     assert.equal(JSON.stringify(input), frozen);

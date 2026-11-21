@@ -9,7 +9,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { useStudyStore } from "../src/stores/studyStore";
 import { forkStudyRecord, restoreStudyRecord } from "../src/lib/studies-store";
 import { StudyShareModal } from "../src/components/study/StudyShareModal";
-import { useHistoricalRouteStore } from "../src/stores/historicalRouteStore";
+import { useSceneStore } from "../src/stores/sceneStore";
 import { useObservatoryStore } from "../src/stores/observatoryStore";
 import {
   calculateIssPosition,
@@ -403,7 +403,7 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
 
     // 3. Configura Circum-navegação de Magalhães (1519): deve suprimir badge
     useTimelineStore.getState().selectYear(1519);
-    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
+    useSceneStore.getState().openScene("magellan-1519");
 
     const htmlMagellan = renderToStaticMarkup(React.createElement(StudyShareModal));
     assert.ok(
@@ -412,7 +412,7 @@ describe("Horizonte 3: Observatório Planetário (NASA) & Tráfego Global (RN17,
     );
 
     // Cleanup
-    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useSceneStore.getState().closeScene();
     useTimelineStore.getState().selectYear(2026);
     useTimelineStore.getState().setYearRange(1974, 2024);
     useStudyStore.getState().setShareModalOpen(false);

@@ -29,11 +29,6 @@ export const DEFAULT_GEOLOGICAL_MA = 250;
 export const MAGELLAN_ROUTE_ID = "magellan-1519";
 /** Marco da partida da expedição (Sanlúcar de Barrameda, 1519). */
 export const MAGELLAN_DEPARTURE_MILESTONE_ID = "esp-1519";
-/** Marcos que ativam explicitamente a cena de Magalhães. */
-export const MAGELLAN_MILESTONE_IDS: readonly string[] = [MAGELLAN_ROUTE_ID, MAGELLAN_DEPARTURE_MILESTONE_ID];
-
-/** Marcos que ativam explicitamente a cena da Apollo 11. */
-export const APOLLO11_MILESTONE_IDS: readonly string[] = ["usa-1969", "glo-1969"];
 /** Marco global da Apollo 11 (usado ao restaurar estudos com a cena ativa). */
 export const APOLLO11_GLOBAL_MILESTONE_ID = "glo-1969";
 
@@ -41,13 +36,6 @@ export const APOLLO11_GLOBAL_MILESTONE_ID = "glo-1969";
 export const SPACE_AGE_START_YEAR = 1957;
 
 export type EpochMode = "CONTEMPORARY" | "HISTORICAL" | "GEOLOGICAL";
-export type EpochScene = "MAGELLAN" | "APOLLO11";
-
-/** Cena de dados de cada modo especial (D12c). A D12d troca o modo pelo id da cena ativa. */
-export const EPOCH_SCENE_DATA_IDS: Record<EpochScene, string> = {
-  MAGELLAN: MAGELLAN_ROUTE_ID,
-  APOLLO11: APOLLO11_GLOBAL_MILESTONE_ID,
-};
 
 export function isGeologicalMilestoneId(id: string | null | undefined): id is GeologicalMilestoneId {
   return !!id && Object.prototype.hasOwnProperty.call(GEOLOGICAL_MILESTONE_MA, id);

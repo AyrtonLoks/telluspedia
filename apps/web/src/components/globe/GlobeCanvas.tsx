@@ -21,7 +21,6 @@ import { SkyStars } from "./SkyStars";
 import { CameraFlyToController } from "./CameraFlyToController";
 import { ScenePlayer } from "@/components/scenes/ScenePlayer";
 import { getScene } from "@/lib/scenes/catalog";
-import { EPOCH_SCENE_DATA_IDS } from "@/lib/epoch/constants";
 import { PaleoPlatesLayer } from "./PaleoPlatesLayer";
 import { NasaFirmsLayer } from "./NasaFirmsLayer";
 import { NasaEonetLayer } from "./NasaEonetLayer";
@@ -74,8 +73,8 @@ export const GlobeCanvas: React.FC = () => {
   const epoch = useEpochState();
   const isGeological = epoch.mode === "GEOLOGICAL";
   const activeScene = epoch.activeScene;
-  // D12c: o player recebe a cena de dados; a D12d troca o modo pelo id da cena ativa.
-  const activeSceneData = activeScene ? getScene(EPOCH_SCENE_DATA_IDS[activeScene]) : undefined;
+  // D12d: a época já traz o id da cena ativa (dados em src/data/scenes/).
+  const activeSceneData = activeScene ? getScene(activeScene) : undefined;
   const isContemporary = epoch.isContemporary;
 
   const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);

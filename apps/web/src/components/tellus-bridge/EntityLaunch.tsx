@@ -3,7 +3,7 @@
 import { applyTimelinePreset, selectCountry, selectHistoricalRoute } from "@/stores/actions";
 
 import React, { useEffect } from "react";
-import { MAGELLAN_MILESTONE_IDS, MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
+import { sceneOpenedBy, sceneHasTrajectoryKind } from "@/lib/scenes/catalog";
 import { usePathname, useSearchParams } from "next/navigation";
 import { resolveLaunch, studyUrl } from "@/lib/tellus-bridge/catalog";
 import { findMilestoneById, getCountryData } from "@/lib/country-data";
@@ -62,7 +62,8 @@ export function EntityLaunch() {
       timeline.setAllCategories([...ALL_CATEGORIES]);
       if (!timeline.isExpanded) timeline.toggleExpanded();
       timeline.setYearRange(event.year - 15, event.year + 15);
-      selectHistoricalRoute(MAGELLAN_MILESTONE_IDS.includes(key) ? MAGELLAN_ROUTE_ID : null);
+      const scene = sceneOpenedBy(key);
+      selectHistoricalRoute(scene && sceneHasTrajectoryKind(scene.id, "surface") ? scene.id : null);
       timeline.selectYear(event.year);
       timeline.selectMilestone(event.id);
       if (event.latitude !== undefined && event.longitude !== undefined) {

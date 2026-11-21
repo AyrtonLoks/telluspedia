@@ -13,6 +13,7 @@ import { calculateLunarPosition } from "@/lib/astronomy";
 import { calculatePlanetaryPosition, currentMoonWorldPos, ASTROPHYSICAL_CATALOG } from "@/lib/astronomy-planets";
 import { bodySceneRadius, celestialLabelPriority, earthSystemScale } from "@/lib/cosmic-scale";
 import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
+import { sceneHasTrajectoryKind } from "@/lib/scenes/catalog";
 
 const MOON_RADIUS = 0.27;
 
@@ -155,7 +156,8 @@ export const OrbitingMoon: React.FC = () => {
   const { invalidate } = useThree();
 
   const epoch = useEpochState();
-  const isApolloScene = epoch.activeScene === "APOLLO11";
+  // Cena Terra–Lua: a Lua acompanha a missão (D12d — vem dos dados, não do nome do evento).
+  const isApolloScene = sceneHasTrajectoryKind(epoch.activeScene, "cislunar");
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   const sun = useSunDirection();
 

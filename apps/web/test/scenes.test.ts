@@ -211,8 +211,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { cislunarTelemetry } from "../src/lib/scenes/cislunar";
 import { ScenePlayerOverlay } from "../src/components/scenes/ScenePlayerOverlay";
-import { useApollo11Store } from "../src/stores/apollo11Store";
-import { useHistoricalRouteStore } from "../src/stores/historicalRouteStore";
+import { useSceneStore } from "../src/stores/sceneStore";
 
 describe("D12c: painel genérico do player", () => {
   const apollo = getScene("glo-1969")!.trajectories[0];
@@ -233,16 +232,17 @@ describe("D12c: painel genérico do player", () => {
   });
 
   test("um só painel serve Magalhães e Apollo 11, com textos e estatísticas vindos dos dados", () => {
-    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
-    useHistoricalRouteStore.getState().jumpToWaypoint(6);
+    useSceneStore.getState().openScene("magellan-1519");
+    useSceneStore.getState().jumpToStep(6);
     const mag = renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "magellan-1519" }));
     for (const s of ["CIRCUM-NAVEGAÇÃO", "Léguas navegadas", "léguas", "Diário de Bordo — Antonio Pigafetta (1524)", "Fernão de Magalhães", 'data-scene-id="magellan-1519"']) assert.ok(mag.includes(s), s);
-    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useSceneStore.getState().closeScene();
 
-    useApollo11Store.getState().setProgress(0.97);
+    useSceneStore.getState().openScene("glo-1969");
+    useSceneStore.getState().seek(0.97);
     const apo = renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "glo-1969" }));
     for (const s of ["APOLLO 11", "Telemetria de Voo Espacial NASA", "SATURN V / LEO", "TOUCHDOWN / EAGLE", "Distância da Terra", "Tempo de missão (GET)", "The Eagle has landed", "Visão ampla", "Lua"]) assert.ok(apo.includes(s), s);
-    useApollo11Store.getState().setProgress(0.5);
+    useSceneStore.getState().seek(0.5);
     assert.ok(!renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "glo-1969" })).includes("The Eagle has landed"), "frase final só perto do fim");
     assert.equal(renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "queda-muro-inexistente" })), "");
   });
@@ -253,5 +253,90 @@ describe("D12c: painel genérico do player", () => {
     const overlay = fs.readFileSync(path.join(__dirname, "../src/components/scenes/ScenePlayerOverlay.tsx"), "utf-8");
     assert.doesNotMatch(overlay, /magellan|apollo 11|1519|1969|km\/h/i, "o painel não conhece eventos pelo nome");
     assert.match(fs.readFileSync(path.join(__dirname, "../src/components/shell/GlobeExperienceShell.tsx"), "utf-8"), /<ScenePlayerOverlay \/>/);
+  });
+});
+
+import { resolveEpoch } from "../src/lib/epoch/resolveEpoch";
+import { useTimelineStore } from "../src/stores/timelineStore";
+import { useGlobeStore } from "../src/stores/globeStore";
+import { selectHistoricalRoute } from "../src/stores/actions";
+import { sceneLockedInstant, sceneOpenedBy, sceneStepStarts } from "../src/lib/scenes/catalog";
+import { sceneIdFromSearch, searchWithScene } from "../src/components/scenes/SceneLinkSync";
+
+describe("D12d: ativação de cenas pelos dados", () => {
+  const read = (rel: string) => fs.readFileSync(path.join(__dirname, "..", rel), "utf-8");
+
+  test("resolveEpoch e o store de cenas não conhecem eventos pelo nome", () => {
+    for (const f of ["src/lib/epoch/resolveEpoch.ts", "src/lib/epoch/constants.ts", "src/stores/sceneStore.ts", "src/lib/epoch/useSunDirection.ts"]) {
+      assert.doesNotMatch(read(f), /"MAGELLAN"|"APOLLO11"|EpochScene/, f);
+    }
+    assert.ok(!fs.existsSync(path.join(__dirname, "../src/stores/historicalRouteStore.ts")), "store antigo removido");
+    assert.ok(!fs.existsSync(path.join(__dirname, "../src/stores/apollo11Store.ts")), "store antigo removido");
+  });
+
+  test("cena só abre por seleção explícita; o ano nunca abre cena", () => {
+    assert.equal(resolveEpoch({ selectedYear: 1969 }).activeScene, null);
+    assert.equal(resolveEpoch({ selectedYear: 1519 }).activeScene, null);
+    assert.equal(resolveEpoch({ activeSceneId: "glo-1969" }).activeScene, "glo-1969");
+    assert.equal(resolveEpoch({ selectedMilestoneId: "usa-1969" }).activeScene, "glo-1969", "openedBy nos dados");
+    assert.equal(sceneOpenedBy("elcano-1522"), undefined, "marco simples não abre o player");
+    assert.equal(resolveEpoch({ activeSceneId: "elcano-1522" }).activeScene, null, "sem trajetória não é cena tocável");
+    // Período da cena (antes da Era Espacial) decide modo e telemetria, não o nome
+    assert.deepEqual(
+      (({ mode, isContemporary }) => ({ mode, isContemporary }))(resolveEpoch({ activeSceneId: "magellan-1519", selectedYear: 2020 })),
+      { mode: "HISTORICAL", isContemporary: false }
+    );
+  });
+
+  test("instante travado e passos vêm da trajetória da cena", () => {
+    assert.equal(sceneLockedInstant("glo-1969")?.toISOString(), "1969-07-20T20:17:40.000Z");
+    assert.equal(sceneLockedInstant("magellan-1519"), null);
+    const steps = sceneStepStarts(getScene("magellan-1519"));
+    assert.equal(steps[0], 0);
+    assert.equal(steps[steps.length - 1], 1);
+  });
+
+  test("sair da cena restaura timeline, país e câmera de antes da abertura", () => {
+    useSceneStore.getState().closeScene({ restore: false });
+    useTimelineStore.setState({ selectedYear: 1990, selectedMilestoneId: null, startYear: 1974, endYear: 2024, geologicalMa: null });
+    useGlobeStore.getState().setSelectedIso("BRA");
+    useGlobeStore.getState().setCameraPosition(-10, -50, 2.5);
+
+    selectHistoricalRoute("magellan-1519");
+    assert.equal(useSceneStore.getState().activeSceneId, "magellan-1519");
+    assert.equal(useTimelineStore.getState().selectedYear, 1519);
+    useGlobeStore.getState().setCameraPosition(30, 10, 3);
+
+    useSceneStore.getState().closeScene();
+    const t = useTimelineStore.getState();
+    const g = useGlobeStore.getState();
+    assert.equal(useSceneStore.getState().activeSceneId, null);
+    assert.deepEqual([t.selectedYear, t.startYear, t.endYear], [1990, 1974, 2024]);
+    assert.equal(g.selectedIso, "BRA");
+    assert.deepEqual([g.cameraLat, g.cameraLng, g.cameraAltitude], [-10, -50, 2.5]);
+  });
+
+  test("marco que abre cena (pin/busca) guarda o estado anterior; outro marco fecha sem restaurar", () => {
+    useTimelineStore.setState({ selectedYear: 2001, selectedMilestoneId: null, geologicalMa: null });
+    useTimelineStore.getState().selectYear(1969);
+    useTimelineStore.getState().selectMilestone("usa-1969");
+    assert.equal(useSceneStore.getState().activeSceneId, "glo-1969");
+    useSceneStore.getState().closeScene();
+    assert.equal(useTimelineStore.getState().selectedMilestoneId, null);
+
+    useTimelineStore.getState().selectMilestone("glo-1969");
+    assert.equal(useSceneStore.getState().activeSceneId, "glo-1969");
+    useTimelineStore.getState().selectMilestone("elcano-1522");
+    assert.equal(useSceneStore.getState().activeSceneId, null, "navegou para outro marco");
+    assert.equal(useTimelineStore.getState().selectedMilestoneId, "elcano-1522");
+  });
+
+  test("link ?cena=<id>: leitura e escrita preservam os outros parâmetros", () => {
+    assert.equal(sceneIdFromSearch("?cena=glo-1969&entity=x"), "glo-1969");
+    assert.equal(sceneIdFromSearch("?cena="), null);
+    assert.equal(searchWithScene("?entity=x", "magellan-1519"), "?entity=x&cena=magellan-1519");
+    assert.equal(searchWithScene("?cena=glo-1969&entity=x", null), "?entity=x");
+    assert.equal(searchWithScene("?cena=glo-1969", null), "");
+    assert.match(read("src/components/shell/GlobeExperienceShell.tsx"), /<SceneLinkSync \/>/);
   });
 });

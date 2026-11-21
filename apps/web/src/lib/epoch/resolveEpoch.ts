@@ -5,23 +5,14 @@
  * Precedência:
  *   1. Geológico — idade (Ma) > 0 na timeline ou marco geológico
  *      selecionado. Nesse caso não há cena nem telemetria contemporânea.
- *   2. Cena explícita — Magalhães (rota ativa ou marco da expedição) e, depois,
- *      Apollo 11 (marco da missão). Cenas NUNCA são ativadas só
- *      pelo ano: o playback passando por 1519 ou 1969 não as liga.
+ *   2. Cena explícita (D12d) — a rota ativa ou o marco selecionado, quando abre uma cena com
+ *      trajetória nos dados (`src/data/scenes/`). Cenas NUNCA são ativadas só pelo ano.
  *   3. Ano — ano efetivo (ano selecionado > ano do marco > ano representativo do intervalo) e a
  *      era histórica correspondente.
  */
 import { resolveEffectiveHistoricalYear, resolveHistoricalEra, type HistoricalEraId } from "../historical-entities";
-import {
-  APOLLO11_MILESTONE_IDS,
-  GEOLOGICAL_MILESTONE_MA,
-  MAGELLAN_MILESTONE_IDS,
-  MAGELLAN_ROUTE_ID,
-  SPACE_AGE_START_YEAR,
-  isGeologicalMilestoneId,
-  type EpochMode,
-  type EpochScene,
-} from "./constants";
+import { GEOLOGICAL_MILESTONE_MA, SPACE_AGE_START_YEAR, isGeologicalMilestoneId, type EpochMode } from "./constants";
+import { getScene, isPlayableScene, sceneOpenedBy, sceneStartYear } from "../scenes/catalog";
 
 export interface EpochInput {
   selectedYear?: number | null;
@@ -31,7 +22,8 @@ export interface EpochInput {
   startYear?: number | null;
   endYear?: number | null;
   geologicalMa?: number | null;
-  activeRouteId?: string | null;
+  /** Cena aberta explicitamente (store de cenas). */
+  activeSceneId?: string | null;
 }
 
 export interface EpochState {
@@ -42,7 +34,8 @@ export interface EpochState {
   geologicalMa: number | null;
   /** Era histórica (HISTORICAL_ERAS). "CONTEMPORARY" no presente e no modo geológico. */
   historicalEraId: HistoricalEraId;
-  activeScene: EpochScene | null;
+  /** Id da cena ativa (dados em `src/data/scenes/`), ou null. */
+  activeScene: string | null;
   /** Telemetria contemporânea (Observatório) faz sentido nesta época. */
   isContemporary: boolean;
 }
@@ -57,15 +50,10 @@ function resolveGeologicalMa(input: EpochInput): number | null {
   return positiveMa(input.geologicalMa) ?? milestoneMa;
 }
 
-function resolveScene(input: EpochInput): EpochScene | null {
-  const milestone = input.selectedMilestoneId ?? null;
-  if (input.activeRouteId === MAGELLAN_ROUTE_ID || (milestone !== null && MAGELLAN_MILESTONE_IDS.includes(milestone))) {
-    return "MAGELLAN";
-  }
-  if (milestone !== null && APOLLO11_MILESTONE_IDS.includes(milestone)) {
-    return "APOLLO11";
-  }
-  return null;
+function resolveScene(input: EpochInput): string | null {
+  const open = input.activeSceneId ? getScene(input.activeSceneId) : undefined;
+  if (isPlayableScene(open)) return open.id;
+  return sceneOpenedBy(input.selectedMilestoneId)?.id ?? null;
 }
 
 export function resolveEpoch(input: EpochInput): EpochState {
@@ -91,9 +79,11 @@ export function resolveEpoch(input: EpochInput): EpochState {
   const activeScene = resolveScene(input);
   const historicalEraId = resolveHistoricalEra(effectiveYear).id;
   const beforeSpaceAge = effectiveYear !== null && effectiveYear < SPACE_AGE_START_YEAR;
-  const isContemporary = !beforeSpaceAge && activeScene !== "MAGELLAN";
-  const mode: EpochMode =
-    historicalEraId !== "CONTEMPORARY" || activeScene === "MAGELLAN" ? "HISTORICAL" : "CONTEMPORARY";
+  // Cena anterior à Era Espacial é histórica, mesmo que o ano da timeline seja outro.
+  const scene = activeScene ? getScene(activeScene) : undefined;
+  const sceneBeforeSpaceAge = scene !== undefined && sceneStartYear(scene) < SPACE_AGE_START_YEAR;
+  const isContemporary = !beforeSpaceAge && !sceneBeforeSpaceAge;
+  const mode: EpochMode = historicalEraId !== "CONTEMPORARY" || sceneBeforeSpaceAge ? "HISTORICAL" : "CONTEMPORARY";
 
   return { mode, effectiveYear, geologicalMa: null, historicalEraId, activeScene, isContemporary };
 }

@@ -162,6 +162,10 @@ export const SceneHudSchema = z.object({
   /** Frase exibida perto do fim (progresso ≥ minProgress). */
   finalQuote: z.object({ text: z.string().min(1), minProgress: z.number().min(0).max(1) }).optional(),
   speeds: z.array(z.number().positive()).default([0.5, 1, 2]),
+  /** Duração da reprodução completa a 1×, em segundos. */
+  durationSeconds: z.number().positive().default(90),
+  /** Progresso inicial ao abrir a cena (ex.: começar já na injeção translunar). */
+  startProgress: z.number().min(0).max(1).default(0),
 });
 
 const ERA_IDS = Object.keys(HISTORICAL_ERAS) as [string, ...string[]];
@@ -197,6 +201,8 @@ export const SceneSchema = z
     facts: Facts.optional(),
     subtitle: z.string().optional(),
     hud: SceneHudSchema.optional(),
+    /** Outros marcos que também abrem esta cena (ex.: o marco do país da missão). */
+    openedBy: z.array(z.string().min(1)).default([]),
     /** Texto longo opcional (Markdown) para o modo leitura. */
     dossierMarkdown: z.string().optional(),
     /** Rascunhos (ingestão do Wikidata) ficam fora da UI até a revisão humana. */

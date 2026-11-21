@@ -145,7 +145,7 @@ describe("T14 · Fonte única de direção solar (useSunDirection, relógio comp
     const apollo = computeSunDirection({
       effectiveYear: 1969,
       selectedMilestoneId: "usa-1969",
-      activeScene: "APOLLO11",
+      activeScene: "glo-1969",
       now: new Date("2026-11-20T18:00:00Z"),
     });
     assert.equal(apollo.timestamp, "1969-07-20T20:17:40.000Z");

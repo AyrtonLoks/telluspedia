@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { calculateSubsolarPoint, type SubsolarPoint } from "./astronomy-solar";
+import { sceneLockedInstant } from "./scenes/catalog";
 
 export { calculateSubsolarPoint, type SubsolarPoint };
 
@@ -350,11 +351,10 @@ export function resolveAstronomicalDate(input: {
 }): Date {
   const now = input.now ?? new Date();
 
-  // Explicit Apollo 11 scene always locks to the exact touchdown timestamp (1969-07-20T20:17:40Z)
-  // so OrbitingMoon and Apollo11Trajectory stay 100% synchronized (never diverging by date-only 12:00Z).
-  if (input.activeScene === "APOLLO11") {
-    return new Date(APOLLO11_LANDING_DATE.getTime());
-  }
+  // Cena Terra–Lua (ex.: Apollo 11) trava no instante de referência dos dados (o pouso), para a Lua
+  // e a trajetória ficarem no mesmo ponto (nunca divergindo pela data sem hora, 12:00Z).
+  const locked = sceneLockedInstant(input.activeScene);
+  if (locked) return locked;
 
   if (input.selectedMilestoneExactDate) {
     const raw = input.selectedMilestoneExactDate;

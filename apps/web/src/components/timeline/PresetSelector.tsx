@@ -1,6 +1,6 @@
 "use client";
 
-import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
+import { useSceneStore } from "@/stores/sceneStore";
 import { applyTimelinePreset } from "@/stores/actions";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -21,7 +21,7 @@ export const PresetSelector: React.FC = () => {
   const startYear = useTimelineStore((s) => s.startYear);
   const endYear = useTimelineStore((s) => s.endYear);
   const geologicalMa = useTimelineStore((s) => s.geologicalMa);
-  const activeRouteId = useHistoricalRouteStore((s) => s.activeRouteId);
+  const activeRouteId = useSceneStore((s) => s.activeSceneId);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

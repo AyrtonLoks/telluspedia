@@ -1,14 +1,10 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { BookOpen, Calendar, ChevronLeft, ChevronRight, Eye, MapPin, Maximize2, Minimize2, Pause, Play, RotateCcw, X } from "lucide-react";
-import { historicalRouteActions, selectHistoricalRoute } from "@/stores/actions";
-import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
-import { useApollo11Store } from "@/stores/apollo11Store";
+import { useSceneStore } from "@/stores/sceneStore";
 import { useGlobeStore } from "@/stores/globeStore";
-import { useTimelineStore } from "@/stores/timelineStore";
 import { useEpochState } from "@/lib/epoch/useEpochState";
-import { EPOCH_SCENE_DATA_IDS } from "@/lib/epoch/constants";
 import { getScene } from "@/lib/scenes/catalog";
 import type { Scene, SceneTrajectory } from "@/lib/scenes/schema";
 import { cislunarTelemetry } from "@/lib/scenes/cislunar";
@@ -28,53 +24,35 @@ import { cn } from "@/components/ui/cn";
 type Surface = Extract<SceneTrajectory, { kind: "surface" }>;
 type Cislunar = Extract<SceneTrajectory, { kind: "cislunar" }>;
 
-/** Estado de reprodução por tipo de trajetória (stores existentes; a D12d unifica a ativação). */
-function usePlayback(kind: SceneTrajectory["kind"]) {
+/** Estado de reprodução da cena aberta (store único, D12d). */
+function usePlayback() {
   const isServer = typeof window === "undefined";
-  const surface = {
-    isPlaying: useHistoricalRouteStore((s) => s.isPlaying),
-    progress: useHistoricalRouteStore((s) => s.progress),
-    index: useHistoricalRouteStore((s) => s.currentWaypointIndex),
-    speed: useHistoricalRouteStore((s) => s.playbackSpeed),
-    minimized: useHistoricalRouteStore((s) => s.isMinimized),
+  const live = {
+    isPlaying: useSceneStore((s) => s.isPlaying),
+    progress: useSceneStore((s) => s.progress),
+    index: useSceneStore((s) => s.stepIndex),
+    speed: useSceneStore((s) => s.playbackSpeed),
+    minimized: useSceneStore((s) => s.isMinimized),
   };
-  const cis = {
-    isPlaying: useApollo11Store((s) => s.isPlaying),
-    progress: useApollo11Store((s) => s.progress),
-    speed: useApollo11Store((s) => s.playbackSpeed),
-    minimized: useApollo11Store((s) => s.isMinimized),
-  };
-  if (kind === "surface") {
-    const st = isServer ? useHistoricalRouteStore.getState() : null;
-    return {
-      isPlaying: st ? st.isPlaying : surface.isPlaying,
-      progress: st ? st.progress : surface.progress,
-      index: st ? st.currentWaypointIndex : surface.index,
-      speed: st ? st.playbackSpeed : surface.speed,
-      minimized: st ? st.isMinimized : surface.minimized,
-      togglePlay: () => historicalRouteActions.togglePlay(),
-      seek: (p: number) => historicalRouteActions.seek(p),
-      prev: () => historicalRouteActions.prevWaypoint(),
-      next: () => historicalRouteActions.nextWaypoint(),
-      reset: () => historicalRouteActions.reset(),
-      setSpeed: (v: number) => useHistoricalRouteStore.getState().setPlaybackSpeed(v),
-      toggleMinimized: () => useHistoricalRouteStore.getState().toggleMinimized(),
-    };
-  }
-  const st = isServer ? useApollo11Store.getState() : null;
+  const st = isServer ? useSceneStore.getState() : null;
+  const store = () => useSceneStore.getState();
   return {
-    isPlaying: st ? st.isPlaying : cis.isPlaying,
-    progress: st ? st.progress : cis.progress,
-    index: -1,
-    speed: st ? st.playbackSpeed : cis.speed,
-    minimized: st ? st.isMinimized : cis.minimized,
-    togglePlay: () => useApollo11Store.getState().togglePlay(),
-    seek: (p: number) => useApollo11Store.getState().setProgress(p),
-    prev: () => undefined,
-    next: () => undefined,
-    reset: () => useApollo11Store.getState().resetMission(),
-    setSpeed: (v: number) => useApollo11Store.getState().setPlaybackSpeed(v),
-    toggleMinimized: () => useApollo11Store.getState().toggleMinimized(),
+    isPlaying: st ? st.isPlaying : live.isPlaying,
+    progress: st ? st.progress : live.progress,
+    index: st ? st.stepIndex : live.index,
+    speed: st ? st.playbackSpeed : live.speed,
+    minimized: st ? st.isMinimized : live.minimized,
+    togglePlay: () => store().togglePlay(),
+    seek: (p: number) => store().seek(p),
+    prev: () => store().prevStep(),
+    next: () => store().nextStep(),
+    jumpTo: (i: number) => {
+      store().jumpToStep(i);
+      store().play();
+    },
+    reset: () => store().reset(),
+    setSpeed: (v: number) => store().setPlaybackSpeed(v),
+    toggleMinimized: () => store().toggleMinimized(),
   };
 }
 
@@ -87,7 +65,7 @@ const fmtDate = (iso: string) => {
 
 export const ScenePlayerOverlay: React.FC<{ sceneId?: string }> = ({ sceneId }) => {
   const activeScene = useEpochState().activeScene;
-  const id = sceneId ?? (activeScene ? EPOCH_SCENE_DATA_IDS[activeScene] : undefined);
+  const id = sceneId ?? activeScene ?? undefined;
   const scene = id ? getScene(id) : undefined;
   const trajectory = scene?.trajectories[0];
   if (!scene || !trajectory || !scene.hud) return null;
@@ -96,22 +74,8 @@ export const ScenePlayerOverlay: React.FC<{ sceneId?: string }> = ({ sceneId }) 
 
 const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory }> = ({ scene, trajectory }) => {
   const hud = scene.hud!;
-  const pb = usePlayback(trajectory.kind);
+  const pb = usePlayback();
   const flyTo = useGlobeStore((s) => s.flyTo);
-
-  // Reprodução das rotas de superfície (a missão Terra–Lua avança pelo quadro 3D).
-  useEffect(() => {
-    if (trajectory.kind !== "surface" || !pb.isPlaying) return;
-    let raf = 0;
-    let last = performance.now();
-    const loop = (now: number) => {
-      historicalRouteActions.tick(Math.min((now - last) / 1000, 0.1));
-      last = now;
-      if (useHistoricalRouteStore.getState().isPlaying) raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, [trajectory.kind, pb.isPlaying, pb.speed]);
 
   const step = useMemo(() => {
     if (trajectory.kind === "surface") {
@@ -127,10 +91,8 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory }> = ({ sce
   }, [trajectory, pb.index, pb.progress, hud.quoteFact]);
 
   const pct = Math.round(pb.progress * 100);
-  const closeScene = () => {
-    if (trajectory.kind === "surface") selectHistoricalRoute(null);
-    useTimelineStore.getState().selectMilestone(null);
-  };
+  // Sair da cena restaura o estado de antes da abertura (timeline, país e câmera).
+  const closeScene = () => useSceneStore.getState().closeScene();
 
   return (
     <Panel
@@ -222,17 +184,13 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory }> = ({ sce
           {trajectory.kind === "cislunar" && (
             <div role="group" aria-label="Fases da missão" className="my-3 grid grid-cols-2 gap-1.5">
               {(trajectory as Cislunar).phases.map((ph, i) => {
-                const start = typeof ph.facts?.startProgress === "number" ? ph.facts.startProgress : i / (trajectory as Cislunar).phases.length;
                 const active = i === step.index;
                 return (
                   <button
                     key={ph.id}
                     type="button"
                     aria-pressed={active}
-                    onClick={() => {
-                      useApollo11Store.getState().setProgress(start);
-                      useApollo11Store.getState().setPlaying(true);
-                    }}
+                    onClick={() => pb.jumpTo(i)}
                     className={cn(
                       "flex flex-col items-start rounded-control border p-2 text-left transition-colors duration-fast ease-out",
                       active ? "border-accent/50 bg-accent/10" : "border-line bg-surface-raised hover:bg-surface-hover"
@@ -285,12 +243,12 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory }> = ({ sce
           {/* Controles */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1">
-              {trajectory.kind === "surface" && <IconButton label="Passo anterior" size="sm" icon={<ChevronLeft />} onClick={pb.prev} />}
+              <IconButton label="Passo anterior" size="sm" icon={<ChevronLeft />} onClick={pb.prev} />
               <Button variant="primary" size="sm" onClick={pb.togglePlay} aria-label={pb.isPlaying ? "Pausar cena" : "Reproduzir cena"}>
                 {pb.isPlaying ? <Pause aria-hidden="true" className="h-3.5 w-3.5" /> : <Play aria-hidden="true" className="h-3.5 w-3.5" />}
                 <span>{pb.isPlaying ? "Pausar" : "Reproduzir"}</span>
               </Button>
-              {trajectory.kind === "surface" && <IconButton label="Próximo passo" size="sm" icon={<ChevronRight />} onClick={pb.next} />}
+              <IconButton label="Próximo passo" size="sm" icon={<ChevronRight />} onClick={pb.next} />
               <IconButton label="Reiniciar cena" size="sm" icon={<RotateCcw />} onClick={pb.reset} />
             </div>
             <div role="group" aria-label="Velocidade da cena" className="flex items-center gap-1">

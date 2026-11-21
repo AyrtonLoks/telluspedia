@@ -21,7 +21,7 @@ import {
   HISTORICAL_ENTITIES,
 } from "../src/lib/historical-entities";
 import { StudyShareModal } from "../src/components/study/StudyShareModal";
-import { useHistoricalRouteStore } from "../src/stores/historicalRouteStore";
+import { useSceneStore } from "../src/stores/sceneStore";
 
 describe("Componente 4: Persistência & Compartilhamento de Estudos (RN16) e Componente Visual de Era", () => {
   test("1. Resolução Canônica de Eras Históricas (resolveHistoricalEra)", () => {
@@ -369,7 +369,7 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
 
     assert.equal(useStudyStore.getState().currentStudyId, "estudo-completo-66ma");
     assert.equal(useTimelineStore.getState().geologicalMa, 250);
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
+    assert.equal(useSceneStore.getState().activeSceneId, null);
 
     store.resetStudy();
     assert.equal(useStudyStore.getState().currentStudyId, null);
@@ -379,7 +379,7 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
 
   test("4. StudyShareModal exibe badges de Era Geológica e Rota de Expedição quando ativos", () => {
     enterGeologicalMode(250);
-    useHistoricalRouteStore.getState().setActiveRouteId("magellan-1519");
+    useSceneStore.getState().openScene("magellan-1519");
     useStudyStore.getState().setShareModalOpen(true);
 
     const html = renderToStaticMarkup(React.createElement(StudyShareModal));
@@ -397,13 +397,13 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
     // Cleanup
     useStudyStore.getState().setShareModalOpen(false);
     useTimelineStore.getState().setGeologicalMa(null);
-    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useSceneStore.getState().closeScene();
     useStudyStore.getState().resetStudy();
   });
 
   test("5. StudyShareModal omite badges paleogeográficos e de expedição no modo padrão contemporâneo", () => {
     useTimelineStore.getState().setGeologicalMa(null);
-    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useSceneStore.getState().closeScene();
     useStudyStore.getState().resetStudy();
     useStudyStore.getState().setShareModalOpen(true);
 
@@ -424,12 +424,12 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
     });
     restoreStudySnapshot(legacyStudy);
     assert.equal(useTimelineStore.getState().geologicalMa, 250);
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, "magellan-1519");
-    assert.equal(useHistoricalRouteStore.getState().isPlaying, false);
+    assert.equal(useSceneStore.getState().activeSceneId, "magellan-1519");
+    assert.equal(useSceneStore.getState().isPlaying, false);
 
     applyTimelinePreset("LAST_50_YEARS");
     assert.equal(useTimelineStore.getState().geologicalMa, null);
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
+    assert.equal(useSceneStore.getState().activeSceneId, null);
     assert.equal(legacyStudy.selectedGeologicalMa, 250);
     assert.equal(legacyStudy.selectedRouteId, "magellan-1519");
 
@@ -440,7 +440,7 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
     assert.equal(useTimelineStore.getState().selectedMilestoneId, null);
     assert.equal(useTimelineStore.getState().selectedYear, null);
     assert.equal(useTimelineStore.getState().geologicalMa, null);
-    assert.equal(useHistoricalRouteStore.getState().activeRouteId, null);
+    assert.equal(useSceneStore.getState().activeSceneId, null);
     useStudyStore.getState().resetStudy();
   });
 
@@ -565,7 +565,7 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
     useTimelineStore.getState().selectYear(1969);
     useTimelineStore.getState().selectMilestone("glo-1969");
     enterGeologicalMode(250); // Pangeia ativada
-    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useSceneStore.getState().closeScene();
     useStudyStore.getState().setShareModalOpen(true);
 
     const html = renderToStaticMarkup(React.createElement(StudyShareModal));
@@ -586,7 +586,7 @@ describe("Componente 4: Persistência de Estudos Paleogeográficos & Rotas Hist�
 
   test("12. StudyShareModal respeita desativação de rotas históricas (omite badge se rota foi desativada)", () => {
     // Cenário: estudo carregado tinha rota, mas o usuário a desativou na HUD
-    useHistoricalRouteStore.getState().setActiveRouteId(null);
+    useSceneStore.getState().closeScene();
     useStudyStore.getState().setShareModalOpen(true);
 
     const html = renderToStaticMarkup(React.createElement(StudyShareModal));

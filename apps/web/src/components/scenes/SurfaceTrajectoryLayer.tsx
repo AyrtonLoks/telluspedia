@@ -1,6 +1,5 @@
 "use client";
 
-import { historicalRouteActions } from "@/stores/actions";
 
 import React, { useRef, useMemo, useEffect, useState } from "react";
 import * as THREE from "three";
@@ -9,7 +8,7 @@ import { createSurfaceTrajectoryCurve, ROUTE_ALTITUDE } from "@/lib/scenes/surfa
 import type { SceneTrajectory } from "@/lib/scenes/schema";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
-import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
+import { useSceneStore } from "@/stores/sceneStore";
 
 export { ROUTE_ALTITUDE };
 
@@ -180,9 +179,9 @@ export const SurfaceTrajectoryLayer: React.FC<{ sceneId: string; trajectory: Sur
     };
   }, []);
 
-  // Track playback progress synchronized with useHistoricalRouteStore
+  // Progresso da reprodução, sincronizado com o store único de cenas
   const localProgressRef = useRef<number>(
-    typeof window !== "undefined" ? useHistoricalRouteStore.getState().progress || 0 : 0
+    typeof window !== "undefined" ? useSceneStore.getState().progress || 0 : 0
   );
   const lastStoreUpdateRef = useRef<number>(0);
 
@@ -190,16 +189,13 @@ export const SurfaceTrajectoryLayer: React.FC<{ sceneId: string; trajectory: Sur
   useFrame((state, delta) => {
     if (!curve) return;
 
-    const routeStore = useHistoricalRouteStore.getState();
-    const isActive = Boolean(routeStore.activeRouteId);
+    const sceneStore = useSceneStore.getState();
+    const isActive = sceneStore.activeSceneId === sceneId;
 
     let progress: number;
 
     if (isActive) {
-      if (routeStore.isPlaying) {
-        historicalRouteActions.tick(delta);
-      }
-      progress = useHistoricalRouteStore.getState().progress;
+      progress = sceneStore.progress;
       localProgressRef.current = progress;
     } else {
       // Standalone continuous loop when route is not actively driven by HUD

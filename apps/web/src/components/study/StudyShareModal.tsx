@@ -8,9 +8,10 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { HISTORICAL_ERAS } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";
-import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
+import { useSceneStore } from "@/stores/sceneStore";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { getHistoricalRoute } from "@/lib/historical-routes";
+import { sceneHasTrajectoryKind } from "@/lib/scenes/catalog";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
@@ -52,11 +53,10 @@ export const StudyShareModal: React.FC = () => {
   const epoch = useEpochState();
   const geologicalMa = epoch.geologicalMa;
 
-  const storeHistRouteId = useHistoricalRouteStore((s) => s.activeRouteId);
-  const activeRouteId =
-    typeof window === "undefined"
-      ? useHistoricalRouteStore.getState().activeRouteId
-      : storeHistRouteId;
+  // Só rotas de superfície vão para o estudo como rota; a missão Terra–Lua volta pelo marco.
+  const storeSceneId = useSceneStore((s) => s.activeSceneId);
+  const openSceneId = typeof window === "undefined" ? useSceneStore.getState().activeSceneId : storeSceneId;
+  const activeRouteId = sceneHasTrajectoryKind(openSceneId, "surface") ? openSceneId : null;
 
   const storeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
   const activeObservatoryLayers =
@@ -92,7 +92,7 @@ export const StudyShareModal: React.FC = () => {
   // a Apollo só conta quando o marco/estudo a ativou explicitamente, não pelo ano.
   const eraDef = HISTORICAL_ERAS[epoch.historicalEraId];
   const isHistoricalEraActive = epoch.mode !== "GEOLOGICAL" && eraDef.id !== "CONTEMPORARY";
-  const isApollo11Active = epoch.activeScene === "APOLLO11";
+  const isApollo11Active = sceneHasTrajectoryKind(epoch.activeScene, "cislunar");
 
   const geologicalEraDef = geologicalMa ? resolveGeologicalEra(geologicalMa) : null;
   const historicalRouteDef = activeRouteId ? getHistoricalRoute(activeRouteId) : null;
