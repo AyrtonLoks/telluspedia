@@ -219,7 +219,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | DONE | antigravity | T30 | G-ESTUDOS, G-SHELL |
-| D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | IN_PROGRESS | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS |
+| D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | REVIEW | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS |
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | TODO | — | — | G-OBS, G-GLOBO |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
 | D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
@@ -2075,7 +2075,7 @@ Hoje só é possível criar estudos (`POST /api/studies`) e abrir por link exato
 
 ### D24 · Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas)
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d24-cenas-historicas · **Worktree:** ../telluspedia-wt/claude-d24
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d24-cenas-historicas · **Worktree:** ../telluspedia-wt/claude-d24
 - **Prioridade:** P1 · **Área:** Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS
 
 **Contexto / problema**
@@ -2098,6 +2098,7 @@ O player genérico de cenas (D12) está pronto, mas o catálogo contém apenas 2
 - 2026-11-21 · claude · REVIEW · Ayrton conferiu no navegador o cartão do marco e as interações da cena (“de acordo”). Critérios atendidos: 7 cenas completas e tocáveis (Magalhães, Apollo 11, Marco Polo, Vasco da Gama, Primeira e Segunda Guerras, Muro de Berlim), todas validadas pelo schema D12, com fontes auditáveis; First Load JS de `/` +1,5 kB gzip, sem conteúdo pesado no chunk inicial. Validação: typecheck e lint ok; testes só com as 5 falhas de ambiente do Prisma.
 - 2026-11-21 · claude · IN_PROGRESS · Reaberta a pedido do Ayrton para estender “arrastar não é clique” (`isDragRelease`) aos cliques 3D do Cosmos (planetas, Sol, Lua, cometa Halley) e das camadas do Observatório (aviões, navios, rotas marítimas, EONET, FIRMS, ISS e satélites). G-COSMOS e G-OBS adicionados (livres; D04 e D08 em REVIEW não bloqueiam).
 - 2026-11-21 · claude · IN_PROGRESS · `fix(interacao): arrastar não é clique no Cosmos e no Observatório [D24]`. Guarda `isDragRelease` em todos os cliques 3D que selecionam algo: Observatório — aviões (2), navios (2), rotas marítimas, eventos EONET, focos FIRMS, ISS e satélites; Cosmos — planetas, Sol, Lua e o cometa Halley (a etiqueta HTML do Halley fica fora: não é acionada por arraste no canvas). Teste de cobertura por arquivo em `scenes-lazy.test.ts`. Typecheck: só erros de ambiente (Prisma não gerado: 4 de sempre + 2 `implicit any` da D23 já presentes no master); lint ok; testes só com as falhas de ambiente do Prisma (6, incluindo a nova `studies-gallery` da D23). **Falta:** conferir no navegador.
+- 2026-11-21 · claude · REVIEW · Conferido no navegador (painel visível, 1440×900) com o código novo servido: no Cosmos, arrastar começando e terminando sobre o Sol gira a câmera sem selecioná-lo; um clique simples seleciona (`corpo=SUN`). Planetas, Lua, Halley e as camadas do Observatório usam a mesma guarda, coberta arquivo a arquivo pelo teste (alvos do Observatório pequenos demais para um arraste confiável com o mouse remoto).
 
 ---
 
