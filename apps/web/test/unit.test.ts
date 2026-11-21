@@ -3102,42 +3102,16 @@ describe("Componente 1 (Horizonte 2 Fechamento): Datasets Paleogeográficos & Ro
     assert.ok(hasSuture, "Deve conter feição de sutura");
     assert.ok(hasSubduction, "Deve conter feição de subducção");
 
-    // 2. Textura equirretangular da Pangeia
-    const texturePath = path.join(__dirname, "../public/textures/paleo_pangea.png");
-    assert.ok(fs.existsSync(texturePath), "paleo_pangea.png deve existir em public/textures/");
-    const textureBuffer = fs.readFileSync(texturePath);
-    assert.ok(textureBuffer.length > 50000, "Textura PNG deve ter tamanho > 50KB");
-
-    // Assinatura PNG canônica: 89 50 4E 47 0D 0A 1A 0A
-    assert.equal(textureBuffer[0], 0x89);
-    assert.equal(textureBuffer[1], 0x50);
-    assert.equal(textureBuffer[2], 0x4e);
-    assert.equal(textureBuffer[3], 0x47);
-
-    // Cópias de compatibilidade Pangeia
-    const aliasPath1 = path.join(__dirname, "../public/textures/paleo/pangea_250ma.png");
-    const aliasPath2 = path.join(__dirname, "../public/textures/pangea_250ma.png");
-    assert.ok(fs.existsSync(aliasPath1));
-    assert.ok(fs.existsSync(aliasPath2));
-
-    // 3. Textura equirretangular de Gondwana & Laurásia (150 Ma)
-    const gondwanaTexturePath = path.join(__dirname, "../public/textures/paleo_gondwana.png");
-    assert.ok(fs.existsSync(gondwanaTexturePath), "paleo_gondwana.png deve existir em public/textures/");
-    const gondwanaBuffer = fs.readFileSync(gondwanaTexturePath);
-    assert.ok(gondwanaBuffer.length > 50000, "Textura Gondwana PNG deve ter tamanho > 50KB");
-
-    assert.equal(gondwanaBuffer[0], 0x89);
-    assert.equal(gondwanaBuffer[1], 0x50);
-    assert.equal(gondwanaBuffer[2], 0x4e);
-    assert.equal(gondwanaBuffer[3], 0x47);
-
-    const gondwanaAlias1 = path.join(__dirname, "../public/textures/paleo/gondwana_150ma.png");
-    const gondwanaAlias2 = path.join(__dirname, "../public/textures/gondwana_150ma.png");
-    assert.ok(fs.existsSync(gondwanaAlias1));
-    assert.ok(fs.existsSync(gondwanaAlias2));
-
-    // Validação de vinculação no catálogo
-    assert.equal(PALEO_ERAS["gondwana-150ma"].textureUrl, "/textures/paleo_gondwana.png");
+    // 2. Paleomapas equirretangulares (PALEOMAP PaleoDEM — ver test/globe-surface.test.ts)
+    for (const [eraId, file] of [["pangea-250ma", "paleo_250ma.png"], ["gondwana-150ma", "paleo_150ma.png"]] as const) {
+      const texturePath = path.join(__dirname, "../public/textures/paleo", file);
+      assert.ok(fs.existsSync(texturePath), `${file} deve existir em public/textures/paleo/`);
+      const textureBuffer = fs.readFileSync(texturePath);
+      assert.ok(textureBuffer.length > 50000, "Textura PNG deve ter tamanho > 50KB");
+      // Assinatura PNG canônica: 89 50 4E 47
+      assert.deepEqual(Array.from(textureBuffer.subarray(0, 4)), [0x89, 0x50, 0x4e, 0x47]);
+      assert.equal(PALEO_ERAS[eraId].textureUrl, `/textures/paleo/${file}`);
+    }
   });
 
   test("7. Reconstituição da Circum-navegação de Magalhães-Elcano: Frota, Waypoints e Pigafetta (RN12)", () => {

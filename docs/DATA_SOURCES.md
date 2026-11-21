@@ -144,19 +144,27 @@ O binário `HYG1` contém uma contagem total e uma de estrelas visíveis em uint
 
 ---
 
-## Anexo — Texturas do globo (D02, 2026-11-20)
+## Anexo — Texturas do globo (D02, revisado em 2026-11-20)
 
-Arquivos em `apps/web/public/textures/`, todos derivados de imagens da NASA em **domínio público**
-(obras do governo dos EUA). Baixados das cópias hospedadas no Wikimedia Commons, porque o servidor
-original `eoimages.gsfc.nasa.gov` estava inacessível no momento da integração.
+Arquivos em `apps/web/public/textures/`, gerados por `apps/web/scripts/textures/build-earth-textures.mjs`
+(`pnpm --filter web textures:build`) a partir dos originais em `assets-src/raw/` (fora do git; URLs em
+`assets-src/README.md`). As imagens da NASA vêm do novo acervo do Earth Observatory em
+`assets.science.nasa.gov` (o antigo `eoimages.gsfc.nasa.gov` saiu do ar).
+
+Cada textura existe em **KTX2** (Basis Universal, com mipmaps; carregada pelo `KTX2Loader`) e em
+**JPG/PNG** de fallback, usado quando o navegador não transcodifica o KTX2. Os KTX2 são gravados com o
+eixo Y invertido porque o `KTX2Loader` usa `flipY = false`.
 
 | Arquivo | Origem | Licença | Processamento |
 |---|---|---|---|
-| `earth_day_4k.jpg`, `earth_day_2k.jpg` | NASA Visible Earth — Blue Marble Next Generation, “Whole world - land and oceans” ([Commons](https://commons.wikimedia.org/wiki/File:Whole_world_-_land_and_oceans_12000.jpg)) | Domínio público (NASA) | Miniatura 3840×1920 do Commons; versão 2048×1024 por redimensionamento; JPEG q86 |
-| `earth_night_4k.jpg`, `earth_night_2k.jpg` | NASA Earth Observatory — “The earth at night” (luzes noturnas, Suomi NPP VIIRS) ([Commons](https://commons.wikimedia.org/wiki/File:The_earth_at_night.jpg)) | Domínio público (NASA) | Idem |
-| `earth_surface_2k.png` — canal R | NASA — elevação SRTM “srtm_ramp2” em tons de cinza ([Commons](https://commons.wikimedia.org/wiki/File:Srtm_ramp2.world.21600x10800.jpg)) | Domínio público (NASA) | Redimensionado para 2048×1024; usado como altura relativa para o relevo (gradiente no shader) — não é altitude em metros |
-| `earth_surface_2k.png` — canal G | Derivado de `earth_day` | — | Máscara de água: pixels próximos da cor do oceano da Blue Marble (RGB 11,10,50) e com azul dominante; transição suave; desfoque de 0,6 px |
+| `earth_day_4k.jpg`/`.ktx2`, `earth_day_2k.jpg`/`.ktx2` | NASA Earth Observatory — Blue Marble Next Generation **com relevo e batimetria**, julho de 2004 (`world.topo.bathy.200407.3x5400x2700.jpg`, [página](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/)) | Domínio público (NASA) | 5400×2700 → 4096×2048 e 2048×1024 (Lanczos); JPEG q88; KTX2 UASTC + RDO + Zstandard, sRGB |
+| `earth_night_4k.jpg`/`.ktx2`, `earth_night_2k.jpg`/`.ktx2` | NASA Earth Observatory — “The earth at night” (Suomi NPP VIIRS) ([Commons](https://commons.wikimedia.org/wiki/File:The_earth_at_night.jpg)) | Domínio público (NASA) | JPG de 3840 px mantido; KTX2 ETC1S 4096×2048 e 2048×1024, sRGB |
+| `earth_surface_2k.png`/`.ktx2` — canal R | NASA/BMNG — elevação GEBCO 08 em tons de cinza (`gebco_08_rev_elev_5400x2700.jpg`, [página](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/topography-bathymetry-maps/)) | Domínio público (NASA); dados GEBCO | 2048×1024; altura relativa em terra (0 = nível do mar) para o relevo no shader |
+| `earth_surface_2k.png`/`.ktx2` — canal G | NASA/BMNG — batimetria GEBCO 08 (`gebco_08_rev_bath_5400x2700.jpg`) | Idem | Máscara de água = batimetria abaixo de 0 m, calculada em 5400 px e reduzida (borda suave); inclui mares interiores como o Cáspio |
+| `earth_surface_2k.png`/`.ktx2` — canal B | Idem | Idem | Profundidade relativa (0 = raso, 255 = fossa); zero em terra. KTX2 UASTC linear |
+| `earth_clouds_2k.jpg`/`.ktx2` | NASA Earth Observatory — Blue Marble 2002, camada de nuvens (`cloud_combined_2048.jpg`, MODIS/Terra, composição de dois dias + infravermelho nos polos; [página](https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/)) | Domínio público (NASA) | Tons de cinza; KTX2 ETC1S. Imagem estática de 2001 — **não** é a nebulosidade atual |
+| `paleo/paleo_250ma.png`, `paleo_200ma.png`, `paleo_150ma.png`, `paleo_66ma.png` (+ `.ktx2`) | **PALEOMAP PaleoDEMs** — Scotese, C. R.; Wright, N. (2018). *PALEOMAP Paleodigital Elevation Models (PaleoDEMS) for the Phanerozoic*. Zenodo. [doi:10.5281/zenodo.5460860](https://doi.org/10.5281/zenodo.5460860) — mapas 49 (250 Ma), 43 (200 Ma), 33 (150 Ma) e 16 (65 Ma, usado para o K-Pg de 66 Ma), grade de 1° | **CC BY 4.0** (atribuição obrigatória: Scotese & Wright, 2018) | Elevação/batimetria reamostrada por bicúbica para 2048×1024; cor hipsométrica (oceano na mesma escala de azuis da Blue Marble com batimetria; terra ocre no Permo-Triássico árido, verde no Jurássico/Cretáceo); sombreamento de relevo; **alfa = água** (reflexo do Sol no modo geológico). A cor da vegetação é uma convenção visual, não um dado do PaleoDEM |
 
-**Escolha de resolução:** 3840 px quando `maxTextureSize ≥ 8192`, senão 2048 px (`pickEarthTextureSet` em `EarthSphere.tsx`).
+**Escolha de resolução:** 4096 px quando `maxTextureSize ≥ 8192`, senão 2048 px (`pickEarthTextureSet` em `EarthSphere.tsx`).
 
-**Pendências:** nuvens — nenhuma textura de nuvens em domínio público estava acessível (a “Blue Marble 2002” do Commons é a superfície sem nuvens); KTX2/Basis — sem ferramentas de conversão no ambiente (JPEG/PNG com mipmaps do WebGL).
+**Limitações conhecidas:** as nuvens são de 2048 px (a versão de 8192 px do Blue Marble não está no novo acervo da NASA); o KTX2 diurno de 4K tem ~6 MB (UASTC, para preservar o degradê do oceano) contra ~1,4 MB do JPG, em troca de ~4× menos memória de vídeo e sem decodificação na thread principal; as suturas de `PaleoPlatesLayer` (`pangea-plates-250ma.json`) usam coordenadas atuais e não se alinham aos paleomapas reconstruídos.

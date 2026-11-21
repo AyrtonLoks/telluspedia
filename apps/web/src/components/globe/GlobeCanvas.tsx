@@ -3,15 +3,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
-import { CloudSun, Sun } from "lucide-react";
+import { Cloud, CloudSun, Sun } from "lucide-react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { EarthSphere } from "./EarthSphere";
 import { Atmosphere } from "./Atmosphere";
+import { CloudLayer } from "./CloudLayer";
 
 /** Botões de alternância sobre o globo (tokens do design system — D14). */
 const GLOBE_TOGGLE =
-  "flex h-9 items-center gap-2 rounded-control border border-line bg-surface/86 px-3 text-label font-medium text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:text-fg aria-pressed:border-accent/40 aria-pressed:bg-accent/15 aria-pressed:text-fg";
+  "flex h-9 items-center gap-2 rounded-control border border-line bg-surface/86 px-3 text-label font-medium text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:text-fg aria-pressed:border-accent/40 aria-pressed:bg-accent/15 aria-pressed:text-fg disabled:cursor-not-allowed disabled:opacity-50";
 import { CountryBorders } from "./CountryBorders";
 import { OrbitingMoon } from "./OrbitingMoon";
 import { SkyStars } from "./SkyStars";
@@ -63,6 +64,8 @@ export const GlobeCanvas: React.FC = () => {
   const [studyLighting, setStudyLighting] = useState(false);
   // D02: atmosfera com espalhamento (ligada por padrão; desativável).
   const [showAtmosphere, setShowAtmosphere] = useState(true);
+  // D02: nuvens reais (MODIS/NASA), ligadas por padrão; somem no modo geológico.
+  const [showClouds, setShowClouds] = useState(true);
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   // Época ativa: fonte única (T12). Cenas só por seleção explícita, nunca pelo ano.
@@ -147,6 +150,7 @@ export const GlobeCanvas: React.FC = () => {
 
           {/* 3D Earth Mesh with Shader */}
           <EarthSphere studyLighting={studyLighting} atmosphere={showAtmosphere} />
+          <CloudLayer enabled={showClouds} geological={isGeological} studyLighting={studyLighting} />
           {showAtmosphere && <Atmosphere />}
 
           {/* High-Resolution TopoJSON Borders */}
@@ -189,6 +193,17 @@ export const GlobeCanvas: React.FC = () => {
         >
           <CloudSun aria-hidden="true" className="size-4" />
           Atmosfera
+        </button>
+        <button
+          type="button"
+          aria-pressed={showClouds}
+          onClick={() => setShowClouds((enabled) => !enabled)}
+          className={GLOBE_TOGGLE}
+          disabled={isGeological}
+          title={isGeological ? "Nuvens indisponíveis no modo geológico" : "Nuvens reais (composição MODIS/Terra da NASA; imagem estática, não a previsão do tempo)"}
+        >
+          <Cloud aria-hidden="true" className="size-4" />
+          Nuvens
         </button>
       </div>
 

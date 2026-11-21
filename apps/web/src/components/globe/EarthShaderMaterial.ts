@@ -14,7 +14,7 @@ export const EarthShader = {
     uDayTexture: { value: createPlaceholderTexture(11, 25, 46) as THREE.Texture },
     uNightTexture: { value: createPlaceholderTexture(2, 5, 11) as THREE.Texture },
     uPaleoTexture: { value: null as THREE.Texture | null },
-    /** D02: R = elevação (SRTM, NASA), G = máscara de água derivada da textura diurna. */
+    /** R = elevação em terra, G = água, B = profundidade do oceano (GEBCO 08 via NASA BMNG). */
     uSurfaceTexture: { value: createPlaceholderTexture(0, 0, 0) as THREE.Texture },
     uSurfaceTexel: { value: new THREE.Vector2(1 / 2048, 1 / 1024) },
     /** Intensidade do relevo (0 desliga). */
@@ -82,12 +82,14 @@ export const EarthShader = {
       // Sample day, night, and paleogeographic textures
       vec3 dayColor = texture2D(uDayTexture, vUv).rgb;
       vec3 nightColor = texture2D(uNightTexture, vUv).rgb;
-      vec3 paleoColor = texture2D(uPaleoTexture, vUv).rgb;
+      vec4 paleoSample = texture2D(uPaleoTexture, vUv);
+      vec3 paleoColor = paleoSample.rgb;
 
-      // D02 — superfície: elevação (R) e água (G). Relevo e reflexo valem só para a geografia atual.
+      // Superfície: elevação (R), água (G) e profundidade (B). O relevo por normal vale só para a
+      // geografia atual (nos paleomapas ele já vem sombreado); a água do paleomapa vem no alfa.
       vec4 surface = texture2D(uSurfaceTexture, vUv);
-      float water = surface.g;
       float modern = 1.0 - uPaleoFactor;
+      float water = mix(surface.g, paleoSample.a, uPaleoFactor);
 
       // Relevo: inclina a normal pelo gradiente da elevação (leste/norte no espaço mundial).
       float hE = texture2D(uSurfaceTexture, vUv + vec2(uSurfaceTexel.x, 0.0)).r;
@@ -101,10 +103,11 @@ export const EarthShader = {
       // Sombreamento do relevo relativo à esfera lisa: realça cordilheiras sob luz rasante.
       float reliefShade = clamp((dot(reliefNormal, sunDir) - nDotL) * 2.2, -0.45, 0.45) * (1.0 - uStudyLighting);
 
-      // Oceano levemente mais rico (a textura diurna tem o mar num azul-marinho uniforme).
+      // A textura diurna (Blue Marble com batimetria) já traz plataformas, dorsais e fossas;
+      // aqui só um leve ganho de saturação no mar para não apagar sob a luz difusa.
       vec3 baseDay = mix(dayColor, paleoColor, uPaleoFactor);
-      vec3 oceanTint = baseDay * vec3(0.85, 1.12, 1.3) + vec3(0.0, 0.012, 0.03);
-      baseDay = mix(baseDay, oceanTint, water * modern * 0.75);
+      vec3 oceanTint = baseDay * vec3(0.94, 1.04, 1.12);
+      baseDay = mix(baseDay, oceanTint, water * 0.6);
 
       // Keep daylight bright at noon and use uniform diffuse lighting in study mode.
       float diffuse = mix(0.78 + max(nDotL, 0.0) * 0.37, 1.15, uStudyLighting);
@@ -114,7 +117,7 @@ export const EarthShader = {
       vec3 halfDir = normalize(sunDir + viewDir);
       float nDotH = max(dot(normal, halfDir), 0.0);
       float glint = pow(nDotH, 180.0) * 1.1 + pow(nDotH, 18.0) * 0.07;
-      vec3 specular = vec3(1.0, 0.94, 0.84) * glint * water * modern * uOceanSpecular
+      vec3 specular = vec3(1.0, 0.94, 0.84) * glint * water * uOceanSpecular
         * smoothstep(0.0, 0.12, nDotL) * (1.0 - uStudyLighting);
       dayComposite += specular;
 

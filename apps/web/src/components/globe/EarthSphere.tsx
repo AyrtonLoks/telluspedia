@@ -32,6 +32,7 @@ import {
 } from "@/lib/historical-topology";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { loadGlobeTexture, textureSource } from "@/lib/textures/globeTextures";
 
 /**
  * Generates an authentic equirectangular DataTexture of Pangea (~250 Ma)
@@ -102,7 +103,7 @@ function createProceduralPangeaTexture(width = 512, height = 256): THREE.DataTex
           data[idx + 1] = Math.floor(120 + harmonic * 25);
           data[idx + 2] = Math.floor(70 + harmonic * 20);
         }
-        data[idx + 3] = 255;
+        data[idx + 3] = 0; // alfa = água (0 em terra), mesma convenção dos paleomapas
       } else if (elevation > -0.12) {
         // Turquoise continental shelf / lagoon
         const shelf = (elevation + 0.12) / 0.16;
@@ -127,16 +128,23 @@ function createProceduralPangeaTexture(width = 512, height = 256): THREE.DataTex
   return texture;
 }
 
-/** Conjunto de texturas por capacidade da GPU (D02). */
+/**
+ * Conjunto de texturas por capacidade da GPU (D02). Cada item tem o KTX2 (preferido) e o
+ * JPG/PNG de fallback — ver lib/textures/globeTextures.ts.
+ */
 export function pickEarthTextureSet(maxTextureSize: number) {
-  const hi = maxTextureSize >= 8192;
+  const quality = maxTextureSize >= 8192 ? "4k" : "2k";
   return {
-    quality: hi ? "4k" : "2k",
-    day: hi ? "/textures/earth_day_4k.jpg" : "/textures/earth_day_2k.jpg",
-    night: hi ? "/textures/earth_night_4k.jpg" : "/textures/earth_night_2k.jpg",
-    surface: "/textures/earth_surface_2k.png",
+    quality,
+    day: textureSource(`/textures/earth_day_${quality}.jpg`),
+    night: textureSource(`/textures/earth_night_${quality}.jpg`),
+    surface: textureSource("/textures/earth_surface_2k.png"),
+    clouds: textureSource("/textures/earth_clouds_2k.jpg"),
   } as const;
 }
+
+/** Paleomapa padrão (Pangeia, 250 Ma) quando a era geológica não define outro. */
+export const DEFAULT_PALEO_TEXTURE = "/textures/paleo/paleo_250ma.png";
 
 export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolean }> = ({
   studyLighting,
@@ -157,47 +165,57 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
   const effectiveYear = epoch.effectiveYear;
   const era = HISTORICAL_ERAS[epoch.historicalEraId];
 
-  // Texturas NASA (domínio público — docs/DATA_SOURCES.md). D02: 3840 px quando a GPU aguenta,
-  // 2048 px como fallback; superfície (elevação + água) em espaço linear: são dados, não cor.
-  const [dayTexture, nightTexture, surfaceTexture] = useMemo(() => {
-    const set = pickEarthTextureSet(gl.capabilities.maxTextureSize);
-    const anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
-    const loader = new THREE.TextureLoader();
-    const day = loader.load(set.day, () => invalidate());
-    const night = loader.load(set.night, () => invalidate());
-    const surface = loader.load(set.surface, () => invalidate());
-    day.colorSpace = THREE.SRGBColorSpace;
-    night.colorSpace = THREE.SRGBColorSpace;
-    surface.colorSpace = THREE.NoColorSpace;
-    day.anisotropy = anisotropy;
-    night.anisotropy = anisotropy;
-    return [day, night, surface];
-  }, [invalidate, gl]);
+  // Texturas NASA (domínio público — docs/DATA_SOURCES.md): 4096 px quando a GPU aguenta,
+  // 2048 px como fallback; superfície (elevação + água + profundidade) é dado linear, não cor.
+  const textureSet = useMemo(() => pickEarthTextureSet(gl.capabilities.maxTextureSize), [gl]);
 
   // Procedural Pangea texture initialized immediately as base fallback
   const proceduralPaleoTexture = useMemo(() => {
     return createProceduralPangeaTexture();
   }, []);
 
-  // Initialize shader material (uSunDirection synced from canonical useSunDirection below)
+  // Initialize shader material (uSunDirection synced from canonical useSunDirection below).
+  // As texturas entram de forma assíncrona (KTX2 ou JPG/PNG); até lá valem os placeholders 1×1.
   const earthMaterial = useMemo(() => {
-    return createEarthMaterial(dayTexture, nightTexture, proceduralPaleoTexture, surfaceTexture);
-  }, [dayTexture, nightTexture, proceduralPaleoTexture, surfaceTexture]);
+    return createEarthMaterial(null, null, proceduralPaleoTexture, null);
+  }, [proceduralPaleoTexture]);
+
+  useEffect(() => {
+    let alive = true;
+    const loaded: THREE.Texture[] = [];
+    const jobs = [
+      ["uDayTexture", textureSet.day, "color"],
+      ["uNightTexture", textureSet.night, "color"],
+      ["uSurfaceTexture", textureSet.surface, "data"],
+    ] as const;
+    for (const [uniform, source, kind] of jobs) {
+      loadGlobeTexture(gl, source, kind)
+        .then((texture) => {
+          if (!alive) {
+            texture.dispose();
+            return;
+          }
+          loaded.push(texture);
+          earthMaterial.uniforms[uniform].value = texture;
+          if (uniform === "uSurfaceTexture") {
+            const { width, height } = texture.image as { width: number; height: number };
+            earthMaterial.uniforms.uSurfaceTexel.value.set(1 / width, 1 / height);
+          }
+          invalidate();
+        })
+        .catch((error) => console.error(`[globo] falha ao carregar ${source.fallback}`, error));
+    }
+    // Descarte das texturas da Terra ao desmontar (RN21)
+    return () => {
+      alive = false;
+      loaded.forEach((texture) => texture.dispose());
+    };
+  }, [gl, earthMaterial, textureSet, invalidate]);
 
   useEffect(() => {
     earthMaterial.uniforms.uAtmosphereShell.value = atmosphere ? 1 : 0;
     invalidate();
   }, [earthMaterial, atmosphere, invalidate]);
-
-  // Descarte das texturas da Terra ao desmontar (RN21)
-  useEffect(
-    () => () => {
-      dayTexture.dispose();
-      nightTexture.dispose();
-      surfaceTexture.dispose();
-    },
-    [dayTexture, nightTexture, surfaceTexture]
-  );
 
   useEffect(() => {
     earthMaterial.uniforms.uStudyLighting.value = studyLighting ? 1 : 0;
@@ -210,18 +228,16 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
   // Load raster paleogeographic texture from public directory if available
   useEffect(() => {
     let isMounted = true;
-    const loader = new THREE.TextureLoader();
     const paleoEra = effectiveGeologicalMa ? resolveGeologicalEra(effectiveGeologicalMa) : null;
-    const texturePath = paleoEra?.textureUrl || "/textures/paleo_pangea.png";
+    const texturePath = paleoEra?.textureUrl || DEFAULT_PALEO_TEXTURE;
 
-    loader.load(
-      texturePath,
+    // Paleomapas PALEOMAP (CC BY 4.0): RGB = cor, A = água (reflexo do Sol no shader).
+    loadGlobeTexture(gl, textureSource(texturePath), "color").then(
       (tex) => {
         if (!isMounted) {
           tex.dispose();
           return;
         }
-        tex.colorSpace = THREE.SRGBColorSpace;
         // Dispose previously loaded raster texture to prevent VRAM accumulation
         if (
           loadedPaleoTextureRef.current &&
@@ -234,30 +250,21 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
         earthMaterial.needsUpdate = true;
         invalidate();
       },
-      undefined,
       () => {
-        // Fallback procedural texture already loaded
+        // A textura procedural continua como fallback
       }
     );
 
     return () => {
       isMounted = false;
     };
-  }, [earthMaterial, effectiveGeologicalMa, proceduralPaleoTexture, invalidate]);
+  }, [gl, earthMaterial, effectiveGeologicalMa, proceduralPaleoTexture, invalidate]);
 
-  useEffect(() => {
-    if (dayTexture) earthMaterial.uniforms.uDayTexture.value = dayTexture;
-    if (nightTexture) earthMaterial.uniforms.uNightTexture.value = nightTexture;
-    earthMaterial.needsUpdate = true;
-  }, [earthMaterial, dayTexture, nightTexture]);
-
-  // Dispose earth material, planetary textures, and procedural texture on unmount
+  // Dispose earth material and procedural texture on unmount
   useEffect(() => {
     return () => {
       earthMaterial.dispose();
       proceduralPaleoTexture.dispose();
-      dayTexture?.dispose();
-      nightTexture?.dispose();
       if (
         loadedPaleoTextureRef.current &&
         loadedPaleoTextureRef.current !== proceduralPaleoTexture
@@ -265,7 +272,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
         loadedPaleoTextureRef.current.dispose();
       }
     };
-  }, [earthMaterial, proceduralPaleoTexture, dayTexture, nightTexture]);
+  }, [earthMaterial, proceduralPaleoTexture]);
 
   // Dynamic spatial index (<0.2ms) switching seamlessly between contemporary and historical eras
   const [historicalSpatialIndex, setHistoricalSpatialIndex] = useState<CountrySpatialIndex | null>(() => {

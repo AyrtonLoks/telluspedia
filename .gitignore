@@ -60,3 +60,6 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 .turbo/
+
+# Originais das texturas (ver assets-src/README.md)
+assets-src/raw/
