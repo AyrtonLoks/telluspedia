@@ -191,7 +191,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | DONE | claude | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
-| D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | IN_PROGRESS | claude | T02, D14 | G-TIMELINE |
+| D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | REVIEW | claude | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
@@ -1388,7 +1388,7 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 
 ### D13 · Eixo da timeline: zoom, clusters, prévias
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d13-eixo-timeline · **Worktree:** ../telluspedia-wt/claude-d13
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d13-eixo-timeline · **Worktree:** ../telluspedia-wt/claude-d13
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** G · **Depende de:** T02, D14 · **Grupos:** G-TIMELINE
 
 **Contexto / problema**
@@ -1402,13 +1402,14 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 5. Cores de categoria vindas dos tokens (D14).
 
 **Critérios de aceite**
-- [ ] Nenhum pin sobreposto em qualquer nível de zoom.
+- [x] Nenhum pin sobreposto em qualquer nível de zoom.
 - [ ] Navegação fluida (60 FPS) ao arrastar/zoom.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada após a D11 ir para REVIEW. Primeira TODO elegível da fase 7 (D12 depende da T20 em andamento; D16 compartilha G-OBS com a D08). G-TIMELINE sem tarefas em andamento.
+- 2026-11-20 · claude · REVIEW · Commit `feat(timeline): eixo com zoom, pan, ticks adaptativos, grupos de marcos e scrubber [D13]`. **Eixo (`lib/timeline/axis.ts` + `TimelineAxis`):** janela visível local com zoom ancorado no cursor (roda/trackpad com listener não passivo; Ctrl+roda = pinça do trackpad; pinça com dois dedos por pointer events), pan por arrasto e roda horizontal, teclado (+ − ← → 0) e botão "período inteiro" quando há zoom; mínimo de 3 meses; troca de preset volta ao período inteiro. Ticks adaptativos século → década → ano → mês ("fev 1990"), sempre com ≥ 80 px entre si. **Marcos:** posição pela data exata (`exactDate`) quando existe; agrupamento que funde o par vizinho mais próximo até todos ficarem a ≥ 22 px — nenhum marcador se sobrepõe em nenhum zoom (teste varre larguras, zooms e janelas com todos os marcos globais e dos países). `MilestoneCluster`: contagem com a cor da categoria (tokens D14), prévia com data, título e categoria dos membros (clicáveis) e clique que aproxima o eixo até separar. **Scrubber:** alça do ano selecionado (fim do período quando não há ano), arrastável e com setas (`role="slider"`), que atualiza `selectedYear` — o Sol, a Lua e as fronteiras do globo reagem como já faziam. **Fora do escopo/limites:** a prévia não tem imagem (os marcos não têm imagem nos dados; nada foi inventado); "abrir a cena" fica para a D12; o eixo geológico não mudou. **Testes:** `test/timeline-axis.test.tsx` (9) + os existentes de layout/design system. **Validação:** lint ok; typecheck ok exceto o Prisma não gerado; 456/460 (as 4 falhas são `@prisma/client did not initialize`, sem acesso a binaries.prisma.sh aqui). **Não verificado:** FPS ao arrastar/zoom e aparência no navegador — critério de 60 FPS fica aberto até a medição.
 ---
 
 ### D14 · Design system (tokens + primitivos)
