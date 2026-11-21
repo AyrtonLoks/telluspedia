@@ -191,7 +191,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | REVIEW | claude | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
-| D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
+| D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | IN_PROGRESS | claude | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
@@ -1386,7 +1386,7 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 
 ### D13 · Eixo da timeline: zoom, clusters, prévias
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d13-eixo-timeline · **Worktree:** ../telluspedia-wt/claude-d13
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** G · **Depende de:** T02, D14 · **Grupos:** G-TIMELINE
 
 **Contexto / problema**
@@ -1406,6 +1406,7 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 
+- 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada após a D11 ir para REVIEW. Primeira TODO elegível da fase 7 (D12 depende da T20 em andamento; D16 compartilha G-OBS com a D08). G-TIMELINE sem tarefas em andamento.
 ---
 
 ### D14 · Design system (tokens + primitivos)
