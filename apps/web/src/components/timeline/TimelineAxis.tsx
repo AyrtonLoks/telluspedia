@@ -2,9 +2,22 @@
 
 import { enterGeologicalMode, restoreContemporaryTimeline } from "@/stores/actions";
 
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { MilestonePin } from "./MilestonePin";
+import { MilestoneCluster } from "./MilestoneCluster";
+import {
+  adaptiveTicks,
+  clusterPins,
+  DEFAULT_AXIS_WIDTH_PX,
+  milestoneDecimalYear,
+  panView,
+  pxToYear,
+  viewForCluster,
+  yearToPercent,
+  zoomView,
+  type AxisView,
+} from "@/lib/timeline/axis";
 import { GLOBAL_MILESTONES, PILOT_COUNTRIES, findMilestoneById, MilestoneItem } from "@/lib/country-data";
 import { useGlobeStore } from "@/stores/globeStore";
 import { cn } from "@/components/ui/cn";
@@ -96,26 +109,6 @@ export const TimelineAxis: React.FC = () => {
     },
   ], []);
 
-  // Generate Year Ticks
-  const ticks = useMemo(() => {
-    let step = 10;
-    if (span <= 20) step = 2;
-    else if (span <= 50) step = 5;
-    else if (span <= 100) step = 10;
-    else if (span <= 250) step = 25;
-    else if (span <= 500) step = 50;
-    else step = 100;
-
-    const items: { year: number; percent: number }[] = [];
-    const firstTick = Math.ceil(startYear / step) * step;
-
-    for (let yr = firstTick; yr <= endYear; yr += step) {
-      const percent = ((yr - startYear) / span) * 100;
-      items.push({ year: yr, percent });
-    }
-    return items;
-  }, [startYear, endYear, span]);
-
   // Aggregate Milestones (Global + Selected Country if any)
   const milestones = useMemo(() => {
     const all: MilestoneItem[] = [...GLOBAL_MILESTONES];
@@ -146,11 +139,6 @@ export const TimelineAxis: React.FC = () => {
     // Sort chronologically
     return filtered.sort((a, b) => a.year - b.year);
   }, [startYear, endYear, activeCategories, selectedIso, selectedMilestoneId]);
-
-  const pinPercents = useMemo(
-    () => milestones.map((m) => Math.max(2, Math.min(98, ((m.year - startYear) / span) * 100))),
-    [milestones, startYear, span]
-  );
 
   const handleAxisBackgroundClick = () => {
     selectMilestone(null);
@@ -240,15 +228,181 @@ export const TimelineAxis: React.FC = () => {
   }
 
   return (
+    <HistoricalAxis
+      startYear={startYear}
+      endYear={endYear}
+      milestones={milestones}
+      onBackgroundClick={handleAxisBackgroundClick}
+    />
+  );
+};
+
+const ZOOM_STEP = 0.8;
+
+/**
+ * Eixo histórico (D13): zoom (roda, pinça, teclado) e pan (arrastar), ticks adaptativos
+ * (século → década → ano → mês), marcos próximos agrupados sem sobreposição e scrubber do ano.
+ */
+const HistoricalAxis: React.FC<{
+  startYear: number;
+  endYear: number;
+  milestones: MilestoneItem[];
+  onBackgroundClick: () => void;
+}> = ({ startYear, endYear, milestones, onBackgroundClick }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(DEFAULT_AXIS_WIDTH_PX);
+  const bounds = useMemo<AxisView>(() => ({ start: startYear, end: Math.max(startYear + 1, endYear) }), [startYear, endYear]);
+  const [view, setView] = useState<AxisView>(bounds);
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
+  const selectedYear = typeof window === "undefined" ? useTimelineStore.getState().selectedYear : storeSelectedYear;
+  const selectYear = useTimelineStore((s) => s.selectYear);
+
+  // Novo período (preset): volta a mostrar o período inteiro.
+  useEffect(() => setView(bounds), [bounds]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(([entry]) => setWidth(Math.max(1, entry.contentRect.width)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const anchorAt = useCallback((clientX: number) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    return rect ? pxToYear(clientX - rect.left, rect.width, viewRef.current) : (viewRef.current.start + viewRef.current.end) / 2;
+  }, []);
+
+  // Roda/trackpad (listener nativo, não passivo, para não rolar a página). Ctrl+roda = pinça do trackpad.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const v = viewRef.current;
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && !e.ctrlKey) {
+        setView(panView(v, bounds, (e.deltaX / Math.max(1, el.clientWidth)) * (v.end - v.start)));
+      } else {
+        setView(zoomView(v, bounds, Math.exp(e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), anchorAt(e.clientX)));
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [bounds, anchorAt]);
+
+  // Arrastar = pan; dois dedos = pinça. Um clique sem arrasto desmarca o marco selecionado.
+  const pointers = useRef(new Map<number, number>());
+  const gesture = useRef<{ moved: boolean; lastX: number; pinchDist: number }>({ moved: false, lastX: 0, pinchDist: 0 });
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Só o fundo do eixo inicia gesto; marcos, grupos e scrubber tratam o próprio clique.
+    const target = e.target as HTMLElement;
+    if (target !== e.currentTarget && !target.hasAttribute("data-axis-bg")) return;
+    pointers.current.set(e.pointerId, e.clientX);
+    gesture.current.lastX = e.clientX;
+    gesture.current.moved = false;
+    if (pointers.current.size === 2) {
+      pointers.current.forEach((_, id) => e.currentTarget.setPointerCapture?.(id));
+      const [a, b] = [...pointers.current.values()];
+      gesture.current.pinchDist = Math.abs(a - b);
+    }
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointers.current.has(e.pointerId)) return;
+    pointers.current.set(e.pointerId, e.clientX);
+    const v = viewRef.current;
+    const w = Math.max(1, containerRef.current?.clientWidth ?? width);
+    if (pointers.current.size >= 2) {
+      const [a, b] = [...pointers.current.values()];
+      const dist = Math.abs(a - b);
+      if (gesture.current.pinchDist > 0 && dist > 0) {
+        setView(zoomView(v, bounds, gesture.current.pinchDist / dist, anchorAt((a + b) / 2)));
+        gesture.current.moved = true;
+      }
+      gesture.current.pinchDist = dist;
+      return;
+    }
+    const dx = e.clientX - gesture.current.lastX;
+    if (!gesture.current.moved && Math.abs(dx) < 3) return;
+    if (!gesture.current.moved) e.currentTarget.setPointerCapture?.(e.pointerId);
+    gesture.current.moved = true;
+    gesture.current.lastX = e.clientX;
+    setView(panView(v, bounds, (-dx / w) * (v.end - v.start)));
+  };
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    pointers.current.delete(e.pointerId);
+    if (pointers.current.size < 2) gesture.current.pinchDist = 0;
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const v = viewRef.current;
+    const mid = (v.start + v.end) / 2;
+    const span = v.end - v.start;
+    if (e.key === "+" || e.key === "=") setView(zoomView(v, bounds, ZOOM_STEP, mid));
+    else if (e.key === "-" || e.key === "_") setView(zoomView(v, bounds, 1 / ZOOM_STEP, mid));
+    else if (e.key === "ArrowLeft") setView(panView(v, bounds, -span * 0.1));
+    else if (e.key === "ArrowRight") setView(panView(v, bounds, span * 0.1));
+    else if (e.key === "0") setView(bounds);
+    else return;
+    e.preventDefault();
+  };
+
+  const ticks = useMemo(() => adaptiveTicks(view, width), [view, width]);
+  const clusters = useMemo(() => {
+    const visible = milestones
+      .map((m) => ({ item: m, value: milestoneDecimalYear(m.year, m.exactDate) }))
+      .filter((p) => p.value >= view.start && p.value <= view.end);
+    return clusterPins(visible, view, width, (m) => m.id);
+  }, [milestones, view, width]);
+  const pinPercents = clusters.map((c) => yearToPercent(c.value, view));
+  const isZoomed = view.end - view.start < bounds.end - bounds.start - 1e-6;
+
+  // Scrubber: ano selecionado (ou o fim do período quando nenhum foi escolhido), arrastável.
+  const scrubYear = selectedYear ?? Math.floor(bounds.end);
+  const scrubPercent = yearToPercent(Math.min(bounds.end, scrubYear + 0.5), view);
+  const scrubVisible = scrubPercent >= 0 && scrubPercent <= 100;
+  const yearFromClientX = (clientX: number) => Math.min(Math.floor(bounds.end), Math.max(Math.floor(bounds.start), Math.floor(anchorAt(clientX))));
+  const onScrubPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+  const onScrubPointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (!e.currentTarget.hasPointerCapture?.(e.pointerId)) return;
+    const y = yearFromClientX(e.clientX);
+    if (y !== useTimelineStore.getState().selectedYear) selectYear(y);
+  };
+  const onScrubKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const delta = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0;
+    if (!delta) return;
+    e.preventDefault();
+    e.stopPropagation();
+    selectYear(Math.min(Math.floor(bounds.end), Math.max(Math.floor(bounds.start), scrubYear + delta)));
+  };
+
+  return (
     <div
+      ref={containerRef}
       data-testid="historical-timeline-axis"
-      className="relative w-full h-16 my-1 select-none cursor-default"
-      onClick={handleAxisBackgroundClick}
+      data-view-start={view.start.toFixed(2)}
+      data-view-end={view.end.toFixed(2)}
+      tabIndex={0}
+      aria-label="Eixo da linha do tempo. Roda ou pinça para zoom, arrastar para mover; teclas + e − para zoom, setas para mover e 0 para o período inteiro."
+      className="relative w-full h-16 my-1 select-none cursor-grab touch-none rounded-control outline-none focus-visible:ring-2 focus-visible:ring-accent/60 active:cursor-grabbing"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onKeyDown={onKeyDown}
+      onClick={() => {
+        if (!gesture.current.moved) onBackgroundClick();
+        gesture.current.moved = false;
+      }}
     >
       {/* Central Axis Line */}
-      <div className="absolute left-0 right-0 top-1/2 h-0.5 rounded-full bg-surface-hover" />
+      <div data-axis-bg="" className="absolute left-0 right-0 top-1/2 h-0.5 rounded-full bg-surface-hover" />
 
-      {/* Year Ticks & Labels (Hang strictly below central axis & pins so labels never collide with pins) */}
+      {/* Ticks adaptativos — pendurados abaixo do eixo para nunca colidir com os marcos */}
       {ticks.map((t) => {
         const isStartEdge = t.percent <= 2;
         const isEndEdge = t.percent >= 98;
@@ -256,12 +410,13 @@ export const TimelineAxis: React.FC = () => {
 
         return (
           <div
-            key={t.year}
+            key={t.key}
             data-testid="timeline-year-tick"
             data-year={t.year}
+            data-unit={t.unit}
             style={{
               left: isEndEdge ? "auto" : `${t.percent}%`,
-              right: isEndEdge ? 0 : "auto",
+              right: isEndEdge ? `${Math.max(0, 100 - t.percent)}%` : "auto",
             }}
             className={`absolute top-1/2 flex flex-col pointer-events-none ${
               isEndEdge
@@ -271,19 +426,64 @@ export const TimelineAxis: React.FC = () => {
                 : "-translate-x-1/2 items-center"
             }`}
           >
-            <div
-              className={cn("h-2.5 w-px", hasNearbyPin ? "bg-line" : "bg-line-strong")}
-            />
+            <div className={cn("h-2.5 w-px", hasNearbyPin ? "bg-line" : "bg-line-strong")} />
             <span className="mt-1 whitespace-nowrap font-mono text-caption leading-none tabular-nums text-fg-muted">
-              {t.year}
+              {t.label}
             </span>
           </div>
         );
       })}
 
-      {/* Alternating Milestone Nodes */}
-      {milestones.map((m, idx) => {
-        const percent = ((m.year - startYear) / span) * 100;
+      {/* Scrubber do ano selecionado */}
+      {scrubVisible && (
+        <div
+          className="pointer-events-none absolute inset-y-0 z-10 -translate-x-1/2"
+          style={{ left: `${scrubPercent}%` }}
+        >
+          <div className={cn("mx-auto h-full w-px", selectedYear === null ? "bg-line" : "bg-accent/70")} />
+          <button
+            type="button"
+            role="slider"
+            data-testid="timeline-scrubber"
+            aria-label="Ano selecionado"
+            aria-valuemin={Math.floor(bounds.start)}
+            aria-valuemax={Math.floor(bounds.end)}
+            aria-valuenow={scrubYear}
+            title="Arraste para mudar o ano no globo (setas ← →)"
+            onPointerDown={onScrubPointerDown}
+            onPointerMove={onScrubPointerMove}
+            onKeyDown={onScrubKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            className={cn(
+              "pointer-events-auto absolute -top-1 left-1/2 -translate-x-1/2 cursor-ew-resize touch-none rounded-control border px-1.5 font-mono text-caption leading-4 tabular-nums shadow-e1 transition-colors duration-fast ease-out",
+              selectedYear === null ? "border-line bg-surface text-fg-muted" : "border-accent bg-accent text-accent-on"
+            )}
+          >
+            {scrubYear}
+          </button>
+        </div>
+      )}
+
+      {/* Marcos e grupos de marcos (sem sobreposição em nenhum zoom) */}
+      {clusters.map((c, idx) => {
+        const percent = yearToPercent(c.value, view);
+        if (c.members.length > 1) {
+          return (
+            <MilestoneCluster
+              key={c.key}
+              members={c.members}
+              percent={percent}
+              onExpand={() => {
+                const next = viewForCluster(c.first, c.last, bounds);
+                const v = viewRef.current;
+                if (next.end - next.start >= (v.end - v.start) * 0.98) return false;
+                setView(next);
+                return true;
+              }}
+            />
+          );
+        }
+        const m = c.members[0];
         return (
           <MilestonePin
             key={m.id}
@@ -304,6 +504,22 @@ export const TimelineAxis: React.FC = () => {
           />
         );
       })}
+
+      {isZoomed && (
+        <button
+          type="button"
+          data-testid="timeline-zoom-reset"
+          onClick={(e) => {
+            e.stopPropagation();
+            setView(bounds);
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="absolute -top-1 right-0 z-30 rounded-control border border-line bg-surface/90 px-1.5 font-mono text-caption leading-4 tabular-nums text-fg-secondary shadow-e1 transition-colors duration-fast ease-out hover:text-fg"
+          title="Mostrar o período inteiro (0)"
+        >
+          {Math.round(view.start)}–{Math.round(view.end)} · período inteiro
+        </button>
+      )}
     </div>
   );
 };
