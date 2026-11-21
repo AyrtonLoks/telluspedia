@@ -220,7 +220,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | DONE | antigravity | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | DONE | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS |
-| D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | TODO | — | — | G-OBS, G-GLOBO |
+| D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | IN_PROGRESS | claude | — | G-OBS, G-GLOBO |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
 | D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
 | D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
@@ -2105,7 +2105,7 @@ O player genérico de cenas (D12) está pronto, mas o catálogo contém apenas 2
 
 ### D25 · Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d25-gibs · **Worktree:** ../telluspedia-wt/claude-d25
 - **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO
 
 **Contexto / problema**
@@ -2120,6 +2120,7 @@ O `docs/ROADMAP.md` prevê camadas científicas de observação terrestre da NAS
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada: D22 (antigravity) ocupa G-FRONTEIRAS/G-PAIS/G-SHELL/G-ESTUDOS; entre as elegíveis da fase 11 (D25, D26, T37), D25 vem primeiro. G-OBS e G-GLOBO livres (D04 e D08 em REVIEW não bloqueiam).
 
 ---
 
