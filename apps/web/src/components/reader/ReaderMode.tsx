@@ -42,7 +42,8 @@ export const ReaderMode: React.FC = () => {
     }
   }, [selectedIso, resetActiveDimension, setActiveDimension]);
 
-  if (!isReaderOpen || !selectedIso) return null;
+  // Fechado, o Dialog não renderiza nada; manter montado deixa a saída animar (D17).
+  if (!selectedIso) return null;
 
   const country = getCountryData(selectedIso);
   if (!country) return null;

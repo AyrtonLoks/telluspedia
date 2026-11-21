@@ -86,8 +86,7 @@ export const StudyShareModal: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  if (!isShareModalOpen) return null;
-
+  // Sem retorno antecipado: com `open` falso o Dialog não renderiza nada e anima a saída (D17).
   // Era histórica, cena Apollo 11 e contemporaneidade vêm do seletor único (T12):
   // a Apollo só conta quando o marco/estudo a ativou explicitamente, não pelo ano.
   const eraDef = HISTORICAL_ERAS[epoch.historicalEraId];

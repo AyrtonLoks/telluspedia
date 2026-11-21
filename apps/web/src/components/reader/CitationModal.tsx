@@ -38,8 +38,7 @@ export const CitationModal: React.FC<CitationModalProps> = ({
 
   const [copied, setCopied] = useState<boolean>(false);
 
-  if (!isCitationModalOpen) return null;
-
+  // Sem retorno antecipado: com `open` falso o Dialog não renderiza nada e anima a saída (D17).
   const currentCountry = selectedIso ? getCountryData(selectedIso) : null;
   const effectiveIso = propCountryIso || currentCountry?.isoCode || "BRA";
   const effectiveCountryName = propCountryName || currentCountry?.nameCommon || "TellusPedia";

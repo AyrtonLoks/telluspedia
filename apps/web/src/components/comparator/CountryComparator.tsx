@@ -20,8 +20,7 @@ export const CountryComparator: React.FC = () => {
   const selectedIsos = useComparatorStore((s) => s.selectedIsos);
   const addCountry = useComparatorStore((s) => s.addCountry);
 
-  if (!isOpen) return null;
-
+  // Sem retorno antecipado: com `open` falso o Dialog não renderiza nada e anima a saída (D17).
   const availableCountries = Object.values(PILOT_COUNTRIES).filter(
     (c) => !selectedIsos.includes(c.isoCode)
   );
