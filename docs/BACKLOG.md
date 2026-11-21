@@ -220,7 +220,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | REVIEW | antigravity | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | DONE | antigravity | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | DONE | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS |
-| D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | IN_PROGRESS | claude | — | G-OBS, G-GLOBO, G-EPOCA |
+| D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | REVIEW | claude | — | G-OBS, G-GLOBO, G-EPOCA |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
 | D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
 | D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
@@ -2123,6 +2123,7 @@ O `docs/ROADMAP.md` prevê camadas científicas de observação terrestre da NAS
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada: D22 (antigravity) ocupa G-FRONTEIRAS/G-PAIS/G-SHELL/G-ESTUDOS; entre as elegíveis da fase 11 (D25, D26, T37), D25 vem primeiro. G-OBS e G-GLOBO livres (D04 e D08 em REVIEW não bloqueiam).
 - 2026-11-21 · claude · IN_PROGRESS · G-EPOCA adicionado (livre) para montar a camada no `GlobeCanvas`. `explore/search.ts` e `explore/view-url.ts` (D18, G-SHELL — ocupado pela D22) e `study-schema.ts` (G-ESTUDOS — idem) não serão tocados: o GIBS fica fora da busca ⌘K, da URL compartilhável e dos estudos por enquanto (os estudos descartam camadas desconhecidas; a URL só é relida ao carregar/voltar, então a camada não desliga durante o uso).
+- 2026-11-21 · claude · REVIEW · `79d701d`: proxy `/api/observatory/gibs` (+ `/image` pela própria origem, CSP T30) no envelope T05; 4 produtos (NDVI, neve, gelo marinho, temperatura) com mês, legenda oficial e opacidade; `GibsLayer` no globo (raio 1.0015, sem raycast, textura descartada); referência local quando o GIBS não tem a data. Testes: `test/gibs.test.tsx` 20/20; suíte 654 ok, 6 falhas de ambiente (Prisma). First Load `/` +1,2 kB gz (231,6 → 232,8). Verificado no navegador em 1440×900: NDVI e temperatura de 2026-10 ao vivo e alinhados aos continentes, abril de 2025 cai para a referência de 2024-07 com aviso, opacidade 75→100% e desligar limpos, sem erros no console. Acompanhamento: a URL já grava `camadas=NASA_GIBS`, mas `view-url.ts` ignora ao carregar; incluir NASA_GIBS em busca/URL/estudos quando G-SHELL/G-ESTUDOS liberarem.
 
 ---
 
