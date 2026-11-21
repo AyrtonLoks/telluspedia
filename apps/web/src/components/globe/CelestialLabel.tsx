@@ -32,7 +32,9 @@ export const CelestialLabel: React.FC<{
   children: React.ReactNode;
 }> = ({ priority, anchorHeight, children }) => {
   const id = useId();
-  // Na descida de volta à Terra os rótulos saem (o gerenciador de anticolisão não roda fora do Cosmos).
+  // Na descida de volta à Terra os rótulos ficam ocultos (o gerenciador de anticolisão não roda fora do
+  // Cosmos). Ocultos, não desmontados: o <Html> tem raiz React própria, e desmontá-la no meio de uma
+  // renderização (a saída começa num layout effect) gera erro no React.
   const exiting = useSolarSystemExiting();
   const object = useRef<THREE.Group>(null);
   const element = useRef<HTMLDivElement>(null);
@@ -46,14 +48,18 @@ export const CelestialLabel: React.FC<{
     };
   }, [id]);
 
-  if (exiting) return null;
   return (
     <group ref={object} position={[0, anchorHeight, 0]}>
       <Html zIndexRange={[30, 0]} className="pointer-events-none select-none">
         <div
           ref={element}
           data-celestial-label=""
-          style={{ transform: `translate(-50%, calc(-100% - ${GAP_PX}px))`, opacity: 0, transition: "opacity 120ms ease-out" }}
+          style={{
+            transform: `translate(-50%, calc(-100% - ${GAP_PX}px))`,
+            opacity: 0,
+            transition: "opacity 120ms ease-out",
+            visibility: exiting ? "hidden" : undefined,
+          }}
         >
           {children}
         </div>

@@ -230,7 +230,9 @@ describe("D17: sistema solar na tela durante a descida de volta à Terra", () =>
     assert.match(sun, /uniform float uOpacity;/);
     assert.match(sun, /gl_FragColor = vec4\(color, uOpacity\);/);
     assert.match(sun, /uOpacity: \{ value: 1 \}/);
-    assert.match(read("src/components/globe/CelestialLabel.tsx"), /if \(exiting\) return null;/);
+    const label = read("src/components/globe/CelestialLabel.tsx");
+    assert.match(label, /visibility: exiting \? "hidden" : undefined/, "rótulos ocultos na descida");
+    assert.doesNotMatch(label, /if \(exiting\) return null/, "sem desmontar a raiz do <Html> durante a renderização");
     assert.match(read("src/components/globe/SolarSystemFrame.tsx"), /holder\.raycast = noRaycast/, "sem cliques durante a descida");
   });
 });
