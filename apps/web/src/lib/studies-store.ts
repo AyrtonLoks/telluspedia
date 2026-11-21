@@ -50,10 +50,15 @@ export interface StudyListItem extends StudyRecord {
   forkCount: number;
 }
 
-const memoryStudies: Map<string, StudyRecord> = new Map();
+// Em desenvolvimento cada rota do Next é empacotada à parte: um Map no módulo ficava isolado por
+// rota, e o link temporário criado no POST /api/studies dava 404 em /study/<id>. O Map vive no
+// globalThis para todas as rotas do mesmo processo enxergarem os mesmos estudos.
+const memoryKey = Symbol.for("telluspedia.memoryStudies");
+const memoryGlobal = globalThis as typeof globalThis & { [memoryKey]?: Map<string, StudyRecord> };
+const memoryStudies: Map<string, StudyRecord> = (memoryGlobal[memoryKey] ??= new Map());
 
 // Seed initial example study
-memoryStudies.set("guerra-fria-br-de-k9x2", {
+if (!memoryStudies.has("guerra-fria-br-de-k9x2")) memoryStudies.set("guerra-fria-br-de-k9x2", {
   id: "guerra-fria-br-de-k9x2",
   parentId: null,
   title: "Análise Comparada da Guerra Fria: Brasil & Alemanha",

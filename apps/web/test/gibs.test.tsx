@@ -376,3 +376,11 @@ describe("D25 — busca ⌘K, URL compartilhável e estudos", () => {
     assert.match(sql, /ADD COLUMN "gibsMonth" VARCHAR\(7\)/);
   });
 });
+
+test("estudos temporários (sem banco) são compartilhados entre rotas do mesmo processo", async () => {
+  const { saveMemoryStudy } = await import("../src/lib/studies-store");
+  const record = { ...sanitizeStudy({ title: "temporário", gibsProduct: "snow", activeObservatoryLayers: ["NASA_GIBS"] }), id: "estudo-mem-gibs", createdAt: NOW.toISOString() };
+  saveMemoryStudy(record);
+  const shared = (globalThis as Record<symbol, Map<string, StudyRecord>>)[Symbol.for("telluspedia.memoryStudies")];
+  assert.equal(shared.get("estudo-mem-gibs")?.gibsProduct, "snow", "outra rota, outro bundle, mesmo Map");
+});
