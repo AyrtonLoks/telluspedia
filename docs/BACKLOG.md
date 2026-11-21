@@ -179,7 +179,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | TODO | — | T03 | G-PAIS, G-PIPELINE |
-| T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | IN_PROGRESS | antigravity | — | G-SHELL, G-INFRA |
+| T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | REVIEW | antigravity | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | REVIEW | claude | D01 | G-GLOBO, G-EPOCA |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | REVIEW | claude | — | G-OBS |
@@ -962,7 +962,7 @@ Após a remoção dos valores inventados na T03, os ~147 países fora de `PILOT_
 
 ### T27 · Corrigir falha intermitente do loader next/font com Merriweather v33
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t27-next-font-merriweather · **Worktree:** ../telluspedia-wt/antigravity-t27
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t27-next-font-merriweather · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA
 
 **Contexto / problema**
@@ -973,14 +973,15 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 2. Validar que `pnpm build` passa de forma determinística (inclusive sem depender de POP específico do Google Fonts) e que os testes de `apps/web/test/fonts.test.ts` seguem verdes.
 
 **Critérios de aceite**
-- [ ] `pnpm build` passa de forma determinística sem erro em `next/font/google/loader.js`.
-- [ ] Fontes Geist, Geist Mono e Merriweather continuam carregadas corretamente.
+- [x] `pnpm build` passa de forma determinística sem erro em `next/font/google/loader.js`.
+- [x] Fontes Geist, Geist Mono e Merriweather continuam carregadas corretamente.
 
 **Como verificar**: rodar `pnpm build` repetidamente e `pnpm test`.
 
 **Log**
 - 2026-11-20 · antigravity · TODO · Problema identificado durante validação de build da T03.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (11fabe3). Grupos G-SHELL e G-INFRA livres.
+- 2026-11-20 · antigravity · REVIEW · Migradas as três famílias de fontes em `apps/web/src/app/layout.tsx` de `next/font/google` para `next/font/local` usando arquivos `.woff2` oficiais (SIL OFL-1.1) em `apps/web/src/app/fonts/`: `Geist-Variable.woff2` (68 KB), `GeistMono-Variable.woff2` (70 KB, `vercel/geist-font`) e `Merriweather-{Regular,Italic,Bold,BoldItalic}.woff2` (75–76 KB cada, `SorkinType/Merriweather`, com `preload: false`), preservando as variáveis CSS `--font-geist-sans`, `--font-geist-mono` e `--font-merriweather`, métricas de fallback (`Arial` / `Times New Roman`) e cobertura completa de glifos latinos/português e `latin-ext` verificada com o `fontkit` do próprio Next.js, sem adicionar dependências npm nem alterar `pnpm-lock.yaml`. Adicionados 3 testes de regressão em `apps/web/test/fonts.test.ts` (ausência de `next/font/google`, existência e assinatura `wOF2` de cada arquivo referenciado, pesos 400/700 normal/itálico e `preload: false` em Merriweather). Validação: `pnpm typecheck`, `pnpm lint`, `pnpm test` (452/452) e 3 builds limpos consecutivos (`rm -rf apps/web/.next && pnpm build`), incluindo build offline com `HTTP_PROXY`/`HTTPS_PROXY` bloqueados; verificação ao vivo via `next start` na porta 3003 confirmou as 3 variáveis CSS no HTML/CSS e HTTP 200 + `wOF2` para todos os 6 assets emitidos em `/_next/static/media/*.woff2`. Commit: 45f4377.
 
 ---
 
