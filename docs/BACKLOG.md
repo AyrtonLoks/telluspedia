@@ -169,7 +169,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T13 | Desacoplar stores Zustand e remover estado redundante | Arquitetura | P1 | G | DONE | codex | T12 | G-EPOCA, G-ESTUDOS, G-TIMELINE, G-GLOBO, G-FRONTEIRAS, G-PAIS, G-SHELL |
 | T14 | Fonte única de direção solar | 3D | P1 | M | DONE | antigravity | T12 | G-EPOCA, G-GLOBO |
 | T15 | Lua com posição astronômica real | 3D | P1 | M | DONE | antigravity | T12 | G-EPOCA |
-| T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | TODO | — | — | G-FRONTEIRAS |
+| T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | IN_PROGRESS | codex | — | G-FRONTEIRAS |
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | DONE | antigravity | T13 | G-PAIS, G-ESTUDOS, G-SHELL |
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
@@ -717,7 +717,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 ### T16 · Cache de geometria de highlight por ISO
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t16-cache-highlight · **Worktree:** ../telluspedia-wt/codex-t16
 - **Prioridade:** P2 · **Área:** Performance · **Tamanho:** P · **Depende de:** — · **Grupos:** G-FRONTEIRAS
 
 **Contexto / problema**
@@ -734,6 +734,7 @@ IDs mágicos espalhados: `"pangea-250ma"`, `"gondwana-150ma"`, `"kpg-66ma"` em 5
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · codex · IN_PROGRESS · Próxima tarefa elegível na fase 8. G-FRONTEIRAS está livre.
 
 ---
 
