@@ -5,7 +5,9 @@
  * - `script-src 'unsafe-inline'`: o App Router injeta scripts inline de hidratação sem nonce;
  *   `'wasm-unsafe-eval'` para o transcoder Basis (KTX2) compilar WebAssembly; `'unsafe-eval'` só no
  *   `next dev` (React Refresh).
- * - `worker-src blob:`: o KTX2Loader cria seus workers a partir de um Blob.
+ * - `worker-src blob:`: workers de bibliotecas criados a partir de Blob. O do KTX2 é um arquivo
+ *   (`/basis/ktx2-worker.js`) com CSP própria — `ktx2WorkerHeaders` — porque o transcoder Basis
+ *   (Emscripten/embind) chama `new Function`; assim a página não precisa de `'unsafe-eval'`.
  * - `img-src https://flagcdn.com`: bandeiras dos países; o resto (texturas, estrelas, dados, fontes,
  *   transcoder) é servido pela própria origem.
  * - `connect-src 'self'`: o navegador só fala com as rotas `/api/*`; no dev, também o WebSocket do HMR.
@@ -50,4 +52,18 @@ export function securityHeaders({ dev }) {
   // HSTS só em produção: no dev (http://localhost) seria ignorado, e num https local fixaria o host.
   if (!dev) headers.push({ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" });
   return headers;
+}
+
+/** Caminho do worker do transcoder KTX2 (ver `src/lib/textures/ktx2Worker.ts`). */
+export const KTX2_WORKER_PATH = "/basis/ktx2-worker.js";
+
+/**
+ * CSP do worker do KTX2: um worker carregado por URL usa a CSP da própria resposta. Libera eval e
+ * WebAssembly só ali; o worker não faz rede (o WASM chega por `postMessage`).
+ */
+export function ktx2WorkerHeaders() {
+  return [
+    { key: "Content-Security-Policy", value: "default-src 'none'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'" },
+    { key: "Cache-Control", value: "public, max-age=3600, must-revalidate" },
+  ];
 }

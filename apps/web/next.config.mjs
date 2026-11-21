@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
-import { securityHeaders } from "./security-headers.mjs";
+import { KTX2_WORKER_PATH, ktx2WorkerHeaders, securityHeaders } from "./security-headers.mjs";
 
 const withBundleAnalyzer = createBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -32,7 +32,11 @@ export default (phase) => {
     // T30: sem "X-Powered-By: Next.js" e com cabeçalhos de segurança em todas as respostas.
     poweredByHeader: false,
     async headers() {
-      return [{ source: "/:path*", headers: securityHeaders({ dev }) }];
+      return [
+        { source: "/:path*", headers: securityHeaders({ dev }) },
+        // Vem depois: no mesmo cabeçalho, a última regra vale. Só o worker do KTX2 libera eval.
+        { source: KTX2_WORKER_PATH, headers: ktx2WorkerHeaders() },
+      ];
     },
     distDir: dev ? ".next-dev" : ".next",
   });

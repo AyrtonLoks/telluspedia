@@ -121,7 +121,9 @@ describe("D02: assets do globo", () => {
 
   test("carregador: KTX2 com fallback para JPG/PNG e caminho do transcoder", () => {
     const loader = read("src/lib/textures/globeTextures.ts");
-    assert.match(loader, /new KTX2Loader\(\)\.setTranscoderPath\(BASIS_TRANSCODER_PATH\)\.detectSupport\(gl\)/);
+    // T30: subclasse do KTX2Loader cujos workers vêm de /basis/ktx2-worker.js (CSP própria).
+    assert.match(loader, /class FileWorkerKTX2Loader extends KTX2Loader/);
+    assert.match(loader, /new FileWorkerKTX2Loader\(\)\.setTranscoderPath\(BASIS_TRANSCODER_PATH\)\.detectSupport\(gl\)/);
     assert.match(loader, /BASIS_TRANSCODER_PATH = "\/basis\/"/);
     assert.match(loader, /catch \(error\)[\s\S]*TextureLoader\(\)\.loadAsync\(source\.fallback\)/);
     const pipeline = read("scripts/textures/build-earth-textures.mjs");

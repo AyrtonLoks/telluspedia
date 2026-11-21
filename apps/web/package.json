@@ -12,7 +12,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "textures:build": "node scripts/textures/build-earth-textures.mjs",
     "test:e2e": "playwright test",
-    "scenes:wikidata": "tsx scripts/ingest-wikidata.ts"
+    "scenes:wikidata": "tsx scripts/ingest-wikidata.ts",
+    "textures:ktx2-worker": "tsx scripts/textures/build-ktx2-worker.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

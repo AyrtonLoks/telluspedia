@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { NextRequest } from "next/server";
-import { contentSecurityPolicy, securityHeaders } from "../security-headers.mjs";
+import { contentSecurityPolicy, securityHeaders, ktx2WorkerHeaders, KTX2_WORKER_PATH } from "../security-headers.mjs";
 import nextConfigFactory from "../next.config.mjs";
 import { CACHE_POLICY, withCachePolicy } from "../src/lib/http-cache";
 import { BASIS_TRANSCODER_PATH } from "../src/lib/textures/globeTextures";
@@ -51,6 +51,15 @@ describe("T30: cabeçalhos de segurança", () => {
     }
   });
 
+  test("eval liberado só no worker do KTX2, que é carregado de arquivo (não de Blob)", () => {
+    const worker = ktx2WorkerHeaders().find((h) => h.key === "Content-Security-Policy")!.value;
+    assert.equal(worker, "default-src 'none'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'");
+    const loader = read("src/lib/textures/globeTextures.ts");
+    assert.match(loader, /new FileWorkerKTX2Loader\(\)/);
+    assert.match(loader, /new Worker\(KTX2_WORKER_URL\)/);
+    assert.doesNotMatch(loader, /createObjectURL/);
+  });
+
   test("dev: eval (React Refresh) e WebSocket do HMR liberados; sem HSTS nem upgrade", () => {
     const h = securityHeaders({ dev: true });
     const csp = header(h, "Content-Security-Policy")!;
@@ -68,6 +77,8 @@ describe("T30: cabeçalhos de segurança", () => {
       assert.equal(rules[0].source, "/:path*");
       assert.ok(rules[0].headers.some((x) => x.key === "Content-Security-Policy"));
       assert.equal(rules[0].headers.some((x) => x.key === "Strict-Transport-Security"), phase === "phase-production-build");
+      // A regra do worker do KTX2 vem depois (no mesmo cabeçalho, a última vale).
+      assert.equal(rules[1].source, KTX2_WORKER_PATH);
     }
   });
 });

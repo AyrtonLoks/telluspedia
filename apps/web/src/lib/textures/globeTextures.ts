@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
+import { KTX2_WORKER_URL } from "./ktx2Worker";
 
 /**
  * Carregamento das texturas do globo (D02/D09): KTX2 (Basis Universal) quando o navegador
@@ -25,12 +26,46 @@ export function textureSource(fallback: string): GlobeTextureSource {
   return { ktx2: fallback.replace(/\.(png|jpe?g)$/i, ".ktx2"), fallback };
 }
 
+/**
+ * KTX2Loader cujos workers vêm de um arquivo (`/basis/ktx2-worker.js`) e não de um Blob (T30): um
+ * worker de Blob herda a CSP da página, e o transcoder Basis precisa de `eval`. Só o WASM é baixado
+ * aqui; o worker recebe o binário no mesmo `postMessage` de inicialização do loader original.
+ */
+type LoaderInternals = {
+  transcoderPending: Promise<void> | null;
+  transcoderBinary: ArrayBuffer;
+  workerConfig: unknown;
+  workerPool: { setWorkerCreator: (create: () => Worker) => void };
+};
+
+export class FileWorkerKTX2Loader extends KTX2Loader {
+  override init(): Promise<void> {
+    const self = this as unknown as LoaderInternals;
+    if (!self.transcoderPending) {
+      const binaryLoader = new THREE.FileLoader(this.manager);
+      binaryLoader.setPath(this.transcoderPath);
+      binaryLoader.setResponseType("arraybuffer");
+      binaryLoader.setWithCredentials(this.withCredentials);
+      self.transcoderPending = binaryLoader.loadAsync("basis_transcoder.wasm").then((binary) => {
+        self.transcoderBinary = binary as ArrayBuffer;
+        self.workerPool.setWorkerCreator(() => {
+          const worker = new Worker(KTX2_WORKER_URL);
+          const transcoderBinary = self.transcoderBinary.slice(0);
+          worker.postMessage({ type: "init", config: self.workerConfig, transcoderBinary }, [transcoderBinary]);
+          return worker;
+        });
+      });
+    }
+    return self.transcoderPending;
+  }
+}
+
 const loaders = new WeakMap<THREE.WebGLRenderer, KTX2Loader>();
 
 function ktx2LoaderFor(gl: THREE.WebGLRenderer): KTX2Loader {
   let loader = loaders.get(gl);
   if (!loader) {
-    loader = new KTX2Loader().setTranscoderPath(BASIS_TRANSCODER_PATH).detectSupport(gl);
+    loader = new FileWorkerKTX2Loader().setTranscoderPath(BASIS_TRANSCODER_PATH).detectSupport(gl);
     loaders.set(gl, loader);
   }
   return loader;
