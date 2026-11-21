@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useMemo, useEffect } from "react";
+import { useSolarSystemVisible } from "@/stores/cosmicExitStore";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCosmicStore } from "@/stores/cosmicStore";
@@ -23,6 +24,7 @@ void main() {
 `;
 
 const sunFragmentShader = `
+uniform float uOpacity;
 uniform float uTime;
 uniform vec3 uColorCore;
 uniform vec3 uColorLimb;
@@ -57,12 +59,13 @@ void main() {
   vec3 color = mix(uColorCore, uColorLimb, n * 0.4);
   color = mix(color, uColorGlow, pow(fresnel, 2.0) * 0.85);
 
-  gl_FragColor = vec4(color, 1.0);
+  gl_FragColor = vec4(color, uOpacity);
 }
 `;
 
 export const SunCore: React.FC = () => {
-  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  // Visível no Cosmos e durante a descida de volta à Terra (D17).
+  const isCosmicMode = useSolarSystemVisible();
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const focusBody = useCosmicStore((s) => s.focusBody);
   const setHoveredBody = useCosmicStore((s) => s.setHoveredBody);
@@ -83,6 +86,8 @@ export const SunCore: React.FC = () => {
         uColorCore: { value: new THREE.Color("#fff7ed") },
         uColorLimb: { value: new THREE.Color("#f59e0b") },
         uColorGlow: { value: new THREE.Color("#fbbf24") },
+        // Esmaecimento na volta do Cosmos (D17); 1 no uso normal.
+        uOpacity: { value: 1 },
       },
     });
 

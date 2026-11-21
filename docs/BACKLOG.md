@@ -199,7 +199,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
-| D17 | Movimento e transições | Design | P2 | M | REVIEW | claude | D14 | G-SHELL |
+| D17 | Movimento e transições | Design | P2 | M | IN_PROGRESS | claude | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
@@ -1838,7 +1838,7 @@ No painel do Observatório, cada card repete um botão grande "Aprofundar no Tel
 
 ### D17 · Movimento e transições
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d17-movimento · **Worktree:** ../telluspedia-wt/claude-d17
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d17-movimento · **Worktree:** ../telluspedia-wt/claude-d17
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL
 
 **Contexto / problema**
@@ -1864,6 +1864,7 @@ Painéis aparecem/somem sem transição coerente; troca Terra → Cosmos é um c
 - 2026-11-21 · claude · IN_PROGRESS · **Painéis conferidos no navegador** (`fix(movimento): modais animam também ao fechar [D17]`): skeleton no lugar do dock enquanto o código carrega; dock entra com `sheet-in` e sai com `sheet-out` (opacidade 1 → 0,94 → 0,35 em ~120 ms, depois desmonta); comparador entra com `pop-in` (opacidade 0 → 1, escala 0,96 → 1). **Corrigido:** os 4 modais (comparador, dossiê, compartilhamento, citação) retornavam `null` antes do `<Dialog>` quando fechados, então o Radix nunca recebia `open={false}` e a saída não animava; agora ficam montados durante a saída (teste). Validação: 535/539 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok.
 - 2026-11-21 · claude · IN_PROGRESS · **2ª verificação no navegador** (`fix(ui): Dialog passa overlay e conteúdo separados ao Portal para animar a saída [D17]`). **Ida ao Cosmos aprovada:** folha de contato com 12 quadros — a Terra fica igual na tela na troca (inclusive durante os travamentos de ~1 s da montagem), a câmera se afasta, aparecem Lua e sistema solar, termina na vista do Sol; sem corte e sem passar por corpos. **Volta aprovada quanto à câmera:** desce contínua da vista geral até a vista padrão da Terra; ressalva: Sol e planetas somem no 1º quadro (o sistema solar desmonta ao sair do Cosmos). **Modais ainda sumiam ao fechar:** MutationObserver mostrou `data-state="closed"` e remoção no mesmo ms, sem `animationstart`. Causa: o `DialogContent` passava overlay + conteúdo num fragmento como filho único do `Portal`; o Radix envolve cada filho do Portal num `Presence`, que precisa de um nó para ler a animação — sem nó, desmonta na hora. Corrigido no primitivo (vale para todos os modais), com teste. Validação: 535/539 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok.
 - 2026-11-21 · claude · REVIEW · **3ª verificação no navegador:** comparador fecha com `pop-out` (`data-state="closed"`, opacidade 0,16 aos 130 ms) e só então desmonta. Critérios: (1) aberturas/fechamentos de painel animados — dock e modais conferidos; (2) Terra ↔ Cosmos sem corte de câmera e sem NaN — ida e volta conferidas em folhas de contato, mais testes com a Terra em 24 posições da órbita; (3) `prefers-reduced-motion` — CSS zera animações, presença desmonta na hora e voos de câmera vão direto (teste). **Em aberto, para decisão do Ayrton:** na volta do Cosmos o Sol e os planetas somem no 1º quadro, porque o sistema solar desmonta ao sair do modo; mantê-lo montado durante a descida é uma mudança à parte.
+- 2026-11-21 · claude · IN_PROGRESS · **Ayrton pediu manter o sistema solar na tela durante a descida** (`feat(movimento): sistema solar esmaece na descida de volta à Terra [D17]`). `stores/cosmicExitStore.ts` guarda a saída (centro e escala da Terra na órbita) enquanto a câmera desce; Sol, planetas, cinturão, cometa e meteoros continuam montados (`useSolarSystemVisible`) dentro de `SolarSystemFrame`, que aplica o mesmo reposicionamento da câmera — `(p − c)/s` — e esmaece materiais e o shader do Sol (novo `uOpacity`) de 100 % a 0 entre 15 % e 80 % do voo, sem aceitar cliques; rótulos saem na descida; o controlador limpa a saída no fim (ou ao reentrar, ou com movimento reduzido). Testes novos em `test/motion.test.tsx`. Validação: 544/548 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok. Falta conferir no navegador.
 
 ---
 

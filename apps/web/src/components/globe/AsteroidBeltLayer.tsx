@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useRef, useMemo, useEffect } from "react";
+import { useSolarSystemVisible } from "@/stores/cosmicExitStore";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCosmicStore } from "@/stores/cosmicStore";
 
 export const AsteroidBeltLayer: React.FC = () => {
-  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  // Visível no Cosmos e durante a descida de volta à Terra (D17).
+  const isCosmicMode = useSolarSystemVisible();
   const activeCosmicLayers = useCosmicStore((s) => s.activeCosmicLayers);
 
   const groupRef = useRef<THREE.Group>(null);

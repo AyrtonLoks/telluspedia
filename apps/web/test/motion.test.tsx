@@ -15,6 +15,7 @@ import {
   orbitTransitionDuration,
   reanchorOrbit,
   prefersReducedMotion,
+  solarSystemExitOpacity,
   type OrbitState,
 } from "../src/lib/camera-transition";
 import { MOTION_MS } from "../src/components/ui/motion";
@@ -184,6 +185,53 @@ describe("D17: transição orbital Terra ↔ Cosmos", () => {
     assert.match(src, /obstacles/, "Sol e Terra como obstáculos durante o voo");
     assert.match(src, /Math\.min\(delta, MAX_FRAME_STEP\)/, "travamentos de montagem não consomem a animação");
     assert.match(src, /maxDistance = Infinity/, "limites abertos durante o voo");
+  });
+});
+
+describe("D17: sistema solar na tela durante a descida de volta à Terra", () => {
+  test("esmaece ao longo do voo e chega a zero antes do fim (sem estalo ao desmontar)", () => {
+    assert.equal(solarSystemExitOpacity(0), 1);
+    assert.equal(solarSystemExitOpacity(0.15), 1);
+    assert.equal(solarSystemExitOpacity(0.8), 0);
+    assert.equal(solarSystemExitOpacity(1), 0);
+    let last = 1;
+    for (let i = 0; i <= 100; i++) {
+      const a = solarSystemExitOpacity(i / 100);
+      assert.ok(a <= last + 1e-12 && a >= 0 && a <= 1, `monótona (${i})`);
+      last = a;
+    }
+  });
+
+  test("o grupo do sistema solar usa o mesmo reposicionamento da câmera: (p − c) / s", () => {
+    const exit = { center: v(-120, 0, 40), scale: 0.3 };
+    const k = 1 / exit.scale;
+    const groupPos = exit.center.clone().multiplyScalar(-k);
+    for (const p of [v(0, 0, 0), v(30, 2, -50), v(-120, 0, 40)]) {
+      const viaGroup = p.clone().multiplyScalar(k).add(groupPos);
+      const viaCamera = reanchorOrbit({ target: p, camera: p }, exit, { center: v(0, 0, 0), scale: 1 }).camera;
+      assert.ok(viaGroup.distanceTo(viaCamera) < 1e-9);
+    }
+    const frame = read("src/components/globe/SolarSystemFrame.tsx");
+    assert.match(frame, /const k = exiting \? 1 \/ exit\.scale : 1/);
+    assert.match(frame, /-exit\.center\[0\] \* k/);
+  });
+
+  test("ligações: Canvas, controlador, componentes, Sol com uOpacity e rótulos fora na descida", () => {
+    const canvas = read("src/components/globe/GlobeCanvas.tsx");
+    assert.match(canvas, /\{solarSystemVisible && \(\s*<SolarSystemFrame>/);
+    assert.match(canvas, /\{isCosmicMode && <CelestialLabelManager \/>\}/);
+    const ctrl = read("src/components/globe/CosmicCameraController.tsx");
+    assert.match(ctrl, /setExit\(isCosmicMode \|\| prefersReducedMotion\(\) \? null/);
+    assert.match(ctrl, /orbitTransition\.progress = t;/);
+    for (const f of ["SunCore", "PlanetarySystem", "AsteroidBeltLayer", "CometHalleyTrajectory", "MeteorShowersLayer"]) {
+      assert.match(read(`src/components/globe/${f}.tsx`), /const isCosmicMode = useSolarSystemVisible\(\);/, f);
+    }
+    const sun = read("src/components/globe/SunCore.tsx");
+    assert.match(sun, /uniform float uOpacity;/);
+    assert.match(sun, /gl_FragColor = vec4\(color, uOpacity\);/);
+    assert.match(sun, /uOpacity: \{ value: 1 \}/);
+    assert.match(read("src/components/globe/CelestialLabel.tsx"), /if \(exiting\) return null;/);
+    assert.match(read("src/components/globe/SolarSystemFrame.tsx"), /holder\.raycast = noRaycast/, "sem cliques durante a descida");
   });
 });
 

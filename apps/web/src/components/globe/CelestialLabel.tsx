@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useId, useRef } from "react";
+import { useSolarSystemExiting } from "@/stores/cosmicExitStore";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
@@ -31,6 +32,8 @@ export const CelestialLabel: React.FC<{
   children: React.ReactNode;
 }> = ({ priority, anchorHeight, children }) => {
   const id = useId();
+  // Na descida de volta à Terra os rótulos saem (o gerenciador de anticolisão não roda fora do Cosmos).
+  const exiting = useSolarSystemExiting();
   const object = useRef<THREE.Group>(null);
   const element = useRef<HTMLDivElement>(null);
   const priorityRef = useRef(priority);
@@ -43,6 +46,7 @@ export const CelestialLabel: React.FC<{
     };
   }, [id]);
 
+  if (exiting) return null;
   return (
     <group ref={object} position={[0, anchorHeight, 0]}>
       <Html zIndexRange={[30, 0]} className="pointer-events-none select-none">

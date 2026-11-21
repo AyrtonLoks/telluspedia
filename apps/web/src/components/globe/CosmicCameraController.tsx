@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
+import { useCosmicExitStore } from "@/stores/cosmicExitStore";
 import { MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "@/stores/globeStore";
 import {
   computeAllPlanetaryPositions,
@@ -168,6 +169,12 @@ export const CosmicCameraController: React.FC = () => {
         scale: earthSystemScale(isCosmicMode ? scaleMode : previousScale),
       };
       from = isCosmicMode ? reanchorOrbit(from, home, orbit) : reanchorOrbit(from, orbit, home);
+      // Saindo: o sistema solar fica na tela durante a descida, com o mesmo reposicionamento.
+      useCosmicExitStore
+        .getState()
+        .setExit(isCosmicMode || prefersReducedMotion() ? null : { center: orbit.center.toArray() as [number, number, number], scale: orbit.scale });
+    } else if (useCosmicExitStore.getState().exit) {
+      useCosmicExitStore.getState().setExit(null);
     }
     // A Terra (onde estiver, na escala do momento) e, no Cosmos, o Sol são obstáculos do voo.
     if (isCosmicMode) {
@@ -218,6 +225,7 @@ export const CosmicCameraController: React.FC = () => {
     controlsHook.update();
     transition.current = { from, to, obstacles, elapsed: 0, duration, limits };
     orbitTransition.active = true;
+    orbitTransition.progress = 0;
   }, [isCosmicMode, focusedBodyId, scaleMode, controlsHook, camera, selectedYear]);
 
   useFrame((_, delta) => {
@@ -227,6 +235,7 @@ export const CosmicCameraController: React.FC = () => {
     if (tr) {
       tr.elapsed += Math.min(delta, MAX_FRAME_STEP);
       const t = Math.min(1, tr.elapsed / tr.duration);
+      orbitTransition.progress = t;
       const state = interpolateOrbit(tr.from, tr.to, easeInOutCubic(t), { obstacles: tr.obstacles });
       controlsHook.target.copy(state.target);
       camera.position.copy(state.camera);
@@ -236,6 +245,7 @@ export const CosmicCameraController: React.FC = () => {
         controlsHook.maxDistance = tr.limits.max;
         transition.current = null;
         orbitTransition.active = false;
+        if (useCosmicExitStore.getState().exit) useCosmicExitStore.getState().setExit(null);
       }
       controlsHook.update();
     } else if (focusedBodyId && focusedBodyId !== "SUN") {

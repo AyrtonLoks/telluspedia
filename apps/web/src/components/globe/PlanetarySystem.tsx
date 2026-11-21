@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useEffect } from "react";
+import { useSolarSystemVisible } from "@/stores/cosmicExitStore";
 import * as THREE from "three";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
@@ -26,7 +27,8 @@ const PLANET_IDS: Array<Exclude<CelestialBodyId, "SUN" | "MOON" | "HALLEY">> = [
 ];
 
 export const PlanetarySystem: React.FC = () => {
-  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  // Visível no Cosmos e durante a descida de volta à Terra (D17).
+  const isCosmicMode = useSolarSystemVisible();
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const hoveredBodyId = useCosmicStore((s) => s.hoveredBodyId);
   const activeCosmicLayers = useCosmicStore((s) => s.activeCosmicLayers);

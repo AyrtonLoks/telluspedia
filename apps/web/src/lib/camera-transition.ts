@@ -100,4 +100,13 @@ export { prefersReducedMotion } from "./reduced-motion";
  * Há uma transição orbital em curso (Terra ↔ Cosmos, foco de corpo). O voo de câmera da Terra
  * espera por ela para não disputar a câmera no quadro em que volta a ser montado.
  */
-export const orbitTransition = { active: false };
+export const orbitTransition = { active: false, progress: 0 };
+
+/**
+ * Opacidade do sistema solar na descida de volta à Terra, pelo progresso do voo: inteiro no começo,
+ * some entre 15 % e 80 % (antes de a câmera chegar à vista da Terra) — sem estalo ao desmontar.
+ */
+export function solarSystemExitOpacity(progress: number): number {
+  const x = Math.max(0, Math.min(1, (progress - 0.15) / 0.65));
+  return 1 - x * x * (3 - 2 * x);
+}

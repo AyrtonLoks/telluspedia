@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useEffect, useRef, useState } from "react";
+import { useSolarSystemVisible } from "@/stores/cosmicExitStore";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
@@ -654,7 +655,8 @@ export function buildDustTailGeometry(
 
 export const CometHalleyTrajectory: React.FC = () => {
   const { camera } = useThree();
-  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  // Visível no Cosmos e durante a descida de volta à Terra (D17).
+  const isCosmicMode = useSolarSystemVisible();
   const activeCosmicLayers = useCosmicStore((s) => s.activeCosmicLayers);
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const hoveredBodyId = useCosmicStore((s) => s.hoveredBodyId);

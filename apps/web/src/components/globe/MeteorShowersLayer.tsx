@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useEffect, useRef } from "react";
+import { useSolarSystemVisible } from "@/stores/cosmicExitStore";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCosmicStore } from "@/stores/cosmicStore";
@@ -8,7 +9,8 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
 
 export const MeteorShowersLayer: React.FC = () => {
-  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  // Visível no Cosmos e durante a descida de volta à Terra (D17).
+  const isCosmicMode = useSolarSystemVisible();
   const activeCosmicLayers = useCosmicStore((s) => s.activeCosmicLayers);
   const selectedYear = useTimelineStore((s) => s.selectedYear) || new Date().getUTCFullYear();
 

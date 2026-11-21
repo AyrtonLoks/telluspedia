@@ -10,6 +10,8 @@ import { EarthSphere } from "./EarthSphere";
 import { Atmosphere } from "./Atmosphere";
 import { CloudLayer } from "./CloudLayer";
 import { CelestialLabelManager } from "./CelestialLabel";
+import { SolarSystemFrame } from "./SolarSystemFrame";
+import { useSolarSystemVisible } from "@/stores/cosmicExitStore";
 import { earthSystemScale } from "@/lib/cosmic-scale";
 
 /** Botões de alternância sobre o globo (tokens do design system — D14). */
@@ -83,6 +85,7 @@ export const GlobeCanvas: React.FC = () => {
   const cosmicScaleMode = useCosmicStore((s) => s.scaleMode);
   // D11: no modo Cosmos o grupo Terra + Lua segue a política única de escala.
   const earthGroupScale = isCosmicMode ? earthSystemScale(cosmicScaleMode) : 1;
+  const solarSystemVisible = useSolarSystemVisible();
 
   // Compute Earth's position in cosmic space or origin for earth mode
   const earthPosition = useMemo(() => {
@@ -138,17 +141,17 @@ export const GlobeCanvas: React.FC = () => {
         {/* Deep Space Celestial Vault (HYG 3,500+ Stars & IAU Constellations) */}
         <SkyStars />
 
-        {/* Solar System Components (Active in Cosmic Mode) */}
-        {isCosmicMode && (
-          <>
+        {/* Sistema solar: no Cosmos e, esmaecendo, durante a descida de volta à Terra (D17) */}
+        {solarSystemVisible && (
+          <SolarSystemFrame>
             <SunCore />
             <PlanetarySystem />
             <AsteroidBeltLayer />
             <CometHalleyTrajectory />
             <MeteorShowersLayer />
-            <CelestialLabelManager />
-          </>
+          </SolarSystemFrame>
         )}
+        {isCosmicMode && <CelestialLabelManager />}
 
         {/* Earth Core Entities Group (Positioned at Origin in Earth View, or Orbit in Cosmic View) */}
         <group position={earthPosition} scale={earthGroupScale}>
