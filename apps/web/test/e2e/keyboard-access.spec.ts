@@ -20,6 +20,7 @@ test("teclado controla a câmera e transfere o foco da busca para o país", asyn
     if (await globe.evaluate((element) => document.activeElement === element)) break;
   }
   await expect(globe).toBeFocused();
+  await expect.poll(() => globe.evaluate((element) => getComputedStyle(element, "::after").borderTopWidth)).toBe("2px");
   await globe.press("ArrowRight");
   await expect.poll(() => new URL(page.url()).searchParams.get("camera")).not.toBeNull();
   const rotated = new URL(page.url()).searchParams.get("camera")!.split(",").map(Number);

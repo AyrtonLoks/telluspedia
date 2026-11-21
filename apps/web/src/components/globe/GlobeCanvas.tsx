@@ -115,7 +115,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
       aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight /"
       data-globe-keyboard=""
       tabIndex={0}
-      className="absolute inset-0 h-full w-full overflow-hidden bg-bg focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+      className="absolute inset-0 h-full w-full overflow-hidden bg-bg focus-visible:outline-none focus-visible:after:pointer-events-none focus-visible:after:absolute focus-visible:after:inset-1 focus-visible:after:z-10 focus-visible:after:rounded-control focus-visible:after:border-2 focus-visible:after:border-accent"
     >
       <p id={instructions} className="sr-only">Use as setas para girar, mais e menos para ajustar o zoom e barra para abrir a busca.</p>
       <Canvas
