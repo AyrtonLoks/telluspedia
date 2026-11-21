@@ -255,12 +255,18 @@ const HistoricalAxis: React.FC<{
   const [view, setView] = useState<AxisView>(bounds);
   const viewRef = useRef(view);
   viewRef.current = view;
+  // Atualiza a ref na hora: vários eventos de roda/pinça no mesmo quadro somam, em vez de
+  // recalcular a partir da janela antiga.
+  const applyView = useCallback((next: AxisView) => {
+    viewRef.current = next;
+    setView(next);
+  }, []);
   const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
   const selectedYear = typeof window === "undefined" ? useTimelineStore.getState().selectedYear : storeSelectedYear;
   const selectYear = useTimelineStore((s) => s.selectYear);
 
   // Novo período (preset): volta a mostrar o período inteiro.
-  useEffect(() => setView(bounds), [bounds]);
+  useEffect(() => applyView(bounds), [bounds, applyView]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -283,14 +289,14 @@ const HistoricalAxis: React.FC<{
       e.preventDefault();
       const v = viewRef.current;
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && !e.ctrlKey) {
-        setView(panView(v, bounds, (e.deltaX / Math.max(1, el.clientWidth)) * (v.end - v.start)));
+        applyView(panView(v, bounds, (e.deltaX / Math.max(1, el.clientWidth)) * (v.end - v.start)));
       } else {
-        setView(zoomView(v, bounds, Math.exp(e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), anchorAt(e.clientX)));
+        applyView(zoomView(v, bounds, Math.exp(e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), anchorAt(e.clientX)));
       }
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [bounds, anchorAt]);
+  }, [bounds, anchorAt, applyView]);
 
   // Arrastar = pan; dois dedos = pinça. Um clique sem arrasto desmarca o marco selecionado.
   const pointers = useRef(new Map<number, number>());
@@ -317,7 +323,7 @@ const HistoricalAxis: React.FC<{
       const [a, b] = [...pointers.current.values()];
       const dist = Math.abs(a - b);
       if (gesture.current.pinchDist > 0 && dist > 0) {
-        setView(zoomView(v, bounds, gesture.current.pinchDist / dist, anchorAt((a + b) / 2)));
+        applyView(zoomView(v, bounds, gesture.current.pinchDist / dist, anchorAt((a + b) / 2)));
         gesture.current.moved = true;
       }
       gesture.current.pinchDist = dist;
@@ -328,7 +334,7 @@ const HistoricalAxis: React.FC<{
     if (!gesture.current.moved) e.currentTarget.setPointerCapture?.(e.pointerId);
     gesture.current.moved = true;
     gesture.current.lastX = e.clientX;
-    setView(panView(v, bounds, (-dx / w) * (v.end - v.start)));
+    applyView(panView(v, bounds, (-dx / w) * (v.end - v.start)));
   };
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     pointers.current.delete(e.pointerId);
@@ -339,11 +345,11 @@ const HistoricalAxis: React.FC<{
     const v = viewRef.current;
     const mid = (v.start + v.end) / 2;
     const span = v.end - v.start;
-    if (e.key === "+" || e.key === "=") setView(zoomView(v, bounds, ZOOM_STEP, mid));
-    else if (e.key === "-" || e.key === "_") setView(zoomView(v, bounds, 1 / ZOOM_STEP, mid));
-    else if (e.key === "ArrowLeft") setView(panView(v, bounds, -span * 0.1));
-    else if (e.key === "ArrowRight") setView(panView(v, bounds, span * 0.1));
-    else if (e.key === "0") setView(bounds);
+    if (e.key === "+" || e.key === "=") applyView(zoomView(v, bounds, ZOOM_STEP, mid));
+    else if (e.key === "-" || e.key === "_") applyView(zoomView(v, bounds, 1 / ZOOM_STEP, mid));
+    else if (e.key === "ArrowLeft") applyView(panView(v, bounds, -span * 0.1));
+    else if (e.key === "ArrowRight") applyView(panView(v, bounds, span * 0.1));
+    else if (e.key === "0") applyView(bounds);
     else return;
     e.preventDefault();
   };
@@ -477,7 +483,7 @@ const HistoricalAxis: React.FC<{
                 const next = viewForCluster(c.first, c.last, bounds);
                 const v = viewRef.current;
                 if (next.end - next.start >= (v.end - v.start) * 0.98) return false;
-                setView(next);
+                applyView(next);
                 return true;
               }}
             />
@@ -511,7 +517,7 @@ const HistoricalAxis: React.FC<{
           data-testid="timeline-zoom-reset"
           onClick={(e) => {
             e.stopPropagation();
-            setView(bounds);
+            applyView(bounds);
           }}
           onPointerDown={(e) => e.stopPropagation()}
           className="absolute -top-1 right-0 z-30 rounded-control border border-line bg-surface/90 px-1.5 font-mono text-caption leading-4 tabular-nums text-fg-secondary shadow-e1 transition-colors duration-fast ease-out hover:text-fg"

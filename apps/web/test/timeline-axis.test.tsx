@@ -131,6 +131,9 @@ describe("D13: componente", () => {
     assert.match(src, /pointers\.current\.size >= 2/, "pinça com dois dedos");
     assert.match(src, /e\.key === "\+"/);
     assert.match(src, /role="slider"/);
+    // vários eventos de roda no mesmo quadro precisam somar (a ref é atualizada na hora)
+    assert.match(src, /const applyView = useCallback\(\(next: AxisView\) => \{\s*viewRef\.current = next;/);
+    assert.doesNotMatch(src.slice(src.indexOf("const HistoricalAxis")), /(?<![\w.])setView\((?!next\))/);
     assert.match(read("src/components/timeline/MilestoneCluster.tsx"), /CATEGORY_TONE/);
   });
 });
