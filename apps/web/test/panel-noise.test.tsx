@@ -13,6 +13,7 @@ import { useObservatoryStore } from "../src/stores/observatoryStore";
 import { useTimelineStore } from "../src/stores/timelineStore";
 import { PILOT_COUNTRIES } from "../src/lib/country-data";
 import type { ObservatoryLayerId } from "../src/lib/observatory-data";
+import { calculateIssPosition } from "../src/lib/satellites";
 
 const ALL: ObservatoryLayerId[] = ["NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES"];
 const count = (html: string, s: string) => html.split(s).length - 1;
@@ -20,7 +21,8 @@ const count = (html: string, s: string) => html.split(s).length - 1;
 describe("D16: Observatório compacto", () => {
   beforeEach(() => {
     useObservatoryStore.getState().resetObservatory();
-    useObservatoryStore.setState({ isPanelOpen: true, activeLayers: [...ALL] });
+    // A telemetria da ISS sai do SGP4 quando a camada carrega (T35: o satellite.js é sob demanda).
+    useObservatoryStore.setState({ isPanelOpen: true, activeLayers: [...ALL], issTelemetry: calculateIssPosition() });
     useTimelineStore.setState({ selectedYear: 2024, geologicalMa: null, selectedMilestoneId: null });
   });
 

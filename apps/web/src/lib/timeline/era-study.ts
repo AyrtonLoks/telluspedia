@@ -1,5 +1,5 @@
 import type { EpochState } from "@/lib/epoch/resolveEpoch";
-import type { HistoricalEraId } from "@/lib/historical-entities";
+import type { HistoricalEraId } from "@/lib/historical-eras";
 
 /**
  * Mapeia eras históricas do seletor único de época (`useEpochState`) para o

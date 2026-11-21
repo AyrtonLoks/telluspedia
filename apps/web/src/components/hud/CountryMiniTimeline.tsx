@@ -5,7 +5,7 @@ import { History, Calendar, BookOpen, ExternalLink, Quote } from "lucide-react";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useReaderStore } from "@/stores/readerStore";
-import { MilestoneItem } from "@/lib/country-data";
+import type { MilestoneItem } from "@/lib/milestones";
 import { getSourceUrl } from "@/lib/citations";
 import { cn } from "@/components/ui/cn";
 

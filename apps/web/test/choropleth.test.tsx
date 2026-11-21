@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { buildChoroplethDataset } from "../src/lib/choropleth-dataset";
 import {
-  buildChoroplethDataset,
   CHOROPLETH_FIRMS_ZERO_COLOR,
   CHOROPLETH_INDICATOR_IDS,
   CHOROPLETH_INDICATORS,

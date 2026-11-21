@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useSceneStore } from "@/stores/sceneStore";
-import { findMilestoneById } from "@/lib/country-data";
+import { findMilestoneById } from "@/lib/milestones";
 import { resolveEpoch, type EpochState } from "./resolveEpoch";
 
 const selectTimeline = (s: ReturnType<typeof useTimelineStore.getState>) => ({

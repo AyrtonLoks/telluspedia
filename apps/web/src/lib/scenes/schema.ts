@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "../../stores/globeStore";
-import { HISTORICAL_ERAS } from "../historical-entities";
+import { HISTORICAL_ERAS } from "../historical-eras";
 
 /**
  * Modelo de dados das cenas históricas (D12a). Uma cena é qualquer evento da linha do tempo — de

@@ -13,7 +13,6 @@ import {
   FALLBACK_EONET_EVENTS,
   FALLBACK_AIRCRAFT_FLEET,
   FALLBACK_MARITIME_ROUTES,
-  calculateIssPosition,
 } from "@/lib/observatory-data";
 import {
   type ObservatoryMeta,
@@ -28,13 +27,7 @@ import {
   type FirmsConfidenceFilter,
   type FirmsWindowDays,
 } from "@/lib/firms-aggregate";
-import {
-  ISS_NORAD_ID,
-  buildIssTelemetry,
-  toSatrec,
-  type SatelliteCategory,
-  type SatelliteTle,
-} from "@/lib/satellites";
+import { ISS_NORAD_ID, type SatelliteCategory, type SatelliteTle } from "@/lib/satellite-catalog";
 import type { SatRec } from "satellite.js";
 import { GIBS_DEFAULT_PRODUCT, GIBS_PRODUCTS, type GibsLayerData, type GibsProductId } from "@/lib/gibs";
 
@@ -58,10 +51,22 @@ export interface FirmsWindow {
 
 /** satrec por TLE (montar o satrec é a parte cara; a propagação é barata). */
 const satrecCache = new Map<string, SatRec | null>();
-function cachedSatrec(tle: SatelliteTle): SatRec | null {
+function cachedSatrec(lib: SatelliteLib, tle: SatelliteTle): SatRec | null {
   const key = tle.line1 + tle.line2;
-  if (!satrecCache.has(key)) satrecCache.set(key, toSatrec(tle));
+  if (!satrecCache.has(key)) satrecCache.set(key, lib.toSatrec(tle));
   return satrecCache.get(key) ?? null;
+}
+
+/**
+ * O SGP4 (`satellite.js`, ~10 kB gzip) só baixa quando a camada da ISS é ligada (T35). Até lá a
+ * telemetria fica `null`; o primeiro `refreshIssTelemetry` carrega a biblioteca e recalcula.
+ */
+type SatelliteLib = typeof import("@/lib/satellites");
+let satelliteLib: SatelliteLib | null = null;
+let satelliteLibPromise: Promise<SatelliteLib> | null = null;
+export function loadSatelliteLib(): Promise<SatelliteLib> {
+  satelliteLibPromise ??= import("@/lib/satellites").then((m) => (satelliteLib = m));
+  return satelliteLibPromise;
 }
 
 function isEonetSelection(entity: ObservatoryEntity | null) {
@@ -184,7 +189,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     if (cur.activeLayers.includes("NASA_GIBS")) void get().loadLayerData("NASA_GIBS");
     else set((s) => ({ hasLoaded: { ...s.hasLoaded, NASA_GIBS: false } }));
   },
-  issTelemetry: calculateIssPosition(),
+  issTelemetry: null,
   satellites: [],
   satelliteCategories: ["station", "visual"],
   showIssGroundTrack: false,
@@ -271,10 +276,15 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   }),
 
   refreshIssTelemetry: (now = Date.now()) => {
+    const lib = satelliteLib;
+    if (!lib) {
+      void loadSatelliteLib().then(() => get().refreshIssTelemetry(now)).catch(() => {});
+      return;
+    }
     const iss = get().satellites.find((t) => t.noradId === ISS_NORAD_ID);
-    const rec = iss ? cachedSatrec(iss) : null;
-    const telemetry = rec ? buildIssTelemetry(rec, now, iss!.epoch) : null;
-    set({ issTelemetry: telemetry ?? calculateIssPosition(now) });
+    const rec = iss ? cachedSatrec(lib, iss) : null;
+    const telemetry = rec ? lib.buildIssTelemetry(rec, now, iss!.epoch) : null;
+    set({ issTelemetry: telemetry ?? lib.calculateIssPosition(now) });
   },
 
   toggleIssGroundTrack: () => set((s) => ({ showIssGroundTrack: !s.showIssGroundTrack })),
@@ -333,7 +343,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           applyMeta("NASA_EONET", body.meta);
         }
       } else if (layerId === "ISS_SATELLITES") {
-        const body = await fetchEnvelope("/api/observatory/satellites");
+        // Baixa o SGP4 junto com os TLEs; a telemetria sai já calculada quando os dois chegam.
+        const [body] = await Promise.all([fetchEnvelope("/api/observatory/satellites"), loadSatelliteLib()]);
         if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
           set({ satellites: body.data as SatelliteTle[] });
           get().refreshIssTelemetry();
@@ -380,7 +391,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           },
         },
       }));
-      if (layerId === "ISS_SATELLITES") set({ issTelemetry: calculateIssPosition() });
+      if (layerId === "ISS_SATELLITES") get().refreshIssTelemetry();
       if (layerId === "NASA_GIBS") set({ gibs: gibsLocalReference(get().gibsProduct, get().gibsMonth) });
     } finally {
       set((s) => ({

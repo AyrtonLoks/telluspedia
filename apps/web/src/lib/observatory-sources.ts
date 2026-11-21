@@ -8,7 +8,6 @@ import {
   FALLBACK_EONET_EVENTS,
   FALLBACK_FIRMS_HOTSPOTS,
   FALLBACK_MARITIME_ROUTES,
-  calculateIssPosition,
   type AircraftState,
   type EonetEvent,
   type IssTelemetryData,
@@ -28,6 +27,7 @@ import { createCountryLookup } from "./firms-country";
 import {
   ISS_NORAD_ID,
   REFERENCE_ISS_TLE,
+  calculateIssPosition,
   mergeSatelliteGroups,
   parseTleText,
   tleEpochToIso,

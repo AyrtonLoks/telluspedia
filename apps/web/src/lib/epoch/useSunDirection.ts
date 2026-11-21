@@ -9,7 +9,7 @@ import {
   resolveAstronomicalDate,
   type SubsolarPoint,
 } from "../astronomy";
-import { findMilestoneById } from "../country-data";
+import { findMilestoneById } from "../milestones";
 import { useTimelineStore } from "../../stores/timelineStore";
 import { getEpochState, useEpochState } from "./useEpochState";
 

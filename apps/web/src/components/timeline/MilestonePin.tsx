@@ -13,7 +13,6 @@ import { sceneOpenedBy } from "@/lib/scenes/catalog";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { getSourceUrl } from "@/lib/citations";
-import { getCountryData } from "@/lib/country-data";
 import {
   preloadCitationModal,
   preloadReaderMode,
@@ -85,7 +84,6 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   const isHigh = index % 2 === 1;
   const tone = TONES[CATEGORY_TONE[category] ?? "cat-politics"];
   const effectiveCountryIso = countryIso || (blocIsos && blocIsos.length > 0 ? blocIsos[0] : undefined);
-  const country = effectiveCountryIso ? getCountryData(effectiveCountryIso) : null;
 
   // Escape key and click-outside deselects currently active milestone without eating pointerdown clicks
   useEffect(() => {
@@ -242,8 +240,12 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
               type="button"
               onMouseEnter={preloadCitationModal}
               onFocus={preloadCitationModal}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
+                // country-data (dossiês e entidades históricas) só carrega ao citar (T35); o
+                // pré-carregamento do modal já traz o mesmo chunk.
+                const { getCountryData } = await import("@/lib/country-data");
+                const country = effectiveCountryIso ? getCountryData(effectiveCountryIso) : null;
                 setCitationModalOpen(true, {
                   title: `${title} (${year}) - ${summary}`,
                   countryName: country?.nameCommon || effectiveCountryIso || "TellusPedia",

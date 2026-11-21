@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { Suspense, lazy, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
 import { CheckCircle2, Cloud, CloudSun, RotateCcw, Sun, TriangleAlert } from "lucide-react";
@@ -32,7 +32,6 @@ import { PaleoPlatesLayer } from "./PaleoPlatesLayer";
 import { NasaFirmsLayer } from "./NasaFirmsLayer";
 import { GibsLayer } from "./GibsLayer";
 import { NasaEonetLayer } from "./NasaEonetLayer";
-import { IssOrbitLayer } from "./IssOrbitLayer";
 import { AirTrafficLayer } from "./AirTrafficLayer";
 import { MaritimeRoutesLayer } from "./MaritimeRoutesLayer";
 import { ObservatoryTelemetryHUD } from "@/components/observatory/ObservatoryTelemetryHUD";
@@ -51,6 +50,9 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
+
+// SGP4 (satellite.js) só baixa quando a camada da ISS é ligada (T35).
+const IssOrbitLayer = lazy(() => import("./IssOrbitLayer").then((m) => ({ default: m.IssOrbitLayer })));
 
 /**
  * Primary directional sunlight synchronized with EarthSphere and OrbitingMoon via
@@ -259,7 +261,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {isContemporary && activeObservatoryLayers.includes("NASA_GIBS") && <GibsLayer />}
             {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
             {isContemporary && activeObservatoryLayers.includes("NASA_EONET") && <NasaEonetLayer />}
-            {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && <IssOrbitLayer />}
+            {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && (
+              <Suspense fallback={null}>
+                <IssOrbitLayer />
+              </Suspense>
+            )}
             {isContemporary && activeObservatoryLayers.includes("FLIGHTS_OPENSKY") && <AirTrafficLayer />}
             {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
           </EarthOrientationGroup>

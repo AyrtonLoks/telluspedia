@@ -22,19 +22,9 @@ export const REFERENCE_ISS_TLE = {
   line1: "1 25544U 98067A   26324.49484039  .00009536  00000+0  17778-3 0  9993",
   line2: "2 25544  51.6319 246.5768 0007409  46.6569 313.5036 15.49509114595987",
 };
-export const ISS_NORAD_ID = 25544;
-
-export type SatelliteCategory = "station" | "visual";
-
-export interface SatelliteTle {
-  name: string;
-  noradId: number;
-  category: SatelliteCategory;
-  line1: string;
-  line2: string;
-  /** Época do TLE (ISO), para mostrar a idade do dado. */
-  epoch: string;
-}
+export { ISS_NORAD_ID } from "./satellite-catalog";
+export type { SatelliteCategory, SatelliteTle } from "./satellite-catalog";
+import type { SatelliteCategory, SatelliteTle } from "./satellite-catalog";
 
 export interface SatelliteState {
   lat: number;
@@ -245,4 +235,13 @@ export function referenceIssTelemetry(timestamp: number = Date.now()): IssTeleme
     groundTrack: [],
     ...(epoch ? { tleEpoch: epoch } : {}),
   };
+}
+
+/**
+ * Posição da ISS por SGP4 a partir do TLE de referência. Usada só como fallback “Simulado” e em
+ * testes — com dados ao vivo, a telemetria vem dos TLEs do CelesTrak (D04). Fica aqui, e não em
+ * `observatory-data.ts`, para o `satellite.js` não entrar no carregamento inicial (T35).
+ */
+export function calculateIssPosition(timestamp: number = Date.now()): IssTelemetryData {
+  return referenceIssTelemetry(timestamp);
 }

@@ -2,8 +2,8 @@
 
 import React, { useEffect, useMemo } from "react";
 import { Check, ExternalLink, Layers, SlidersHorizontal, X } from "lucide-react";
+import { buildChoroplethDataset } from "@/lib/choropleth-dataset";
 import {
-  buildChoroplethDataset,
   buildPaletteGradientCss,
   CHOROPLETH_FIRMS_ZERO_COLOR,
   CHOROPLETH_INDICATOR_LIST,

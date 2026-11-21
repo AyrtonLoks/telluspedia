@@ -9,7 +9,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useTimelineStore } from "@/stores/timelineStore";
-import { findMilestoneById } from "@/lib/country-data";
+import { findMilestoneById } from "@/lib/milestones";
 import { getBaseBorderPositions, getCountryFill, getCountryOutline } from "@/lib/country-border-geometry";
 import { resolveHistoricalEntity, HISTORICAL_ERAS } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";

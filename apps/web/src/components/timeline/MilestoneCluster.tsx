@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import type { MilestoneItem } from "@/lib/country-data";
+import type { MilestoneItem } from "@/lib/milestones";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { CATEGORY_TONE, TONES } from "@/components/ui/tones";

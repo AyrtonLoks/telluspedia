@@ -18,7 +18,7 @@ import {
   zoomView,
   type AxisView,
 } from "@/lib/timeline/axis";
-import { GLOBAL_MILESTONES, PILOT_COUNTRIES, findMilestoneById, MilestoneItem } from "@/lib/country-data";
+import { GLOBAL_MILESTONES, findMilestoneById, getCountryMilestones, type MilestoneItem } from "@/lib/milestones";
 import { useGlobeStore } from "@/stores/globeStore";
 import { cn } from "@/components/ui/cn";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -113,9 +113,8 @@ export const TimelineAxis: React.FC = () => {
   const milestones = useMemo(() => {
     const all: MilestoneItem[] = [...GLOBAL_MILESTONES];
 
-    if (selectedIso && PILOT_COUNTRIES[selectedIso]) {
-      const countryMilestones = PILOT_COUNTRIES[selectedIso].milestones;
-      for (const cm of countryMilestones) {
+    if (selectedIso) {
+      for (const cm of getCountryMilestones(selectedIso)) {
         if (!all.some((m) => m.id === cm.id)) {
           all.push({
             ...cm,

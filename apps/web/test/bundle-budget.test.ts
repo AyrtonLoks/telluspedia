@@ -113,7 +113,7 @@ describe("T25 · Orçamento de bundle inicial e carregamento sob demanda", () =>
     assert.equal(pkg.scripts?.analyze, "ANALYZE=true next build");
   });
 
-  test("6. Quando build (.next) existe, First Load JS de / fica abaixo de 250 kB e sem three/recharts/radix-dialog", () => {
+  test("6. Quando build (.next) existe, First Load JS de / fica abaixo de 185 kB e sem three/recharts/radix-dialog", () => {
     const manifestPath = path.join(webRoot, ".next", "app-build-manifest.json");
     if (!fs.existsSync(manifestPath)) return;
 
@@ -132,12 +132,17 @@ describe("T25 · Orçamento de bundle inicial e carregamento sob demanda", () =>
       const text = content.toString("utf-8");
       assert.doesNotMatch(text, /WebGLRenderer/, `Chunk inicial ${relChunk} não deve conter Three.js (WebGLRenderer)`);
       assert.doesNotMatch(text, /ResponsiveContainer/, `Chunk inicial ${relChunk} não deve conter Recharts`);
+      // T35: dossiês/indicadores, entidades históricas e SGP4 ficam fora do carregamento inicial.
+      assert.doesNotMatch(text, /twoline2satrec/, `Chunk inicial ${relChunk} não deve conter satellite.js`);
+      assert.doesNotMatch(text, /Reino da Prússia/, `Chunk inicial ${relChunk} não deve conter as entidades históricas`);
+      assert.doesNotMatch(text, /EN\.GHG\.CO2\.PC\.CE\.AR5/, `Chunk inicial ${relChunk} não deve conter os indicadores do Banco Mundial`);
     }
 
     const totalGzipKb = totalGzipBytes / 1024;
+    // T35: 235 → 176 kB. O piso é o framework (React + Next ≈ 104 kB); ver o log da T35.
     assert.ok(
-      totalGzipKb < 250,
-      `First Load JS gzip de / deve ficar < 250 kB (atual: ${totalGzipKb.toFixed(1)} kB)`
+      totalGzipKb < 185,
+      `First Load JS gzip de / deve ficar < 185 kB (atual: ${totalGzipKb.toFixed(1)} kB)`
     );
   });
 });

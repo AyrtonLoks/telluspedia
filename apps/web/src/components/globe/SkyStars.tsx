@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { resolveAstronomicalDate } from "@/lib/astronomy";
-import { findMilestoneById } from "@/lib/country-data";
+import { findMilestoneById } from "@/lib/milestones";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import {
   bvToRgb,

@@ -10,7 +10,7 @@
  *   3. Ano — ano efetivo (ano selecionado > ano do marco > ano representativo do intervalo) e a
  *      era histórica correspondente.
  */
-import { resolveEffectiveHistoricalYear, resolveHistoricalEra, type HistoricalEraId } from "../historical-entities";
+import { resolveEffectiveHistoricalYear, resolveHistoricalEra, type HistoricalEraId } from "../historical-eras";
 import { GEOLOGICAL_MILESTONE_MA, SPACE_AGE_START_YEAR, isGeologicalMilestoneId, type EpochMode } from "./constants";
 import { getScene, isPlayableScene, sceneOpenedBy, sceneStartYear } from "../scenes/catalog";
 

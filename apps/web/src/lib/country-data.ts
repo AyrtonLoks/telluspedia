@@ -3,9 +3,10 @@ import {
   resolveHistoricalEntity,
   HistoricalEraId,
 } from "./historical-entities";
-import worldCountriesDataset from "../../public/data/countries-ne-110m.json";
+import { WORLD_COUNTRIES_CATALOG, WORLD_COUNTRIES_METADATA, type WorldCountryCatalogEntry } from "./country-catalog";
 import worldBankDataset from "../../public/data/countries-worldbank-indicators.json";
-import { globalMilestones, countryMilestones } from "./scenes/catalog";
+import { GLOBAL_MILESTONES, getCountryMilestones } from "./milestones";
+import type { MilestoneItem } from "./milestones";
 
 export type DataCompleteness = "full" | "partial" | "none";
 
@@ -48,20 +49,9 @@ export interface WorldBankCountryEntry {
   indicators: Record<string, { value: number; year: number }>;
 }
 
-export interface WorldCountryCatalogEntry {
-  isoCode: string;
-  iso2: string;
-  numericCode: string | null;
-  nameCommon: string;
-  nameNaturalEarth: string;
-  latitude: number | null;
-  longitude: number | null;
-  flagSvgUrl: string;
-}
 
-export const WORLD_COUNTRIES_METADATA = worldCountriesDataset.metadata;
-export const WORLD_COUNTRIES_CATALOG: Record<string, WorldCountryCatalogEntry> =
-  worldCountriesDataset.countries;
+export { WORLD_COUNTRIES_CATALOG, WORLD_COUNTRIES_METADATA } from "./country-catalog";
+export type { WorldCountryCatalogEntry } from "./country-catalog";
 
 export const WORLD_BANK_METADATA = worldBankDataset.metadata;
 export const WORLD_BANK_INDICATOR_SPECS: WorldBankIndicatorSpec[] =
@@ -256,7 +246,7 @@ Em 15 de novembro de 1889, Marechal Deodoro da Fonseca liderou a Proclamação d
 A base industrial é diversificada, destacando-se na produção aeronáutica (Embraer), extração de petróleo em águas ultraprofundas (Camada Pré-Sal via Petrobras), mineração de ferro (Vale) e complexo automotivo [1][2].`,
       },
     ],
-    milestones: countryMilestones("BRA"),
+    milestones: getCountryMilestones("BRA"),
   },
   DEU: {
     isoCode: "DEU",
@@ -307,7 +297,7 @@ O Poder Executivo tem a liderança política centralizada no Chanceler Federal (
 Após 1945, a Alemanha foi dividida entre a República Federal da Alemanha (RFA, ocidental) e a República Democrática Alemã (RDA, oriental) [1]. Em 9 de novembro de 1989, a pacífica queda do Muro de Berlim abriu caminho para a reunificação oficial em 3 de outubro de 1990 [1][2].`,
       },
     ],
-    milestones: countryMilestones("DEU"),
+    milestones: getCountryMilestones("DEU"),
   },
   USA: {
     isoCode: "USA",
@@ -360,7 +350,7 @@ O sistema baseia-se em um rigoroso equilíbrio de freios e contrapesos (*checks 
 Após a Guerra de Secessão (1861–1865), o país acelerou seu processo de industrialização e emergiu como potência mundial decisiva na Primeira e Segunda Guerras Mundiais [1]. Durante a Guerra Fria, protagonizou a corrida espacial que culminou com o desembarque na Lua pelo programa Apollo em 1969 [1][2].`,
       },
     ],
-    milestones: countryMilestones("USA"),
+    milestones: getCountryMilestones("USA"),
   },
   JPN: {
     isoCode: "JPN",
@@ -402,7 +392,7 @@ Após a Guerra de Secessão (1861–1865), o país acelerou seu processo de indu
 O Poder Executivo é conduzido pelo Primeiro-Ministro e seu Gabinete, responsáveis perante a Dieta Nacional (*Kokkai*), o parlamento bicameral japonês [1]. O Artigo 9º da Constituição renuncia expressamente à guerra como direito soberano da nação [1].`,
       },
     ],
-    milestones: countryMilestones("JPN"),
+    milestones: getCountryMilestones("JPN"),
   },
   ZAF: {
     isoCode: "ZAF",
@@ -443,7 +433,7 @@ O Poder Executivo é conduzido pelo Primeiro-Ministro e seu Gabinete, responsáv
 A Constituição de 1996 é considerada uma das mais progressistas do mundo, com uma Declaração de Direitos ampla que protege expressamente contra discriminação por raça, gênero, orientação sexual e crença [1][2].`,
       },
     ],
-    milestones: countryMilestones("ZAF"),
+    milestones: getCountryMilestones("ZAF"),
   },
   EGY: {
     isoCode: "EGY",
@@ -484,42 +474,12 @@ A Constituição de 1996 é considerada uma das mais progressistas do mundo, com
 Na modernidade, a abertura do Canal de Suez em 1869 revolucionou o comércio marítimo mundial ao interligar diretamente o Mar Mediterrâneo ao Mar Vermelho [1][2].`,
       },
     ],
-    milestones: countryMilestones("EGY"),
+    milestones: getCountryMilestones("EGY"),
   },
 };
 
-export interface MilestoneItem {
-  id: string;
-  title: string;
-  summary: string;
-  year: number;
-  exactDate?: string;
-  category: "POLITICS_REGIMES" | "ECONOMY" | "WAR_MILITARY" | "SCIENCE_CULTURE" | "HEALTH_PANDEMICS";
-  sourcePrimary: string;
-  latitude?: number;
-  longitude?: number;
-  countryIso?: string;
-  blocIsos?: string[];
-  preferredAltitude?: number;
-}
-
-/** Marcos globais — agora vêm das cenas em `src/data/scenes/` (D12b). */
-export const GLOBAL_MILESTONES: MilestoneItem[] = globalMilestones();
-
-export function findMilestoneById(id: string): MilestoneItem | undefined {
-  const global = GLOBAL_MILESTONES.find((m) => m.id === id);
-  if (global) return global;
-  for (const country of Object.values(PILOT_COUNTRIES)) {
-    const found = country.milestones.find((m) => m.id === id);
-    if (found) {
-      return {
-        ...found,
-        countryIso: found.countryIso || country.isoCode,
-      };
-    }
-  }
-  return undefined;
-}
+export type { MilestoneItem } from "./milestones";
+export { GLOBAL_MILESTONES, findMilestoneById, PILOT_COUNTRY_ISOS, getCountryMilestones } from "./milestones";
 
 export const NUMERIC_TO_ISO: Record<string, string> = {
   "004": "AFG", "008": "ALB", "010": "ATA", "012": "DZA", "024": "AGO", "031": "AZE", "032": "ARG", "036": "AUS",

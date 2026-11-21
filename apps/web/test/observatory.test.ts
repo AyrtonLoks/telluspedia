@@ -11,8 +11,8 @@ import { forkStudyRecord, restoreStudyRecord } from "../src/lib/studies-store";
 import { StudyShareModal } from "../src/components/study/StudyShareModal";
 import { useSceneStore } from "../src/stores/sceneStore";
 import { useObservatoryStore } from "../src/stores/observatoryStore";
+import { calculateIssPosition } from "../src/lib/satellites";
 import {
-  calculateIssPosition,
   isContemporaryEpoch,
   FALLBACK_FIRMS_HOTSPOTS,
   FALLBACK_EONET_EVENTS,

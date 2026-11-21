@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
-import { buildChoroplethDataset } from "@/lib/choropleth";
+import { buildChoroplethDataset } from "@/lib/choropleth-dataset";
 import {
   CHOROPLETH_TEXTURE_HEIGHT,
   CHOROPLETH_TEXTURE_WIDTH,

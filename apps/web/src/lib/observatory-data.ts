@@ -1,7 +1,5 @@
 import type { AisVessel, VesselGroup } from "./ais-data";
-import { geoCentroid } from "d3-geo";
 import type { ObservatoryMeta } from "./observatory-source";
-import { referenceIssTelemetry } from "./satellites";
 
 /** Camadas que a busca ⌘K, a URL compartilhável e os estudos conhecem. */
 export type ObservatoryLayerId =
@@ -69,8 +67,23 @@ export function observationLocation(observation: EonetObservation) {
     return { lng, lat };
   }
   const [exterior] = observation.coordinates;
-  const [lng, lat] = geoCentroid({ type: "MultiPoint", coordinates: exterior.slice(0, -1) });
-  return { lng, lat };
+  return sphericalCentroid(exterior.slice(0, -1));
+}
+
+/**
+ * Centroide esférico de pontos (média dos vetores unitários), o mesmo que o `geoCentroid` do
+ * d3-geo faz para um MultiPoint, sem levar o d3-geo ao carregamento inicial (T35).
+ */
+function sphericalCentroid(points: number[][]): { lng: number; lat: number } {
+  let x = 0, y = 0, z = 0;
+  for (const [lng, lat] of points) {
+    const λ = (lng * Math.PI) / 180, φ = (lat * Math.PI) / 180;
+    x += Math.cos(φ) * Math.cos(λ);
+    y += Math.cos(φ) * Math.sin(λ);
+    z += Math.sin(φ);
+  }
+  const deg = 180 / Math.PI;
+  return { lng: Math.atan2(y, x) * deg, lat: Math.atan2(z, Math.hypot(x, y)) * deg };
 }
 
 const dateFormat = new Intl.DateTimeFormat("pt-BR", {
@@ -155,14 +168,6 @@ export type ObservatoryEntity =
   | { type: "VESSEL"; data: AisVessel; meta: ObservatoryMeta; group?: VesselGroup }
   | { type: "VESSEL_GROUP"; data: VesselGroup; meta: ObservatoryMeta };
 
-/**
- * Posição da ISS por SGP4 a partir do TLE de referência (lib/satellites.ts). Usada só como fallback
- * “Simulado” e em testes — com dados ao vivo, a telemetria vem dos TLEs do CelesTrak (D04).
- * (Substitui o antigo modelo analítico inventado, que não correspondia à ISS real.)
- */
-export function calculateIssPosition(timestamp: number = Date.now()): IssTelemetryData {
-  return referenceIssTelemetry(timestamp);
-}
 
 /**
  * Validação de anacronismo temporal (RN09, RN10, RN11).

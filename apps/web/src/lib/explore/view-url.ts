@@ -1,7 +1,8 @@
 import { CELESTIAL_BODY_IDS } from "@/lib/celestial-bodies";
 import { GEOLOGICAL_MILESTONE_MA } from "@/lib/epoch/constants";
-import { WORLD_COUNTRIES_CATALOG, findMilestoneById } from "@/lib/country-data";
-import { HISTORICAL_ENTITIES } from "@/lib/historical-entities";
+import { COUNTRY_ISO_CODES } from "@/lib/country-isos";
+import { findMilestoneById } from "@/lib/milestones";
+import { HISTORICAL_ENTITY_IDS } from "@/lib/historical-eras";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { encodeGibsView, readGibsView } from "@/lib/gibs";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "@/stores/cosmicStore";
@@ -82,7 +83,7 @@ export function restoreView(search: string, view: ViewCamera) {
   const params = new URLSearchParams(search);
   if (params.get("visao") !== "1") return false;
   const iso = params.get("pais");
-  selectCountry(iso && (Object.hasOwn(WORLD_COUNTRIES_CATALOG, iso) || Object.hasOwn(HISTORICAL_ENTITIES, iso)) ? iso : null);
+  selectCountry(iso && (COUNTRY_ISO_CODES.has(iso) || (HISTORICAL_ENTITY_IDS as readonly string[]).includes(iso)) ? iso : null);
 
   const [from, to] = (params.get("periodo") ?? "").split(",");
   const start = numberIn(from ?? null, 1, 9998);
@@ -129,7 +130,7 @@ export function restoreView(search: string, view: ViewCamera) {
   useComparatorStore.setState({
     isOpen: params.has("comparar"),
     selectedIsos: [...new Set(params.get("comparar")?.split(",") ?? [])]
-      .filter((code) => Object.hasOwn(WORLD_COUNTRIES_CATALOG, code)).slice(0, 4),
+      .filter((code) => COUNTRY_ISO_CODES.has(code)).slice(0, 4),
   });
   const camera = parseCameraOffset(params.get("camera"));
   view.offset = camera ?? DEFAULT_CAMERA_OFFSET;

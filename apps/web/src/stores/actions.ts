@@ -1,5 +1,5 @@
 import { sceneHasTrajectoryKind, sceneOpenedBy } from "@/lib/scenes/catalog";
-import { HISTORICAL_ERAS } from "@/lib/historical-entities";
+import { HISTORICAL_ERAS } from "@/lib/historical-eras";
 import { MAGELLAN_ROUTE } from "@/lib/historical-routes";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { readGibsView } from "@/lib/gibs";
