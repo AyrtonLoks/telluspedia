@@ -213,7 +213,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | TODO | — | — | G-PAIS, G-OBS, G-SHELL |
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | TODO | — | — | G-PAIS, G-COSMOS, G-INFRA |
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
-| T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | IN_PROGRESS | antigravity | T32 | G-PAIS |
+| T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | REVIEW | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | TODO | — | — | G-COSMOS |
@@ -1259,7 +1259,7 @@ Cinco arquivos ultrapassam 850 linhas (`country-data.ts` 1.138, `CometHalleyTraj
 
 ### T38 · Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t38-analytical-reader-177 · **Worktree:** ../telluspedia-wt/antigravity-t38
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t38-analytical-reader-177 · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Dados/UX · **Tamanho:** G · **Depende de:** T32 · **Grupos:** G-PAIS
 
 **Contexto / problema**
@@ -1270,11 +1270,12 @@ Apenas os 6 `PILOT_COUNTRIES` possuem dossiês completos no Modo Leitura; os dem
 2. Integrar resumo factual estruturado auditado (com link direto para Banco Mundial / Natural Earth / REST Countries) sem texto inventado.
 
 **Critérios de aceite**
-- [ ] Abrir o Reader Mode em qualquer um dos 177 países entrega análise comparativa real e citável (ABNT/APA/MLA/BibTeX).
+- [x] Abrir o Reader Mode em qualquer um dos 177 países entrega análise comparativa real e citável (ABNT/APA/MLA/BibTeX).
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (9f7bbae). Dependência T32 em DONE; grupo G-PAIS livre (D18 do codex ocupa G-SHELL/G-EPOCA/G-COSMOS; T30 do claude ocupa G-INFRA/G-ESTUDOS).
+- 2026-11-21 · antigravity · REVIEW · Implementação em `6a79fcd`. **Motor determinístico (`apps/web/src/lib/country-analytics.ts`):** `buildCountryAnalyticalProfile` calcula ranking global (competition ranking `#pos / N` + percentil) para os 177 países Natural Earth nos 8 indicadores reais do Banco Mundial (`NY.GDP.MKTP.CD`, `NY.GDP.PCAP.CD`, `SP.POP.TOTL`, `AG.SRF.TOTL.K2`, `SP.DYN.LE00.IN`, `EG.FEC.RNEW.ZS`, `EN.GHG.CO2.PC.CE.AR5`, `MS.MIL.XPND.GD.ZS`) e densidade demográfica derivada (`hab./km²`); agrega média/mediana/ranking e diferença percentual em relação ao grupo regional (sub-região com ≥ 3 países ou continente como fallback); identifica até 4 pares mais próximos por distância padronizada (z-score com escala log para PIB, PIB per capita e população); e monta resumo factual estritamente derivado de dados auditados (territórios sem série do Banco Mundial como `CYN` retornam `hasQuantitativeData: false`, 0 rankings e 0 pares, sem texto inventado). **Interface D14 (`apps/web/src/components/reader/AnalyticalProfileView.tsx`, registrada em `MIGRATED` no `design-system.test.tsx`):** renderiza resumo factual auditado, ficha administrativo-geográfica (`<dl>`), cartões de ranking global/regional com barra de posição e links RN02 diretos para o Banco Mundial, pares comparáveis clicáveis (com botão "Abrir no Comparador" pré-carregando o país + 3 pares no `useComparatorStore`), botão "Citar Perfil Analítico" integrado ao `CitationModal` (ABNT/APA/MLA/BibTeX) e links externos oficiais (Natural Earth / Banco Mundial / REST Countries) sem nenhum `<div>` dentro de `<p>`. **Integração Reader/HUD:** adicionada dimensão `ANALYTICAL_PROFILE` no topo do sumário (`ReaderTableOfContents.tsx`) e selecionada automaticamente ao abrir o Reader Mode (`ReaderMode.tsx`, `InspectorHUD.tsx`) para os 171 países sem dossiê editorial curado; dimensões editoriais ainda não redigidas mantêm `reader-empty-state` com atalho direto para o Perfil Analítico. **Testes:** `apps/web/test/analytical-reader.test.tsx` (4 testes cobrindo integridade nos 177 países, rankings exatos, ausência de dados sintéticos em `CYN`, SSR sem `<div>` em `<p>` e citações ABNT/APA/MLA/BibTeX). **Validação pós-rebase em `7428ffe`:** `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 589/589 ok, `pnpm build` ok (`/` = 225 kB, sem aumento no First Load JS).
 
 ---
 
