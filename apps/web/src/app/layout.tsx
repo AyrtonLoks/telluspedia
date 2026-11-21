@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
+import { SearchProvider } from "@/components/explore/SearchProvider";
 
 // Fontes auto-hospedadas localmente via next/font/local (T27: elimina dependência
 // do CDN do Google Fonts em build time e a falha intermitente do loader com Merriweather v33).
@@ -71,7 +72,7 @@ export default function RootLayout({
       className={`dark ${geistSans.variable} ${geistMono.variable} ${merriweather.variable}`}
     >
       <body className="bg-bg text-fg antialiased min-h-screen font-sans">
-        {children}
+        <SearchProvider>{children}</SearchProvider>
       </body>
     </html>
   );

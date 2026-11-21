@@ -1,19 +1,17 @@
 "use client";
 
-import { selectCountry, resetGlobeView } from "@/stores/actions";
+import { resetGlobeView } from "@/stores/actions";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import { Globe, Search, BarChart2, Share2, RotateCcw, Radio, Orbit, BookOpen } from "lucide-react";
-import { useGlobeStore } from "@/stores/globeStore";
-import { useTimelineStore } from "@/stores/timelineStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { panelButtonAction, useRightDock } from "@/components/layout/useRightDock";
-import { PILOT_COUNTRIES, getCountryData } from "@/lib/country-data";
+import { useOpenExploreSearch } from "@/components/explore/SearchProvider";
 import {
   preloadCosmicHud,
   preloadCountryComparator,
@@ -33,7 +31,7 @@ function navItemClasses(isActive: boolean) {
 }
 
 export const TopNavBar: React.FC = () => {
-  const flyTo = useGlobeStore((s) => s.flyTo);
+  const openSearch = useOpenExploreSearch();
   const openComparator = useComparatorStore((s) => s.openComparator);
   const setShareModalOpen = useStudyStore((s) => s.setShareModalOpen);
   const storeIsPanelOpen = useObservatoryStore((s) => s.isPanelOpen);
@@ -58,26 +56,6 @@ export const TopNavBar: React.FC = () => {
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const toggleCosmicMode = useCosmicStore((s) => s.toggleCosmicMode);
-
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const handleCountrySelect = (iso: string) => {
-    selectCountry(iso);
-    useTimelineStore.getState().selectMilestone(null);
-    const country = PILOT_COUNTRIES[iso] || getCountryData(iso);
-    if (country && country.latitude && country.longitude) {
-      flyTo(country.latitude, country.longitude, 2.0);
-    }
-    setSearchQuery("");
-  };
-
-  const filteredCountries = searchQuery
-    ? Object.values(PILOT_COUNTRIES).filter(
-        (c) =>
-          c.nameCommon.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.isoCode.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
 
   return (
     <header className="fixed left-6 top-4 z-20 max-w-[calc(100vw-3rem)]">
@@ -146,39 +124,18 @@ export const TopNavBar: React.FC = () => {
           <span className="hidden sm:inline">Comparador</span>
         </button>
 
-        {/* Busca de país */}
-        <div className="relative ml-1">
-          <label className="flex h-9 w-56 items-center gap-2 rounded-control border border-line bg-surface-sunken px-3 text-label">
-            <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-            <span className="sr-only">Buscar país ou código ISO</span>
-            <input
-              type="text"
-              value={searchQuery}
-              onFocus={preloadRightDock}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar país ou ISO…"
-              className="w-full min-w-0 border-none bg-transparent text-fg placeholder:text-fg-muted focus:outline-none"
-            />
-          </label>
-
-          {filteredCountries.length > 0 && (
-            <div className="absolute left-0 top-full z-30 mt-2 w-64 space-y-0.5 rounded-card border border-line bg-surface p-1.5 shadow-e2">
-              {filteredCountries.map((c) => (
-                <button
-                  type="button"
-                  key={c.isoCode}
-                  onMouseEnter={preloadRightDock}
-                  onClick={() => handleCountrySelect(c.isoCode)}
-                  className="flex w-full items-center gap-2 rounded-control px-2.5 py-1.5 text-left text-label transition-colors duration-fast ease-out hover:bg-surface-hover"
-                >
-                  <img src={c.flagSvgUrl} alt="" className="h-3.5 w-5 rounded-sm object-cover" />
-                  <span className="font-medium text-fg">{c.nameCommon}</span>
-                  <span className="ml-auto font-mono text-caption text-fg-muted">{c.isoCode}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <button
+          type="button"
+          aria-label="Buscar no TellusPedia"
+          aria-keyshortcuts="Control+k Meta+k"
+          aria-haspopup="dialog"
+          onClick={openSearch}
+          className={buttonClasses("secondary", "md", "ml-1 gap-2 sm:w-56 sm:justify-start sm:bg-surface-sunken")}
+        >
+          <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
+          <span className="hidden text-fg-secondary sm:inline">Buscar no TellusPedia</span>
+          <kbd aria-hidden="true" className="ml-auto hidden rounded border border-line px-1 font-mono text-caption text-fg-muted sm:inline">⌘/Ctrl K</kbd>
+        </button>
 
         <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
 

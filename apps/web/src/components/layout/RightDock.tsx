@@ -12,6 +12,7 @@ import { cn } from "@/components/ui/cn";
 import { useRightDock } from "./useRightDock";
 import { DOCK_FRAME_CLASSES, dockMotionClasses } from "./dockFrame";
 import { useLastDefined } from "@/components/ui/motion";
+import { CountrySearchSuggestions } from "@/components/explore/CountrySearchSuggestions";
 
 const TAB_ICON: Record<RightPanelId, React.ReactNode> = {
   country: <MapPin />,
@@ -84,7 +85,12 @@ export const RightDock: React.FC<{ closing?: boolean }> = ({ closing = false }) 
       )}
 
       <div role={dock.open.length > 1 ? "tabpanel" : undefined} className="flex min-h-0 flex-1 flex-col">
-        {active === "country" && <InspectorHUD />}
+        {active === "country" && (
+          <>
+            <InspectorHUD />
+            <CountrySearchSuggestions iso={selectedIso} />
+          </>
+        )}
         {active === "observatory" && <ObservatoryPanel />}
         {active === "cosmos" && <CosmicInspectorHUD placement="dock" />}
       </div>

@@ -13,6 +13,8 @@ import { useEpochState } from "@/lib/epoch/useEpochState";
 import type { StudyRecord } from "@/lib/studies-store";
 import { restoreStudySnapshot, selectCountry } from "@/stores/actions";
 import { SceneLinkSync } from "@/components/scenes/SceneLinkSync";
+import { ExplorerUrlSync } from "@/components/explore/ExplorerUrlSync";
+import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "@/lib/explore/view-camera";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -146,6 +148,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   initialState = { kind: "default" },
 }) => {
   const stateKey = getInitialGlobeStateKey(initialState);
+  const viewCamera = useRef<ViewCamera>({ offset: DEFAULT_CAMERA_OFFSET, restore: null, onChange: null }).current;
   const hydratedKeyRef = useRef<string | null>(null);
 
   // One-time synchronous hydration before children mount (eliminates default-state flash on SSR & hydration)
@@ -194,7 +197,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
       )}
       <main className="relative h-screen w-screen overflow-hidden bg-bg select-none">
         {/* 3D WebGL Canvas Layer */}
-        <GlobeCanvas />
+        <GlobeCanvas viewCamera={viewCamera} />
 
         {/* Top Floating Navigation Bar */}
         <Suspense fallback={null}>
@@ -203,6 +206,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         </Suspense>
         {/* Link de cena (?cena=<id>) e endereço em sincronia com a cena aberta (D12d) */}
         <SceneLinkSync />
+        <ExplorerUrlSync view={viewCamera} immutable={initialState.kind === "study"} />
 
         {/* Floating Historical Era Badge */}
         {showHistoricalBadge && <HistoricalEraBadge />}

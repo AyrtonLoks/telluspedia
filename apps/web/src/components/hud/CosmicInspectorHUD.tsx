@@ -13,7 +13,7 @@ import {
   Globe,
   Layers,
 } from "lucide-react";
-import { useCosmicStore, CosmicLayerId } from "@/stores/cosmicStore";
+import { ALL_COSMIC_LAYERS, COSMIC_LAYER_LABELS, useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { getLunarPhase } from "@/lib/astronomy";
 import {
@@ -133,16 +133,8 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           <div className="space-y-1.5">
             <h4 className="text-caption font-medium text-fg-muted">Camadas visuais</h4>
             <div className="flex flex-col gap-1">
-              {(
-                [
-                  ["ORBITS", "Órbitas Keplerianas"],
-                  ["CONSTELLATIONS", "88 Constelações IAU"],
-                  ["ASTEROIDS", "Cinturão de Asteroides"],
-                  ["LABELS", "Rótulos do céu e dos planetas"],
-                  ["COMETS", "Cometa 1P/Halley"],
-                  ["METEORS", "Chuvas de Meteoros"],
-                ] as Array<[CosmicLayerId, string]>
-              ).map(([layerId, label]) => {
+              {ALL_COSMIC_LAYERS.map((layerId) => {
+                const label = COSMIC_LAYER_LABELS[layerId];
                 const isActive = activeCosmicLayers.includes(layerId);
                 return (
                   <button

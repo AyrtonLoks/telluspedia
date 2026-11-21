@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
 import { Cloud, CloudSun, Sun } from "lucide-react";
@@ -21,6 +21,8 @@ import { CountryBorders } from "./CountryBorders";
 import { OrbitingMoon } from "./OrbitingMoon";
 import { SkyStars } from "./SkyStars";
 import { CameraFlyToController } from "./CameraFlyToController";
+import { CameraUrlBridge } from "./CameraUrlBridge";
+import type { ViewCamera } from "@/lib/explore/view-camera";
 import { ScenePlayer } from "@/components/scenes/ScenePlayer";
 import { getScene } from "@/lib/scenes/catalog";
 import { PaleoPlatesLayer } from "./PaleoPlatesLayer";
@@ -63,7 +65,8 @@ const SolarDirectionalLight: React.FC = () => {
   return <directionalLight position={sun.lightPosition} intensity={2.2} color="#ffffff" />;
 };
 
-export const GlobeCanvas: React.FC = () => {
+export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }) => {
+  const lastEarthFlight = useRef(0);
   const [studyLighting, setStudyLighting] = useState(false);
   // D02: atmosfera com espalhamento (ligada por padrão; desativável).
   const [showAtmosphere, setShowAtmosphere] = useState(true);
@@ -133,10 +136,11 @@ export const GlobeCanvas: React.FC = () => {
         />
 
         {/* Earth Camera FlyTo Interpolator (Active in Earth Mode) */}
-        {!isCosmicMode && <CameraFlyToController />}
+        {!isCosmicMode && <CameraFlyToController lastRequest={lastEarthFlight} />}
 
         {/* Cosmic Camera Target Handover Controller (Active in Cosmic Mode) */}
         <CosmicCameraController />
+        <CameraUrlBridge view={viewCamera} />
 
         {/* Deep Space Celestial Vault (HYG 3,500+ Stars & IAU Constellations) */}
         <SkyStars />

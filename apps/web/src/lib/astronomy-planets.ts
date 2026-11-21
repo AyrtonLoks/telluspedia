@@ -1,3 +1,4 @@
+import type { CelestialBodyId } from "./celestial-bodies";
 import * as THREE from "three";
 import { bodySceneRadius } from "./cosmic-scale";
 
@@ -14,19 +15,7 @@ import { bodySceneRadius } from "./cosmic-scale";
  */
 export const currentMoonWorldPos = new THREE.Vector3(3.6, 0.4, 0);
 
-export type CelestialBodyId =
-  | "SUN"
-  | "MERCURY"
-  | "VENUS"
-  | "EARTH"
-  | "MARS"
-  | "JUPITER"
-  | "SATURN"
-  | "URANUS"
-  | "NEPTUNE"
-  | "PLUTO"
-  | "MOON"
-  | "HALLEY";
+export type { CelestialBodyId };
 
 export interface KeplerianElements {
   /** Semi-major axis in AU */

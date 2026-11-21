@@ -37,7 +37,7 @@ function resetControlsDeltas(ctrl: FlightControls | null) {
   if (ctrl._scale !== undefined) ctrl._scale = 1;
 }
 
-export const CameraFlyToController: React.FC = () => {
+export const CameraFlyToController: React.FC<{ lastRequest: React.RefObject<number> }> = ({ lastRequest }) => {
   const { camera } = useThree();
   const controlsHook = useThree((state) => state.controls as FlightControls | null);
 
@@ -68,9 +68,12 @@ export const CameraFlyToController: React.FC = () => {
     };
   }, [controlsHook]);
 
-  useEffect(() => {
-    // A volta do Cosmos (ou um foco da Lua) está levando a câmera: não disputar com ela.
-    if (flyToTrigger > 0 && !orbitTransition.active) {
+  useFrame((state) => {
+    // Leave new requests queued while the camera is returning from the Cosmos or Moon.
+    if (orbitTransition.active) return;
+    const activeControls = (state.controls as FlightControls | null) ?? controlsHook;
+    if (activeControls && flyToTrigger > lastRequest.current) {
+      lastRequest.current = flyToTrigger;
       // 1. Calculate safe destination coordinates (min altitude 1.5)
       const safeTargetAltitude = Math.max(MIN_CAMERA_ALTITUDE, cameraAltitude || 2.0);
       const targetVec = latLngToVector3(cameraLat, cameraLng, safeTargetAltitude);
@@ -106,11 +109,9 @@ export const CameraFlyToController: React.FC = () => {
       if ((angle < 0.002 && altitudeDelta < 0.02) || prefersReducedMotion()) {
         camera.position.copy(finalPosition.current);
         camera.lookAt(0, 0, 0);
-        if (controlsHook) {
-          resetControlsDeltas(controlsHook);
-          controlsHook.enabled = true;
-          controlsHook.update();
-        }
+        resetControlsDeltas(activeControls);
+        activeControls.enabled = true;
+        activeControls.update();
         isAnimating.current = false;
         return;
       }
@@ -125,17 +126,11 @@ export const CameraFlyToController: React.FC = () => {
       isAnimating.current = true;
 
       // 6. Disable user drag inputs during flyTo and reset deltas to prevent jitter
-      if (controlsHook) {
-        controlsHook.enabled = false;
-        resetControlsDeltas(controlsHook);
-      }
+      activeControls.enabled = false;
+      resetControlsDeltas(activeControls);
     }
-  }, [flyToTrigger, cameraLat, cameraLng, cameraAltitude, camera, controlsHook]);
 
-  useFrame((state) => {
     if (!isAnimating.current) return;
-
-    const activeControls = (state.controls as FlightControls | null) ?? controlsHook;
 
     const clockTime = state.clock.getElapsedTime();
     if (startTime.current < 0) {

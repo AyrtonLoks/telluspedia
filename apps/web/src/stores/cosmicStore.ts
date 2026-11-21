@@ -2,22 +2,17 @@ import { create } from "zustand";
 import { CelestialBodyId } from "@/lib/astronomy-planets";
 import type { CosmicScaleMode } from "@/lib/cosmic-scale";
 
-export type CosmicLayerId =
-  | "ORBITS"
-  | "CONSTELLATIONS"
-  | "ASTEROIDS"
-  | "LABELS"
-  | "COMETS"
-  | "METEORS";
+export const COSMIC_LAYER_LABELS = {
+  ORBITS: "Órbitas Keplerianas",
+  CONSTELLATIONS: "88 Constelações IAU",
+  ASTEROIDS: "Cinturão de Asteroides",
+  LABELS: "Rótulos do céu e dos planetas",
+  COMETS: "Cometa 1P/Halley",
+  METEORS: "Chuvas de Meteoros",
+} as const;
 
-export const ALL_COSMIC_LAYERS: CosmicLayerId[] = [
-  "ORBITS",
-  "CONSTELLATIONS",
-  "ASTEROIDS",
-  "LABELS",
-  "COMETS",
-  "METEORS",
-];
+export type CosmicLayerId = keyof typeof COSMIC_LAYER_LABELS;
+export const ALL_COSMIC_LAYERS = Object.keys(COSMIC_LAYER_LABELS) as CosmicLayerId[];
 
 export interface CosmicState {
   isCosmicMode: boolean;
