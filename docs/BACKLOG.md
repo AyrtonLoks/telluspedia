@@ -186,7 +186,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | DONE | codex | T05 | G-OBS, G-INFRA |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | DONE | codex | T05 | G-OBS |
-| D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | REVIEW | codex | T05 | G-OBS |
+| D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | IN_PROGRESS | codex | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | TODO | — | D10 | G-COSMOS |
@@ -1219,7 +1219,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D08 · Embarcações reais via AIS
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d08-embarcacoes-ais · **Worktree:** ../telluspedia-wt/codex-d08
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d08-embarcacoes-ais · **Worktree:** ../telluspedia-wt/codex-d08
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** T05 · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -1246,6 +1246,8 @@ A camada "Rotas Marítimas Globais" é só um conjunto de 5 polylines estáticas
 - 2026-11-20 · codex · IN_PROGRESS · Reaberta após revisão do Ayrton. Ícones sobrepostos em Malaca e Europa, leitura de movimento e alcance geográfico da amostra.
 
 - 2026-11-20 · codex · REVIEW · Marcadores agrupados na tela com contagem, lista pesquisável e seleção individual, ícones com contorno e filtro de velocidade AIS a partir de 1 nó. Acrescentados Santos, Panamá e Cabo da Boa Esperança. Capturas no mesmo enquadramento de Malaca mostram 130 ícones de teste sobrepostos antes e um marcador numerado depois. Chromium validou clique, busca MMSI, ficha e filtro. Typecheck, lint, 449 testes e build passaram. Em quatro amostras ao vivo houve posições em quatro áreas e mudanças de coordenadas entre leituras. No último recorte, 56 de 168 embarcações tinham velocidade a partir de 1 nó. Suez e Panamá ficaram sem posições no recorte, então o critério dos três corredores originais permanece aberto. Implementação em `afc70aa`.
+
+- 2026-11-20 · codex · IN_PROGRESS · Reaberta após revisão do Ayrton. Substituir as silhuetas individuais por miniaturas de navios com leitura visual semelhante à camada aérea.
 
 ---
 
