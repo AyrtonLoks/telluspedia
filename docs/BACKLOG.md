@@ -179,7 +179,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | DONE | codex | T18 | G-INFRA |
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | DONE | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
-| T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | IN_PROGRESS | codex | D14 | G-SHELL, G-EPOCA, G-TIMELINE |
+| T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | REVIEW | codex | D14 | G-SHELL, G-EPOCA, G-TIMELINE |
 | T23 | Limpezas menores | Qualidade | P2 | P | DONE | antigravity | — | G-TIMELINE, G-PAIS |
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | DONE | antigravity | T03 | G-PAIS, G-PIPELINE |
@@ -899,7 +899,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### T22 · Acessibilidade (labels, teclado, foco)
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t22-acessibilidade · **Worktree:** ../telluspedia-wt/codex-t22
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t22-acessibilidade · **Worktree:** ../telluspedia-wt/codex-t22
 - **Prioridade:** P2 · **Área:** A11y · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL, G-EPOCA, G-TIMELINE
 
 **Contexto / problema**
@@ -913,13 +913,16 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 5. Rodar axe (extensão ou `@axe-core/playwright` em T19).
 
 **Critérios de aceite**
-- [ ] axe sem violações "serious"/"critical" na home.
-- [ ] Fluxo "buscar país → abrir HUD → fechar" possível só com teclado.
+- [x] axe sem violações "serious"/"critical" na home.
+- [x] Fluxo "buscar país → abrir HUD → fechar" possível só com teclado.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa disponível da fase 8, com D14 concluída e G-SHELL livre.
 - 2026-11-21 · codex · IN_PROGRESS · Reservados G-EPOCA e G-TIMELINE para incluir navegação por teclado no canvas e controles acessíveis na linha do tempo. Grupos livres no remoto.
+- 2026-11-21 · codex · REVIEW · Rótulos acessíveis na navbar e timeline; atalhos de órbita e zoom no globo; barra abre a busca com foco no globo ou no próprio botão. O dock permite alternar abas com setas e usar o globo enquanto está aberto. Busca por teclado leva o foco à ficha e, ao fechar, devolve-o ao controle de origem. Modais Radix contêm e restauram o foco. Os interruptores do Observatório foram verificados com Espaço e aria-checked. Implementação: `adbc521`.
+- 2026-11-21 · codex · REVIEW · Capturas antes/depois em 1366 e 1920 px: a diferença visual na home se restringe ao controle de busca, com rótulo curto e atalho sem sobreposição. Capturas com Tab em 1366 e 390 px confirmam contorno ciano visível sobre o canvas.
+- 2026-11-21 · codex · REVIEW · Após integrar a D21: typecheck, lint, build, 609 testes e 14 cenários Playwright passaram. O teste de KTX2, pulado no host por falta de Chrome no caminho esperado, passou em execução separada no Chromium. Axe 4.14.1 sem violações na home em 1366×850 e 390×844.
 
 ---
 
