@@ -190,11 +190,11 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | DONE | claude | D10 | G-COSMOS |
-| D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | REVIEW | claude | T12, T20 | G-EPOCA, G-SHELL |
+| D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | DONE | claude | T12, T20 | G-EPOCA, G-SHELL |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | DONE | claude | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
-| D16 | Reduzir ruído visual dos painéis | Design | P2 | M | TODO | — | D14, T05 | G-SHELL, G-OBS |
+| D16 | Reduzir ruído visual dos painéis | Design | P2 | M | IN_PROGRESS | claude | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
@@ -1376,7 +1376,7 @@ Cada corpo do modo Cosmos decide o próprio tamanho e estilo de label (`Planetar
 
 ### D12 · Eventos históricos dirigidos por dados (player de cenas)
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d12-cenas · **Worktree:** ../telluspedia-wt/claude-d12
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d12-cenas · **Worktree:** ../telluspedia-wt/claude-d12
 - **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** GG (quebrar em subtarefas antes de iniciar) · **Depende de:** T12, T20 · **Grupos:** G-EPOCA, G-SHELL
 
 **Contexto / problema**
@@ -1414,6 +1414,7 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 - 2026-11-21 · claude · REVIEW · **D12e concluída — ingestão do Wikidata** (`feat(cenas): ingestão de eventos do Wikidata como rascunhos [D12e]`): `lib/scenes/wikidata.ts` (puro) monta a consulta SPARQL (por QIDs ou por classe P31 + período) e converte a resposta em rascunhos `published: false` com QID, datas na precisão do Wikidata (momento P585 ou intervalo P580/P582, vence o mais preciso), coordenadas P625, países P17→P298 e fontes (Wikidata + artigo da Wikipédia pt). `scripts/ingest-wikidata.ts` (`pnpm scenes:wikidata`, com `--dry-run`, `--input` e `--print-query`) valida cada rascunho com o schema e grava em `src/data/scenes/drafts/wikidata.json`, que **não** entra no catálogo do site; QIDs já usados não são reimportados e ids colididos ganham o QID. Nada é inventado: pendências em `facts.aRevisar` (título sem rótulo pt, resumo ausente, categoria da importação, sem coordenadas, datas divergentes, e o país do P17 — que é o país atual, não a entidade da época); o teste recusa cena publicada com `aRevisar`. Achado ao testar com dados reais: o serviço SPARQL devolve datas sem `+` e com ano astronômico (`-0047` = 48 a.C.) — convertido para o ano histórico. Fixture: resposta real do serviço (`test/fixtures/wikidata-sparql-sample.json`, obtida pelo navegador: o ambiente não acessa query.wikidata.org) com 9 batalhas e 2 itens sem data. Nenhum rascunho foi versionado — a primeira importação fica para quando você escolher o recorte. Docs: `docs/SCENES.md` ("Importar do Wikidata") e anexo em `docs/DATA_SOURCES.md` (CC0). Testes: 6 novos. Validação: 511/515 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok. **D12 completa (a–e) → REVIEW.** Critérios: evento novo só com dados (sim: JSON + teste); Magalhães e Apollo pelo player genérico (sim; fidelidade **não verificada no navegador** desde a D12c); nenhuma ativação por ano (teste); toda cena com fonte (schema exige ≥ 1). Para aceite: conferir no navegador os dois players, abrir/fechar restaurando o estado e `/?cena=glo-1969`.
 - 2026-11-21 · claude · REVIEW · **Verificação no navegador (servidor :3001 do Ayrton) e 3 correções** (`fix(cenas): relógio da missão, restauração do preset e fases do painel [D12]`). Conferido: `/?cena=glo-1969` abre a Apollo 11; fechar remove o painel e limpa o endereço; preset Magalhães abre a cena (ano 1519, endereço `?cena=magellan-1519`) e reproduz a ~1,2 %/s (≈ 90 s em 1×, um só relógio); ano 1969 pelo scrubber **não** abre cena; clique no marco da Apollo na timeline abre a cena. **Corrigido:** (1) tempo de missão antes do instante da fase exibida (TLI com GET 002:22 < 002:50) — o GET era interpolado no `targetProgress` e a fase pelo `startProgress`; agora os dois usam o início da fase (teste varre o progresso de 0 a 1); (2) fechar Magalhães aberto pelo preset não voltava ao preset anterior — o preset mudava o período antes de abrir a cena, e o estado guardado já era 1519–1522; agora abre a cena primeiro (teste); (3) títulos das fases vazavam para a célula vizinha no painel — `min-w-0` no botão e `w-full` no texto, título completo no `title`. **Fora do escopo, sem tarefa ainda:** o selo "Cartografia Histórica" mostra "1870 — Unificação Alemã" para qualquer ano < 1891 (ex.: 1520), porque `resolveHistoricalEra` não tem eras anteriores — é anterior à D12. Validação: 513/517 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok.
 - 2026-11-21 · claude · REVIEW · **Correções conferidas no navegador** (servidor :3001 atualizado): GET ≥ instante da fase em 9 pontos de 0 a 1 (TLI em 0,20 = 002:50:13, LOI em 0,55 = 075:49:50, pouso em 0,82 = 102:45:40); títulos das 4 fases truncados dentro do botão; Guerra Fria → Magalhães → fechar volta a 1947–1991 com o preset marcado e ano 1991. Pronto para aceite.
+- 2026-11-21 · ayrton · DONE · Aprovado (registrado por claude).
 ---
 
 ### D13 · Eixo da timeline: zoom, clusters, prévias
@@ -1509,7 +1510,7 @@ O Inspector do país (ex.: COD) e o painel do Observatório abrem na mesma colun
 
 ### D16 · Reduzir ruído visual dos painéis
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d16-ruido-paineis · **Worktree:** ../telluspedia-wt/claude-d16
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14, T05 · **Grupos:** G-SHELL, G-OBS
 
 **Contexto / problema**
@@ -1527,6 +1528,7 @@ No painel do Observatório, cada card repete um botão grande "Aprofundar no Tel
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada após a D12 ir para DONE: primeira TODO da fase 7; G-SHELL e G-OBS sem tarefas em andamento (D04 e D08 em REVIEW).
 
 ---
 
