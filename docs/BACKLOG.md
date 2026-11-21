@@ -33,7 +33,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 
 | Grupo | Escopo (arquivos/conceitos principais) | Tarefas |
 |---|---|---|
-| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18 |
+| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18, T22 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
@@ -41,7 +41,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40 |
 | `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26 |
@@ -179,7 +179,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | DONE | codex | T18 | G-INFRA |
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | DONE | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
-| T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | IN_PROGRESS | codex | D14 | G-SHELL |
+| T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | IN_PROGRESS | codex | D14 | G-SHELL, G-EPOCA, G-TIMELINE |
 | T23 | Limpezas menores | Qualidade | P2 | P | DONE | antigravity | — | G-TIMELINE, G-PAIS |
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | DONE | antigravity | T03 | G-PAIS, G-PIPELINE |
@@ -900,7 +900,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 ### T22 · Acessibilidade (labels, teclado, foco)
 
 - **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t22-acessibilidade · **Worktree:** ../telluspedia-wt/codex-t22
-- **Prioridade:** P2 · **Área:** A11y · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL
+- **Prioridade:** P2 · **Área:** A11y · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL, G-EPOCA, G-TIMELINE
 
 **Contexto / problema**
 94 `<button>` para 16 `aria-label`. Botões só de ícone (reset na navbar, recolher timeline, fechar painéis) usam apenas `title`. Inputs de ano sem `<label>`. Sem gestão de foco nos painéis; navegação por teclado no globo inexistente.
@@ -919,6 +919,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa disponível da fase 8, com D14 concluída e G-SHELL livre.
+- 2026-11-21 · codex · IN_PROGRESS · Reservados G-EPOCA e G-TIMELINE para incluir navegação por teclado no canvas e controles acessíveis na linha do tempo. Grupos livres no remoto.
 
 ---
 
