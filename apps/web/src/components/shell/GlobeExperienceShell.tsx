@@ -15,6 +15,7 @@ import type { StudyRecord } from "@/lib/studies-store";
 import { restoreStudySnapshot, selectCountry } from "@/stores/actions";
 import { SceneLinkSync } from "@/components/scenes/SceneLinkSync";
 import { ExplorerUrlSync } from "@/components/explore/ExplorerUrlSync";
+import { WebGLErrorBoundary } from "@/components/globe/WebGLErrorBoundary";
 import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "@/lib/explore/view-camera";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
@@ -204,7 +205,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
           <TopNavBar />
           <EntityLaunchGate />
         </Suspense>
-        <GlobeCanvas viewCamera={viewCamera} />
+        <WebGLErrorBoundary>
+          <GlobeCanvas viewCamera={viewCamera} />
+        </WebGLErrorBoundary>
         {/* Link de cena (?cena=<id>) e endereço em sincronia com a cena aberta (D12d) */}
         <SceneLinkSync />
         <ExplorerUrlSync view={viewCamera} immutable={initialState.kind === "study"} />

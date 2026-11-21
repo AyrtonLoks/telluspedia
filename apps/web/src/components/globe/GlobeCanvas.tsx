@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
-import { Cloud, CloudSun, Sun } from "lucide-react";
+import { CheckCircle2, Cloud, CloudSun, RotateCcw, Sun, TriangleAlert } from "lucide-react";
 import { Canvas, useThree } from "@react-three/fiber";
+import { attachWebGLContextListeners } from "@/lib/webgl-support";
 import { OrbitControls } from "@react-three/drei";
 import { EarthSphere } from "./EarthSphere";
 import { EarthOrientationGroup } from "./EarthOrientationGroup";
@@ -67,6 +68,25 @@ const SolarDirectionalLight: React.FC = () => {
   return <directionalLight position={sun.lightPosition} intensity={2.2} color="#ffffff" />;
 };
 
+const WebGLContextMonitor: React.FC<{
+  onContextLost: () => void;
+  onContextRestored: () => void;
+}> = ({ onContextLost, onContextRestored }) => {
+  const { gl, invalidate } = useThree();
+
+  useEffect(() => {
+    return attachWebGLContextListeners(gl.domElement, {
+      onLost: onContextLost,
+      onRestored: () => {
+        onContextRestored();
+        invalidate();
+      },
+    });
+  }, [gl, invalidate, onContextLost, onContextRestored]);
+
+  return null;
+};
+
 export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }) => {
   const lastEarthFlight = useRef(0);
   const viewport = useRef<HTMLDivElement>(null);
@@ -76,6 +96,42 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
   const [showAtmosphere, setShowAtmosphere] = useState(true);
   // D02: nuvens reais (MODIS/NASA), ligadas por padrão; somem no modo geológico.
   const [showClouds, setShowClouds] = useState(true);
+  // T31: monitoramento do ciclo de vida do contexto WebGL (perda/restauração limpa).
+  const [contextState, setContextState] = useState<"active" | "lost" | "restored">("active");
+  const [canvasKey, setCanvasKey] = useState(0);
+  const restoredTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleContextLost = useCallback(() => {
+    if (restoredTimerRef.current) {
+      clearTimeout(restoredTimerRef.current);
+      restoredTimerRef.current = null;
+    }
+    setContextState("lost");
+  }, []);
+
+  const handleContextRestored = useCallback(() => {
+    setContextState("restored");
+    if (restoredTimerRef.current) clearTimeout(restoredTimerRef.current);
+    restoredTimerRef.current = setTimeout(() => {
+      setContextState("active");
+      restoredTimerRef.current = null;
+    }, 4000);
+  }, []);
+
+  const handleReloadCanvas = useCallback(() => {
+    if (restoredTimerRef.current) {
+      clearTimeout(restoredTimerRef.current);
+      restoredTimerRef.current = null;
+    }
+    setContextState("active");
+    setCanvasKey((prev) => prev + 1);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (restoredTimerRef.current) clearTimeout(restoredTimerRef.current);
+    };
+  }, []);
   const isThrottled = useGlobeStore((s) => s.isThrottled);
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   // Época ativa: fonte única (T12). Cenas só por seleção explícita, nunca pelo ano.
@@ -120,6 +176,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
     >
       <p id={instructions} className="sr-only">Use as setas para girar, mais e menos para ajustar o zoom e barra para abrir a busca.</p>
       <Canvas
+        key={canvasKey}
         camera={{ position: [0, 0, 2.5], fov: 45 }}
         frameloop={isThrottled ? "demand" : "always"}
         gl={{
@@ -132,6 +189,10 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
         }}
         onPointerMissed={handlePointerMissed}
       >
+        <WebGLContextMonitor
+          onContextLost={handleContextLost}
+          onContextRestored={handleContextRestored}
+        />
         {/* Ambient & Directional Sun Lighting */}
         <ambientLight intensity={isCosmicMode ? 0.25 : 0.15} />
         {!isCosmicMode && <SolarDirectionalLight />}
@@ -235,6 +296,41 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
           <span className="sr-only sm:not-sr-only">Nuvens</span>
         </button>
       </div>
+
+      {/* T31: Aviso discreto de perda/restauração do contexto WebGL sem travar a interface */}
+      {contextState === "lost" && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          data-testid="webgl-context-lost-banner"
+          className="absolute bottom-24 left-1/2 z-20 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 flex-wrap items-center gap-3 rounded-panel border border-warning/40 bg-surface/90 px-4 py-2.5 text-label text-fg shadow-e2 backdrop-blur-md"
+        >
+          <TriangleAlert aria-hidden="true" className="size-4 shrink-0 text-warning" />
+          <span className="text-fg-secondary">
+            Contexto gráfico WebGL pausado — tentando restaurar…
+          </span>
+          <button
+            type="button"
+            onClick={handleReloadCanvas}
+            className="inline-flex h-8 items-center gap-1.5 rounded-control bg-accent px-3 text-caption font-medium text-accent-on transition-colors duration-fast ease-out hover:bg-accent-hover"
+          >
+            <RotateCcw aria-hidden="true" className="size-3.5" />
+            Recarregar 3D
+          </button>
+        </div>
+      )}
+
+      {contextState === "restored" && (
+        <div
+          role="status"
+          aria-live="polite"
+          data-testid="webgl-context-restored-banner"
+          className="absolute bottom-24 left-1/2 z-20 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center gap-2 rounded-panel border border-success/40 bg-surface/90 px-4 py-2 text-label text-fg shadow-e1 backdrop-blur-md"
+        >
+          <CheckCircle2 aria-hidden="true" className="size-4 shrink-0 text-success" />
+          <span>Contexto gráfico 3D restaurado.</span>
+        </div>
+      )}
 
       {/* Floating Planetary Observatory Telemetry HUD Overlay */}
       {isContemporary && <ObservatoryTelemetryHUD />}
