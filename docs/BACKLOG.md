@@ -206,7 +206,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | DONE | claude | — | G-INFRA, G-ESTUDOS |
-| T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
+| T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | IN_PROGRESS | antigravity | — | G-SHELL, G-GLOBO |
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | DONE | antigravity | T29 | G-PAIS, G-PIPELINE |
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | TODO | — | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | DONE | antigravity | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
@@ -1119,7 +1119,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ### T31 · Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t31-runtime-resilience · **Worktree:** ../telluspedia-wt/antigravity-t31
 - **Prioridade:** P1 · **Área:** Frontend/3D · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-GLOBO
 
 **Contexto / problema**
@@ -1135,6 +1135,7 @@ O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `G
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (720c52a). Primeira P1 elegível da Fase 10; grupos G-SHELL e G-GLOBO livres (D24 do claude ocupa G-CONTEUDO e G-EPOCA).
 
 ---
 
