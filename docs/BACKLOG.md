@@ -190,7 +190,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | DONE | claude | D10 | G-COSMOS |
-| D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
+| D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | IN_PROGRESS | claude | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | DONE | claude | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
@@ -1363,7 +1363,7 @@ Cada corpo do modo Cosmos decide o próprio tamanho e estilo de label (`Planetar
 
 ### D12 · Eventos históricos dirigidos por dados (player de cenas)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d12-cenas · **Worktree:** ../telluspedia-wt/claude-d12
 - **Prioridade:** P1 · **Área:** Arquitetura · **Tamanho:** GG (quebrar em subtarefas antes de iniciar) · **Depende de:** T12, T20 · **Grupos:** G-EPOCA
 
 **Contexto / problema**
@@ -1386,6 +1386,12 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 
+- 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada: única TODO elegível da fase 7 (T12 e T20 em DONE; D16–D18 travadas pelo G-SHELL da D20; G-EPOCA livre). **Quebra proposta** (cada parte com commit, validação e linha de Log próprios; a D12 só vai a REVIEW quando os 4 critérios estiverem atendidos):
+  - **D12a — Modelo de dados:** schema de cena em zod (`lib/scenes/schema.ts`) com id, título, resumo, datas e precisão, países/bloco, categoria, fontes citáveis obrigatórias (RN02), câmera inicial, camadas, trajetórias (LineString com timestamps e tipo de veículo), pontos de interesse, mídia e era de fronteiras. Cenas como **JSON versionado no repositório** (`data/scenes/*.json`), validado por teste — conteúdo curado e revisável em PR, sem depender do banco (que hoje tem fallback). A tabela `TimelineMilestone` do Prisma fica para a ingestão (D12e).
+  - **D12b — Migração:** os 45 marcos (28 globais + países), Magalhães e Apollo 11 para o novo formato, com teste de "sem perda" contra os dados atuais; `country-data.ts` e as rotas passam a ler dos JSON.
+  - **D12c — Player genérico:** um componente que recebe uma cena e desenha trajetória animada, veículo por tipo (nau, nave, avião, exército), pontos de interesse, câmera guiada por SLERP (invariantes do AGENTS.md) e linha do tempo própria (play/pause/scrub); substitui `Apollo11Trajectory`, `HistoricalRouteTrajectory` e os dois overlays, mantendo os testes de fidelidade atuais (ex.: a trajetória da Apollo não atravessa a Lua).
+  - **D12d — Ativação:** cena só por seleção explícita (pin, busca, link `?cena=<id>`); sair restaura o estado anterior; `resolveEpoch` deixa de conhecer `MAGELLAN`/`APOLLO11` pelo nome.
+  - **D12e — Ingestão:** script SPARQL do Wikidata que gera rascunhos (`published: false`) com QID, datas, coordenadas e fonte, para revisão humana antes de publicar.
 ---
 
 ### D13 · Eixo da timeline: zoom, clusters, prévias
