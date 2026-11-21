@@ -210,3 +210,14 @@ describe("D24 — arrastar o globo não é clique", () => {
     assert.match(src("timeline/MilestonePin.tsx"), /if \(target\.closest\("canvas"\)\) return;/, "clique fora do pino ignora o globo (o R3F decide)");
   });
 });
+
+describe("D24 — cartão do marco não cobre o player", () => {
+  test("com a cena do marco aberta, o cartão fixo do pino é escondido", () => {
+    const pin = fs.readFileSync(path.join(__dirname, "../src/components/timeline/MilestonePin.tsx"), "utf-8");
+    assert.match(pin, /const showCard = isSelected && !playingHere;/);
+    assert.match(pin, /showCard\n\s*\? "pointer-events-auto z-50/);
+    assert.match(pin, /const hideOnHover = playingHere \|\| hoverSuppressed;/, "nem no hover, com a cena aberta");
+    assert.match(pin, /selectMilestone\(null\);\n\s*setHoverSuppressed\(true\);/, "o X do cartão fecha de verdade");
+    assert.match(pin, /onMouseLeave=\{\(\) => setHoverSuppressed\(false\)\}/);
+  });
+});

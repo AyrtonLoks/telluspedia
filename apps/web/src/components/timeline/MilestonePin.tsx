@@ -4,10 +4,12 @@ import { selectCountry } from "@/stores/actions";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { X, Globe, BookOpen, ExternalLink, Quote } from "lucide-react";
 import { MilestoneCategoryType } from "@/stores/timelineStore";
 import { useTimelineStore } from "@/stores/timelineStore";
+import { useSceneStore } from "@/stores/sceneStore";
+import { sceneOpenedBy } from "@/lib/scenes/catalog";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { getSourceUrl } from "@/lib/citations";
@@ -72,6 +74,13 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
 
   const isSelected = selectedMilestoneId === id;
+  // Com a cena deste marco aberta, quem controla o evento é o painel do player (fechar o painel encerra
+  // a cena): o cartão sairia por cima dos controles dele, então some, inclusive no hover (D24).
+  const playingHere = useSceneStore((s) => s.activeSceneId !== null && s.activeSceneId === sceneOpenedBy(id)?.id);
+  const showCard = isSelected && !playingHere;
+  // Depois de fechar pelo X, o mouse ainda está sobre o pino: sem isto o hover reabriria o cartão na hora.
+  const [hoverSuppressed, setHoverSuppressed] = useState(false);
+  const hideOnHover = playingHere || hoverSuppressed;
   // All cards pop upwards to prevent viewport overflow. Stagger heights (bottom-7 vs bottom-24) to avoid collisions
   const isHigh = index % 2 === 1;
   const tone = TONES[CATEGORY_TONE[category] ?? "cat-politics"];
@@ -143,6 +152,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   return (
     <div
       ref={pinRef}
+      onMouseLeave={() => setHoverSuppressed(false)}
       style={{ left: `${Math.max(2, Math.min(98, percent))}%` }}
       className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 group cursor-pointer ${
         isSelected ? "z-50" : "z-20 hover:z-40"
@@ -181,8 +191,10 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
         className={`absolute ${horizontalAlignmentClass} w-56 rounded-card border border-line bg-surface p-3 shadow-e2 transition-opacity duration-base ease-out ${
           isHigh ? "bottom-24" : "bottom-7"
         } ${
-          isSelected
+          showCard
             ? "pointer-events-auto z-50 border-line-strong opacity-100"
+            : hideOnHover
+            ? "invisible opacity-0 pointer-events-none"
             : "invisible opacity-0 group-hover:visible group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto z-30 group-hover:z-50"
         }`}
         onClick={handleCardClick}
@@ -198,6 +210,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
               onClick={(e) => {
                 e.stopPropagation();
                 selectMilestone(null);
+                setHoverSuppressed(true);
                 trigger.current?.focus();
               }}
               className="ml-auto rounded-sm p-0.5 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
