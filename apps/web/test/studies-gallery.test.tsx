@@ -3,6 +3,8 @@
  * árvore de forks (parentId) e exportação acadêmica (Markdown ABNT/APA + JSON portátil).
  */
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, test, type TestContext } from "node:test";
@@ -212,6 +214,17 @@ describe("D23 · Filtros, paginação e GET /api/studies", () => {
       hits.some((item) => item.id === "route:/studies"),
       "busca universal deve oferecer comando direto para /studies"
     );
+
+    const shellSrc = fs.readFileSync(
+      path.resolve(__dirname, "../src/components/shell/GlobeExperienceShell.tsx"),
+      "utf-8"
+    );
+    assert.match(
+      shellSrc,
+      /typeof window === "undefined" && hydratedKeyRef\.current !== stateKey/,
+      "hidratação síncrona durante o render deve ocorrer apenas em SSR (evita setState-in-render no React 19)"
+    );
+    assert.match(shellSrc, /useIsomorphicLayoutEffect/);
   });
 });
 

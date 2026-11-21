@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useRef } from "react";
+import React, { Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { TopNavBar } from "@/components/nav/TopNavBar";
@@ -143,6 +143,9 @@ export function applyInitialGlobeState(initialState: InitialGlobeState): void {
   }
 }
 
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export interface GlobeExperienceShellProps {
   initialState?: InitialGlobeState;
 }
@@ -156,14 +159,16 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const viewCamera = useRef<ViewCamera>({ offset: DEFAULT_CAMERA_OFFSET, restore: null, onChange: null }).current;
   const hydratedKeyRef = useRef<string | null>(null);
 
-  // One-time synchronous hydration before children mount (eliminates default-state flash on SSR & hydration)
-  if (hydratedKeyRef.current === null) {
+  // SSR: hidrata stores sincronamente antes dos filhos renderizarem (sem assinantes client montados).
+  // No cliente, evita mutar stores Zustand durante o render (React 19: "Cannot update a component
+  // while rendering a different component", ex. ao navegar de /study/[a] para /study/[fork]).
+  if (typeof window === "undefined" && hydratedKeyRef.current !== stateKey) {
     hydratedKeyRef.current = stateKey;
     applyInitialGlobeState(initialState);
   }
 
-  // Subsequent route transitions while shell remains mounted
-  useEffect(() => {
+  // No cliente, aplica antes da pintura (useLayoutEffect) na montagem inicial e nas transições de rota.
+  useIsomorphicLayoutEffect(() => {
     if (hydratedKeyRef.current === stateKey) return;
     hydratedKeyRef.current = stateKey;
     applyInitialGlobeState(initialState);
