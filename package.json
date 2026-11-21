@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
+    "analyze": "pnpm --filter web analyze",
     "lint": "pnpm --filter web lint",
     "test": "pnpm --filter web test",
     "docker:up": "docker compose up -d",

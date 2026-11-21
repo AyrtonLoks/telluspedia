@@ -7,7 +7,7 @@
  * Terra do globo (textura e fronteiras não giram; o Sol é que se move).
  */
 import { eciToGeodetic, degreesLat, degreesLong, gstime, propagate, twoline2satrec, type SatRec } from "satellite.js";
-import { calculateSubsolarPoint } from "./astronomy";
+import { calculateSubsolarPoint } from "./astronomy-solar";
 import type { IssTelemetryData } from "./observatory-data";
 
 export const EARTH_RADIUS_KM = 6371;

@@ -3,7 +3,7 @@
 import { selectCountry } from "@/stores/actions";
 
 import Link from "next/link";
-import { StudyContext } from "@/components/tellus-bridge/StudyContext";
+import dynamic from "next/dynamic";
 import React, { useEffect, useRef } from "react";
 import { X, Globe, BookOpen, ExternalLink, Quote } from "lucide-react";
 import { MilestoneCategoryType } from "@/stores/timelineStore";
@@ -12,8 +12,18 @@ import { useGlobeStore } from "@/stores/globeStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { getSourceUrl } from "@/lib/citations";
 import { getCountryData } from "@/lib/country-data";
+import {
+  preloadCitationModal,
+  preloadReaderMode,
+  preloadRightDock,
+} from "@/lib/panel-preload";
 import { CATEGORY_TONE, TONES } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
+
+const StudyContext = dynamic(
+  () => import("@/components/tellus-bridge/StudyContext").then((m) => m.StudyContext),
+  { ssr: false }
+);
 
 const ACTION = "flex items-center justify-center gap-1 rounded-control border border-line bg-surface-raised px-2 py-1 text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg";
 
@@ -207,6 +217,8 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
             </a>
             <button
               type="button"
+              onMouseEnter={preloadCitationModal}
+              onFocus={preloadCitationModal}
               onClick={(e) => {
                 e.stopPropagation();
                 setCitationModalOpen(true, {
@@ -233,6 +245,8 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
           {effectiveCountryIso && (
             <button
               type="button"
+              onMouseEnter={preloadRightDock}
+              onFocus={preloadRightDock}
               onClick={(e) => {
                 e.stopPropagation();
                 selectCountry(effectiveCountryIso);
@@ -250,6 +264,8 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
           {effectiveCountryIso && (
             <button
               type="button"
+              onMouseEnter={preloadReaderMode}
+              onFocus={preloadReaderMode}
               onClick={(e) => {
                 e.stopPropagation();
                 selectCountry(effectiveCountryIso);

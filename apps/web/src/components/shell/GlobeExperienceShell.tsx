@@ -2,23 +2,18 @@
 
 import React, { Suspense, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import { EntityLaunch } from "@/components/tellus-bridge/EntityLaunch";
+import { useSearchParams } from "next/navigation";
 import { TopNavBar } from "@/components/nav/TopNavBar";
-import { HistoricalEraBadge } from "@/components/globe/HistoricalEraBadge";
-import { PaleoEraBadge } from "@/components/globe/PaleoEraBadge";
-import { HistoricalRouteOverlay } from "@/components/globe/HistoricalRouteOverlay";
-import { RightDock } from "@/components/layout/RightDock";
-import { CosmicInspectorHUD } from "@/components/hud/CosmicInspectorHUD";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
-import { ReaderMode } from "@/components/reader/ReaderMode";
-import { CountryComparator } from "@/components/comparator/CountryComparator";
-import { StudyShareModal } from "@/components/study/StudyShareModal";
-import { CitationModal } from "@/components/reader/CitationModal";
-import { ForkStudyBanner } from "@/components/study/ForkStudyBanner";
+import { useRightDock } from "@/components/layout/useRightDock";
+import { useEpochState } from "@/lib/epoch/useEpochState";
 import type { StudyRecord } from "@/lib/studies-store";
 import { restoreStudySnapshot, selectCountry } from "@/stores/actions";
 import { useComparatorStore } from "@/stores/comparatorStore";
+import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
+import { useReaderStore } from "@/stores/readerStore";
+import { useStudyStore } from "@/stores/studyStore";
 
 // Load 3D WebGL Canvas client-side only (disables SSR for R3F / Three.js)
 const GlobeCanvas = dynamic(
@@ -35,6 +30,58 @@ const GlobeCanvas = dynamic(
     ),
   }
 );
+
+// Painéis, modais e overlays fechados por padrão são carregados sob demanda (T25)
+const EntityLaunch = dynamic(
+  () => import("@/components/tellus-bridge/EntityLaunch").then((m) => m.EntityLaunch),
+  { ssr: false }
+);
+const HistoricalEraBadge = dynamic(
+  () => import("@/components/globe/HistoricalEraBadge").then((m) => m.HistoricalEraBadge),
+  { ssr: false }
+);
+const PaleoEraBadge = dynamic(
+  () => import("@/components/globe/PaleoEraBadge").then((m) => m.PaleoEraBadge),
+  { ssr: false }
+);
+const HistoricalRouteOverlay = dynamic(
+  () => import("@/components/globe/HistoricalRouteOverlay").then((m) => m.HistoricalRouteOverlay),
+  { ssr: false }
+);
+const RightDock = dynamic(
+  () => import("@/components/layout/RightDock").then((m) => m.RightDock),
+  { ssr: false }
+);
+const CosmicInspectorHUD = dynamic(
+  () => import("@/components/hud/CosmicInspectorHUD").then((m) => m.CosmicInspectorHUD),
+  { ssr: false }
+);
+const ReaderMode = dynamic(
+  () => import("@/components/reader/ReaderMode").then((m) => m.ReaderMode),
+  { ssr: false }
+);
+const CountryComparator = dynamic(
+  () => import("@/components/comparator/CountryComparator").then((m) => m.CountryComparator),
+  { ssr: false }
+);
+const StudyShareModal = dynamic(
+  () => import("@/components/study/StudyShareModal").then((m) => m.StudyShareModal),
+  { ssr: false }
+);
+const CitationModal = dynamic(
+  () => import("@/components/reader/CitationModal").then((m) => m.CitationModal),
+  { ssr: false }
+);
+const ForkStudyBanner = dynamic(
+  () => import("@/components/study/ForkStudyBanner").then((m) => m.ForkStudyBanner),
+  { ssr: false }
+);
+
+function EntityLaunchGate() {
+  const searchParams = useSearchParams();
+  if (!searchParams.has("entity")) return null;
+  return <EntityLaunch />;
+}
 
 export type InitialGlobeState =
   | { kind: "default" }
@@ -110,6 +157,20 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
     applyInitialGlobeState(initialState);
   }, [stateKey, initialState]);
 
+  const dock = useRightDock();
+  const epoch = useEpochState();
+  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  const isReaderOpen = useGlobeStore((s) => s.isReaderOpen);
+  const selectedIso = useGlobeStore((s) => s.selectedIso);
+  const isComparatorOpen = useComparatorStore((s) => s.isOpen);
+  const isShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
+  const isCitationModalOpen = useReaderStore((s) => s.isCitationModalOpen);
+
+  const showHistoricalBadge =
+    epoch.mode !== "GEOLOGICAL" && epoch.historicalEraId !== "CONTEMPORARY";
+  const showPaleoBadge = epoch.mode === "GEOLOGICAL";
+  const showHistoricalRoute = epoch.activeScene === "MAGELLAN";
+
   return (
     <>
       {initialState.kind === "study" && (
@@ -126,38 +187,38 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         {/* Top Floating Navigation Bar */}
         <Suspense fallback={null}>
           <TopNavBar />
-          <EntityLaunch />
+          <EntityLaunchGate />
         </Suspense>
 
         {/* Floating Historical Era Badge */}
-        <HistoricalEraBadge />
+        {showHistoricalBadge && <HistoricalEraBadge />}
 
         {/* Floating Paleogeographical Deep-Time Era Badge (RN10 & RN11) */}
-        <PaleoEraBadge />
+        {showPaleoBadge && <PaleoEraBadge />}
 
         {/* Floating Historical Expedition / Magellan Route HUD Overlay (RN12) */}
-        <HistoricalRouteOverlay />
+        {showHistoricalRoute && <HistoricalRouteOverlay />}
 
         {/* Dock direito (D15): Inspector do país, Observatório e Inspector cósmico num único lugar */}
-        <RightDock />
+        {dock.visible && <RightDock />}
 
         {/* Botão flutuante de camadas cósmicas (quando nenhum corpo está focado) */}
-        <CosmicInspectorHUD placement="floating" />
+        {isCosmicMode && <CosmicInspectorHUD placement="floating" />}
 
         {/* Bottom Semantic Dynamic Timeline (50 Years Default) */}
         <TimelineBar />
 
         {/* Camada 2: Deep Reading Mode Overlay with TOC & Academic Citations */}
-        <ReaderMode />
+        {isReaderOpen && Boolean(selectedIso) && <ReaderMode />}
 
         {/* Multidimensional Country Comparator (Up to 4 Nations & Recharts) */}
-        <CountryComparator />
+        {isComparatorOpen && <CountryComparator />}
 
         {/* Shareable Study Snapshot & Fork Modal */}
-        <StudyShareModal />
+        {isShareModalOpen && <StudyShareModal />}
 
         {/* Citation Generator Modal (Global) */}
-        <CitationModal />
+        {isCitationModalOpen && <CitationModal />}
       </main>
     </>
   );

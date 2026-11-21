@@ -14,6 +14,12 @@ import { useCosmicStore } from "@/stores/cosmicStore";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { panelButtonAction, useRightDock } from "@/components/layout/useRightDock";
 import { PILOT_COUNTRIES, getCountryData } from "@/lib/country-data";
+import {
+  preloadCosmicHud,
+  preloadCountryComparator,
+  preloadRightDock,
+  preloadStudyShareModal,
+} from "@/lib/panel-preload";
 import { IconButton } from "@/components/ui/IconButton";
 import { buttonClasses } from "@/components/ui/Button";
 import { cn } from "@/components/ui/cn";
@@ -98,6 +104,8 @@ export const TopNavBar: React.FC = () => {
         <button
           type="button"
           onClick={toggleCosmicMode}
+          onMouseEnter={() => { preloadCosmicHud(); preloadRightDock(); }}
+          onFocus={() => { preloadCosmicHud(); preloadRightDock(); }}
           data-testid="top-nav-cosmos-button"
           aria-pressed={isCosmicMode}
           className={navItemClasses(isCosmicMode)}
@@ -110,6 +118,8 @@ export const TopNavBar: React.FC = () => {
         <button
           type="button"
           onClick={toggleObservatoryPanel}
+          onMouseEnter={preloadRightDock}
+          onFocus={preloadRightDock}
           data-testid="top-nav-observatory-button"
           aria-pressed={isObservatoryPanelOpen}
           className={navItemClasses(isObservatoryPanelOpen || hasActiveLayers)}
@@ -125,7 +135,13 @@ export const TopNavBar: React.FC = () => {
           )}
         </button>
 
-        <button type="button" onClick={openComparator} className={navItemClasses(false)}>
+        <button
+          type="button"
+          onClick={openComparator}
+          onMouseEnter={preloadCountryComparator}
+          onFocus={preloadCountryComparator}
+          className={navItemClasses(false)}
+        >
           <BarChart2 aria-hidden="true" className="h-4 w-4" />
           <span className="hidden sm:inline">Comparador</span>
         </button>
@@ -138,6 +154,7 @@ export const TopNavBar: React.FC = () => {
             <input
               type="text"
               value={searchQuery}
+              onFocus={preloadRightDock}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar país ou ISO…"
               className="w-full min-w-0 border-none bg-transparent text-fg placeholder:text-fg-muted focus:outline-none"
@@ -150,6 +167,7 @@ export const TopNavBar: React.FC = () => {
                 <button
                   type="button"
                   key={c.isoCode}
+                  onMouseEnter={preloadRightDock}
                   onClick={() => handleCountrySelect(c.isoCode)}
                   className="flex w-full items-center gap-2 rounded-control px-2.5 py-1.5 text-left text-label transition-colors duration-fast ease-out hover:bg-surface-hover"
                 >
@@ -167,6 +185,8 @@ export const TopNavBar: React.FC = () => {
         <button
           type="button"
           onClick={() => setShareModalOpen(true)}
+          onMouseEnter={preloadStudyShareModal}
+          onFocus={preloadStudyShareModal}
           className={buttonClasses("secondary", "md", "gap-1.5 px-3")}
         >
           <Share2 aria-hidden="true" className="h-4 w-4" />

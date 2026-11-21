@@ -1,8 +1,13 @@
 "use client";
 
-import { StudyContext } from "@/components/tellus-bridge/StudyContext";
+import dynamic from "next/dynamic";
 import React, { useEffect } from "react";
 import { ChevronUp, ChevronDown, Clock, Play, Pause, FastForward } from "lucide-react";
+
+const StudyContext = dynamic(
+  () => import("@/components/tellus-bridge/StudyContext").then((m) => m.StudyContext),
+  { ssr: false }
+);
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useCosmicStore } from "@/stores/cosmicStore";

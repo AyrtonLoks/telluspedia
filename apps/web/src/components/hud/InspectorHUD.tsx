@@ -19,6 +19,12 @@ import { useReaderStore } from "@/stores/readerStore";
 import { getCountryData, findMilestoneById } from "@/lib/country-data";
 import { resolveEffectiveHistoricalYear } from "@/lib/historical-entities";
 import { getSourceUrl } from "@/lib/citations";
+import {
+  preloadCitationModal,
+  preloadCountryComparator,
+  preloadReaderMode,
+  preloadStudyShareModal,
+} from "@/lib/panel-preload";
 import { CountryHeader } from "./CountryHeader";
 import { LocalClockWidget } from "./LocalClockWidget";
 import { LiveWeatherWidget } from "./LiveWeatherWidget";
@@ -304,13 +310,21 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
 
       {/* Action Buttons */}
       <div className="mt-4 flex items-center gap-2 border-t border-line pt-3">
-        <Button variant="primary" className="flex-1" onClick={handleDeepReading}>
+        <Button
+          variant="primary"
+          className="flex-1"
+          onMouseEnter={preloadReaderMode}
+          onFocus={preloadReaderMode}
+          onClick={handleDeepReading}
+        >
           <BookOpen aria-hidden="true" className="h-4 w-4" />
           <span>Aprofundar Estudo</span>
         </Button>
 
         <button
           type="button"
+          onMouseEnter={preloadCountryComparator}
+          onFocus={preloadCountryComparator}
           onClick={handleCompare}
           aria-pressed={isCompared}
           className={buttonClasses("secondary", "md", cn("gap-1.5 px-3", isCompared && "border-accent/40 bg-accent/15"))}
@@ -320,7 +334,14 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
           <span>{isCompared ? "Comparando" : "Comparar"}</span>
         </button>
 
-        <IconButton label="Compartilhar estudo deste país" icon={<Share2 />} variant="secondary" onClick={handleShare} />
+        <IconButton
+          label="Compartilhar estudo deste país"
+          icon={<Share2 />}
+          variant="secondary"
+          onMouseEnter={preloadStudyShareModal}
+          onFocus={preloadStudyShareModal}
+          onClick={handleShare}
+        />
       </div>
 
       {/* Subtle Permanent Institutional Footer with Cited Sources */}
@@ -329,6 +350,8 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
           <span className="font-medium text-fg-secondary">Fontes Primárias Auditadas:</span>
           <button
             type="button"
+            onMouseEnter={preloadCitationModal}
+            onFocus={preloadCitationModal}
             onClick={() => {
               const url =
                 typeof window !== "undefined"

@@ -1,6 +1,5 @@
 import type { AisVessel, VesselGroup } from "./ais-data";
 import { geoCentroid } from "d3-geo";
-import { latLngToVector3 } from "./geo-spatial";
 import type { ObservatoryMeta } from "./observatory-source";
 import { referenceIssTelemetry } from "./satellites";
 
