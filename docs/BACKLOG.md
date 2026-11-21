@@ -174,13 +174,13 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
 | T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | TODO | — | T18 | G-INFRA |
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | TODO | — | — | G-ESTUDOS |
-| T21 | Consolidar texturas duplicadas | Assets | P2 | P | TODO | — | — | G-GLOBO |
+| T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
 | T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
 | T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | IN_PROGRESS | antigravity | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | DONE | antigravity | — | G-SHELL, G-INFRA |
-| D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | REVIEW | claude | D01 | G-GLOBO, G-EPOCA |
+| D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | DONE | claude | D01 | G-GLOBO, G-EPOCA |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
 | D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | REVIEW | claude | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
@@ -841,7 +841,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 
 ### T21 · Consolidar texturas duplicadas
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** — · **Worktree:** —
+- **Status:** DONE · **Responsável:** claude · **Branch:** — · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Assets · **Tamanho:** P · **Depende de:** — · **Grupos:** G-GLOBO
 
 **Contexto / problema**
@@ -854,12 +854,13 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 **Critérios de aceite**
 - [x] Nenhum arquivo duplicado em `public/textures`.
-- [ ] Modo geológico continua exibindo Pangeia e Gondwana.
+- [x] Modo geológico continua exibindo Pangeia e Gondwana.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 
 - 2026-11-20 · claude · REVIEW · Feito junto com as pendências da D02: as 7 cópias (`paleo_pangea.png`, `paleo_gondwana.png`, `pangea_250ma.*`, `gondwana_150ma.png` e as de `paleo/`) foram removidas; cada era aponta para `textures/paleo/paleo_<idade>ma.png` (+ `.ktx2`), gerados do PALEOMAP PaleoDEM. Teste em `globe-surface.test.ts` garante que as antigas não voltam.
+- 2026-11-20 · ayrton · DONE · Aprovada pelo Ayrton (registrado por claude). Pangeia e Gondwana conferidos no navegador (:3001) com os novos paleomapas.
 ---
 
 ### T22 · Acessibilidade (labels, teclado, foco)
@@ -1032,7 +1033,7 @@ O globo inteiro parece escuro e lavado. Causa principal (técnica): o `ShaderMat
 
 ### D02 · Oceanos, relevo, nuvens e atmosfera
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d02-oceanos-atmosfera · **Worktree:** ../telluspedia-wt/claude-d02
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d02-oceanos-atmosfera · **Worktree:** ../telluspedia-wt/claude-d02
 - **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** D01 · **Grupos:** G-GLOBO, G-EPOCA
 
 **Contexto / problema**
@@ -1060,6 +1061,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 - 2026-11-20 · claude · REVIEW · Commit `4fb9c21`. **Assets (NASA, domínio público — `docs/DATA_SOURCES.md`):** o servidor `eoimages.gsfc.nasa.gov` estava inacessível (timeout) e o NEO foi desativado; as imagens vieram das cópias no Wikimedia Commons (licença conferida pela API): diurna Blue Marble NG “Whole world - land and oceans” e noturna “The earth at night”, ambas em 3840×1920 (`*_4k.jpg`) com versão 2048×1024 (`*_2k.jpg`), escolhidas por `maxTextureSize ≥ 8192` (`pickEarthTextureSet`); anisotropia até 8×. `earth_surface_2k.png`: **R** = elevação SRTM em tons de cinza (NASA), **G** = máscara de água derivada da cor do oceano da diurna (RGB 11,10,50 + azul dominante; inclui lagos como o Cáspio). Texturas antigas (`earth_day.jpg`, `earth_night.png`, 2048 px de 2010) removidas — só o `EarthSphere` as usava. **Shader (`EarthShaderMaterial`):** reflexo do Sol Blinn-Phong (brilho concentrado + halo largo) multiplicado pela máscara de água; relevo pela diferença central da elevação nas direções leste/norte (normal no espaço mundial — AGENTS.md §1), só em terra, aplicado ao sombreamento difuso (o terminador segue na normal geométrica); oceano com tom levemente mais rico; reflexo e relevo suprimidos com `uPaleoFactor` (litoral/elevação atuais) e o reflexo também na iluminação de estudo. **Atmosfera (`Atmosphere.tsx`):** casca `BackSide` de raio 1,025 com espalhamento aproximado (azul no limbo diurno, laranja no terminador, quase nada à noite), direção do Sol do `useSunDirection` (T14); com ela ligada, o Fresnel do shader da Terra cai para um toque de borda. Botão **“Atmosfera”** ao lado de “Iluminação de estudo” (ambos migrados para os tokens do design system). **Testes:** `test/globe-surface.test.ts` (7, com decodificador PNG mínimo): escolha de resolução e arquivos presentes, máscara de água nos pixels (oceanos × Amazônia/Saara/Sibéria/Austrália; Cáspio = água), elevação (Tibete e Altiplano ≫ Amazônia ≥ oceano), documentação, reflexo condicionado a água/era atual/estudo, relevo só em terra e normal em espaço mundial, atmosfera ativável. **Validação após rebase:** typecheck ok, lint ok, 430/430 testes, build ok (home 450 kB; texturas ficam em `public/`, fora do bundle). **Pendências (critérios não atendidos):** (1) **nuvens** — nenhuma textura de nuvens em domínio público acessível (a “Blue Marble 2002” do Commons é a superfície sem nuvens; o servidor da NASA com `cloud_combined` estava fora); não foram inventadas nuvens procedurais; (2) **KTX2/Basis** — sem `toktx`/`basisu` no ambiente; (3) **FPS antes/depois** — não medido (Chromium headless indisponível); o custo extra é 4 leituras de textura e um passe aditivo da atmosfera por pixel do globo; conferir num notebook com GPU integrada; (4) aparência não verificada visualmente pelo agente.
 
 - 2026-11-20 · claude · REVIEW · **Pendências entregues (sem commit; alterações no checkout de trabalho para revisão).** **Fontes reais:** o Earth Observatory migrou para `assets.science.nasa.gov`; de lá vieram a Blue Marble NG **com relevo e batimetria** (julho/2004), elevação e batimetria **GEBCO 08** e as **nuvens** MODIS do Blue Marble 2002 (`cloud_combined_2048.jpg`); paleogeografia do **PALEOMAP PaleoDEM** (Scotese & Wright 2018, Zenodo, CC BY 4.0). Originais em `assets-src/raw/` (gitignored; URLs em `assets-src/README.md`). **Pipeline:** `pnpm --filter web textures:build` (`scripts/textures/build-earth-textures.mjs`: sharp + `ktx2-encoder` WASM + `h5wasm`) gera JPG/PNG e **KTX2** (Basis; diurna UASTC+RDO+Zstd, noite/nuvens ETC1S, superfície UASTC linear, paleomapas UASTC RGBA; mipmaps; Y invertido porque o `KTX2Loader` usa `flipY=false`) e copia o transcoder para `public/basis/`. **Runtime:** `lib/textures/globeTextures.ts` carrega KTX2 via `KTX2Loader` e cai para JPG/PNG em qualquer falha; `EarthSphere` passou a carregar as texturas de forma assíncrona. **Oceano:** a diurna agora tem plataformas, dorsais e fossas reais; superfície R = elevação GEBCO, G = água (batimetria < 0 m), B = profundidade; o tingimento artificial do mar foi reduzido. **Nuvens:** `CloudLayer.tsx` (casca 1,006, iluminada pelo `useSunDirection`, quase invisível à noite, some no modo geológico e fica discreta na iluminação de estudo) e botão **“Nuvens”**; estáticas (sem rotação), porque o frameloop é sob demanda e a imagem é de 2001. **Modo geológico:** os retângulos procedurais foram trocados por paleomapas gerados do PaleoDEM para 250/200/150/66 Ma (antes 200 e 66 Ma reaproveitavam a Pangeia), com alfa = água e reflexo do Sol nos oceanos antigos. **Testes:** `globe-surface.test.ts` com 13 casos (cabeçalho/DFD dos KTX2, máscara/elevação/profundidade nos pixels, nuvens, paleomapas e fração de terra). **Validação (VM sem acesso a binaries.prisma.sh e Google Fonts):** lint ok; typecheck ok exceto erros do Prisma não gerado; testes 427/431 (as 4 falhas são `@prisma/client did not initialize`); build bloqueado pelo download das fontes. **FPS e conferência visual (mesmo dia):** notebook com Intel Iris Xe (ANGLE/D3D11), viewport 1600×900, DPR 1, `next dev`, globo renderizando a cada quadro (zoom contínuo por `wheel`): **antes** (master no :3000) 59,2–60,0 FPS, p95 24,8–25,2 ms; **depois** (:3001, com KTX2 4K, nuvens e paleomapas) 60,0 FPS, p95 23,0–25,0 ms — ambos no limite do vsync de 60 Hz. No navegador: os 5 KTX2 carregaram sem cair no fallback; orientação correta (fronteiras alinhadas à imagem, ou seja, o Y invertido do KTX2 está certo); batimetria, nuvens e reflexo do Sol visíveis; Pangeia/Gondwana exibidos no modo geológico. **Pendente:** as suturas de `PaleoPlatesLayer` usam coordenadas atuais e não se alinham aos paleomapas (follow-up).
+- 2026-11-20 · ayrton · DONE · Aprovada pelo Ayrton (registrado por claude). Entrega em `d73ca30` + `ef26444`.
 ---
 
 ### D03 · Fronteiras com espessura real e highlight
