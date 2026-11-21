@@ -8,6 +8,7 @@ import { CountryData } from "@/lib/country-data";
 import { getSourceUrl } from "@/lib/citations";
 import { HoverCardPreview } from "./HoverCardPreview";
 import { HoverCitationCard } from "./HoverCitationCard";
+import { AnalyticalProfileView } from "./AnalyticalProfileView";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
@@ -18,7 +19,12 @@ interface ReaderContentProps {
 
 export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension }) => {
   const storeDimension = useReaderStore((s) => s.activeDimension);
-  const activeDimension = dimension || storeDimension;
+  const activeDimension =
+    dimension ||
+    (typeof window === "undefined"
+      ? useReaderStore.getState().activeDimension
+      : storeDimension);
+  const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
 
   const section = country.dossierSections?.find((s) => s.dimension === activeDimension);
@@ -89,6 +95,11 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
     return baseMap;
   }, [section]);
 
+  // Perfil Analítico & Posição Global (T38): disponível para todos os 177 países contemporâneos
+  if (activeDimension === "ANALYTICAL_PROFILE" && !country.isHistoricalEntity) {
+    return <AnalyticalProfileView country={country} />;
+  }
+
   // Empty state when no dossier has been authored for this country/dimension
   if (!section) {
     const wikipediaUrl = `https://pt.wikipedia.org/wiki/${encodeURIComponent(country.nameCommon)}`;
@@ -132,6 +143,16 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
           </p>
 
           <div className="flex flex-wrap items-center gap-2.5 pt-2">
+            {!country.isHistoricalEntity && (
+              <Button
+                variant="primary"
+                size="sm"
+                data-testid="open-analytical-profile-from-empty"
+                onClick={() => setActiveDimension("ANALYTICAL_PROFILE")}
+              >
+                <span>Ver Perfil Analítico &amp; Posição Global</span>
+              </Button>
+            )}
             <a
               href={wikipediaUrl}
               target="_blank"

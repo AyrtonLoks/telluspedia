@@ -2,6 +2,7 @@
 
 import React from "react";
 import {
+  BarChart2,
   Compass,
   Landmark,
   TrendingUp,
@@ -23,6 +24,7 @@ interface DimensionItem {
 }
 
 const DIMENSIONS: DimensionItem[] = [
+  { key: "ANALYTICAL_PROFILE", label: "Perfil Analítico & Global", icon: <BarChart2 aria-hidden="true" className="h-4 w-4" />, estimatedMin: 3 },
   { key: "GEOGRAPHY", label: "Geografia & Biomas", icon: <Compass aria-hidden="true" className="h-4 w-4" />, estimatedMin: 6 },
   { key: "GOVERNMENT_POLITICS", label: "Governo & Política", icon: <Landmark aria-hidden="true" className="h-4 w-4" />, estimatedMin: 8 },
   { key: "ECONOMY_SOCIAL", label: "Economia & Social", icon: <TrendingUp aria-hidden="true" className="h-4 w-4" />, estimatedMin: 7 },

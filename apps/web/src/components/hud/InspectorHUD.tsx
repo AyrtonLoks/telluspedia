@@ -69,6 +69,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
   const setShareModalOpen = useStudyStore((s) => s.setShareModalOpen);
 
   const resetActiveDimension = useReaderStore((s) => s.resetActiveDimension);
+  const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
 
   // Synchronize with active historical timeline reference year
@@ -121,7 +122,13 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
   const isCompared = comparatorIsos.includes(currentCountry.isoCode);
 
   const handleDeepReading = () => {
-    resetActiveDimension();
+    if (currentCountry.dossierSections && currentCountry.dossierSections.length > 0) {
+      resetActiveDimension();
+    } else if (!currentCountry.isHistoricalEntity) {
+      setActiveDimension("ANALYTICAL_PROFILE");
+    } else {
+      resetActiveDimension();
+    }
     setReaderOpen(true);
   };
 

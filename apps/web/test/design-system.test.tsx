@@ -115,6 +115,7 @@ const MIGRATED = [
   "src/components/hud/LocalClockWidget.tsx",
   "src/components/hud/CosmicInspectorHUD.tsx",
   "src/components/layout/RightDock.tsx",
+  "src/components/reader/AnalyticalProfileView.tsx",
   "src/components/reader/CitationModal.tsx",
   "src/components/reader/HoverCardPreview.tsx",
   "src/components/reader/HoverCitationCard.tsx",

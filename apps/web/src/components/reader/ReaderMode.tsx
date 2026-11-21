@@ -26,13 +26,15 @@ export const ReaderMode: React.FC = () => {
   }, [selectedIso]);
 
   React.useEffect(() => {
-    if (selectedIso && prevIsoRef.current && prevIsoRef.current !== selectedIso) {
+    if (selectedIso && prevIsoRef.current !== selectedIso) {
       const c = getCountryData(selectedIso);
       const hasGeography = c?.dossierSections?.some((s) => s.dimension === "GEOGRAPHY");
       if (hasGeography) {
-        resetActiveDimension();
+        if (prevIsoRef.current) resetActiveDimension();
       } else if (c?.dossierSections && c.dossierSections.length > 0) {
         setActiveDimension(c.dossierSections[0].dimension);
+      } else if (c && !c.isHistoricalEntity) {
+        setActiveDimension("ANALYTICAL_PROFILE");
       } else {
         resetActiveDimension();
       }
