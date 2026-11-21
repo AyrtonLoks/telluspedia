@@ -24,8 +24,14 @@ describe("T23 · Limpezas menores (contexto de era, api-client, shader e ISS)", 
     const geological = resolveEpoch({ startYear: 1947, endYear: 1991, geologicalMa: 250 });
     assert.equal(resolveEraStudyEntityId(geological), null);
 
+    const prussia = resolveEpoch({ startYear: 1865, endYear: 1875, selectedYear: 1870 });
+    assert.equal(resolveEraStudyEntityId(prussia), "era:PRUSSIA_1870");
+
+    const ww1 = resolveEpoch({ startYear: 1910, endYear: 1920, selectedYear: 1914 });
+    assert.equal(resolveEraStudyEntityId(ww1), "era:WW1_1914");
+
     const ww2 = resolveEpoch({ startYear: 1914, endYear: 1945 });
-    assert.equal(resolveEraStudyEntityId(ww2), null);
+    assert.equal(resolveEraStudyEntityId(ww2), "era:WW2_1939");
 
     // Todos os IDs de era mapeados devem existir no manifesto do TellusBridge
     for (const [eraId, entityId] of Object.entries(ERA_STUDY_ENTITY_IDS)) {

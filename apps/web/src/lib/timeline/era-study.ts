@@ -10,6 +10,9 @@ import type { HistoricalEraId } from "@/lib/historical-entities";
  * todos os IDs mapeados existem no manifesto.
  */
 export const ERA_STUDY_ENTITY_IDS: Partial<Record<HistoricalEraId, string>> = {
+  PRUSSIA_1870: "era:PRUSSIA_1870",
+  WW1_1914: "era:WW1_1914",
+  WW2_1939: "era:WW2_1939",
   COLD_WAR_1969: "era:COLD_WAR",
 };
 

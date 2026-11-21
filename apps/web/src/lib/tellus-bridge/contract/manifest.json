@@ -24,7 +24,15 @@
         "DOM-ENG:7.1",
         "DOM-ENG:7.2",
         "DOM-ENG:7.3",
-        "DOM-ENG:7.4"
+        "DOM-ENG:7.4",
+        "DOM-PHYS:1.2",
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:2.1",
+        "DOM-PHYS:2.2",
+        "DOM-PHYS:6.1",
+        "DOM-MATH:5.7",
+        "DOM-MATH:5.12",
+        "DOM-MATH:5.13"
       ],
       "bookIds": [
         "BIB-PHYS-01",
@@ -33,7 +41,11 @@
         "BIB-PHYS-05",
         "BIB-PHYS-07",
         "BIB-ENG-04",
-        "BIB-ENG-05"
+        "BIB-ENG-05",
+        "BIB-PHYS-02",
+        "BIB-MATH-26",
+        "BIB-MATH-28",
+        "BIB-MATH-30"
       ]
     },
     {
@@ -60,13 +72,30 @@
         "DOM-PHYS:3.3",
         "DOM-PHYS:3.4",
         "DOM-PHYS:3.5",
-        "DOM-PHYS:3.6"
+        "DOM-PHYS:3.6",
+        "DOM-ENG:1.1",
+        "DOM-ENG:1.2",
+        "DOM-ENG:1.3",
+        "DOM-ENG:1.4",
+        "DOM-ENG:1.5",
+        "DOM-PHYS:1.4",
+        "DOM-PHYS:2.3",
+        "DOM-PHYS:2.5",
+        "DOM-PHYS:3.1",
+        "DOM-PHYS:3.2",
+        "DOM-PHYS:4.4",
+        "DOM-PHYS:4.6"
       ],
       "bookIds": [
         "BIB-ENG-01",
         "BIB-ENG-02",
         "BIB-ENG-03",
-        "BIB-PHYS-03"
+        "BIB-PHYS-03",
+        "BIB-ENG-04",
+        "BIB-ENG-05",
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-04"
       ]
     },
     {
@@ -89,7 +118,15 @@
         "DOM-ECON:8.1",
         "DOM-ECON:8.2",
         "DOM-ECON:8.3",
-        "DOM-ECON:8.4"
+        "DOM-ECON:8.4",
+        "DOM-ECON:1.1",
+        "DOM-ECON:1.2",
+        "DOM-ECON:1.3",
+        "DOM-ECON:1.4",
+        "DOM-ECON:2.1",
+        "DOM-ECON:6.3",
+        "DOM-ECON:7.1",
+        "DOM-MATH:1.12"
       ],
       "bookIds": [
         "BIB-ECON-02",
@@ -105,7 +142,12 @@
         "BIB-ECON-13",
         "BIB-ECON-04",
         "BIB-ECON-05",
-        "BIB-ECON-14"
+        "BIB-ECON-14",
+        "BIB-ECON-07",
+        "BIB-ECON-01",
+        "BIB-ECON-06",
+        "BIB-ECON-19",
+        "BIB-MATH-11"
       ]
     },
     {
@@ -187,7 +229,31 @@
         "DOM-MATH:7.10",
         "DOM-MATH:7.11",
         "DOM-HUM:3.2",
-        "DOM-HUM:3.3"
+        "DOM-HUM:3.3",
+        "DOM-MATH:2.6",
+        "DOM-MATH:2.7",
+        "DOM-MATH:2.8",
+        "DOM-MATH:3.1",
+        "DOM-MATH:3.4",
+        "DOM-MATH:3.6",
+        "DOM-MATH:3.8",
+        "DOM-MATH:3.9",
+        "DOM-MATH:3.10",
+        "DOM-MATH:4.1",
+        "DOM-MATH:4.2",
+        "DOM-MATH:4.3",
+        "DOM-MATH:4.4",
+        "DOM-MATH:4.5",
+        "DOM-MATH:4.6",
+        "DOM-MATH:8.1",
+        "DOM-MATH:8.2",
+        "DOM-MATH:8.3",
+        "DOM-MATH:8.4",
+        "DOM-MATH:8.5",
+        "DOM-MATH:8.6",
+        "DOM-MATH:8.7",
+        "DOM-MATH:8.8",
+        "DOM-PHYS:5.4"
       ],
       "bookIds": [
         "BIB-PROG-01",
@@ -244,7 +310,15 @@
         "BIB-MATH-24",
         "BIB-MATH-36",
         "BIB-HUM-09",
-        "BIB-HUM-10"
+        "BIB-HUM-10",
+        "BIB-MATH-15",
+        "BIB-MATH-16",
+        "BIB-MATH-20",
+        "BIB-MATH-23",
+        "BIB-MATH-18",
+        "BIB-MATH-19",
+        "BIB-MATH-22",
+        "BIB-PHYS-05"
       ]
     },
     {
@@ -280,7 +354,15 @@
         "DOM-HUM:7.2",
         "DOM-HUM:7.3",
         "DOM-HUM:7.4",
-        "DOM-HUM:7.5"
+        "DOM-HUM:7.5",
+        "DOM-HUM:1.1",
+        "DOM-HUM:1.2",
+        "DOM-HUM:1.3",
+        "DOM-HUM:1.4",
+        "DOM-HUM:1.5",
+        "DOM-HUM:8.1",
+        "DOM-HUM:8.2",
+        "DOM-HUM:8.3"
       ],
       "bookIds": [
         "BIB-HUM-12",
@@ -320,7 +402,22 @@
         "BIB-HUM-19",
         "BIB-HUM-20",
         "BIB-HUM-35",
-        "BIB-HUM-21"
+        "BIB-HUM-21",
+        "BIB-HUM-01",
+        "BIB-HUM-02",
+        "BIB-HUM-03",
+        "BIB-HUM-05",
+        "BIB-HUM-06",
+        "BIB-HUM-04",
+        "BIB-HUM-45",
+        "BIB-HUM-46",
+        "BIB-HUM-47",
+        "BIB-HUM-48",
+        "BIB-HUM-49",
+        "BIB-HUM-50",
+        "BIB-HUM-51",
+        "BIB-HUM-52",
+        "BIB-HUM-53"
       ]
     },
     {
@@ -423,7 +520,21 @@
         "DOM-LIT:5.1",
         "DOM-LIT:5.2",
         "DOM-LIT:5.3",
-        "DOM-LIT:6.2"
+        "DOM-LIT:6.2",
+        "DOM-MATH:9.1",
+        "DOM-MATH:9.2",
+        "DOM-MATH:9.3",
+        "DOM-MATH:9.4",
+        "DOM-MATH:9.5",
+        "DOM-MATH:9.6",
+        "DOM-MATH:9.7",
+        "DOM-MATH:9.8",
+        "DOM-MATH:9.10",
+        "DOM-MATH:9.11",
+        "DOM-MATH:9.12",
+        "DOM-MATH:9.13",
+        "DOM-ECON:1.2",
+        "DOM-ECON:2.2"
       ],
       "bookIds": [
         "BIB-HUM-41",
@@ -449,7 +560,14 @@
         "BIB-LIT-22",
         "BIB-LIT-23",
         "BIB-LIT-25",
-        "BIB-LIT-26"
+        "BIB-LIT-26",
+        "BIB-MATH-37",
+        "BIB-MATH-38",
+        "BIB-MATH-39",
+        "BIB-MATH-40",
+        "BIB-ECON-07",
+        "BIB-ECON-01",
+        "BIB-ECON-02"
       ]
     },
     {
@@ -461,7 +579,9 @@
         "DOM-LIT:1.1",
         "DOM-LIT:2.1",
         "DOM-LIT:3.1",
-        "DOM-LANG:5.1"
+        "DOM-LANG:5.1",
+        "DOM-MATH:1.5",
+        "DOM-MATH:1.11"
       ],
       "bookIds": [
         "BIB-LIT-01",
@@ -469,7 +589,9 @@
         "BIB-LIT-07",
         "BIB-LIT-09",
         "BIB-LIT-12",
-        "BIB-LANG-06"
+        "BIB-LANG-06",
+        "BIB-MATH-03",
+        "BIB-MATH-10"
       ]
     },
     {
@@ -480,7 +602,15 @@
       "nodeIds": [
         "DOM-LIT:3.1",
         "DOM-HUM:4.5",
-        "DOM-HUM:6.1"
+        "DOM-HUM:6.1",
+        "DOM-MATH:1.10",
+        "DOM-MATH:5.12",
+        "DOM-MATH:8.6",
+        "DOM-MATH:8.7",
+        "DOM-MATH:9.5",
+        "DOM-HUM:5.2",
+        "DOM-HUM:5.3",
+        "DOM-PHYS:4.1"
       ],
       "bookIds": [
         "BIB-LIT-09",
@@ -488,7 +618,17 @@
         "BIB-HUM-27",
         "BIB-HUM-28",
         "BIB-HUM-36",
-        "BIB-HUM-37"
+        "BIB-HUM-37",
+        "BIB-MATH-07",
+        "BIB-MATH-26",
+        "BIB-MATH-30",
+        "BIB-MATH-19",
+        "BIB-MATH-37",
+        "BIB-MATH-38",
+        "BIB-HUM-29",
+        "BIB-HUM-32",
+        "BIB-HUM-30",
+        "BIB-PHYS-04"
       ]
     },
     {
@@ -511,10 +651,19 @@
       "nodeIds": [
         "DOM-LANG:4.1",
         "DOM-LANG:4.2",
-        "DOM-LANG:4.3"
+        "DOM-LANG:4.3",
+        "DOM-ENG:1.1",
+        "DOM-ENG:1.2",
+        "DOM-ENG:5.1",
+        "DOM-PHYS:3.1",
+        "DOM-PHYS:3.2"
       ],
       "bookIds": [
-        "BIB-LANG-05"
+        "BIB-LANG-05",
+        "BIB-ENG-01",
+        "BIB-ENG-03",
+        "BIB-PHYS-03",
+        "BIB-PHYS-01"
       ]
     },
     {
@@ -560,14 +709,20 @@
         "DOM-PHYS:2.4",
         "DOM-ENG:3.3",
         "DOM-ENG:5.2",
-        "DOM-ENG:5.3"
+        "DOM-ENG:5.3",
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:1.4",
+        "DOM-PHYS:1.5",
+        "DOM-PHYS:2.1",
+        "DOM-PHYS:2.2"
       ],
       "bookIds": [
         "BIB-PHYS-01",
         "BIB-PHYS-03",
         "BIB-ENG-02",
         "BIB-ENG-03",
-        "BIB-ENG-01"
+        "BIB-ENG-01",
+        "BIB-PHYS-02"
       ]
     },
     {
@@ -646,7 +801,13 @@
         "DOM-ECON:8.1",
         "DOM-ECON:8.2",
         "DOM-ECON:8.3",
-        "DOM-ECON:8.4"
+        "DOM-ECON:8.4",
+        "DOM-ECON:1.4",
+        "DOM-ECON:5.1",
+        "DOM-ECON:5.4",
+        "DOM-ECON:6.2",
+        "DOM-ECON:6.3",
+        "DOM-ECON:7.1"
       ],
       "bookIds": [
         "BIB-ECON-02",
@@ -662,7 +823,9 @@
         "BIB-ECON-13",
         "BIB-ECON-04",
         "BIB-ECON-05",
-        "BIB-ECON-14"
+        "BIB-ECON-14",
+        "BIB-ECON-06",
+        "BIB-ECON-19"
       ]
     },
     {
@@ -681,7 +844,11 @@
         "DOM-PROG:8.7",
         "DOM-PROG:8.8",
         "DOM-HUM:3.3",
-        "DOM-LANG:3.3"
+        "DOM-LANG:3.3",
+        "DOM-MATH:4.1",
+        "DOM-MATH:4.2",
+        "DOM-MATH:4.4",
+        "DOM-MATH:4.6"
       ],
       "bookIds": [
         "BIB-PROG-29",
@@ -694,7 +861,11 @@
         "BIB-PROG-36",
         "BIB-HUM-10",
         "BIB-LANG-04",
-        "BIB-LANG-03"
+        "BIB-LANG-03",
+        "BIB-MATH-17",
+        "BIB-MATH-20",
+        "BIB-MATH-21",
+        "BIB-MATH-23"
       ]
     },
     {
@@ -706,12 +877,17 @@
         "DOM-ENG:2.2",
         "DOM-ENG:4.1",
         "DOM-ENG:4.4",
-        "DOM-ENG:5.3"
+        "DOM-ENG:5.3",
+        "DOM-ENG:1.1",
+        "DOM-ENG:1.4",
+        "DOM-ENG:1.5",
+        "DOM-PHYS:4.6"
       ],
       "bookIds": [
         "BIB-ENG-01",
         "BIB-ENG-02",
-        "BIB-ENG-03"
+        "BIB-ENG-03",
+        "BIB-PHYS-04"
       ]
     },
     {
@@ -819,7 +995,10 @@
         "DOM-LIT:1.1",
         "DOM-LIT:2.1",
         "DOM-LIT:3.1",
-        "DOM-LANG:5.1"
+        "DOM-LANG:5.1",
+        "DOM-MATH:1.5",
+        "DOM-MATH:1.11",
+        "DOM-PHYS:2.5"
       ],
       "bookIds": [
         "BIB-LIT-01",
@@ -827,7 +1006,11 @@
         "BIB-LIT-07",
         "BIB-LIT-09",
         "BIB-LIT-12",
-        "BIB-LANG-06"
+        "BIB-LANG-06",
+        "BIB-MATH-03",
+        "BIB-MATH-10",
+        "BIB-PHYS-01",
+        "BIB-PHYS-03"
       ]
     },
     {
@@ -915,7 +1098,18 @@
         "DOM-ENG:7.1",
         "DOM-ENG:7.2",
         "DOM-ENG:7.3",
-        "DOM-ENG:7.4"
+        "DOM-ENG:7.4",
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:2.1",
+        "DOM-PHYS:2.2",
+        "DOM-PHYS:4.5",
+        "DOM-PHYS:5.1",
+        "DOM-PHYS:6.1",
+        "DOM-MATH:3.1",
+        "DOM-MATH:3.2",
+        "DOM-MATH:3.3",
+        "DOM-MATH:5.7",
+        "DOM-MATH:5.13"
       ],
       "bookIds": [
         "BIB-PHYS-01",
@@ -924,7 +1118,14 @@
         "BIB-PHYS-05",
         "BIB-PHYS-07",
         "BIB-ENG-04",
-        "BIB-ENG-05"
+        "BIB-ENG-05",
+        "BIB-PHYS-02",
+        "BIB-PHYS-04",
+        "BIB-MATH-15",
+        "BIB-MATH-16",
+        "BIB-MATH-26",
+        "BIB-MATH-28",
+        "BIB-MATH-30"
       ]
     },
     {
@@ -935,13 +1136,26 @@
       "nodeIds": [
         "DOM-PHYS:2.4",
         "DOM-ENG:5.2",
-        "DOM-ENG:5.3"
+        "DOM-ENG:5.3",
+        "DOM-PHYS:1.2",
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:1.4",
+        "DOM-PHYS:2.1",
+        "DOM-PHYS:2.2",
+        "DOM-MATH:3.1",
+        "DOM-MATH:3.9",
+        "DOM-MATH:5.13"
       ],
       "bookIds": [
         "BIB-PHYS-01",
         "BIB-PHYS-03",
         "BIB-ENG-03",
-        "BIB-ENG-01"
+        "BIB-ENG-01",
+        "BIB-PHYS-02",
+        "BIB-MATH-15",
+        "BIB-MATH-16",
+        "BIB-MATH-26",
+        "BIB-MATH-30"
       ]
     },
     {
@@ -953,14 +1167,23 @@
         "DOM-ENG:2.2",
         "DOM-ENG:3.3",
         "DOM-ENG:5.3",
-        "DOM-LANG:3.3"
+        "DOM-LANG:3.3",
+        "DOM-PHYS:1.2",
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:2.5",
+        "DOM-ENG:1.3"
       ],
       "bookIds": [
         "BIB-ENG-01",
         "BIB-ENG-02",
         "BIB-ENG-03",
         "BIB-LANG-04",
-        "BIB-LANG-03"
+        "BIB-LANG-03",
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-03",
+        "BIB-ENG-04",
+        "BIB-ENG-05"
       ]
     },
     {
@@ -971,13 +1194,22 @@
       "nodeIds": [
         "DOM-ECON:2.3",
         "DOM-ENG:2.1",
-        "DOM-ENG:2.3"
+        "DOM-ENG:2.3",
+        "DOM-PHYS:2.5",
+        "DOM-MATH:1.5",
+        "DOM-MATH:1.11",
+        "DOM-ENG:1.2"
       ],
       "bookIds": [
         "BIB-ECON-02",
         "BIB-ECON-10",
         "BIB-ENG-01",
-        "BIB-ENG-02"
+        "BIB-ENG-02",
+        "BIB-PHYS-01",
+        "BIB-PHYS-03",
+        "BIB-MATH-03",
+        "BIB-MATH-10",
+        "BIB-ENG-03"
       ]
     },
     {
@@ -988,13 +1220,19 @@
       "nodeIds": [
         "DOM-PHYS:3.3",
         "DOM-PHYS:4.7",
-        "DOM-ENG:5.2"
+        "DOM-ENG:5.2",
+        "DOM-PHYS:3.4",
+        "DOM-MATH:5.8",
+        "DOM-MATH:5.11"
       ],
       "bookIds": [
         "BIB-PHYS-03",
         "BIB-PHYS-04",
         "BIB-ENG-03",
-        "BIB-ENG-01"
+        "BIB-ENG-01",
+        "BIB-MATH-26",
+        "BIB-MATH-28",
+        "BIB-MATH-29"
       ]
     },
     {
@@ -1005,13 +1243,1154 @@
       "nodeIds": [
         "DOM-MATH:7.1",
         "DOM-MATH:7.8",
-        "DOM-ENG:5.2"
+        "DOM-ENG:5.2",
+        "DOM-PHYS:2.5",
+        "DOM-PHYS:3.1",
+        "DOM-PHYS:3.2",
+        "DOM-MATH:5.11"
       ],
       "bookIds": [
         "BIB-MATH-32",
         "BIB-MATH-35",
         "BIB-ENG-03",
-        "BIB-ENG-01"
+        "BIB-ENG-01",
+        "BIB-PHYS-01",
+        "BIB-PHYS-03",
+        "BIB-MATH-26",
+        "BIB-MATH-29"
+      ]
+    },
+    {
+      "entityId": "dossier:fundamentos-da-matematica",
+      "kind": "dossier",
+      "title": "Fundamentos da matemática, álgebra linear, cálculo e análise",
+      "target": "/dossies/fundamentos-da-matematica",
+      "nodeIds": [
+        "DOM-MATH:1.1",
+        "DOM-MATH:1.2",
+        "DOM-MATH:1.3",
+        "DOM-MATH:1.4",
+        "DOM-MATH:1.5",
+        "DOM-MATH:1.6",
+        "DOM-MATH:1.7",
+        "DOM-MATH:1.8",
+        "DOM-MATH:1.9",
+        "DOM-MATH:1.10",
+        "DOM-MATH:1.11",
+        "DOM-MATH:1.12",
+        "DOM-MATH:2.6",
+        "DOM-MATH:2.7",
+        "DOM-MATH:2.8",
+        "DOM-MATH:3.1",
+        "DOM-MATH:3.2",
+        "DOM-MATH:3.3",
+        "DOM-MATH:3.4",
+        "DOM-MATH:3.5",
+        "DOM-MATH:3.6",
+        "DOM-MATH:3.7",
+        "DOM-MATH:3.8",
+        "DOM-MATH:3.9",
+        "DOM-MATH:3.10",
+        "DOM-MATH:5.1",
+        "DOM-MATH:5.2",
+        "DOM-MATH:5.3",
+        "DOM-MATH:5.4",
+        "DOM-MATH:5.5",
+        "DOM-MATH:5.6",
+        "DOM-MATH:5.7",
+        "DOM-MATH:5.8",
+        "DOM-MATH:5.9",
+        "DOM-MATH:5.10",
+        "DOM-MATH:5.11",
+        "DOM-MATH:5.12",
+        "DOM-MATH:5.13",
+        "DOM-MATH:9.1",
+        "DOM-MATH:9.2",
+        "DOM-MATH:9.3",
+        "DOM-MATH:9.4",
+        "DOM-MATH:9.5",
+        "DOM-MATH:9.6",
+        "DOM-MATH:9.7",
+        "DOM-MATH:9.8",
+        "DOM-MATH:9.9",
+        "DOM-MATH:9.10",
+        "DOM-MATH:9.11",
+        "DOM-MATH:9.12",
+        "DOM-MATH:9.13"
+      ],
+      "bookIds": [
+        "BIB-MATH-01",
+        "BIB-MATH-02",
+        "BIB-MATH-03",
+        "BIB-MATH-09",
+        "BIB-MATH-04",
+        "BIB-MATH-05",
+        "BIB-MATH-17",
+        "BIB-MATH-06",
+        "BIB-MATH-07",
+        "BIB-MATH-10",
+        "BIB-MATH-11",
+        "BIB-MATH-13",
+        "BIB-MATH-14",
+        "BIB-MATH-12",
+        "BIB-MATH-15",
+        "BIB-MATH-16",
+        "BIB-MATH-26",
+        "BIB-MATH-25",
+        "BIB-MATH-27",
+        "BIB-MATH-08",
+        "BIB-MATH-28",
+        "BIB-MATH-29",
+        "BIB-MATH-30",
+        "BIB-MATH-37",
+        "BIB-MATH-38",
+        "BIB-MATH-39",
+        "BIB-MATH-40"
+      ]
+    },
+    {
+      "entityId": "dossier:mecanica-eletromagnetismo-quantica",
+      "kind": "dossier",
+      "title": "Mecânica clássica, eletromagnetismo, relatividade e física quântica",
+      "target": "/dossies/mecanica-eletromagnetismo-quantica",
+      "nodeIds": [
+        "DOM-PHYS:1.1",
+        "DOM-PHYS:1.2",
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:1.4",
+        "DOM-PHYS:1.5",
+        "DOM-PHYS:2.1",
+        "DOM-PHYS:2.2",
+        "DOM-PHYS:2.3",
+        "DOM-PHYS:2.4",
+        "DOM-PHYS:2.5",
+        "DOM-PHYS:3.1",
+        "DOM-PHYS:3.2",
+        "DOM-PHYS:4.1",
+        "DOM-PHYS:4.2",
+        "DOM-PHYS:4.3",
+        "DOM-PHYS:4.4",
+        "DOM-PHYS:4.5",
+        "DOM-PHYS:4.6",
+        "DOM-PHYS:5.1",
+        "DOM-PHYS:5.2",
+        "DOM-PHYS:5.3",
+        "DOM-PHYS:5.4",
+        "DOM-PHYS:5.5",
+        "DOM-PHYS:6.1"
+      ],
+      "bookIds": [
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-03",
+        "BIB-PHYS-04",
+        "BIB-PHYS-05",
+        "BIB-PHYS-06"
+      ]
+    },
+    {
+      "entityId": "dossier:mercados-financas-corporativas",
+      "kind": "dossier",
+      "title": "Mercados de capitais, finanças corporativas, derivativos e gestão de riscos",
+      "target": "/dossies/mercados-financas-corporativas",
+      "nodeIds": [
+        "DOM-ECON:1.1",
+        "DOM-ECON:1.2",
+        "DOM-ECON:1.3",
+        "DOM-ECON:1.4",
+        "DOM-ECON:2.1",
+        "DOM-ECON:4.1",
+        "DOM-ECON:4.2",
+        "DOM-ECON:4.3",
+        "DOM-ECON:4.4",
+        "DOM-ECON:5.1",
+        "DOM-ECON:5.2",
+        "DOM-ECON:5.3",
+        "DOM-ECON:5.4",
+        "DOM-ECON:6.1",
+        "DOM-ECON:6.2",
+        "DOM-ECON:6.3",
+        "DOM-ECON:7.1"
+      ],
+      "bookIds": [
+        "BIB-ECON-07",
+        "BIB-ECON-01",
+        "BIB-ECON-06",
+        "BIB-ECON-02",
+        "BIB-ECON-03",
+        "BIB-ECON-04",
+        "BIB-ECON-08",
+        "BIB-ECON-09",
+        "BIB-ECON-10",
+        "BIB-ECON-05",
+        "BIB-ECON-19",
+        "BIB-ECON-12",
+        "BIB-ECON-14"
+      ]
+    },
+    {
+      "entityId": "figure:isaac-newton",
+      "kind": "figure",
+      "title": "Isaac Newton",
+      "target": "/dossies/isaac-newton",
+      "nodeIds": [
+        "DOM-PHYS:1.2",
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:1.4",
+        "DOM-PHYS:2.4",
+        "DOM-PHYS:6.2",
+        "DOM-MATH:5.1",
+        "DOM-MATH:5.2",
+        "DOM-MATH:5.4",
+        "DOM-MATH:5.13"
+      ],
+      "bookIds": [
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-03",
+        "BIB-PHYS-06",
+        "BIB-PHYS-05",
+        "BIB-MATH-25",
+        "BIB-MATH-27",
+        "BIB-MATH-08",
+        "BIB-MATH-26",
+        "BIB-MATH-30"
+      ]
+    },
+    {
+      "entityId": "figure:albert-einstein",
+      "kind": "figure",
+      "title": "Albert Einstein",
+      "target": "/dossies/albert-einstein",
+      "nodeIds": [
+        "DOM-PHYS:5.1",
+        "DOM-PHYS:5.2",
+        "DOM-PHYS:5.5",
+        "DOM-PHYS:6.1",
+        "DOM-PHYS:2.4"
+      ],
+      "bookIds": [
+        "BIB-PHYS-05",
+        "BIB-PHYS-06",
+        "BIB-PHYS-01",
+        "BIB-PHYS-03"
+      ]
+    },
+    {
+      "entityId": "era:PRUSSIA_1870",
+      "kind": "era",
+      "title": "Guerra Franco-Prussiana e Unificação Alemã (1870–1871)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.2",
+        "DOM-HUM:5.3",
+        "DOM-HUM:6.1",
+        "DOM-HUM:6.2",
+        "DOM-ENG:1.2",
+        "DOM-ENG:2.1",
+        "DOM-ECON:2.2"
+      ],
+      "bookIds": [
+        "BIB-HUM-29",
+        "BIB-HUM-32",
+        "BIB-HUM-30",
+        "BIB-HUM-36",
+        "BIB-HUM-37",
+        "BIB-HUM-38",
+        "BIB-ENG-01",
+        "BIB-ENG-03",
+        "BIB-ENG-02",
+        "BIB-ECON-02"
+      ]
+    },
+    {
+      "entityId": "era:WW1_1914",
+      "kind": "era",
+      "title": "Primeira Guerra Mundial e Fim dos Impérios (1914–1918)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.3",
+        "DOM-HUM:5.4",
+        "DOM-HUM:6.2",
+        "DOM-HUM:6.3",
+        "DOM-ECON:2.3",
+        "DOM-ECON:2.4",
+        "DOM-ENG:1.2",
+        "DOM-ENG:5.1"
+      ],
+      "bookIds": [
+        "BIB-HUM-32",
+        "BIB-HUM-30",
+        "BIB-HUM-31",
+        "BIB-HUM-38",
+        "BIB-HUM-39",
+        "BIB-HUM-40",
+        "BIB-ECON-02",
+        "BIB-ECON-10",
+        "BIB-ECON-15",
+        "BIB-ENG-01",
+        "BIB-ENG-03"
+      ]
+    },
+    {
+      "entityId": "era:WW2_1939",
+      "kind": "era",
+      "title": "Segunda Guerra Mundial e Ordem Pós-1945 (1939–1945)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.4",
+        "DOM-HUM:5.5",
+        "DOM-HUM:6.3",
+        "DOM-HUM:6.4",
+        "DOM-PHYS:5.5",
+        "DOM-MATH:4.2",
+        "DOM-PROG:1.1",
+        "DOM-ECON:2.4",
+        "DOM-ECON:2.5"
+      ],
+      "bookIds": [
+        "BIB-HUM-31",
+        "BIB-HUM-33",
+        "BIB-HUM-34",
+        "BIB-HUM-39",
+        "BIB-HUM-40",
+        "BIB-HUM-41",
+        "BIB-HUM-43",
+        "BIB-PHYS-05",
+        "BIB-MATH-17",
+        "BIB-MATH-21",
+        "BIB-PROG-01",
+        "BIB-ECON-15",
+        "BIB-ECON-16",
+        "BIB-ECON-17",
+        "BIB-ECON-18"
+      ]
+    },
+    {
+      "entityId": "event:polo-1271",
+      "kind": "event",
+      "title": "Marco Polo na Rota da Seda (1271–1295)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:4.2",
+        "DOM-HUM:4.3",
+        "DOM-ECON:2.1",
+        "DOM-ECON:2.2"
+      ],
+      "bookIds": [
+        "BIB-HUM-23",
+        "BIB-HUM-25",
+        "BIB-ECON-02"
+      ]
+    },
+    {
+      "entityId": "event:gama-1497",
+      "kind": "event",
+      "title": "Viagem de Vasco da Gama à Índia (1497–1499)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-LIT:1.1",
+        "DOM-HUM:4.3",
+        "DOM-HUM:4.4",
+        "DOM-MATH:1.5",
+        "DOM-MATH:1.11",
+        "DOM-PHYS:2.5"
+      ],
+      "bookIds": [
+        "BIB-LIT-01",
+        "BIB-HUM-25",
+        "BIB-HUM-26",
+        "BIB-MATH-03",
+        "BIB-MATH-10",
+        "BIB-PHYS-01",
+        "BIB-PHYS-03"
+      ]
+    },
+    {
+      "entityId": "event:glo-1914",
+      "kind": "event",
+      "title": "Eclosão da Primeira Guerra Mundial (1914–1918)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.3",
+        "DOM-HUM:5.4",
+        "DOM-HUM:6.2",
+        "DOM-ECON:2.3",
+        "DOM-ENG:1.2"
+      ],
+      "bookIds": [
+        "BIB-HUM-32",
+        "BIB-HUM-30",
+        "BIB-HUM-31",
+        "BIB-HUM-38",
+        "BIB-ECON-02",
+        "BIB-ECON-10",
+        "BIB-ENG-01",
+        "BIB-ENG-03"
+      ]
+    },
+    {
+      "entityId": "event:glo-1939",
+      "kind": "event",
+      "title": "Segunda Guerra Mundial (1939–1945)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.4",
+        "DOM-HUM:5.5",
+        "DOM-HUM:6.3",
+        "DOM-PHYS:5.5",
+        "DOM-MATH:4.2",
+        "DOM-ECON:2.4"
+      ],
+      "bookIds": [
+        "BIB-HUM-31",
+        "BIB-HUM-33",
+        "BIB-HUM-34",
+        "BIB-HUM-39",
+        "BIB-HUM-40",
+        "BIB-PHYS-05",
+        "BIB-MATH-17",
+        "BIB-MATH-21",
+        "BIB-ECON-15"
+      ]
+    },
+    {
+      "entityId": "event:glo-1989",
+      "kind": "event",
+      "title": "Queda do Muro de Berlim e Reunificação Alemã (1989)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.5",
+        "DOM-HUM:6.4",
+        "DOM-HUM:6.5",
+        "DOM-ECON:2.5",
+        "DOM-ECON:3.1"
+      ],
+      "bookIds": [
+        "BIB-HUM-33",
+        "BIB-HUM-34",
+        "BIB-HUM-41",
+        "BIB-HUM-43",
+        "BIB-HUM-42",
+        "BIB-HUM-44",
+        "BIB-ECON-16",
+        "BIB-ECON-17",
+        "BIB-ECON-18",
+        "BIB-ECON-08",
+        "BIB-ECON-09",
+        "BIB-ECON-10"
+      ]
+    },
+    {
+      "entityId": "event:glo-1945",
+      "kind": "event",
+      "title": "Fundação das Nações Unidas (ONU)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.5",
+        "DOM-HUM:6.4",
+        "DOM-HUM:8.1",
+        "DOM-ECON:2.5"
+      ],
+      "bookIds": [
+        "BIB-HUM-33",
+        "BIB-HUM-34",
+        "BIB-HUM-41",
+        "BIB-HUM-43",
+        "BIB-HUM-45",
+        "BIB-HUM-46",
+        "BIB-HUM-47",
+        "BIB-HUM-48",
+        "BIB-ECON-16",
+        "BIB-ECON-17",
+        "BIB-ECON-18"
+      ]
+    },
+    {
+      "entityId": "event:glo-1957",
+      "kind": "event",
+      "title": "Lançamento do Sputnik 1",
+      "target": "/",
+      "nodeIds": [
+        "DOM-PHYS:1.2",
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:2.4",
+        "DOM-ENG:5.3",
+        "DOM-MATH:5.13"
+      ],
+      "bookIds": [
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-03",
+        "BIB-ENG-03",
+        "BIB-MATH-26",
+        "BIB-MATH-30"
+      ]
+    },
+    {
+      "entityId": "event:sun-1961",
+      "kind": "event",
+      "title": "Vostok 1: Primeiro Voo Humano no Espaço",
+      "target": "/",
+      "nodeIds": [
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:1.5",
+        "DOM-PHYS:2.4",
+        "DOM-ENG:5.3"
+      ],
+      "bookIds": [
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-03",
+        "BIB-ENG-03"
+      ]
+    },
+    {
+      "entityId": "event:glo-1999",
+      "kind": "event",
+      "title": "Criação da Moeda Única Euro",
+      "target": "/",
+      "nodeIds": [
+        "DOM-ECON:2.2",
+        "DOM-ECON:2.3",
+        "DOM-ECON:2.4",
+        "DOM-ECON:7.1",
+        "DOM-ECON:7.2"
+      ],
+      "bookIds": [
+        "BIB-ECON-02",
+        "BIB-ECON-10",
+        "BIB-ECON-15",
+        "BIB-ECON-04",
+        "BIB-ECON-12",
+        "BIB-ECON-14",
+        "BIB-ECON-11",
+        "BIB-ECON-08",
+        "BIB-ECON-09"
+      ]
+    },
+    {
+      "entityId": "event:glo-2015",
+      "kind": "event",
+      "title": "Acordo de Paris sobre o Clima",
+      "target": "/",
+      "nodeIds": [
+        "DOM-PHYS:3.3",
+        "DOM-PHYS:3.4",
+        "DOM-ENG:4.1",
+        "DOM-ENG:4.4",
+        "DOM-HUM:6.5"
+      ],
+      "bookIds": [
+        "BIB-PHYS-03",
+        "BIB-ENG-03",
+        "BIB-HUM-42",
+        "BIB-HUM-44"
+      ]
+    },
+    {
+      "entityId": "event:zaf-1994",
+      "kind": "event",
+      "title": "Fim do Apartheid e Eleição de Nelson Mandela",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:6.4",
+        "DOM-HUM:6.5",
+        "DOM-HUM:8.1",
+        "DOM-HUM:8.2"
+      ],
+      "bookIds": [
+        "BIB-HUM-41",
+        "BIB-HUM-43",
+        "BIB-HUM-42",
+        "BIB-HUM-44",
+        "BIB-HUM-45",
+        "BIB-HUM-46",
+        "BIB-HUM-47",
+        "BIB-HUM-48",
+        "BIB-HUM-49",
+        "BIB-HUM-50",
+        "BIB-HUM-51"
+      ]
+    },
+    {
+      "entityId": "event:egy-1869",
+      "kind": "event",
+      "title": "Inauguração do Canal de Suez",
+      "target": "/",
+      "nodeIds": [
+        "DOM-ENG:1.1",
+        "DOM-ENG:1.4",
+        "DOM-PHYS:2.5",
+        "DOM-ECON:2.1",
+        "DOM-HUM:5.2"
+      ],
+      "bookIds": [
+        "BIB-ENG-01",
+        "BIB-ENG-03",
+        "BIB-PHYS-01",
+        "BIB-PHYS-03",
+        "BIB-ECON-02",
+        "BIB-HUM-29"
+      ]
+    },
+    {
+      "entityId": "event:usa-1776",
+      "kind": "event",
+      "title": "Declaração de Independência dos Estados Unidos",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.1",
+        "DOM-HUM:5.2",
+        "DOM-HUM:6.1",
+        "DOM-HUM:6.2"
+      ],
+      "bookIds": [
+        "BIB-HUM-17",
+        "BIB-HUM-29",
+        "BIB-HUM-36",
+        "BIB-HUM-37",
+        "BIB-HUM-38"
+      ]
+    },
+    {
+      "entityId": "event:deu-1871",
+      "kind": "event",
+      "title": "Unificação da Alemanha (1871)",
+      "target": "/",
+      "nodeIds": [
+        "DOM-HUM:5.2",
+        "DOM-HUM:6.1",
+        "DOM-HUM:6.2",
+        "DOM-ENG:1.2"
+      ],
+      "bookIds": [
+        "BIB-HUM-29",
+        "BIB-HUM-36",
+        "BIB-HUM-37",
+        "BIB-HUM-38",
+        "BIB-ENG-01",
+        "BIB-ENG-03"
+      ]
+    },
+    {
+      "entityId": "country:USA",
+      "kind": "country",
+      "title": "Estados Unidos",
+      "target": "/pais/usa",
+      "nodeIds": [
+        "DOM-ECON:4.1",
+        "DOM-ECON:4.2",
+        "DOM-ECON:4.3",
+        "DOM-ECON:4.4",
+        "DOM-ECON:5.1",
+        "DOM-ECON:5.2",
+        "DOM-ECON:5.3",
+        "DOM-ECON:5.4",
+        "DOM-ECON:6.1",
+        "DOM-ECON:6.2",
+        "DOM-ECON:6.3",
+        "DOM-MATH:8.1",
+        "DOM-MATH:8.4",
+        "DOM-MATH:8.8",
+        "DOM-PROG:5.1",
+        "DOM-PROG:8.1",
+        "DOM-LANG:1.1",
+        "DOM-HUM:5.1"
+      ],
+      "bookIds": [
+        "BIB-ECON-02",
+        "BIB-ECON-03",
+        "BIB-ECON-04",
+        "BIB-ECON-08",
+        "BIB-ECON-09",
+        "BIB-ECON-10",
+        "BIB-ECON-05",
+        "BIB-ECON-06",
+        "BIB-ECON-19",
+        "BIB-MATH-18",
+        "BIB-MATH-20",
+        "BIB-MATH-22",
+        "BIB-MATH-23",
+        "BIB-MATH-24",
+        "BIB-PROG-37",
+        "BIB-PROG-38",
+        "BIB-PROG-30",
+        "BIB-LANG-01",
+        "BIB-HUM-17"
+      ]
+    },
+    {
+      "entityId": "country:GBR",
+      "kind": "country",
+      "title": "Reino Unido",
+      "target": "/pais/gbr",
+      "nodeIds": [
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:2.4",
+        "DOM-PHYS:4.5",
+        "DOM-PHYS:4.6",
+        "DOM-PHYS:6.1",
+        "DOM-MATH:4.6",
+        "DOM-MATH:5.2",
+        "DOM-MATH:5.4",
+        "DOM-ENG:1.2",
+        "DOM-ENG:2.1",
+        "DOM-ECON:4.1",
+        "DOM-ECON:5.1",
+        "DOM-LANG:1.1",
+        "DOM-LANG:1.2",
+        "DOM-HUM:5.1"
+      ],
+      "bookIds": [
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-03",
+        "BIB-PHYS-04",
+        "BIB-PHYS-06",
+        "BIB-MATH-17",
+        "BIB-MATH-23",
+        "BIB-MATH-25",
+        "BIB-MATH-27",
+        "BIB-ENG-01",
+        "BIB-ENG-03",
+        "BIB-ENG-02",
+        "BIB-ECON-02",
+        "BIB-ECON-04",
+        "BIB-ECON-08",
+        "BIB-ECON-09",
+        "BIB-ECON-10",
+        "BIB-LANG-01",
+        "BIB-HUM-17"
+      ]
+    },
+    {
+      "entityId": "country:DEU",
+      "kind": "country",
+      "title": "Alemanha",
+      "target": "/pais/deu",
+      "nodeIds": [
+        "DOM-MATH:2.8",
+        "DOM-MATH:5.4",
+        "DOM-MATH:5.11",
+        "DOM-MATH:9.5",
+        "DOM-PHYS:4.2",
+        "DOM-PHYS:5.2",
+        "DOM-PHYS:5.3",
+        "DOM-ENG:1.1",
+        "DOM-ENG:1.2",
+        "DOM-ENG:1.4",
+        "DOM-ENG:1.5",
+        "DOM-HUM:1.4",
+        "DOM-HUM:5.2",
+        "DOM-HUM:5.4",
+        "DOM-ECON:2.2"
+      ],
+      "bookIds": [
+        "BIB-MATH-13",
+        "BIB-MATH-14",
+        "BIB-MATH-17",
+        "BIB-MATH-25",
+        "BIB-MATH-27",
+        "BIB-MATH-26",
+        "BIB-MATH-29",
+        "BIB-MATH-37",
+        "BIB-MATH-38",
+        "BIB-PHYS-04",
+        "BIB-PHYS-05",
+        "BIB-ENG-01",
+        "BIB-ENG-03",
+        "BIB-HUM-06",
+        "BIB-HUM-29",
+        "BIB-HUM-31",
+        "BIB-ECON-02"
+      ]
+    },
+    {
+      "entityId": "country:ITA",
+      "kind": "country",
+      "title": "Itália",
+      "target": "/pais/ita",
+      "nodeIds": [
+        "DOM-PHYS:1.1",
+        "DOM-PHYS:1.2",
+        "DOM-PHYS:6.2",
+        "DOM-MATH:1.9",
+        "DOM-HUM:4.3",
+        "DOM-HUM:4.4",
+        "DOM-ECON:4.1"
+      ],
+      "bookIds": [
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-06",
+        "BIB-PHYS-05",
+        "BIB-MATH-06",
+        "BIB-HUM-25",
+        "BIB-HUM-26",
+        "BIB-ECON-02"
+      ]
+    },
+    {
+      "entityId": "country:GRC",
+      "kind": "country",
+      "title": "Grécia",
+      "target": "/pais/grc",
+      "nodeIds": [
+        "DOM-MATH:1.1",
+        "DOM-MATH:1.5",
+        "DOM-MATH:1.6",
+        "DOM-MATH:1.11",
+        "DOM-HUM:1.2",
+        "DOM-HUM:1.4",
+        "DOM-HUM:2.1",
+        "DOM-HUM:2.2",
+        "DOM-HUM:3.1"
+      ],
+      "bookIds": [
+        "BIB-MATH-01",
+        "BIB-MATH-03",
+        "BIB-MATH-09",
+        "BIB-MATH-10",
+        "BIB-HUM-03",
+        "BIB-HUM-06",
+        "BIB-HUM-12",
+        "BIB-HUM-07",
+        "BIB-HUM-13",
+        "BIB-HUM-08"
+      ]
+    },
+    {
+      "entityId": "country:EGY",
+      "kind": "country",
+      "title": "Egito",
+      "target": "/pais/egy",
+      "nodeIds": [
+        "DOM-MATH:1.6",
+        "DOM-MATH:1.11",
+        "DOM-PHYS:2.5",
+        "DOM-ENG:1.4",
+        "DOM-HUM:4.1"
+      ],
+      "bookIds": [
+        "BIB-MATH-09",
+        "BIB-MATH-10",
+        "BIB-PHYS-01",
+        "BIB-PHYS-03",
+        "BIB-ENG-01",
+        "BIB-ENG-03",
+        "BIB-HUM-22",
+        "BIB-HUM-24"
+      ]
+    },
+    {
+      "entityId": "country:CHE",
+      "kind": "country",
+      "title": "Suíça",
+      "target": "/pais/che",
+      "nodeIds": [
+        "DOM-PHYS:5.1",
+        "DOM-PHYS:5.5",
+        "DOM-MATH:4.4",
+        "DOM-MATH:8.5",
+        "DOM-ECON:1.1",
+        "DOM-ECON:7.1",
+        "DOM-ECON:7.2"
+      ],
+      "bookIds": [
+        "BIB-PHYS-05",
+        "BIB-MATH-17",
+        "BIB-MATH-23",
+        "BIB-MATH-18",
+        "BIB-MATH-20",
+        "BIB-MATH-19",
+        "BIB-ECON-07",
+        "BIB-ECON-01",
+        "BIB-ECON-04",
+        "BIB-ECON-12",
+        "BIB-ECON-14",
+        "BIB-ECON-11",
+        "BIB-ECON-08",
+        "BIB-ECON-09"
+      ]
+    },
+    {
+      "entityId": "country:AUT",
+      "kind": "country",
+      "title": "Áustria",
+      "target": "/pais/aut",
+      "nodeIds": [
+        "DOM-PHYS:3.5",
+        "DOM-PHYS:5.3",
+        "DOM-HUM:8.2",
+        "DOM-HUM:8.3",
+        "DOM-ECON:2.1"
+      ],
+      "bookIds": [
+        "BIB-PHYS-03",
+        "BIB-PHYS-05",
+        "BIB-HUM-49",
+        "BIB-HUM-50",
+        "BIB-HUM-51",
+        "BIB-HUM-52",
+        "BIB-HUM-53",
+        "BIB-ECON-02"
+      ]
+    },
+    {
+      "entityId": "country:POL",
+      "kind": "country",
+      "title": "Polônia",
+      "target": "/pais/pol",
+      "nodeIds": [
+        "DOM-MATH:9.7",
+        "DOM-MATH:9.8",
+        "DOM-MATH:9.9",
+        "DOM-MATH:9.10",
+        "DOM-HUM:5.4"
+      ],
+      "bookIds": [
+        "BIB-MATH-39",
+        "BIB-HUM-31"
+      ]
+    },
+    {
+      "entityId": "country:DNK",
+      "kind": "country",
+      "title": "Dinamarca",
+      "target": "/pais/dnk",
+      "nodeIds": [
+        "DOM-PHYS:5.2",
+        "DOM-PHYS:5.4",
+        "DOM-ENG:4.4"
+      ],
+      "bookIds": [
+        "BIB-PHYS-05",
+        "BIB-ENG-03"
+      ]
+    },
+    {
+      "entityId": "country:IND",
+      "kind": "country",
+      "title": "Índia",
+      "target": "/pais/ind",
+      "nodeIds": [
+        "DOM-MATH:1.4",
+        "DOM-MATH:1.5",
+        "DOM-MATH:1.8",
+        "DOM-MATH:4.2",
+        "DOM-PROG:2.1",
+        "DOM-HUM:4.3"
+      ],
+      "bookIds": [
+        "BIB-MATH-02",
+        "BIB-MATH-03",
+        "BIB-MATH-05",
+        "BIB-MATH-17",
+        "BIB-MATH-21",
+        "BIB-PROG-04",
+        "BIB-PROG-03",
+        "BIB-PROG-07",
+        "BIB-HUM-25"
+      ]
+    },
+    {
+      "entityId": "country:CHN",
+      "kind": "country",
+      "title": "China",
+      "target": "/pais/chn",
+      "nodeIds": [
+        "DOM-ECON:2.1",
+        "DOM-ECON:2.5",
+        "DOM-ENG:1.2",
+        "DOM-ENG:4.1",
+        "DOM-HUM:4.2"
+      ],
+      "bookIds": [
+        "BIB-ECON-02",
+        "BIB-ECON-16",
+        "BIB-ECON-17",
+        "BIB-ECON-18",
+        "BIB-ENG-01",
+        "BIB-ENG-03",
+        "BIB-HUM-23"
+      ]
+    },
+    {
+      "entityId": "country:RUS",
+      "kind": "country",
+      "title": "Rússia",
+      "target": "/pais/rus",
+      "nodeIds": [
+        "DOM-PHYS:1.3",
+        "DOM-PHYS:2.4",
+        "DOM-ENG:5.3",
+        "DOM-HUM:5.4",
+        "DOM-HUM:5.5"
+      ],
+      "bookIds": [
+        "BIB-PHYS-01",
+        "BIB-PHYS-02",
+        "BIB-PHYS-03",
+        "BIB-ENG-03",
+        "BIB-HUM-31",
+        "BIB-HUM-33",
+        "BIB-HUM-34"
+      ]
+    },
+    {
+      "entityId": "country:ZAF",
+      "kind": "country",
+      "title": "África do Sul",
+      "target": "/pais/zaf",
+      "nodeIds": [
+        "DOM-HUM:6.4",
+        "DOM-HUM:6.5",
+        "DOM-HUM:8.1",
+        "DOM-HUM:8.2",
+        "DOM-ECON:2.2"
+      ],
+      "bookIds": [
+        "BIB-HUM-41",
+        "BIB-HUM-43",
+        "BIB-HUM-42",
+        "BIB-HUM-44",
+        "BIB-HUM-45",
+        "BIB-HUM-46",
+        "BIB-HUM-47",
+        "BIB-HUM-48",
+        "BIB-HUM-49",
+        "BIB-HUM-50",
+        "BIB-HUM-51",
+        "BIB-ECON-02"
+      ]
+    },
+    {
+      "entityId": "country:KOR",
+      "kind": "country",
+      "title": "Coreia do Sul",
+      "target": "/pais/kor",
+      "nodeIds": [
+        "DOM-PHYS:5.4",
+        "DOM-ECON:1.3",
+        "DOM-ECON:4.4",
+        "DOM-ECON:5.1",
+        "DOM-ECON:5.2",
+        "DOM-PROG:6.1"
+      ],
+      "bookIds": [
+        "BIB-PHYS-05",
+        "BIB-ECON-01",
+        "BIB-ECON-03",
+        "BIB-ECON-04",
+        "BIB-ECON-08",
+        "BIB-ECON-09",
+        "BIB-ECON-10",
+        "BIB-PROG-27",
+        "BIB-PROG-28"
+      ]
+    },
+    {
+      "entityId": "country:ARG",
+      "kind": "country",
+      "title": "Argentina",
+      "target": "/pais/arg",
+      "nodeIds": [
+        "DOM-ECON:1.2",
+        "DOM-ECON:2.2",
+        "DOM-ECON:2.3",
+        "DOM-HUM:5.2",
+        "DOM-HUM:6.4"
+      ],
+      "bookIds": [
+        "BIB-ECON-07",
+        "BIB-ECON-01",
+        "BIB-ECON-02",
+        "BIB-ECON-10",
+        "BIB-HUM-29",
+        "BIB-HUM-41",
+        "BIB-HUM-43"
+      ]
+    },
+    {
+      "entityId": "country:ESP",
+      "kind": "country",
+      "title": "Espanha",
+      "target": "/pais/esp",
+      "nodeIds": [
+        "DOM-HUM:4.4",
+        "DOM-MATH:1.5",
+        "DOM-MATH:1.11",
+        "DOM-LIT:1.1"
+      ],
+      "bookIds": [
+        "BIB-HUM-26",
+        "BIB-MATH-03",
+        "BIB-MATH-10",
+        "BIB-LIT-01"
+      ]
+    },
+    {
+      "entityId": "country:NLD",
+      "kind": "country",
+      "title": "Países Baixos",
+      "target": "/pais/nld",
+      "nodeIds": [
+        "DOM-ECON:4.4",
+        "DOM-ECON:5.1",
+        "DOM-ECON:5.4",
+        "DOM-PHYS:2.5",
+        "DOM-PHYS:6.1"
+      ],
+      "bookIds": [
+        "BIB-ECON-03",
+        "BIB-ECON-04",
+        "BIB-ECON-08",
+        "BIB-ECON-09",
+        "BIB-ECON-10",
+        "BIB-ECON-05",
+        "BIB-PHYS-01",
+        "BIB-PHYS-03",
+        "BIB-PHYS-06"
+      ]
+    },
+    {
+      "entityId": "country:CAN",
+      "kind": "country",
+      "title": "Canadá",
+      "target": "/pais/can",
+      "nodeIds": [
+        "DOM-LANG:1.1",
+        "DOM-LANG:1.2",
+        "DOM-ECON:1.4",
+        "DOM-HUM:1.1",
+        "DOM-HUM:1.5"
+      ],
+      "bookIds": [
+        "BIB-LANG-01",
+        "BIB-ECON-06",
+        "BIB-HUM-01",
+        "BIB-HUM-02",
+        "BIB-HUM-04"
+      ]
+    },
+    {
+      "entityId": "country:AUS",
+      "kind": "country",
+      "title": "Austrália",
+      "target": "/pais/aus",
+      "nodeIds": [
+        "DOM-LANG:1.1",
+        "DOM-PHYS:3.3",
+        "DOM-PHYS:7.1",
+        "DOM-HUM:1.3"
+      ],
+      "bookIds": [
+        "BIB-LANG-01",
+        "BIB-PHYS-03",
+        "BIB-PHYS-07",
+        "BIB-PHYS-06",
+        "BIB-HUM-05"
       ]
     }
   ]

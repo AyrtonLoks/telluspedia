@@ -6,6 +6,10 @@ import { CurriculumLinks } from "../src/components/tellus-bridge/StudyContext";
 import { StudyHub } from "../src/components/tellus-bridge/StudyHub";
 import { books, entities, manifest, nodes, registry, resolveLaunch, studyUrl } from "../src/lib/tellus-bridge/catalog";
 import { findMilestoneById, NUMERIC_TO_ISO } from "../src/lib/country-data";
+import { getPublishedDossier } from "../src/lib/dossiers-catalog";
+import { HISTORICAL_ERAS } from "../src/lib/historical-entities";
+import { isPlayableScene, PUBLISHED_SCENES } from "../src/lib/scenes/catalog";
+import { ERA_STUDY_ENTITY_IDS } from "../src/lib/timeline/era-study";
 import { parseLabLink, pediaUrl, summarize, validateRegistry, validateManifest, validateSnapshot } from "../src/lib/tellus-bridge/contract/index.mjs";
 import type { TellusLabSnapshotV1 } from "../src/lib/tellus-bridge/contract/types.mjs";
 
@@ -80,4 +84,48 @@ test("deep-links retornam ao nó e descartam uma origem incompatível", () => {
   assert.deepEqual(resolveLaunch(pedia.searchParams), { link, origin: null });
   pedia.searchParams.set("entity", "observatory:invalid");
   assert.equal(resolveLaunch(pedia.searchParams), null);
+});
+
+test("D26 · cobertura curricular ≥ 85% dos 299 nós, todas as eras, cenas D24 e ≥ 20 países sem links quebrados", () => {
+  const coveredNodes = new Set(manifest.links.flatMap((entry) => entry.nodeIds));
+  const coverageRatio = coveredNodes.size / nodes.size;
+  assert.ok(
+    coverageRatio >= 0.85,
+    `Cobertura curricular abaixo de 85%: ${coveredNodes.size}/${nodes.size} (${(coverageRatio * 100).toFixed(1)}%)`
+  );
+
+  // Todas as eras históricas (exceto contemporânea) devem estar mapeadas e presentes no manifesto
+  const historicalEraIds = Object.keys(HISTORICAL_ERAS).filter((id) => id !== "CONTEMPORARY");
+  for (const eraId of historicalEraIds) {
+    const entityId = ERA_STUDY_ENTITY_IDS[eraId as keyof typeof ERA_STUDY_ENTITY_IDS];
+    assert.ok(entityId, `Era ${eraId} deve estar em ERA_STUDY_ENTITY_IDS`);
+    assert.ok(entities.has(entityId), `Entidade ${entityId} deve existir no manifesto`);
+  }
+
+  // Todas as 7 cenas históricas tocáveis (D24) devem ter vínculo no manifesto
+  const playableScenes = PUBLISHED_SCENES.filter(isPlayableScene);
+  assert.ok(playableScenes.length >= 7, `Esperava ≥ 7 cenas tocáveis, achou ${playableScenes.length}`);
+  for (const scene of playableScenes) {
+    const entityId = `event:${scene.id}`;
+    assert.ok(entities.has(entityId), `Cena D24 ${entityId} deve estar vinculada no manifesto`);
+    assert.ok(findMilestoneById(scene.id), `Marco ${scene.id} deve existir em findMilestoneById`);
+  }
+
+  // ≥ 20 países distintos com ISOs válidos e rotas /pais/<iso>
+  const countryLinks = manifest.links.filter((entry) => entry.kind === "country");
+  assert.ok(countryLinks.length >= 20, `Esperava ≥ 20 países no manifesto, achou ${countryLinks.length}`);
+  const validIsos = new Set(Object.values(NUMERIC_TO_ISO));
+  for (const entry of countryLinks) {
+    const iso = entry.entityId.split(":")[1];
+    assert.ok(validIsos.has(iso), `ISO inválido no manifesto: ${entry.entityId}`);
+    assert.equal(entry.target, `/pais/${iso.toLowerCase()}`, `Target inválido para ${entry.entityId}`);
+  }
+
+  // Todos os dossiês e figuras históricas devem apontar para um dossiê publicado sem 404
+  const dossierLinks = manifest.links.filter((entry) => entry.kind === "dossier" || entry.kind === "figure");
+  for (const entry of dossierLinks) {
+    const slug = entry.entityId.split(":")[1];
+    assert.equal(entry.target, `/dossies/${slug}`, `Target inesperado para ${entry.entityId}`);
+    assert.ok(getPublishedDossier(slug), `Dossiê publicado ausente para ${entry.entityId}`);
+  }
 });

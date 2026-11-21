@@ -7,6 +7,7 @@ import { sceneOpenedBy, sceneHasTrajectoryKind } from "@/lib/scenes/catalog";
 import { usePathname, useSearchParams } from "next/navigation";
 import { resolveLaunch, studyUrl } from "@/lib/tellus-bridge/catalog";
 import { findMilestoneById, getCountryData } from "@/lib/country-data";
+import { HISTORICAL_ERAS, type HistoricalEraId } from "@/lib/historical-entities";
 import type { ObservatoryLayerId } from "@/lib/observatory-data";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -71,7 +72,16 @@ export function EntityLaunch() {
       }
     } else if (entity.kind === "era") {
       globe.setSelectedIso(null);
-      applyTimelinePreset(key);
+      if (Object.hasOwn(HISTORICAL_ERAS, key) && key !== "CONTEMPORARY") {
+        const era = HISTORICAL_ERAS[key as HistoricalEraId];
+        selectHistoricalRoute(null);
+        timeline.setGeologicalMa(null);
+        timeline.setYearRange(era.startYear, era.endYear);
+        timeline.selectMilestone(null);
+        timeline.selectYear(era.representativeYear);
+      } else {
+        applyTimelinePreset(key);
+      }
       timeline.setExpanded(true);
     } else if (entity.kind === "observatory") {
       globe.setSelectedIso(null);
