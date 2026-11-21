@@ -16,6 +16,7 @@ import {
   reanchorOrbit,
   prefersReducedMotion,
   solarSystemExitOpacity,
+  nearBodyOpacity,
   type OrbitState,
 } from "../src/lib/camera-transition";
 import { MOTION_MS } from "../src/components/ui/motion";
@@ -200,6 +201,20 @@ describe("D17: sistema solar na tela durante a descida de volta à Terra", () =>
       assert.ok(a <= last + 1e-12 && a >= 0 && a <= 1, `monótona (${i})`);
       last = a;
     }
+  });
+
+  test("um corpo some quando a câmera passa perto dele (Sol não enche a tela na descida)", () => {
+    const R = 25;
+    assert.equal(nearBodyOpacity(R * 2, R), 0, "a 1 raio da superfície: invisível");
+    assert.equal(nearBodyOpacity(R * 5, R), 1, "a 4 raios da superfície: inteiro");
+    assert.equal(nearBodyOpacity(R * 0.5, R), 0, "dentro do corpo: invisível");
+    let last = 0;
+    for (let d = 0; d <= 6 * R; d += R / 10) {
+      const a = nearBodyOpacity(d, R);
+      assert.ok(a >= last - 1e-12, "cresce com a distância");
+      last = a;
+    }
+    assert.match(read("src/components/globe/SolarSystemFrame.tsx"), /alpha \*= nearBodyOpacity\(camera\.position\.distanceTo\(sphere\.center\), sphere\.radius\)/);
   });
 
   test("o grupo do sistema solar usa o mesmo reposicionamento da câmera: (p − c) / s", () => {

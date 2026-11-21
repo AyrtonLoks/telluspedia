@@ -110,3 +110,14 @@ export function solarSystemExitOpacity(progress: number): number {
   const x = Math.max(0, Math.min(1, (progress - 0.15) / 0.65));
   return 1 - x * x * (3 - 2 * x);
 }
+
+/**
+ * Na descida de volta à Terra, um corpo também some quando a câmera chega perto dele (distância à
+ * superfície em raios): inteiro a partir de 4 raios, invisível a 1 raio. Assim o Sol nunca enche a
+ * tela quando a Terra está atrás dele, vista do ponto de partida.
+ */
+export function nearBodyOpacity(distanceToCenter: number, radius: number): number {
+  if (!(radius > 0)) return 1;
+  const x = Math.max(0, Math.min(1, (distanceToCenter - radius - radius) / (3 * radius)));
+  return x * x * (3 - 2 * x);
+}
