@@ -190,9 +190,10 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory }> = ({ sce
                     key={ph.id}
                     type="button"
                     aria-pressed={active}
+                    title={ph.label}
                     onClick={() => pb.jumpTo(i)}
                     className={cn(
-                      "flex flex-col items-start rounded-control border p-2 text-left transition-colors duration-fast ease-out",
+                      "flex min-w-0 flex-col items-start rounded-control border p-2 text-left transition-colors duration-fast ease-out",
                       active ? "border-accent/50 bg-accent/10" : "border-line bg-surface-raised hover:bg-surface-hover"
                     )}
                   >
@@ -200,7 +201,7 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory }> = ({ sce
                       {active && <ChevronRight aria-hidden="true" className="h-3 w-3" />}
                       {String(ph.facts?.badge ?? ph.id)}
                     </span>
-                    <span className="truncate text-caption font-medium leading-tight text-fg">{ph.label}</span>
+                    <span className="w-full truncate text-caption font-medium leading-tight text-fg">{ph.label}</span>
                   </button>
                 );
               })}

@@ -68,12 +68,14 @@ export function applyTimelinePreset(preset: TimelinePreset | string) {
     case "GONDWANA_150MA": return enterGeologicalMode(150);
     case "KPG_66MA": return enterGeologicalMode(66);
     case "MAGELLAN_1519":
+      // Abre a cena antes de mudar o período: o estado guardado para restaurar é o de antes do clique.
+      selectHistoricalRoute(MAGELLAN_ROUTE_ID);
       useTimelineStore.setState({
         startYear: MAGELLAN_ROUTE.startYear,
         endYear: MAGELLAN_ROUTE.endYear,
         selectedMilestoneId: null,
       });
-      return selectHistoricalRoute(MAGELLAN_ROUTE_ID);
+      return;
     case "LAST_50_YEARS":
     case "COLD_WAR":
     case "WORLD_WARS":

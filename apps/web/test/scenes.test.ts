@@ -231,6 +231,16 @@ describe("D12c: painel genérico do player", () => {
     assert.deepEqual(mids, [...mids].sort((a, b) => a - b), "GET cresce com o progresso");
   });
 
+  test("GET nunca fica antes do instante da fase exibida (fase e relógio coerentes)", () => {
+    if (apollo.kind !== "cislunar") throw new Error();
+    const launch = Date.parse(apollo.phases[0].time);
+    for (let i = 0; i <= 100; i++) {
+      const tel = cislunarTelemetry(apollo, i / 100);
+      const phaseGet = (Date.parse(apollo.phases[tel.phaseIndex].time) - launch) / 1000;
+      assert.ok(tel.getSeconds >= phaseGet, `p=${i / 100}: GET ${tel.getFormatted} antes da fase ${apollo.phases[tel.phaseIndex].id}`);
+    }
+  });
+
   test("um só painel serve Magalhães e Apollo 11, com textos e estatísticas vindos dos dados", () => {
     useSceneStore.getState().openScene("magellan-1519");
     useSceneStore.getState().jumpToStep(6);
@@ -259,7 +269,7 @@ describe("D12c: painel genérico do player", () => {
 import { resolveEpoch } from "../src/lib/epoch/resolveEpoch";
 import { useTimelineStore } from "../src/stores/timelineStore";
 import { useGlobeStore } from "../src/stores/globeStore";
-import { selectHistoricalRoute } from "../src/stores/actions";
+import { applyTimelinePreset, selectHistoricalRoute } from "../src/stores/actions";
 import { sceneLockedInstant, sceneOpenedBy, sceneStepStarts } from "../src/lib/scenes/catalog";
 import { sceneIdFromSearch, searchWithScene } from "../src/components/scenes/SceneLinkSync";
 
@@ -314,6 +324,17 @@ describe("D12d: ativação de cenas pelos dados", () => {
     assert.deepEqual([t.selectedYear, t.startYear, t.endYear], [1990, 1974, 2024]);
     assert.equal(g.selectedIso, "BRA");
     assert.deepEqual([g.cameraLat, g.cameraLng, g.cameraAltitude], [-10, -50, 2.5]);
+  });
+
+  test("preset da rota: fechar volta ao preset anterior (período e ano)", () => {
+    useSceneStore.getState().closeScene({ restore: false });
+    applyTimelinePreset("COLD_WAR");
+    applyTimelinePreset("MAGELLAN_1519");
+    assert.equal(useSceneStore.getState().activeSceneId, "magellan-1519");
+    assert.deepEqual([useTimelineStore.getState().startYear, useTimelineStore.getState().endYear], [1519, 1522]);
+    useSceneStore.getState().closeScene();
+    const t = useTimelineStore.getState();
+    assert.deepEqual([t.startYear, t.endYear, t.selectedYear], [1947, 1991, null]);
   });
 
   test("marco que abre cena (pin/busca) guarda o estado anterior; outro marco fecha sem restaurar", () => {

@@ -133,8 +133,9 @@ export function cislunarTelemetry(traj: Cislunar, progress: number) {
     if (p >= num(ph.facts?.startProgress, i / n)) phaseIndex = i;
   });
 
-  // GET: pontos (progresso-alvo, instante) de cada fase
-  const knots = traj.phases.map((ph, i) => ({ at: num(ph.facts?.targetProgress, n > 1 ? i / (n - 1) : 0), t: Date.parse(ph.time) }));
+  // GET: o instante de cada fase é ancorado no início dela (o mesmo critério que escolhe a fase),
+  // então o relógio nunca mostra um tempo anterior ao da fase exibida.
+  const knots = traj.phases.map((ph, i) => ({ at: num(ph.facts?.startProgress, i / n), t: Date.parse(ph.time) }));
   const launch = Date.parse(traj.phases[0].time);
   let t = knots[0].t;
   if (p >= knots[knots.length - 1].at) t = knots[knots.length - 1].t;
