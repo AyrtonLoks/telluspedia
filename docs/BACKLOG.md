@@ -208,7 +208,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | DONE | claude | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | DONE | antigravity | — | G-SHELL, G-GLOBO |
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | DONE | antigravity | T29 | G-PAIS, G-PIPELINE |
-| T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | REVIEW | antigravity | — | G-SHELL, G-PAIS |
+| T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | DONE | antigravity | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | DONE | antigravity | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
 | T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | TODO | — | — | G-PAIS, G-OBS, G-SHELL |
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | TODO | — | — | G-PAIS, G-COSMOS, G-INFRA |
@@ -218,7 +218,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
-| D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | TODO | — | T30 | G-ESTUDOS, G-SHELL |
+| D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | IN_PROGRESS | antigravity | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | IN_PROGRESS | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO |
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | TODO | — | — | G-OBS, G-GLOBO |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
@@ -1168,7 +1168,7 @@ O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `G
 
 ### T33 · SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t33-seo-pwa-jsonld · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t33-seo-pwa-jsonld · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Frontend · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL, G-PAIS
 
 **Contexto / problema**
@@ -1185,6 +1185,7 @@ As páginas SSR (`/pais/[iso]`, `/dossies/[slug]`, `/compare`, `/telluslab`) já
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (6afbf61). Última P1 pendente da Fase 10; grupos G-SHELL e G-PAIS livres (D24 do claude ocupa G-CONTEUDO e G-EPOCA).
 - 2026-11-21 · antigravity · REVIEW · Implementação em `8732d8b`. **Rotas SEO e PWA:** criados `apps/web/src/app/robots.ts` (libera `/`, bloqueia `/api/`, `/dev/ui` e `/dev/`, declara `sitemap` e `host`), `apps/web/src/app/sitemap.ts` (189 URLs válidas sem `/dev/ui`: `/`, `/compare`, `/telluslab`, os 177 países de `WORLD_COUNTRIES_CATALOG` e os 9 dossiês publicados em `src/lib/dossiers-catalog.ts`, com `lastModified` determinístico de `WORLD_BANK_METADATA`), `apps/web/src/app/manifest.ts` (PWA `standalone` `pt-BR` com `theme_color`/`background_color` `#05070B`, também em `viewport.themeColor` no `layout.tsx`) e `apps/web/src/app/icon.svg`. **JSON-LD seguro (`src/lib/seo.ts`, `src/components/seo/JsonLdScript.tsx`):** Server Component (0 bytes no JS do cliente) com `serializeJsonLd` escapando `<`, `>`, `&`, U+2028 e U+2029 contra script breakout XSS; integrado em `page.tsx` (`WebApplication`), `pais/[iso]/page.tsx` (`["Country", "Place"]` com `GeoCoordinates` e propriedades reais) e `dossies/[slug]/page.tsx` (`Article` + `generateMetadata`). **Testes e validação pós-rebase em `f3ee581`:** 7 novos testes em `apps/web/test/seo-pwa.test.tsx`; `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 664/665 ok (0 falhas, 1 skip), `pnpm build` ok (`/` = 232 kB, `bundle-budget.test.ts` pós-build verde < 250 kB); smoke no build de produção (`next start` em `127.0.0.1:3003`) confirmou `200` em `/robots.txt`, `/manifest.webmanifest`, `/sitemap.xml` (189 `<loc>`, 0 `/dev/ui`), `/icon.svg` (`image/svg+xml`) e JSON-LD renderizado em `/`, `/pais/BRA` e `/dossies/astronomia-optica`.
+- 2026-11-21 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
@@ -2043,7 +2044,7 @@ O TellusPedia já possui indicadores reais do Banco Mundial para 170/177 países
 
 ### D23 · Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d23-public-studies-gallery · **Worktree:** ../telluspedia-wt/antigravity-d23
 - **Prioridade:** P1 · **Área:** Produto · **Tamanho:** G · **Depende de:** T30 · **Grupos:** G-ESTUDOS, G-SHELL
 
 **Contexto / problema**
@@ -2059,6 +2060,7 @@ Hoje só é possível criar estudos (`POST /api/studies`) e abrir por link exato
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (abaf9ba). Fase 10 concluída; D23 (Fase 11 · P1, T30 DONE) com grupos G-ESTUDOS e G-SHELL 100% livres e disjuntos da D24 do claude (G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO).
 
 ---
 
