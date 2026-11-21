@@ -138,7 +138,7 @@ export const RightDock: React.FC<{ closing?: boolean }> = ({ closing = false }) 
               ))}
             </TabsList>
             {dock.open.map((id) => (
-              <TabsContent key={id} value={id} data-dock-content={id} className="mt-0 flex min-h-0 flex-1 flex-col focus-visible:-outline-offset-2">
+              <TabsContent key={id} value={id} data-dock-content={id} className="mt-0 flex min-h-0 flex-1 flex-col focus-visible:-outline-offset-2 data-[state=inactive]:hidden">
                 {content(id)}
               </TabsContent>
             ))}

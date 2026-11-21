@@ -11,10 +11,12 @@ import {
   FileText,
   GitFork,
   Library,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { StudyExportActions } from "@/components/study/StudyExportActions";
 import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -25,6 +27,7 @@ export interface ForkStudyBannerProps {
   title: string;
   study?: StudyRecord;
   lineage?: StudyLineageInfo | null;
+  onDismiss?: () => void;
 }
 
 export interface ForkStudyBannerViewProps extends ForkStudyBannerProps {
@@ -37,6 +40,7 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
   title,
   study,
   lineage = null,
+  onDismiss,
   onNavigate,
 }) => {
   const [forking, setForking] = useState<boolean>(false);
@@ -186,6 +190,16 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
               </>
             )}
           </Button>
+
+          {onDismiss && (
+            <IconButton
+              label="Sair do estudo"
+              size="sm"
+              data-testid="study-dismiss-button"
+              icon={<X />}
+              onClick={onDismiss}
+            />
+          )}
         </div>
       </div>
 

@@ -225,6 +225,19 @@ describe("D23 · Filtros, paginação e GET /api/studies", () => {
       "hidratação síncrona durante o render deve ocorrer apenas em SSR (evita setState-in-render no React 19)"
     );
     assert.match(shellSrc, /useIsomorphicLayoutEffect/);
+    assert.match(shellSrc, /leftHistoricalStudyEra/);
+    assert.match(shellSrc, /dismissStudyBanner/);
+
+    const tabsSrc = fs.readFileSync(
+      path.resolve(__dirname, "../src/components/ui/Tabs.tsx"),
+      "utf-8"
+    );
+    const dockSrc = fs.readFileSync(
+      path.resolve(__dirname, "../src/components/layout/RightDock.tsx"),
+      "utf-8"
+    );
+    assert.match(tabsSrc, /data-\[state=inactive\]:hidden/, "TabsContent inativo não pode ocupar altura via flex");
+    assert.match(dockSrc, /data-\[state=inactive\]:hidden/, "RightDock deve ocultar abas inativas");
   });
 });
 
@@ -262,6 +275,7 @@ describe("D23 · Linhagem de forks e página SSR /studies", () => {
         title={loaded.study.title}
         study={loaded.study}
         lineage={loaded.lineage}
+        onDismiss={() => {}}
         onNavigate={() => {}}
       />
     );
@@ -271,6 +285,7 @@ describe("D23 · Linhagem de forks e página SSR /studies", () => {
     assert.match(bannerHtml, /1 fork derivado/);
     assert.match(bannerHtml, /data-testid="study-notes-toggle"/);
     assert.match(bannerHtml, /data-testid="study-open-comparator"/);
+    assert.match(bannerHtml, /data-testid="study-dismiss-button"/);
     assert.match(bannerHtml, /href="\/studies"/);
     assert.match(bannerHtml, /data-testid="study-export-actions"/);
   });

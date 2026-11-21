@@ -36,6 +36,12 @@ export const TabsTrigger = React.forwardRef<HTMLButtonElement, React.ComponentPr
 
 export const TabsContent = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<typeof RadixTabs.Content>>(
   function TabsContent({ className, ...props }, ref) {
-    return <RadixTabs.Content ref={ref} className={cn("mt-3", className)} {...props} />;
+    return (
+      <RadixTabs.Content
+        ref={ref}
+        className={cn("mt-3 data-[state=inactive]:hidden", className)}
+        {...props}
+      />
+    );
   }
 );

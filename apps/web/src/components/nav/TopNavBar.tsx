@@ -61,6 +61,14 @@ export const TopNavBar: React.FC = () => {
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const toggleCosmicMode = useCosmicStore((s) => s.toggleCosmicMode);
 
+  const handleResetGlobe = () => {
+    resetGlobeView();
+    useStudyStore.getState().resetStudy();
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/study/")) {
+      window.history.replaceState(null, "", "/");
+    }
+  };
+
   return (
     <header className="fixed left-3 top-3 z-20 max-w-[calc(100%-1.5rem)] xl:left-6 xl:top-4 xl:max-w-[calc(100%-3rem)]">
       <nav
@@ -174,7 +182,7 @@ export const TopNavBar: React.FC = () => {
           <span className="hidden xl:inline">Compartilhar</span>
         </button>
 
-        <IconButton label="Resetar visão da Terra" icon={<RotateCcw />} onClick={resetGlobeView} />
+        <IconButton label="Resetar visão da Terra" icon={<RotateCcw />} onClick={handleResetGlobe} />
       </nav>
     </header>
   );

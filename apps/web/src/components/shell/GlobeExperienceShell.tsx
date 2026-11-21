@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useLayoutEffect, useRef } from "react";
+import React, { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { TopNavBar } from "@/components/nav/TopNavBar";
@@ -158,6 +158,8 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   useShellObstruction(annotations, "--annotation-obstruction");
   const viewCamera = useRef<ViewCamera>({ offset: DEFAULT_CAMERA_OFFSET, restore: null, onChange: null }).current;
   const hydratedKeyRef = useRef<string | null>(null);
+  const observedStudyActiveRef = useRef<string | null>(null);
+  const [dismissedStudyKey, setDismissedStudyKey] = useState<string | null>(null);
 
   // SSR: hidrata stores sincronamente antes dos filhos renderizarem (sem assinantes client montados).
   // No cliente, evita mutar stores Zustand durante o render (React 19: "Cannot update a component
@@ -182,7 +184,63 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const selectedIso = useGlobeStore((s) => s.selectedIso);
   const isComparatorOpen = useComparatorStore((s) => s.isOpen);
   const isShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
+  const currentStudyId = useStudyStore((s) => s.currentStudyId);
+  const studyHistoricalEra = useStudyStore((s) => s.historicalEra);
   const isCitationModalOpen = useReaderStore((s) => s.isCitationModalOpen);
+
+  const isStudyActive = initialState.kind === "study" && dismissedStudyKey !== stateKey;
+
+  const dismissStudyBanner = useCallback(() => {
+    setDismissedStudyKey(stateKey);
+    useStudyStore.getState().resetStudy();
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/study/")) {
+      window.history.replaceState(null, "", "/");
+    }
+  }, [stateKey]);
+
+  // Ao voltar à era atual (Restaurar Cartografia Atual / Geografia Contemporânea / Resetar visão),
+  // encerra o modo de visualização do snapshot imutável e oculta o cartão do estudo imediatamente.
+  useEffect(() => {
+    if (initialState.kind !== "study") return;
+    if (dismissedStudyKey === stateKey) return;
+
+    const originalEra = initialState.study.historicalEra;
+    const expectsHistoricalEra = Boolean(originalEra && originalEra !== "CONTEMPORARY");
+    const expectsGeologicalEra = Boolean(
+      initialState.study.geologicalMa && initialState.study.geologicalMa > 0
+    );
+
+    // Só ativa a detecção de saída depois que o estado do estudo já foi refletido no render atual
+    // (evita falso disparo no primeiro ciclo antes do useLayoutEffect propagar o estado do store).
+    if (observedStudyActiveRef.current !== stateKey) {
+      const studySynced = currentStudyId === initialState.study.id;
+      const eraSynced = !expectsHistoricalEra || studyHistoricalEra !== null;
+      const geoSynced = !expectsGeologicalEra || epoch.mode === "GEOLOGICAL";
+      if (studySynced && eraSynced && geoSynced) {
+        observedStudyActiveRef.current = stateKey;
+      }
+      return;
+    }
+
+    const studyCleared = currentStudyId !== initialState.study.id;
+    const leftHistoricalStudyEra =
+      expectsHistoricalEra &&
+      (studyHistoricalEra === null || epoch.historicalEraId === "CONTEMPORARY");
+    const leftGeologicalStudyEra = expectsGeologicalEra && epoch.mode !== "GEOLOGICAL";
+
+    if (studyCleared || leftHistoricalStudyEra || leftGeologicalStudyEra) {
+      dismissStudyBanner();
+    }
+  }, [
+    initialState,
+    stateKey,
+    dismissedStudyKey,
+    currentStudyId,
+    studyHistoricalEra,
+    epoch.historicalEraId,
+    epoch.mode,
+    dismissStudyBanner,
+  ]);
 
   const showHistoricalBadge =
     epoch.mode !== "GEOLOGICAL" && epoch.historicalEraId !== "CONTEMPORARY";
@@ -215,16 +273,17 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         </WebGLErrorBoundary>
         {/* Link de cena (?cena=<id>) e endereço em sincronia com a cena aberta (D12d) */}
         <SceneLinkSync />
-        <ExplorerUrlSync view={viewCamera} immutable={initialState.kind === "study"} />
+        <ExplorerUrlSync view={viewCamera} immutable={isStudyActive} />
 
         <div ref={annotations} className="map-annotations pointer-events-none fixed z-20 flex w-max -translate-x-1/2 flex-col items-center gap-2">
-          {initialState.kind === "study" && (
+          {isStudyActive && initialState.kind === "study" && (
             <ForkStudyBanner
               studyId={initialState.study.id}
               parentId={initialState.study.parentId}
               title={initialState.study.title}
               study={initialState.study}
               lineage={initialState.lineage}
+              onDismiss={dismissStudyBanner}
             />
           )}
           {showHistoricalBadge && <HistoricalEraBadge />}
