@@ -177,7 +177,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
 | T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
-| T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
+| T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | IN_PROGRESS | antigravity | — | G-SHELL, G-INFRA |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | DONE | antigravity | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | DONE | antigravity | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | DONE | claude | D01 | G-GLOBO, G-EPOCA |
@@ -198,7 +198,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
-| D20 | Migrar demais componentes para o design system | Design | P1 | G | REVIEW | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
+| D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 
 ---
 
@@ -919,7 +919,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### T25 · Reduzir bundle inicial (408 kB)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t25-reduce-initial-bundle · **Worktree:** ../telluspedia-wt/antigravity-t25
 - **Prioridade:** P2 · **Área:** Performance · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA
 
 **Contexto / problema**
@@ -938,6 +938,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (55e0e68). Grupos G-SHELL e G-INFRA livres.
 
 ---
 
@@ -1589,7 +1590,7 @@ Layout quebra em larguras comuns (ver T02); textos ciano/cinza pequenos sobre az
 
 ### D20 · Migrar demais componentes para o design system
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d20-design-system-migration · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/d20-design-system-migration · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Design · **Tamanho:** G · **Depende de:** D14 · **Grupos:** G-SHELL, G-PAIS, G-COSMOS
 
 **Contexto / problema**
@@ -1610,6 +1611,7 @@ A D14 criou tokens e primitivos e migrou navbar, Observatório, Inspector do pa�
 - 2026-11-20 · claude · TODO · Tarefa criada como follow-up da D14.
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (1fc3fe4). Grupos G-SHELL, G-PAIS e G-COSMOS livres.
 - 2026-11-20 · antigravity · REVIEW · Migrados todos os componentes e páginas restantes para os primitivos (`@/components/ui/*` por arquivo) e tokens semânticos D14: `hud/CosmicInspectorHUD`, `reader/*` (`CitationModal` → `Dialog`, `ReaderMode` → `Dialog`, `ReaderContent`, `ReaderTableOfContents`, `HoverCardPreview`, `HoverCitationCard` preservando invariante HTML5 sem `<div>`), `comparator/*` (`CountryComparator` → `Dialog`, `ComparisonGrid`, `ComparisonCharts` usando CSS vars em vez de hex no Recharts), `study/*` (`StudyShareModal` → `Dialog`, `ForkStudyBanner`), `tellus-bridge/*` (`EntityLaunch`, `StudyHub`), overlays DOM do globo (`HistoricalEraBadge`, `PaleoEraBadge`, `Apollo11TelemetryOverlay`, `HistoricalRouteOverlay`), `GlobeCanvas` (`bg-[#030712]` → `bg-bg`) e `app/dossies/[slug]/page.tsx`. Ajustado `ui/Dialog.tsx` para suportar SSR/`renderToStaticMarkup` mantendo `RadixDialog.Portal` no cliente (foco preso, Esc, título/descrição acessíveis) e adicionado `as="article"` em `ui/Panel.tsx`. Removidos `cosmic.*` de `tailwind.config.ts` e `.glass-panel`/`.glass-panel-subtle`/`.glass-button` de `globals.css`. Acrescentados 26 arquivos à lista `MIGRATED` em `test/design-system.test.tsx` + 2 novos testes de regressão (`Dialog` nos 4 modais e remoção dos legados `cosmic.*`/`.glass-*`). Validação pós-rebase em `origin/master`: `grep -rnE "text-\[[0-9]|(text|bg|border)-(slate|cyan|sky|amber|emerald|rose|purple|indigo)-" apps/web/src` → **0 ocorrências**, `pnpm typecheck`, `pnpm lint`, `pnpm test` (518/518) e `pnpm build` verdes. Verificação visual no navegador pendente do Ayrton (Chromium headless indisponível neste container). Commit: b79ee3f.
+- 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
