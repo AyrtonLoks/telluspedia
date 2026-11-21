@@ -102,7 +102,7 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
       data-state={closing ? "closed" : "open"}
       className={cn(
         closing ? "animate-rise-out" : "animate-rise-in",
-        "fixed left-3 top-[7.5rem] z-20 max-h-[calc(100vh-18.5rem)] max-w-[calc(100vw-1.5rem)] select-none overflow-y-auto p-4 text-fg",
+        "fixed left-3 top-[var(--map-overlay-top)] z-20 max-h-[var(--map-overlay-height)] max-w-[calc(100vw-1.5rem)] select-none overflow-y-auto p-4 text-fg",
         pb.minimized ? "w-80" : "w-96"
       )}
     >

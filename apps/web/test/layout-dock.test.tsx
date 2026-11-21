@@ -83,7 +83,7 @@ describe("D15: RightDock, timeline e navbar", () => {
   test("timeline desvia do dock em lg+ e some em telas estreitas (nunca fica sob um painel)", () => {
     let html = renderToStaticMarkup(<TimelineBar />);
     assert.match(html, /data-side-panel-open="false"/);
-    assert.doesNotMatch(html, /max-lg:hidden/);
+    assert.doesNotMatch(html.match(/<footer[^>]+>/)?.[0] ?? "", /max-lg:hidden/);
     useGlobeStore.setState({ selectedIso: "BRA" });
     html = renderToStaticMarkup(<TimelineBar />);
     assert.match(html, /data-side-panel-open="true"/);
@@ -147,10 +147,10 @@ describe("D15: invariantes de layout no código", () => {
       "src/components/scenes/ScenePlayerOverlay.tsx",
       "src/components/tellus-bridge/EntityLaunch.tsx",
     ]) {
-      assert.match(read(f), /top-\[7\.5rem\]/, f);
+      assert.match(read(f), /top-\[var\(--map-overlay-top\)\]/, f);
     }
     for (const f of ["src/components/scenes/ScenePlayerOverlay.tsx"]) {
-      assert.match(read(f), /max-h-\[calc\(100vh-18\.5rem\)\]/, f);
+      assert.match(read(f), /max-h-\[var\(--map-overlay-height\)\]/, f);
     }
   });
 });

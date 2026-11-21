@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { ChevronUp, ChevronDown, Clock, Play, Pause, FastForward } from "lucide-react";
 
 const StudyContext = dynamic(
@@ -18,29 +18,33 @@ import { useEpochState } from "@/lib/epoch/useEpochState";
 import { resolveEraStudyEntityId } from "@/lib/timeline/era-study";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
+import { useTimelineExpanded } from "./useTimelineExpanded";
+import { useShellObstruction } from "@/components/layout/useShellObstruction";
 import { useRightDock } from "@/components/layout/useRightDock";
 
 const YEAR_INPUT = "w-16 rounded-control border border-line bg-surface-sunken px-1.5 py-1 text-center font-mono text-label tabular-nums text-fg";
 
 export const TimelineBar: React.FC = () => {
-  const storeIsExpanded = useTimelineStore((s) => s.isExpanded);
-  const toggleExpanded = useTimelineStore((s) => s.toggleExpanded);
+  const { expanded: isExpanded, automatic } = useTimelineExpanded();
+  const setExpanded = useTimelineStore((s) => s.setExpanded);
+  const footer = useRef<HTMLElement>(null);
+  const compactToggle = useRef<HTMLButtonElement>(null);
+  const fullToggle = useRef<HTMLButtonElement>(null);
+  const readerOpen = useGlobeStore((s) => s.isReaderOpen);
   const storeStartYear = useTimelineStore((s) => s.startYear);
   const storeEndYear = useTimelineStore((s) => s.endYear);
   const selectYear = useTimelineStore((s) => s.selectYear);
   const setYearRange = useTimelineStore((s) => s.setYearRange);
 
-  const storeIsReaderOpen = useGlobeStore((s) => s.isReaderOpen);
   const storeIsPlaying = useCosmicStore((s) => s.isPlaying);
   const storePlaybackSpeed = useCosmicStore((s) => s.playbackSpeed);
   const setPlayback = useCosmicStore((s) => s.setPlayback);
   const setPlaybackSpeed = useCosmicStore((s) => s.setPlaybackSpeed);
 
   const isServer = typeof window === "undefined";
-  const isExpanded = isServer ? useTimelineStore.getState().isExpanded : storeIsExpanded;
   const startYear = isServer ? useTimelineStore.getState().startYear : storeStartYear;
   const endYear = isServer ? useTimelineStore.getState().endYear : storeEndYear;
-  const isReaderOpen = isServer ? useGlobeStore.getState().isReaderOpen : storeIsReaderOpen;
+  const isReaderOpen = isServer ? useGlobeStore.getState().isReaderOpen : readerOpen;
   const isPlaying = isServer ? useCosmicStore.getState().isPlaying : storeIsPlaying;
   const playbackSpeed = isServer ? useCosmicStore.getState().playbackSpeed : storePlaybackSpeed;
 
@@ -82,8 +86,18 @@ export const TimelineBar: React.FC = () => {
     return () => clearInterval(timer);
   }, [isPlaying, playbackSpeed, selectYear]);
 
-  // If reader is open, hide timeline to maximize reading immersion
+  useShellObstruction(footer, "--timeline-obstruction", !isReaderOpen);
   if (isReaderOpen) return null;
+
+  const changeExpansion = (event: React.MouseEvent<HTMLButtonElement>, expanded: boolean) => {
+    setExpanded(expanded);
+    if (event.detail === 0) {
+      requestAnimationFrame(() => {
+        const compact = compactToggle.current;
+        (compact?.offsetParent ? compact : fullToggle.current)?.focus({ preventScroll: true });
+      });
+    }
+  };
 
   const handleStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value);
@@ -101,9 +115,11 @@ export const TimelineBar: React.FC = () => {
 
   return (
     <footer
+      ref={footer}
+      data-expanded={isExpanded}
       data-timeline-bar="true"
       data-side-panel-open={hasRightSidePanel ? "true" : "false"}
-      className={`fixed bottom-4 z-20 rounded-panel border border-line bg-surface/86 px-4 py-3 shadow-e2 backdrop-blur-md transition-[left,right,max-width] duration-slow ease-out md:px-5 ${
+      className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-20 lg:bottom-4 rounded-panel border border-line bg-surface/86 px-3 py-2 shadow-e2 lg:px-4 lg:py-3 backdrop-blur-md transition-[left,right,max-width] duration-slow ease-out md:px-5 ${
         hasRightSidePanel
           ? "max-lg:hidden left-4 right-4 lg:left-6 lg:right-[26.5rem] max-w-[calc(100vw-2rem)] lg:max-w-[calc(100vw-28rem)] translate-x-0"
           : "left-1/2 -translate-x-1/2 right-auto w-[calc(100vw-2rem)] max-w-6xl"
@@ -112,7 +128,7 @@ export const TimelineBar: React.FC = () => {
       {/* Header bar: Zone A (Title + Scrollable Presets) & Zone B (Fixed Controls always accessible) */}
       <div
         data-testid="timeline-header"
-        className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2"
+        className={cn("flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2", (automatic || !isExpanded) && "max-lg:hidden")}
       >
         {/* Zone A: Title & Horizontally Scrollable Presets */}
         <div
@@ -204,18 +220,40 @@ export const TimelineBar: React.FC = () => {
           {!isGeological && <CategoryFilterPills />}
 
           <IconButton
-            label={isExpanded ? "Recolher timeline" : "Expandir timeline"}
+            label={isExpanded ? "Recolher linha do tempo" : "Expandir linha do tempo"}
             icon={isExpanded ? <ChevronDown /> : <ChevronUp />}
             size="sm"
-            onClick={toggleExpanded}
+            ref={fullToggle}
+            aria-expanded={isExpanded}
+            onClick={(event) => changeExpansion(event, !isExpanded)}
           />
         </div>
       </div>
 
+      {(automatic || !isExpanded) && (
+        <button
+          ref={compactToggle}
+          type="button"
+          aria-expanded={false}
+          onClick={(event) => changeExpansion(event, true)}
+          className="flex min-h-9 w-full items-center gap-2 rounded-control px-1.5 text-label text-fg lg:hidden"
+        >
+          <Clock aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-secondary" />
+          <span className="sr-only">Expandir</span>
+          <span className="font-semibold">Linha do Tempo</span>
+          <span className="ml-auto font-mono text-caption tabular-nums text-fg-secondary">
+            {isGeological ? "300–0 Ma" : `${startYear}–${endYear}`}
+          </span>
+          <ChevronUp aria-hidden="true" className="h-4 w-4 shrink-0" />
+        </button>
+      )}
+
       {/* Axis and Milestone Markers (collapsible) */}
-      {isExpanded && <TimelineAxis />}
-      {isExpanded && eraStudyEntityId && (
-        <div className="max-w-xs"><StudyContext entityId={eraStudyEntityId} /></div>
+      {isExpanded && (
+        <div className={cn("contents", automatic && "max-lg:hidden")}>
+          <TimelineAxis />
+          {eraStudyEntityId && <div className="max-w-xs"><StudyContext entityId={eraStudyEntityId} /></div>}
+        </div>
       )}
     </footer>
   );

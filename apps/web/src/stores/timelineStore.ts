@@ -31,7 +31,7 @@ interface TimelineState {
   selectedYear: number | null;
   selectedMilestoneId: string | null;
   activeCategories: MilestoneCategoryType[];
-  isExpanded: boolean;
+  isExpanded: boolean | null;
 
   geologicalMa: number | null;
 
@@ -40,7 +40,7 @@ interface TimelineState {
   selectMilestone: (id: string | null) => void;
   toggleCategory: (category: MilestoneCategoryType) => void;
   setAllCategories: (categories: MilestoneCategoryType[]) => void;
-  toggleExpanded: () => void;
+  setExpanded: (expanded: boolean) => void;
   setGeologicalMa: (ma: number | null) => void;
 }
 
@@ -50,7 +50,7 @@ export const useTimelineStore = create<TimelineState>((set) => ({
   selectedYear: null,
   selectedMilestoneId: null,
   activeCategories: [...ALL_CATEGORIES],
-  isExpanded: true,
+  isExpanded: null,
 
   geologicalMa: null,
 
@@ -69,7 +69,7 @@ export const useTimelineStore = create<TimelineState>((set) => ({
     }),
 
   setAllCategories: (cats) => set({ activeCategories: cats }),
-  toggleExpanded: () => set((state) => ({ isExpanded: !state.isExpanded })),
+  setExpanded: (expanded) => set({ isExpanded: expanded }),
 
   setGeologicalMa: (geologicalMa) => set({ geologicalMa }),
 }));

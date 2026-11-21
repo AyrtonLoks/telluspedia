@@ -12,6 +12,7 @@ import { CosmicInspectorHUD } from "@/components/hud/CosmicInspectorHUD";
 import { ObservatoryPanel } from "@/components/observatory/ObservatoryPanel";
 import { cn } from "@/components/ui/cn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { useShellObstruction } from "./useShellObstruction";
 import { useRightDock } from "./useRightDock";
 import { DOCK_FRAME_CLASSES, dockMotionClasses } from "./dockFrame";
 import { useLastDefined } from "@/components/ui/motion";
@@ -38,6 +39,7 @@ export const RightDock: React.FC<{ closing?: boolean }> = ({ closing = false }) 
   const storeIso = useGlobeStore((s) => s.selectedIso);
   const selectedIso = typeof window === "undefined" ? useGlobeStore.getState().selectedIso : storeIso;
   const container = useRef<HTMLElement>(null);
+  useShellObstruction(container, "--dock-obstruction", Boolean(active));
   const previousFocus = useRef<{ panel: RightPanelId; element: HTMLElement } | null>(null);
 
   const prevOpen = useRef<RightPanelId[]>(dock.open);

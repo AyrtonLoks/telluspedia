@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
-import { useTimelineStore } from "@/stores/timelineStore";
 import { EONET_CATEGORIES, formatEonetDate, observationLocation, type ObservatoryEntity } from "@/lib/observatory-data";
 import { firmsMapUrl, formatAcqTime, FIRMS_CONFIDENCE_LABEL } from "@/lib/firms-display";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -48,9 +47,6 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
       ? useObservatoryStore.getState().selectedEntity
       : storeSelectedEntity;
   const setSelectedEntity = useObservatoryStore((s) => s.setSelectedEntity);
-  const storeTimelineExpanded = useTimelineStore((s) => s.isExpanded);
-  const isTimelineExpanded =
-    typeof window === "undefined" ? useTimelineStore.getState().isExpanded : storeTimelineExpanded;
   const flyTo = useGlobeStore((s) => s.flyTo);
 
   // Época ativa: fonte única (T12)
@@ -91,11 +87,7 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
   return (
     <Panel
       data-testid="observatory-telemetry-hud"
-      // Acima da timeline (expandida ≈ 9 rem; recolhida ≈ 4 rem), sem cobri-la.
-      className={cn(
-        "fixed left-6 z-30 w-80 max-w-[calc(100vw-3rem)]",
-        isTimelineExpanded ? "bottom-[10.5rem]" : "bottom-[5.5rem]"
-      )}
+      className="fixed bottom-[var(--map-overlay-bottom)] left-3 z-30 max-h-[var(--map-overlay-height)] w-80 max-w-[calc(100%-1.5rem)] overflow-y-auto xl:left-6"
     >
       <PanelHeader
         headingLevel={3}

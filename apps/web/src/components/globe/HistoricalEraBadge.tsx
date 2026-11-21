@@ -10,16 +10,8 @@ import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "@/lib/historical-entities"
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/components/ui/cn";
 
 export const HistoricalEraBadge: React.FC = () => {
-  const storeCurrentStudyId = useStudyStore((s) => s.currentStudyId);
-
-  const currentStudyId =
-    typeof window === "undefined"
-      ? useStudyStore.getState().currentStudyId
-      : storeCurrentStudyId;
-
   // Época ativa: fonte única (T12)
   const epoch = useEpochState();
 
@@ -49,16 +41,11 @@ export const HistoricalEraBadge: React.FC = () => {
   // Clean title without trailing year parenthesis (e.g. "Unificação Alemã & Reino da Prússia")
   const cleanTitle = era.label.replace(/\s*\(\d{4}\)/, "");
 
-  // If a study banner is mounted at top-4, position badge lower to avoid visual overlap
-  const positionClass = currentStudyId ? "top-24 sm:top-20" : "top-16 sm:top-5";
 
   return (
     <Panel
       data-testid="historical-era-badge"
-      className={cn(
-        "pointer-events-auto fixed left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border-warning/40 px-4 py-2 animate-rise-in",
-        positionClass
-      )}
+      className="map-epoch-badge pointer-events-auto fixed z-20 max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center gap-2 border-warning/40 px-2 py-1.5 animate-rise-in sm:gap-3 sm:px-4 sm:py-2"
     >
       <div className="flex items-center gap-2">
         <span className="select-none text-body" aria-hidden="true">

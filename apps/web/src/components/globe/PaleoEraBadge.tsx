@@ -4,25 +4,16 @@ import { restoreContemporaryTimeline } from "@/stores/actions";
 
 import React from "react";
 import { RotateCcw } from "lucide-react";
-import { useStudyStore } from "@/stores/studyStore";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/components/ui/cn";
 
 export interface PaleoEraBadgeProps {
   geologicalMa?: number | null;
 }
 
 export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
-  const storeCurrentStudyId = useStudyStore((s) => s.currentStudyId);
-
-  const currentStudyId =
-    typeof window === "undefined"
-      ? useStudyStore.getState().currentStudyId
-      : storeCurrentStudyId;
-
   // Época ativa: fonte única (T12); o prop permite renderizar uma idade específica.
   const epochMa = useEpochState().geologicalMa;
   const geologicalMa = props.geologicalMa !== undefined ? props.geologicalMa : epochMa;
@@ -41,15 +32,11 @@ export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
       : "🌋";
 
   // Reposicionamento dinâmico contra o ForkStudyBanner para evitar sobreposição na barra superior
-  const positionClass = currentStudyId ? "top-24 sm:top-20" : "top-16 sm:top-5";
 
   return (
     <Panel
       data-testid="paleo-era-badge"
-      className={cn(
-        "pointer-events-auto fixed left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border-warning/40 px-4 py-2 animate-rise-in",
-        positionClass
-      )}
+      className="map-epoch-badge pointer-events-auto fixed z-20 max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center gap-2 border-warning/40 px-2 py-1.5 animate-rise-in sm:gap-3 sm:px-4 sm:py-2"
     >
       <div className="flex items-center gap-2">
         <div className="flex h-6 w-6 select-none items-center justify-center rounded-control border border-warning/40 bg-warning/15 text-label">

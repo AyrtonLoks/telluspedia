@@ -237,7 +237,7 @@ export function runSearchResult(result: SearchResult) {
       showYear(event.year, event.id);
       const timeline = useTimelineStore.getState();
       if (!timeline.activeCategories.includes(event.category)) timeline.toggleCategory(event.category);
-      if (!timeline.isExpanded) timeline.toggleExpanded();
+      timeline.setExpanded(true);
       if (event.countryIso) selectCountry(event.countryIso);
       if (event.latitude != null && event.longitude != null) {
         globe.flyTo(event.latitude, event.longitude, event.preferredAltitude ?? 1.8);

@@ -60,7 +60,7 @@ export function EntityLaunch() {
       globe.setSelectedIso(null);
       timeline.setGeologicalMa(null);
       timeline.setAllCategories([...ALL_CATEGORIES]);
-      if (!timeline.isExpanded) timeline.toggleExpanded();
+      timeline.setExpanded(true);
       timeline.setYearRange(event.year - 15, event.year + 15);
       const scene = sceneOpenedBy(key);
       selectHistoricalRoute(scene && sceneHasTrajectoryKind(scene.id, "surface") ? scene.id : null);
@@ -72,7 +72,7 @@ export function EntityLaunch() {
     } else if (entity.kind === "era") {
       globe.setSelectedIso(null);
       applyTimelinePreset(key);
-      if (!timeline.isExpanded) timeline.toggleExpanded();
+      timeline.setExpanded(true);
     } else if (entity.kind === "observatory") {
       globe.setSelectedIso(null);
       selectHistoricalRoute(null);
@@ -92,7 +92,7 @@ export function EntityLaunch() {
   return (
     <nav
       aria-label="Origem do estudo"
-      className="fixed left-6 top-[7.5rem] z-30 rounded-card border border-line bg-surface/86 px-3 py-2 text-label text-accent shadow-e1 backdrop-blur-md"
+      className="fixed left-3 top-[var(--map-overlay-top)] z-30 max-w-[calc(100%-1.5rem)] xl:left-6 rounded-card border border-line bg-surface/86 px-3 py-2 text-label text-accent shadow-e1 backdrop-blur-md"
     >
       <a href={studyUrl(launch.origin.slug, launch.origin.nodeId, entity.entityId)} className="hover:text-accent-hover hover:underline">
         ← Retornar ao nó {launch.origin.nodeId}

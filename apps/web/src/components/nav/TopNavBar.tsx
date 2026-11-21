@@ -25,7 +25,7 @@ import { cn } from "@/components/ui/cn";
 /** Botão de navegação da barra: neutro; selecionado = tinta do acento. */
 function navItemClasses(isActive: boolean) {
   return cn(
-    buttonClasses("ghost", "md", "relative gap-1.5 px-3"),
+    buttonClasses("ghost", "md", "relative w-8 gap-1.5 px-0 min-[360px]:w-9 xl:w-auto xl:px-3"),
     isActive && "bg-accent/15 text-fg hover:bg-accent/20"
   );
 }
@@ -62,25 +62,26 @@ export const TopNavBar: React.FC = () => {
   const toggleCosmicMode = useCosmicStore((s) => s.toggleCosmicMode);
 
   return (
-    <header className="fixed left-6 top-4 z-20 max-w-[calc(100vw-3rem)]">
+    <header className="fixed left-3 top-3 z-20 max-w-[calc(100%-1.5rem)] xl:left-6 xl:top-4 xl:max-w-[calc(100%-3rem)]">
       <nav
         aria-label="Principal"
-        className="flex flex-wrap items-center gap-1 rounded-panel border border-line bg-surface/86 p-1.5 shadow-e2 backdrop-blur-md"
+        className="flex items-center gap-0.5 rounded-panel xl:gap-1 border border-line bg-surface/86 p-1.5 shadow-e2 backdrop-blur-md"
       >
         {/* Marca */}
         <Link
           href="/"
-          className="flex h-9 items-center gap-2 rounded-control px-2 text-fg transition-colors duration-base ease-out hover:bg-surface-hover"
+          aria-label="TellusPedia"
+          className="flex h-9 w-8 items-center justify-center gap-2 min-[360px]:w-9 rounded-control xl:w-auto xl:px-2 text-fg transition-colors duration-base ease-out hover:bg-surface-hover"
         >
           <Globe aria-hidden="true" className="h-5 w-5 text-accent" />
-          <h1 className="text-body font-semibold leading-none">TellusPedia</h1>
+          <h1 className="sr-only text-body font-semibold leading-none xl:not-sr-only">TellusPedia</h1>
         </Link>
 
-        <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
+        <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-line xl:block" />
 
         <Link href="/telluslab" aria-label="Estudo" className={navItemClasses(false)}>
           <BookOpen aria-hidden="true" className="h-4 w-4" />
-          <span className="hidden sm:inline">Estudo</span>
+          <span className="hidden xl:inline">Estudo</span>
         </Link>
 
         <button
@@ -95,7 +96,7 @@ export const TopNavBar: React.FC = () => {
           title="Alternar entre Terra e Sistema Solar / Cosmos"
         >
           <Orbit aria-hidden="true" className="h-4 w-4" />
-          <span className="hidden sm:inline">{isCosmicMode ? "Sistema Solar" : "Cosmos"}</span>
+          <span className="hidden xl:inline">{isCosmicMode ? "Sistema Solar" : "Cosmos"}</span>
         </button>
 
         <button
@@ -111,7 +112,7 @@ export const TopNavBar: React.FC = () => {
           title="Abrir Observatório Planetário (NASA / Tráfego Global)"
         >
           <Radio aria-hidden="true" className="h-4 w-4" />
-          <span className="hidden sm:inline">Observatório</span>
+          <span className="hidden xl:inline">Observatório</span>
           {hasActiveLayers && (
             <span className="absolute right-1 top-1 flex h-2 w-2" aria-hidden="true">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
@@ -129,10 +130,10 @@ export const TopNavBar: React.FC = () => {
           className={navItemClasses(false)}
         >
           <BarChart2 aria-hidden="true" className="h-4 w-4" />
-          <span className="hidden sm:inline">Comparador</span>
+          <span className="hidden xl:inline">Comparador</span>
         </button>
 
-        <div className="relative ml-1">
+        <div className="relative xl:ml-1">
           <button
             type="button"
             id="explore-search-trigger"
@@ -140,15 +141,15 @@ export const TopNavBar: React.FC = () => {
             aria-keyshortcuts="/ Control+k Meta+k"
             aria-haspopup="dialog"
             onClick={openSearch}
-            className={buttonClasses("secondary", "md", "gap-2 sm:w-56 sm:justify-start sm:bg-surface-sunken")}
+            className={buttonClasses("secondary", "md", "gap-2 w-8 justify-center min-[360px]:w-9 px-0 xl:w-56 xl:justify-start xl:bg-surface-sunken xl:px-4")}
           >
             <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-            <span className="hidden text-fg-secondary sm:inline">Buscar</span>
+            <span className="hidden text-fg-secondary xl:inline">Buscar</span>
           </button>
-          <kbd aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded border border-line px-1 font-mono text-caption text-fg-muted sm:block">⌘/Ctrl K</kbd>
+          <kbd aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded border border-line px-1 font-mono text-caption text-fg-muted xl:block">⌘/Ctrl K</kbd>
         </div>
 
-        <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
+        <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-line xl:block" />
 
         <button
           type="button"
@@ -156,10 +157,10 @@ export const TopNavBar: React.FC = () => {
           onClick={() => setShareModalOpen(true)}
           onMouseEnter={preloadStudyShareModal}
           onFocus={preloadStudyShareModal}
-          className={buttonClasses("secondary", "md", "gap-1.5 px-3")}
+          className={buttonClasses("secondary", "md", "w-8 gap-1.5 px-0 min-[360px]:w-9 xl:w-auto xl:px-3")}
         >
           <Share2 aria-hidden="true" className="h-4 w-4" />
-          <span className="hidden sm:inline">Compartilhar</span>
+          <span className="hidden xl:inline">Compartilhar</span>
         </button>
 
         <IconButton label="Resetar visão da Terra" icon={<RotateCcw />} onClick={resetGlobeView} />

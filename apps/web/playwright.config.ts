@@ -25,6 +25,16 @@ export default defineConfig({
   projects: [
     { name: "desktop-1366", use: { viewport: { width: 1366, height: 850 } } },
     { name: "desktop-1920", use: { viewport: { width: 1920, height: 1080 } } },
+    ...[
+      { name: "mobile-375", width: 375, height: 812 },
+      { name: "tablet-768", width: 768, height: 1024 },
+      { name: "desktop-1680", width: 1680, height: 1050 },
+      { name: "desktop-2560", width: 2560, height: 1440 },
+    ].map(({ name, width, height }) => ({
+      name,
+      testMatch: "**/responsive.spec.ts",
+      use: { viewport: { width, height } },
+    })),
   ],
   webServer: {
     command: `pnpm exec next start -H 127.0.0.1 -p ${port}`,

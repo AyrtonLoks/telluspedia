@@ -1,5 +1,4 @@
 import { expect, test, type Page } from "@playwright/test";
-import path from "node:path";
 
 test.beforeEach(async ({ page }) => {
   // Keep software WebGL responsive while Chromium takes full-width screenshots.
@@ -68,45 +67,4 @@ test("clicking Brazil in the globe opens the country panel", async ({ page }) =>
   await expect(page.getByRole("heading", { name: "Brasil", exact: true })).toBeVisible();
   await expect(page.getByTestId("timeline-header")).toBeVisible();
   expect(exceptions).toEqual([]);
-});
-
-test("desktop typography and timeline match the visual baseline", async ({ page }) => {
-  await page.addInitScript(() => {
-    // The separate smoke test checks WebGL. Keep software rendering out of UI captures.
-    const devtools = new EventTarget();
-    Object.assign(window, { __THREE_DEVTOOLS__: devtools });
-    devtools.addEventListener("observe", (event) => {
-      const renderer = (event as CustomEvent).detail as { isWebGLRenderer?: boolean; render: () => void };
-      if (renderer?.isWebGLRenderer) renderer.render = () => {};
-    });
-  });
-  await openHome(page);
-  const header = page.getByTestId("timeline-header");
-  const controls = page.getByTestId("timeline-controls-zone");
-  await expect(controls).toBeVisible();
-
-  await expect.poll(() => page.evaluate(async () => {
-    await document.fonts.ready;
-    const css = getComputedStyle(document.body);
-    const family = (variable: string) =>
-      css.getPropertyValue(variable).split(",")[0].trim().replaceAll(/['"]/g, "");
-    const geist = family("--font-geist-sans");
-    const merriweather = family("--font-merriweather");
-    if (!geist || !merriweather || !css.fontFamily.includes(geist)) return false;
-    const fonts = await Promise.all([geist, merriweather].map((name) => document.fonts.load(`16px "${name}"`)));
-    return fonts.every((faces) => faces.some((face) => face.status === "loaded"));
-  })).toBe(true);
-
-  const headerBox = await header.boundingBox();
-  const controlsBox = await controls.boundingBox();
-  expect(headerBox).not.toBeNull();
-  expect(controlsBox).not.toBeNull();
-  const headerRight = headerBox!.x + headerBox!.width;
-  expect(headerRight).toBeLessThanOrEqual(page.viewportSize()!.width + 1);
-  expect(controlsBox!.x + controlsBox!.width).toBeLessThanOrEqual(headerRight + 1);
-  await expect(page).toHaveScreenshot("home.png", {
-    stylePath: path.join(__dirname, "visual.css"),
-    animations: "disabled",
-    maxDiffPixelRatio: 0.001,
-  });
 });

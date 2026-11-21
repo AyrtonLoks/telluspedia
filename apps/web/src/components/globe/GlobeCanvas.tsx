@@ -203,7 +203,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
         </group>
       </Canvas>
 
-      <div className="absolute left-3 top-[4.75rem] z-10 flex items-center gap-2 sm:left-6">
+      <div data-testid="map-tools" className="absolute left-3 top-[var(--map-tools-top)] z-10 flex items-center gap-1.5 sm:gap-2 xl:left-6">
         <button
           type="button"
           aria-pressed={studyLighting}
@@ -211,7 +211,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
           className={GLOBE_TOGGLE}
         >
           <Sun aria-hidden="true" className="size-4" />
-          Iluminação de estudo
+          <span className="sr-only sm:not-sr-only">Iluminação de estudo</span>
         </button>
         <button
           type="button"
@@ -221,7 +221,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
           title="Atmosfera com espalhamento (azul no limbo diurno, laranja no terminador)"
         >
           <CloudSun aria-hidden="true" className="size-4" />
-          Atmosfera
+          <span className="sr-only sm:not-sr-only">Atmosfera</span>
         </button>
         <button
           type="button"
@@ -232,7 +232,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
           title={isGeological ? "Nuvens indisponíveis no modo geológico" : "Nuvens reais (composição MODIS/Terra da NASA; imagem estática, não a previsão do tempo)"}
         >
           <Cloud aria-hidden="true" className="size-4" />
-          Nuvens
+          <span className="sr-only sm:not-sr-only">Nuvens</span>
         </button>
       </div>
 

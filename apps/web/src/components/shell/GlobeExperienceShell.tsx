@@ -18,6 +18,7 @@ import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "@/lib/explore/view-camer
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
+import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { useStudyStore } from "@/stores/studyStore";
 
@@ -166,6 +167,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
 
   const dock = useRightDock();
   const epoch = useEpochState();
+  const hasTelemetry = useObservatoryStore((s) => s.selectedEntity !== null);
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const isReaderOpen = useGlobeStore((s) => s.isReaderOpen);
   const selectedIso = useGlobeStore((s) => s.selectedIso);
@@ -195,7 +197,13 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
           title={initialState.study.title}
         />
       )}
-      <main className="relative h-screen w-screen overflow-hidden bg-bg select-none">
+      <main
+        data-map-shell=""
+        data-map-dock={dockPresence.mounted}
+        data-map-epoch={showHistoricalBadge || showPaleoBadge}
+        data-map-stacked={scenePresence.mounted && epoch.isContemporary && hasTelemetry}
+        className="relative h-dvh w-full overflow-hidden bg-bg select-none"
+      >
         {/* Top Floating Navigation Bar */}
         <Suspense fallback={null}>
           <TopNavBar />
