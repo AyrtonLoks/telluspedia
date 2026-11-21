@@ -92,15 +92,15 @@ describe("D17: transição orbital Terra ↔ Cosmos", () => {
     const from = reanchorOrbit(homeView, earthHome, earthOrbit);
     let last = -Infinity;
     for (let i = 0; i <= 200; i++) {
-      const s = interpolateOrbit(from, overview, easeInOutCubic(i / 200), earthOrbit.center);
+      const s = interpolateOrbit(from, overview, easeInOutCubic(i / 200));
       for (const c of [...s.camera.toArray(), ...s.target.toArray()]) assert.ok(Number.isFinite(c), `NaN em ${i}`);
-      const dist = s.camera.distanceTo(earthOrbit.center);
-      assert.ok(dist >= last - 1e-9, `afastamento monótono da Terra (${i})`);
+      const dist = s.camera.distanceTo(s.target);
+      assert.ok(dist >= last - 1e-9, `afastamento monótono do alvo (${i})`);
       last = dist;
       assert.ok(s.camera.distanceTo(earthOrbit.center) > earthOrbit.scale * 0.999, "fora da Terra");
       assert.ok(s.camera.length() > 5, "longe do Sol");
     }
-    assert.ok(interpolateOrbit(from, overview, 1, earthOrbit.center).camera.distanceTo(overview.camera) < 1e-9);
+    assert.ok(interpolateOrbit(from, overview, 1).camera.distanceTo(overview.camera) < 1e-9);
   });
 
   test("voltar à Terra a partir da vista geral: distância ≥ 1,5 até o fim e chegada exata", () => {
@@ -110,10 +110,42 @@ describe("D17: transição orbital Terra ↔ Cosmos", () => {
     for (let i = 0; i <= 200; i++) {
       const s = interpolateOrbit(from, home, easeInOutCubic(i / 200));
       assert.ok(s.camera.length() >= 2.5 - 1e-9, `câmera ≥ 2,5 da Terra (${i})`);
-      assert.ok(s.camera.length() <= last + 1e-9, `aproximação monótona (${i})`);
-      last = s.camera.length();
+      const d = s.camera.distanceTo(s.target);
+      assert.ok(d <= last + 1e-9, `aproximação monótona do alvo (${i})`);
+      last = d;
     }
     assert.ok(interpolateOrbit(from, home, 1).camera.distanceTo(home.camera) < 1e-9);
+  });
+
+  test("entrar no Cosmos com a Terra em qualquer ponto da órbita: nunca atravessa o Sol nem a Terra", () => {
+    const SUN_R = 8.3;
+    const view = { target: v(0, 0, 0), camera: v(0, 90, 160) };
+    for (let deg = 0; deg < 360; deg += 15) {
+      const a = (deg * Math.PI) / 180;
+      const earth = { center: v(126 * Math.cos(a), 0, 126 * Math.sin(a)), scale: 0.3 };
+      const from = reanchorOrbit(homeView, earthHome, earth);
+      const obstacles = [{ center: v(0, 0, 0), radius: SUN_R * 1.3 }, { center: earth.center, radius: earth.scale * 1.5 }];
+      for (let i = 0; i <= 200; i++) {
+        const s = interpolateOrbit(from, view, easeInOutCubic(i / 200), { obstacles });
+        assert.ok(s.camera.toArray().every(Number.isFinite), `NaN (${deg}°, ${i})`);
+        assert.ok(s.camera.length() >= SUN_R * 1.3 - 1e-6, `dentro do Sol (${deg}°, ${i}): ${s.camera.length().toFixed(2)}`);
+        assert.ok(s.camera.distanceTo(earth.center) >= earth.scale * 1.5 - 1e-6, `dentro da Terra (${deg}°, ${i})`);
+      }
+    }
+  });
+
+  test("voltar à Terra com ela em qualquer ponto da órbita: câmera fica fora da Terra até o fim", () => {
+    for (let deg = 0; deg < 360; deg += 15) {
+      const a = (deg * Math.PI) / 180;
+      const earth = { center: v(126 * Math.cos(a), 0, 126 * Math.sin(a)), scale: 0.3 };
+      const from = reanchorOrbit(overview, earth, earthHome);
+      const home: OrbitState = { target: v(0, 0, 0), camera: v(0, 0, 2.5) };
+      const obstacles = [{ center: v(0, 0, 0), radius: 1.5 }];
+      for (let i = 0; i <= 200; i++) {
+        const s = interpolateOrbit(from, home, easeInOutCubic(i / 200), { obstacles });
+        assert.ok(s.camera.length() >= 1.5 - 1e-6, `dentro da Terra (${deg}°, ${i}): ${s.camera.length().toFixed(2)}`);
+      }
+    }
   });
 
   test("casos-limite: direções opostas e câmera sobre o alvo não geram NaN", () => {
@@ -137,7 +169,8 @@ describe("D17: transição orbital Terra ↔ Cosmos", () => {
     assert.doesNotMatch(src, /camera\.position\.lerpVectors/);
     assert.match(src, /useLayoutEffect/);
     assert.match(src, /reanchorOrbit\(/);
-    assert.match(src, /pivot = isCosmicMode \? orbit\.center : home\.center/, "orbita a Terra na troca de cena");
+    assert.match(src, /obstacles/, "Sol e Terra como obstáculos durante o voo");
+    assert.match(src, /Math\.min\(delta, MAX_FRAME_STEP\)/, "travamentos de montagem não consomem a animação");
     assert.match(src, /maxDistance = Infinity/, "limites abertos durante o voo");
   });
 });

@@ -1,12 +1,13 @@
 /**
  * Transições de câmera orbital (D17) — funções puras, testáveis sem WebGL.
  *
- * Uma transição vai de um estado `{ target, camera }` a outro. A câmera orbita um PIVÔ fixo (o corpo
- * de onde se sai ou aonde se chega): a distância até ele varia em escala logarítmica e de forma
- * monotônica (afastar e aproximar parecem igualmente suaves, de 2,5 a 200 unidades) e a direção é
- * interpolada por SLERP — então ela nunca corta o interior desse corpo. O alvo do OrbitControls (para
- * onde se olha) desliza à parte. O `lerp` direto da posição da câmera, que o AGENTS.md proíbe, poderia
- * atravessar um planeta.
+ * Uma transição vai de um estado `{ target, camera }` a outro. A câmera fica sempre a uma distância
+ * do alvo que varia em escala logarítmica (afastar e aproximar parecem igualmente suaves, de 2,5 a
+ * 200 unidades), numa direção interpolada por SLERP. O alvo acompanha a distância: ao se afastar ele
+ * demora a sair do corpo de partida; ao se aproximar, chega cedo ao de destino — assim a câmera não
+ * fica perto de um corpo sem estar olhando para ele. Como rede de segurança, corpos passados como
+ * obstáculos empurram a câmera para fora da esfera deles. O `lerp` direto da posição da câmera, que o
+ * AGENTS.md proíbe, poderia atravessar um planeta.
  */
 import * as THREE from "three";
 import { slerpVectors } from "./geo-spatial";
@@ -24,28 +25,50 @@ export function easeInOutCubic(t: number): number {
 
 const MIN_OFFSET = 1e-4;
 
-function offsetFrom(point: THREE.Vector3, pivot: THREE.Vector3): { dir: THREE.Vector3; dist: number } {
-  const offset = point.clone().sub(pivot);
+function offsetOf(s: OrbitState): { dir: THREE.Vector3; dist: number } {
+  const offset = s.camera.clone().sub(s.target);
   const dist = offset.length();
   if (!Number.isFinite(dist) || dist < MIN_OFFSET) return { dir: new THREE.Vector3(0, 0, 1), dist: MIN_OFFSET };
   return { dir: offset.divideScalar(dist), dist };
 }
 
-const offsetOf = (s: OrbitState) => offsetFrom(s.camera, s.target);
+export interface OrbitObstacle {
+  center: THREE.Vector3;
+  radius: number;
+}
 
 /**
- * Estado no instante `t` (0–1, já com easing) entre `from` e `to`, orbitando `pivot` (padrão: o
- * alvo de chegada). Nunca devolve NaN.
+ * Estado no instante `t` (0–1, já com easing) entre `from` e `to`. Nunca devolve NaN, e a câmera
+ * nunca fica dentro de um `obstacle`.
  */
-export function interpolateOrbit(from: OrbitState, to: OrbitState, t: number, pivot: THREE.Vector3 = to.target): OrbitState {
+export function interpolateOrbit(
+  from: OrbitState,
+  to: OrbitState,
+  t: number,
+  opts: { obstacles?: OrbitObstacle[] } = {}
+): OrbitState {
   const k = Math.max(0, Math.min(1, t));
   if (k === 0) return { target: from.target.clone(), camera: from.camera.clone() };
   if (k === 1) return { target: to.target.clone(), camera: to.camera.clone() };
-  const a = offsetFrom(from.camera, pivot);
-  const b = offsetFrom(to.camera, pivot);
+  const a = offsetOf(from);
+  const b = offsetOf(to);
   const dir = slerpVectors(a.dir, b.dir, k);
   const dist = Math.exp(THREE.MathUtils.lerp(Math.log(a.dist), Math.log(b.dist), k));
-  return { target: from.target.clone().lerp(to.target, k), camera: pivot.clone().add(dir.multiplyScalar(dist)) };
+  // Afastando: o alvo atrasa (fica no corpo de partida enquanto a câmera está perto dele).
+  // Aproximando: o alvo adianta (já está no destino quando a câmera chega perto).
+  const w = b.dist >= a.dist ? Math.pow(k, 4) : 1 - Math.pow(1 - k, 4);
+  const target = from.target.clone().lerp(to.target, w);
+  const camera = target.clone().add(dir.multiplyScalar(dist));
+  for (const o of opts.obstacles ?? []) {
+    const away = camera.clone().sub(o.center);
+    const len = away.length();
+    if (len < o.radius) {
+      if (len < MIN_OFFSET) away.copy(dir).normalize();
+      else away.divideScalar(len);
+      camera.copy(o.center).add(away.multiplyScalar(o.radius));
+    }
+  }
+  return { target, camera };
 }
 
 /**

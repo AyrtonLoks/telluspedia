@@ -14,7 +14,7 @@ import {
   currentMoonWorldPos,
   calculatePlanetaryPosition,
 } from "@/lib/astronomy-planets";
-import { bodySceneRadius, earthSystemScale, scaledViewDistance, type CosmicScaleMode } from "@/lib/cosmic-scale";
+import { bodySceneRadius, earthSystemScale, scaledViewDistance, SUN_CORONA_RATIO, type CosmicScaleMode } from "@/lib/cosmic-scale";
 import {
   easeInOutCubic,
   interpolateOrbit,
@@ -22,8 +22,12 @@ import {
   orbitTransitionDuration,
   prefersReducedMotion,
   reanchorOrbit,
+  type OrbitObstacle,
   type OrbitState,
 } from "@/lib/camera-transition";
+
+/** Teto do passo de tempo por quadro: um travamento (montagem, shaders) não consome o voo. */
+const MAX_FRAME_STEP = 1 / 30;
 
 function resetControlsDeltas(ctrl: any) {
   if (!ctrl) return;
@@ -126,8 +130,8 @@ export const CosmicCameraController: React.FC = () => {
   const transition = useRef<{
     from: OrbitState;
     to: OrbitState;
-    /** Corpo que a câmera orbita durante o voo (a Terra ao entrar no Cosmos; o destino nos demais). */
-    pivot: THREE.Vector3;
+    /** Esferas que a câmera não pode atravessar durante o voo (Sol e Terra). */
+    obstacles: OrbitObstacle[];
     elapsed: number;
     duration: number;
     limits: { min: number; max: number };
@@ -153,7 +157,7 @@ export const CosmicCameraController: React.FC = () => {
 
     resetControlsDeltas(controlsHook);
     let from: OrbitState = { target: controlsHook.target.clone(), camera: camera.position.clone() };
-    let pivot: THREE.Vector3 | null = null;
+    const obstacles: OrbitObstacle[] = [];
 
     // Terra ↔ Cosmos: o grupo da Terra troca de centro (origem ↔ órbita) e de escala no mesmo
     // quadro. Leva câmera e alvo junto, para a Terra continuar igual na tela — sem corte seco.
@@ -164,8 +168,16 @@ export const CosmicCameraController: React.FC = () => {
         scale: earthSystemScale(isCosmicMode ? scaleMode : previousScale),
       };
       from = isCosmicMode ? reanchorOrbit(from, home, orbit) : reanchorOrbit(from, orbit, home);
-      // Entrando: afasta-se da Terra (na órbita). Saindo: aproxima-se da Terra (na origem).
-      pivot = isCosmicMode ? orbit.center : home.center;
+    }
+    // A Terra (onde estiver, na escala do momento) e, no Cosmos, o Sol são obstáculos do voo.
+    if (isCosmicMode) {
+      obstacles.push({ center: new THREE.Vector3(), radius: bodySceneRadius(ASTROPHYSICAL_CATALOG.SUN.equatorialRadiusKm, scaleMode) * SUN_CORONA_RATIO * 1.15 });
+      obstacles.push({
+        center: calculatePlanetaryPosition("EARTH", selectedYear).scenePosition.clone(),
+        radius: earthSystemScale(scaleMode) * 1.5,
+      });
+    } else {
+      obstacles.push({ center: new THREE.Vector3(), radius: MIN_CAMERA_ALTITUDE });
     }
 
     let to: OrbitState;
@@ -204,7 +216,7 @@ export const CosmicCameraController: React.FC = () => {
     controlsHook.target.copy(from.target);
     camera.position.copy(from.camera);
     controlsHook.update();
-    transition.current = { from, to, pivot: pivot ?? to.target.clone(), elapsed: 0, duration, limits };
+    transition.current = { from, to, obstacles, elapsed: 0, duration, limits };
     orbitTransition.active = true;
   }, [isCosmicMode, focusedBodyId, scaleMode, controlsHook, camera, selectedYear]);
 
@@ -213,9 +225,9 @@ export const CosmicCameraController: React.FC = () => {
 
     const tr = transition.current;
     if (tr) {
-      tr.elapsed += delta;
+      tr.elapsed += Math.min(delta, MAX_FRAME_STEP);
       const t = Math.min(1, tr.elapsed / tr.duration);
-      const state = interpolateOrbit(tr.from, tr.to, easeInOutCubic(t), tr.pivot);
+      const state = interpolateOrbit(tr.from, tr.to, easeInOutCubic(t), { obstacles: tr.obstacles });
       controlsHook.target.copy(state.target);
       camera.position.copy(state.camera);
       resetControlsDeltas(controlsHook);
