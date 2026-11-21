@@ -34,7 +34,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | Grupo | Escopo (arquivos/conceitos principais) | Tarefas |
 |---|---|---|
 | `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18, T22, D19 |
-| `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27 |
+| `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27, D21 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D23, D19 |
@@ -216,7 +216,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
-| D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | IN_PROGRESS | claude | — | G-COSMOS |
+| D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | IN_PROGRESS | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | TODO | — | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | TODO | — | — | G-CONTEUDO, G-EPOCA |
@@ -1981,7 +1981,7 @@ A D14 criou tokens e primitivos e migrou navbar, Observatório, Inspector do pa�
 ### D21 · Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno
 
 - **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d21-texturas-planetas · **Worktree:** ../telluspedia-wt/claude-d21
-- **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS
+- **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS, G-GLOBO
 
 **Contexto / problema**
 No modo Cosmos, apenas Terra e Lua possuem texturas fotográficas reais; `PlanetarySystem.tsx` ainda renderiza Mercúrio, Vênus, Marte, Júpiter, Saturno, Urano, Netuno e Plutão como esferas de cor sólida (`useTexture = false`), sem inclinação axial real nem rotação sideral.
