@@ -194,8 +194,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | DONE | claude | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
-| D16 | Reduzir ruído visual dos painéis | Design | P2 | M | REVIEW | claude | D14, T05 | G-SHELL, G-OBS |
-| D17 | Movimento e transições | Design | P2 | M | TODO | — | D14 | G-SHELL |
+| D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
+| D17 | Movimento e transições | Design | P2 | M | IN_PROGRESS | claude | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
@@ -1511,7 +1511,7 @@ O Inspector do país (ex.: COD) e o painel do Observatório abrem na mesma colun
 
 ### D16 · Reduzir ruído visual dos painéis
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d16-ruido-paineis · **Worktree:** ../telluspedia-wt/claude-d16
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d16-ruido-paineis · **Worktree:** ../telluspedia-wt/claude-d16
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14, T05 · **Grupos:** G-SHELL, G-OBS
 
 **Contexto / problema**
@@ -1532,12 +1532,13 @@ No painel do Observatório, cada card repete um botão grande "Aprofundar no Tel
 - 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada após a D12 ir para DONE: primeira TODO da fase 7; G-SHELL e G-OBS sem tarefas em andamento (D04 e D08 em REVIEW).
 - 2026-11-21 · claude · IN_PROGRESS · **Implementação** (`feat(paineis): cards compactos no Observatório e Inspector com ações secundárias recolhidas [D16]`). Medido antes, no navegador a 1920×1080 com as 5 camadas ligadas: lista com 1.526 px de conteúdo para 854 px visíveis. **Observatório:** card de camada numa linha — ícone, nome, contagem (mono) e status da fonte quando ligada, botão de opções (`aria-expanded`/`aria-controls`) e chave; descrição, controles da camada, resumo FIRMS do país, **opacidade** (novo controle; as 5 camadas do globo já liam `layerOpacity`) e "Aprofundar no TellusLab" ficam na expansão, recolhida por padrão. **Inspector do país:** as 6 métricas viraram um `MetricCard` único — nome inteiro (antes cortado em "P…", "Expect…" porque o link da fonte e a citação ocupavam o cabeçalho), valor e rodapé com fonte primária (link), código e ano (RN02); citar aparece ao passar o mouse ou focar (sempre no toque). Marcos: o cartão virou um `<button>` (antes `div` com onClick, inacessível pelo teclado); "Focar" saiu (era o próprio clique); Ler dossiê, Citar e Wikipédia (antes "Info") só no marco selecionado. `EonetLayerControls`/`MaritimeLayerControls` passam a importar React (quebravam a renderização no servidor nos testes). Testes: `test/panel-noise.test.tsx` (6). Validação: 519/523 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok. **Falta:** medir no navegador (critério das 5 camadas sem rolagem em 1080 px).
 - 2026-11-21 · claude · REVIEW · **Verificado no navegador** (servidor :3001 do Ayrton, viewport 1920×1080; commit `fix(paineis): contagens curtas, altitude da ISS em pt-BR e fonte institucional por extenso [D16]`). **Critério 1:** com as 5 camadas ligadas, cada card mede 60 px e a lista não rola (854 px de conteúdo em 854 px; antes 1.526 px). **Critério 2:** "Aprofundar no TellusLab" só dentro das opções da camada, recolhido num `<details>`. Opções de Queimadas abertas mostram descrição, período, confiança, legenda, opacidade (40% aplicado pelo controle) e TellusLab. Inspector do BRA: os 6 nomes de métrica inteiros (nenhum cortado) e rodapés "IBGE / BM · SP.POP.TOTL · 2023" etc.; marco selecionado com fonte e as 3 ações numa linha, os outros sem ações. **Corrigido nessa verificação:** "20 voos rastreados" e "30 embarcações na amostra" cortados ao lado do selo de status → "20 voos" e "30 embarcações" (a ressalva de amostra segue na descrição); altitude da ISS com ponto decimal e 408 km fixos quando faltava telemetria → pt-BR e "Calculando órbita…"; fonte do bloco de governo abreviada para "Constituiç…" → por extenso. Validação: 519/523 (as 4 do Prisma), typecheck ok exceto Prisma, lint ok. Visto também (anterior à D16, sem tarefa): o selo "1870 — Unificação Alemã" para anos < 1891.
+- 2026-11-21 · ayrton · DONE · Aprovado (registrado por claude).
 
 ---
 
 ### D17 · Movimento e transições
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d17-movimento · **Worktree:** ../telluspedia-wt/claude-d17
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL
 
 **Contexto / problema**
@@ -1557,6 +1558,7 @@ Painéis aparecem/somem sem transição coerente; troca Terra → Cosmos é um c
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada após a D16 ir para DONE: próxima TODO da fase 7; G-SHELL sem tarefas em andamento.
 
 ---
 
