@@ -41,7 +41,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19 |
 | `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26 |
@@ -217,11 +217,11 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
-| D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | REVIEW | antigravity | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
+| D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | DONE | antigravity | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | DONE | antigravity | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | DONE | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS |
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | REVIEW | claude | — | G-OBS, G-GLOBO, G-EPOCA |
-| D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
+| D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | IN_PROGRESS | antigravity | D24 | G-CONTEUDO, G-TIMELINE |
 | D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
 | D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
 
@@ -2023,7 +2023,7 @@ No modo Cosmos, apenas Terra e Lua possuem texturas fotográficas reais; `Planet
 
 ### D22 · Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d22-choropleth-3d · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/d22-choropleth-3d · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** T32 · **Grupos:** G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS
 
 **Contexto / problema**
@@ -2041,6 +2041,7 @@ O TellusPedia já possui indicadores reais do Banco Mundial para 170/177 países
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (b64e02a). Única P1 elegível restante; grupos `G-FRONTEIRAS`, `G-PAIS`, `G-SHELL` e `G-ESTUDOS` (adicionado para persistência em `Study`) 100% livres.
 - 2026-11-21 · antigravity · REVIEW · Implementação em `99ee42c`. **Motor de escalas e dados (`src/lib/choropleth.ts`):** 6 camadas reais — PIB nominal (`NY.GDP.MKTP.CD`, log, 169/177), PIB per capita (`NY.GDP.PCAP.CD`, log, 169/177), População total (`SP.POP.TOTL`, log, 170/177), Expectativa de vida (`SP.DYN.LE00.IN`, linear, 170/177), Gasto militar (`MS.MIL.XPND.GD.ZS`, raiz quadrada, 160/177) e Queimadas 24h (`NASA_FIRMS`, log1p sobre `firmsByCountry`) — com rampas perceptualmente uniformes (Viridis/Plasma/Teal-Gold/Magma/Thermal), rankings globais e distinção estrita entre dado ausente (`available: false`, `value: null`, cor/hachura neutra "Dado indisponível", nunca zero) e zero real (ex.: 0% de gasto militar ou 0 focos FIRMS quando o servidor está ativo). **Rasterizador O(1) na GPU (`src/lib/choropleth-texture.ts`, `src/components/globe/ChoroplethOverlay.tsx`, `CountryBorders.tsx`):** pré-projeta uma única vez os 177 países do Natural Earth 110m (ISO 3166-1 com zero-padding + recorte no antimeridiano via `d3-geo` `geoEquirectangular`) em `Path2D`/anéis 2D, reutilizando um único `CanvasTexture` (`2048×1024`, oceanos 100% transparentes, raio `1.0011` abaixo das fronteiras base `1.0015`, `dispose()` completo de geometria/material/textura, `raycast` desabilitado para preservar o picking). Troca de indicador em < 10 ms. **UI D14 sob demanda (`src/components/choropleth/ChoroplethHud.tsx`, `src/stores/choroplethStore.ts`, `TopNavBar.tsx`, `GlobeExperienceShell.tsx`, `search.ts`):** botão **Temático** na `TopNavBar` + busca `⌘K` (carregado via `next/dynamic`), seletor com controle de opacidade (40%–100%), legenda contínua acima da `TimelineBar` com swatch hachurado de "Dado indisponível" e fonte primária clicável (RN02), e tooltip flutuante com valor exato, ano e posição no ranking (`#N de M`) no hover/seleção. **Persistência em Estudos (`prisma/schema.prisma` + migration `20261121160000_add_study_choropleth_indicator`, `study-schema.ts`, `studies-store.ts`, `studyStore.ts`, `StudyShareModal.tsx`, `ForkStudyBanner.tsx`, `study-export.ts`):** salva, valida (Zod), preserva em forks, restaura em `/study/[slug]` e exporta no Markdown acadêmico com fonte RN02. **Validação:** `pnpm db:generate`, `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 705/706 ok (0 falhas, 1 skip; 8 novos testes em `test/choropleth.test.tsx`; `ChoroplethHud.tsx` registrado em `MIGRATED` no `design-system.test.tsx`), `pnpm build` ok (`/` = 237 kB, `bundle-budget.test.ts` 6/6 verde), migration + seed validados em `postgis/postgis:16-3.4`, inspeção visual WebGL ao vivo no Chromium (alinhamento sub-pixel dos 177 países com fronteiras e continentes, 0 erros de console) e **18/18 testes Playwright E2E** no container `mcr.microsoft.com/playwright:v1.60.0-noble` (snapshots de `home.png` atualizados para o botão Temático). Aguarda aceite do Ayrton.
+- 2026-11-21 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
@@ -2129,8 +2130,8 @@ O `docs/ROADMAP.md` prevê camadas científicas de observação terrestre da NAS
 
 ### D26 · Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P2 · **Área:** Conteúdo · **Tamanho:** M · **Depende de:** D24 · **Grupos:** G-CONTEUDO
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d26-tellusbridge-coverage · **Worktree:** ../telluspedia-wt/antigravity-d26
+- **Prioridade:** P2 · **Área:** Conteúdo · **Tamanho:** M · **Depende de:** D24 · **Grupos:** G-CONTEUDO, G-TIMELINE
 
 **Contexto / problema**
 O manifesto atual do TellusBridge possui 31 vínculos cobrindo 181/299 nós (60,5%), com apenas 5 países, 1 era (`era:COLD_WAR`) e 2 figuras históricas — 118 macrotemas curriculares seguem sem ponto de entrada no TellusPedia.
@@ -2144,6 +2145,7 @@ O manifesto atual do TellusBridge possui 31 vínculos cobrindo 181/299 nós (60,
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (`4092d85`). Dependência D24 está `DONE`; primeira tarefa elegível da Fase 11 com grupos `G-CONTEUDO` e `G-TIMELINE` (adicionado para `era-study.ts`) 100% livres.
 
 ---
 
