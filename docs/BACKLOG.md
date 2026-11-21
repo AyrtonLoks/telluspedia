@@ -172,7 +172,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T16 | Cache de geometria de highlight por ISO | Performance | P2 | P | DONE | codex | — | G-FRONTEIRAS |
 | T17 | Páginas com SSR e metadata (OG) | Frontend | P1 | G | DONE | antigravity | T13 | G-PAIS, G-ESTUDOS, G-SHELL |
 | T18 | Pipeline de CI | Infra | P2 | M | DONE | codex | — | G-INFRA |
-| T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | REVIEW | codex | T18 | G-INFRA |
+| T19 | Reorganizar testes + testes de API + E2E visual | Qualidade | P2 | G | DONE | codex | T18 | G-INFRA |
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | DONE | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
@@ -796,7 +796,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 
 ### T19 · Reorganizar testes + testes de API + E2E visual
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t19-testes-api-e2e · **Worktree:** ../telluspedia-wt/codex-t19
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/t19-testes-api-e2e · **Worktree:** ../telluspedia-wt/codex-t19
 - **Prioridade:** P2 · **Área:** Qualidade · **Tamanho:** G · **Depende de:** T18 · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -818,6 +818,7 @@ Não existe `.github/workflows`. Nada impede regressões entrarem em `master`.
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-21 · codex · IN_PROGRESS · Próxima tarefa elegível na fase 8. T18 concluída e G-INFRA livre.
 - 2026-11-21 · codex · REVIEW · As 23 suítes do monólito foram preservadas por domínio; o maior arquivo ficou com 619 linhas. A suíte Cosmos passou a executar uma vez. Estudos, fork, clima e FIRMS são testados por chamadas diretas aos handlers. Playwright validou o clique no Brasil, a carga de Geist e Merriweather e a timeline em 1366 e 1920 px. Os snapshots comparam a interface com o canvas oculto; o smoke usa o WebGL. Typecheck, lint, 526 testes e build passaram. Os 4 E2E passaram localmente em Linux (container Playwright) e no [GitHub Actions](https://github.com/AyrtonLoks/telluspedia/actions/runs/44863369632). Implementação em `f7fff00`.
+- 2026-11-21 · ayrton · DONE · Aceite registrado.
 
 ---
 
