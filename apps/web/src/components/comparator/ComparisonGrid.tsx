@@ -19,11 +19,17 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
   const popInd = c.indicators.find((i) => i.indicatorCode === "SP.POP.TOTL");
   const areaInd = c.indicators.find((i) => i.indicatorCode === "AG.SRF.TOTL.K2");
   const gdpInd = c.indicators.find((i) => i.indicatorCode === "NY.GDP.MKTP.CD");
+  const gdpPcapInd = c.indicators.find((i) => i.indicatorCode === "NY.GDP.PCAP.CD");
   const hdiInd = c.indicators.find((i) => i.indicatorCode === "UNDP.HDI");
   const lifeInd = c.indicators.find((i) => i.indicatorCode === "SP.DYN.LE00.IN");
+  const renewInd = c.indicators.find((i) => i.indicatorCode === "EG.FEC.RNEW.ZS");
+  const co2Ind = c.indicators.find((i) => i.indicatorCode === "EN.GHG.CO2.PC.CE.AR5");
   const gdp = gdpInd?.value;
+  const gdpPcap = gdpPcapInd?.value;
   const hdi = hdiInd?.value;
   const lifeExp = lifeInd?.value;
+  const renewPct = renewInd?.value;
+  const co2Pcap = co2Ind?.value;
 
   const formatPop = (num: number | null) => {
     if (num === null) return "Dado indisponível";
@@ -126,6 +132,21 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
 
         <div>
           <span className="block text-caption text-fg-muted">
+            PIB per capita{gdpPcapInd?.year ? ` (${gdpPcapInd.year})` : ""}
+          </span>
+          <span
+            className={
+              gdpPcap !== undefined
+                ? "font-mono font-medium tabular-nums text-fg"
+                : "text-fg-muted"
+            }
+          >
+            {gdpPcap !== undefined ? `$ ${Math.round(gdpPcap).toLocaleString("pt-BR")}` : "Dado indisponível"}
+          </span>
+        </div>
+
+        <div>
+          <span className="block text-caption text-fg-muted">
             IDH{hdiInd?.year ? ` (${hdiInd.year})` : ""}
           </span>
           <span
@@ -151,6 +172,36 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
             }
           >
             {lifeExp !== undefined ? `${lifeExp} anos` : "Dado indisponível"}
+          </span>
+        </div>
+
+        <div>
+          <span className="block text-caption text-fg-muted">
+            Energia Renovável{renewInd?.year ? ` (${renewInd.year})` : ""}
+          </span>
+          <span
+            className={
+              renewPct !== undefined
+                ? "font-mono font-medium tabular-nums text-fg"
+                : "text-fg-muted"
+            }
+          >
+            {renewPct !== undefined ? `${renewPct.toLocaleString("pt-BR")}%` : "Dado indisponível"}
+          </span>
+        </div>
+
+        <div>
+          <span className="block text-caption text-fg-muted">
+            CO₂ per capita{co2Ind?.year ? ` (${co2Ind.year})` : ""}
+          </span>
+          <span
+            className={
+              co2Pcap !== undefined
+                ? "font-mono font-medium tabular-nums text-fg"
+                : "text-fg-muted"
+            }
+          >
+            {co2Pcap !== undefined ? `${co2Pcap.toLocaleString("pt-BR")} t` : "Dado indisponível"}
           </span>
         </div>
 

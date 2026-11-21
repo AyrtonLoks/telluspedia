@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Users, Maximize2, DollarSign, Award, Landmark, HeartPulse, Shield, ExternalLink, Quote, Info } from "lucide-react";
+import { Users, Maximize2, DollarSign, Award, Landmark, HeartPulse, Shield, Leaf, Factory, ExternalLink, Quote, Info } from "lucide-react";
 import { getSourceUrl } from "@/lib/citations";
 import { DataCompleteness } from "@/lib/country-data";
 import { useReaderStore } from "@/stores/readerStore";
@@ -154,25 +154,34 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   const popIndicator = indicators?.find((i) => i.indicatorCode === "SP.POP.TOTL");
   const areaIndicator = indicators?.find((i) => i.indicatorCode === "AG.SRF.TOTL.K2");
   const gdpIndicator = indicators?.find((i) => i.indicatorCode === "NY.GDP.MKTP.CD");
+  const gdpPcapIndicator = indicators?.find((i) => i.indicatorCode === "NY.GDP.PCAP.CD");
   const hdiIndicator = indicators?.find((i) => i.indicatorCode === "UNDP.HDI");
   const lifeExpectancy = indicators?.find((i) => i.indicatorCode === "SP.DYN.LE00.IN");
   const militaryExp = indicators?.find((i) => i.indicatorCode === "MS.MIL.XPND.GD.ZS");
+  const renewableEnergy = indicators?.find((i) => i.indicatorCode === "EG.FEC.RNEW.ZS");
+  const co2PerCapita = indicators?.find((i) => i.indicatorCode === "EN.GHG.CO2.PC.CE.AR5");
 
   const popSource = popIndicator?.sourcePrimary || "Banco Mundial";
   const areaSource = areaIndicator?.sourcePrimary || "Natural Earth";
   const gdpSource = gdpIndicator?.sourcePrimary || "Banco Mundial";
+  const gdpPcapSource = gdpPcapIndicator?.sourcePrimary || "Banco Mundial";
   const hdiSource = hdiIndicator?.sourcePrimary || "PNUD";
   const lifeSource = lifeExpectancy?.sourcePrimary || "OMS";
   const milSource = militaryExp?.sourcePrimary || "SIPRI";
+  const renewSource = renewableEnergy?.sourcePrimary || "Banco Mundial";
+  const co2Source = co2PerCapita?.sourcePrimary || "Banco Mundial";
 
   const popUrl = popIndicator?.sourceUrl || getSourceUrl(popSource, "SP.POP.TOTL");
   const areaUrl =
     areaIndicator?.sourceUrl ||
     getSourceUrl(areaSource, areaIndicator ? "AG.SRF.TOTL.K2" : undefined);
   const gdpUrl = gdpIndicator?.sourceUrl || getSourceUrl(gdpSource, "NY.GDP.MKTP.CD");
+  const gdpPcapUrl = gdpPcapIndicator?.sourceUrl || getSourceUrl(gdpPcapSource, "NY.GDP.PCAP.CD");
   const hdiUrl = hdiIndicator?.sourceUrl || getSourceUrl(hdiSource, "UNDP.HDI");
   const lifeUrl = lifeExpectancy?.sourceUrl || getSourceUrl(lifeSource, "SP.DYN.LE00.IN");
   const milUrl = militaryExp?.sourceUrl || getSourceUrl(milSource, "MS.MIL.XPND.GD.ZS");
+  const renewUrl = renewableEnergy?.sourceUrl || getSourceUrl(renewSource, "EG.FEC.RNEW.ZS");
+  const co2Url = co2PerCapita?.sourceUrl || getSourceUrl(co2Source, "EN.GHG.CO2.PC.CE.AR5");
 
   const formatPop = (num: number) => {
     if (num >= 1e9) return `${(num / 1e9).toFixed(2)} bilhões`;
@@ -315,6 +324,42 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           code={militaryExp.indicatorCode}
           year={militaryExp.year}
           onCite={() => cite(`Gastos Militares (% do PIB: ${militaryExp.value}%)`, milUrl, militaryExp.year)}
+        />
+      )}
+      {gdpPcapIndicator && (
+        <MetricCard
+          icon={DollarSign}
+          label="PIB per capita"
+          value={`$ ${Math.round(gdpPcapIndicator.value).toLocaleString("pt-BR")}`}
+          source={gdpPcapSource}
+          sourceUrl={gdpPcapUrl}
+          code={gdpPcapIndicator.indicatorCode}
+          year={gdpPcapIndicator.year}
+          onCite={() => cite(`PIB per capita ($ ${Math.round(gdpPcapIndicator.value).toLocaleString("pt-BR")})`, gdpPcapUrl, gdpPcapIndicator.year)}
+        />
+      )}
+      {renewableEnergy && (
+        <MetricCard
+          icon={Leaf}
+          label="Energia renovável"
+          value={`${renewableEnergy.value.toLocaleString("pt-BR")}%`}
+          source={renewSource}
+          sourceUrl={renewUrl}
+          code={renewableEnergy.indicatorCode}
+          year={renewableEnergy.year}
+          onCite={() => cite(`Consumo de Energia Renovável (${renewableEnergy.value}%)`, renewUrl, renewableEnergy.year)}
+        />
+      )}
+      {co2PerCapita && (
+        <MetricCard
+          icon={Factory}
+          label="CO₂ per capita"
+          value={`${co2PerCapita.value.toLocaleString("pt-BR")} t`}
+          source={co2Source}
+          sourceUrl={co2Url}
+          code={co2PerCapita.indicatorCode}
+          year={co2PerCapita.year}
+          onCite={() => cite(`Emissões de CO₂ per capita (${co2PerCapita.value} t CO₂e/hab)`, co2Url, co2PerCapita.year)}
         />
       )}
 

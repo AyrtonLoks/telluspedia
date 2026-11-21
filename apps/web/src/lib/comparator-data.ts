@@ -7,8 +7,11 @@ import { getSourceUrl } from "@/lib/citations";
 
 export type ComparisonMetricId =
   | "GDP"
+  | "GDP_PER_CAPITA"
   | "POPULATION"
   | "LIFE_EXPECTANCY"
+  | "RENEWABLE_ENERGY"
+  | "CO2_PER_CAPITA"
   | "HDI"
   | "MILITARY";
 
@@ -16,8 +19,10 @@ export interface ComparisonMetricSpec {
   id: ComparisonMetricId;
   shortLabel: string;
   title: string;
+  historicalTitle: string;
   unit: string;
   indicatorCode: string;
+  hasWorldBankTimeseries: boolean;
   toDisplayValue: (rawValue: number) => number;
   formatValue: (displayValue: number) => string;
 }
@@ -50,20 +55,35 @@ export const COMPARISON_METRICS: Record<ComparisonMetricId, ComparisonMetricSpec
     id: "GDP",
     shortLabel: "PIB",
     title: "PIB Nominal (leitura mais recente)",
+    historicalTitle: "PIB Nominal Histórico (1990–2024)",
     unit: "Bilhões USD",
     indicatorCode: "NY.GDP.MKTP.CD",
+    hasWorldBankTimeseries: true,
     toDisplayValue: (raw) => Math.round((raw / 1e9) * 10) / 10,
     formatValue: (v) =>
       v >= 1000
         ? `$ ${(v / 1000).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} tri`
         : `$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} bi`,
   },
+  GDP_PER_CAPITA: {
+    id: "GDP_PER_CAPITA",
+    shortLabel: "PIB per capita",
+    title: "PIB per capita (leitura mais recente)",
+    historicalTitle: "PIB per capita Histórico (1990–2024)",
+    unit: "USD / habitante",
+    indicatorCode: "NY.GDP.PCAP.CD",
+    hasWorldBankTimeseries: true,
+    toDisplayValue: (raw) => Math.round(raw),
+    formatValue: (v) => `$ ${Math.round(v).toLocaleString("pt-BR")}`,
+  },
   POPULATION: {
     id: "POPULATION",
     shortLabel: "População",
     title: "População Total (leitura mais recente)",
+    historicalTitle: "Evolução Demográfica Real (1990–2024)",
     unit: "Milhões de habitantes",
     indicatorCode: "SP.POP.TOTL",
+    hasWorldBankTimeseries: true,
     toDisplayValue: (raw) => Math.round((raw / 1e6) * 100) / 100,
     formatValue: (v) =>
       v >= 1000
@@ -74,35 +94,66 @@ export const COMPARISON_METRICS: Record<ComparisonMetricId, ComparisonMetricSpec
     id: "LIFE_EXPECTANCY",
     shortLabel: "Expectativa de vida",
     title: "Expectativa de Vida ao Nascer (leitura mais recente)",
+    historicalTitle: "Expectativa de Vida Real (1990–2024)",
     unit: "Anos",
     indicatorCode: "SP.DYN.LE00.IN",
+    hasWorldBankTimeseries: true,
     toDisplayValue: (raw) => Math.round(raw * 10) / 10,
     formatValue: (v) => `${v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} anos`,
   },
-  HDI: {
-    id: "HDI",
-    shortLabel: "IDH",
-    title: "Índice de Desenvolvimento Humano (leitura mais recente)",
-    unit: "Score (0–1)",
-    indicatorCode: "UNDP.HDI",
-    toDisplayValue: (raw) => Math.round(raw * 1000) / 1000,
-    formatValue: (v) => v.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 }),
+  RENEWABLE_ENERGY: {
+    id: "RENEWABLE_ENERGY",
+    shortLabel: "Renováveis",
+    title: "Consumo de Energia Renovável (leitura mais recente)",
+    historicalTitle: "Energia Renovável no Consumo Final (1990–2024)",
+    unit: "% do consumo final",
+    indicatorCode: "EG.FEC.RNEW.ZS",
+    hasWorldBankTimeseries: true,
+    toDisplayValue: (raw) => Math.round(raw * 10) / 10,
+    formatValue: (v) => `${v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`,
+  },
+  CO2_PER_CAPITA: {
+    id: "CO2_PER_CAPITA",
+    shortLabel: "CO₂ per capita",
+    title: "Emissões de CO₂ per capita (leitura mais recente)",
+    historicalTitle: "Emissões de CO₂ per capita (1990–2024)",
+    unit: "t CO₂e / hab.",
+    indicatorCode: "EN.GHG.CO2.PC.CE.AR5",
+    hasWorldBankTimeseries: true,
+    toDisplayValue: (raw) => Math.round(raw * 100) / 100,
+    formatValue: (v) => `${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} t`,
   },
   MILITARY: {
     id: "MILITARY",
     shortLabel: "Defesa",
     title: "Gastos Militares (leitura mais recente)",
+    historicalTitle: "Gastos Militares Históricos (1990–2024)",
     unit: "% do PIB",
     indicatorCode: "MS.MIL.XPND.GD.ZS",
+    hasWorldBankTimeseries: true,
     toDisplayValue: (raw) => Math.round(raw * 100) / 100,
     formatValue: (v) => `${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% do PIB`,
+  },
+  HDI: {
+    id: "HDI",
+    shortLabel: "IDH",
+    title: "Índice de Desenvolvimento Humano (leitura mais recente)",
+    historicalTitle: "Índice de Desenvolvimento Humano",
+    unit: "Score (0–1)",
+    indicatorCode: "UNDP.HDI",
+    hasWorldBankTimeseries: false,
+    toDisplayValue: (raw) => Math.round(raw * 1000) / 1000,
+    formatValue: (v) => v.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 }),
   },
 };
 
 export const COMPARISON_METRIC_ORDER: readonly ComparisonMetricId[] = [
   "GDP",
+  "GDP_PER_CAPITA",
   "POPULATION",
   "LIFE_EXPECTANCY",
+  "RENEWABLE_ENERGY",
+  "CO2_PER_CAPITA",
   "MILITARY",
   "HDI",
 ];

@@ -64,9 +64,12 @@ describe("T03 + T26 — Integridade de dados de países e ingestão real do Banc
     const expectedCodes = [
       "SP.POP.TOTL",
       "NY.GDP.MKTP.CD",
+      "NY.GDP.PCAP.CD",
       "AG.SRF.TOTL.K2",
       "SP.DYN.LE00.IN",
       "MS.MIL.XPND.GD.ZS",
+      "EG.FEC.RNEW.ZS",
+      "EN.GHG.CO2.PC.CE.AR5",
     ];
     for (const code of expectedCodes) {
       const spec = WORLD_BANK_INDICATOR_SPECS.find((s) => s.code === code);

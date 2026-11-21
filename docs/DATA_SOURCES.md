@@ -172,34 +172,37 @@ eixo Y invertido porque o `KTX2Loader` usa `flipY = false`.
 
 ---
 
-## Anexo — Indicadores do Banco Mundial e Metadados de Países (T26, 2026-11-20)
+## Anexo — Indicadores e Séries Históricas do Banco Mundial e Metadados de Países (T26 / T32, atualizado em 2026-11-21)
 
-Arquivo versionado em `apps/web/public/data/countries-worldbank-indicators.json`, gerado de forma determinística e reproduzível pelo script `apps/web/scripts/ingest-worldbank-indicators.mjs` para todos os **177 países/territórios** do catálogo Natural Earth 1:110m (`apps/web/public/data/countries-ne-110m.json`).
+Arquivos versionados em `apps/web/public/data/countries-worldbank-indicators.json` (leitura mais recente) e `apps/web/public/data/worldbank-timeseries.json` (séries anuais reais **1990–2024**, carregadas sob demanda no Comparador), gerados de forma determinística e reproduzível pelo script `apps/web/scripts/ingest-worldbank-indicators.mjs` para todos os **177 países/territórios** do catálogo Natural Earth 1:110m (`apps/web/public/data/countries-ne-110m.json`).
 
 ### Fontes primárias e licenças
 
-| Série / Conjunto | Código Oficial | Fonte Primária | Licença |
-|---|---|---|---|
-| População Total | `SP.POP.TOTL` | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/SP.POP.TOTL)) | CC BY 4.0 |
-| PIB a Preços Correntes (USD) | `NY.GDP.MKTP.CD` | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/NY.GDP.MKTP.CD)) | CC BY 4.0 |
-| Área de Superfície (km²) | `AG.SRF.TOTL.K2` | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/AG.SRF.TOTL.K2)) | CC BY 4.0 |
-| Expectativa de Vida ao Nascer (anos) | `SP.DYN.LE00.IN` | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/SP.DYN.LE00.IN)) | CC BY 4.0 |
-| Gastos Militares (% do PIB) | `MS.MIL.XPND.GD.ZS` | World Bank Indicators API v2 / SIPRI ([WDI](https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS)) | CC BY 4.0 |
-| Nome oficial (pt-BR), capital, região e moeda | ISO 3166-1 alpha-3 | REST Countries / [`mledoze/countries`](https://github.com/mledoze/countries) | ODbL 1.0 |
+| Série / Conjunto | Código Oficial | Série 1990–2024 | Fonte Primária | Licença |
+|---|---|---|---|---|
+| População Total | `SP.POP.TOTL` | Sim (170 países · 5.950 obs.) | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/SP.POP.TOTL)) | CC BY 4.0 |
+| PIB a Preços Correntes (USD) | `NY.GDP.MKTP.CD` | Sim (169 países · 5.802 obs.) | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/NY.GDP.MKTP.CD)) | CC BY 4.0 |
+| PIB per capita (USD) | `NY.GDP.PCAP.CD` | Sim (169 países · 5.802 obs.) | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/NY.GDP.PCAP.CD)) | CC BY 4.0 |
+| Área de Superfície (km²) | `AG.SRF.TOTL.K2` | Leitura mais recente (169 países) | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/AG.SRF.TOTL.K2)) | CC BY 4.0 |
+| Expectativa de Vida ao Nascer (anos) | `SP.DYN.LE00.IN` | Sim (170 países · 5.950 obs.) | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/SP.DYN.LE00.IN)) | CC BY 4.0 |
+| Gastos Militares (% do PIB) | `MS.MIL.XPND.GD.ZS` | Sim (160 países · 4.976 obs.) | World Bank Indicators API v2 / SIPRI ([WDI](https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS)) | CC BY 4.0 |
+| Consumo de Energia Renovável (% final) | `EG.FEC.RNEW.ZS` | Sim (169 países · 5.376 obs.) | World Bank Indicators API v2 ([WDI](https://data.worldbank.org/indicator/EG.FEC.RNEW.ZS)) | CC BY 4.0 |
+| Emissões de CO₂ per capita (t CO₂e/hab.) | `EN.GHG.CO2.PC.CE.AR5` | Sim (165 países · 5.775 obs.) | World Bank Indicators API v2 / EDGAR AR5 ([WDI](https://data.worldbank.org/indicator/EN.GHG.CO2.PC.CE.AR5)) | CC BY 4.0 |
+| Nome oficial (pt-BR), capital, região e moeda | ISO 3166-1 alpha-3 | Metadados (176 países) | REST Countries / [`mledoze/countries`](https://github.com/mledoze/countries) | ODbL 1.0 |
 
-### Como regenerar o dataset
+### Como regenerar os datasets
 
 ```sh
 node apps/web/scripts/ingest-worldbank-indicators.mjs
-# Para validar cobertura sem sobrescrever o arquivo:
+# Para validar cobertura sem sobrescrever os arquivos:
 node apps/web/scripts/ingest-worldbank-indicators.mjs --dry-run
 ```
 
-### Política de integridade e ausências reais (RN02 / T03)
+### Política de integridade e ausências reais (RN02 / T03 / T29 / T32)
 
-- A consulta à API do Banco Mundial usa `mrnev=1` (*most recent non-empty value*), registrando o ano exato de cada leitura e a data de atualização (`lastupdated`) do conjunto de dados.
-- **Nenhum valor é estimado ou inventado**: territórios sem publicação oficial no Banco Mundial (`ATA`, `ATF`, `CYN`, `ESH`, `FLK`, `GUF`, `TWN`) ou séries ausentes em países específicos (ex.: `NY.GDP.MKTP.CD` e `MS.MIL.XPND.GD.ZS` para `PRK`, `AG.SRF.TOTL.K2` para `XKX`) permanecem como `null` / omitidos e renderizam **"Dado indisponível"** na interface.
-- Cobertura atual: **170/177** população, **169/177** PIB nominal, **169/177** área territorial, **170/177** expectativa de vida, **160/177** gastos militares e **176/177** metadados administrativos (somente `CYN` ausente em ambas as fontes).
+- A consulta à API do Banco Mundial coleta as leituras anuais reais entre **1990 e 2024** (`date=1990:2024`, em janelas por década) para os 7 indicadores temporais e `mrnev=1` para `AG.SRF.TOTL.K2`, registrando o ano exato de cada leitura e a data de atualização (`lastupdated: 2026-11-11`).
+- **Nenhum valor é estimado ou interpolado**: territórios sem publicação oficial no Banco Mundial (`ATA`, `ATF`, `CYN`, `ESH`, `FLK`, `GUF`, `TWN`) e anos sem publicação permanecem estritamente como `null` no JSON e são renderizados com `connectNulls={false}` (lacunas visíveis no gráfico) e **"Dado indisponível"** nos cartões.
+- O arquivo `worldbank-timeseries.json` é carregado sob demanda via `fetch("/data/worldbank-timeseries.json")` apenas quando o usuário abre a aba **Série 1990–2024** no Comparador, sem impactar o First Load JS de `/`.
 
 ## Anexo — Eventos da linha do tempo importados do Wikidata (D12e, 2026-11-21)
 

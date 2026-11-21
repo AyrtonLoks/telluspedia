@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "generatedAt": "2026-11-11",
     "worldBankLastUpdated": "2026-11-11",
     "sources": [
@@ -8,7 +8,7 @@
         "id": "world-bank-wdi",
         "name": "World Bank Indicators API v2 (World Development Indicators)",
         "url": "https://data.worldbank.org/",
-        "apiUrl": "https://api.worldbank.org/v2/country/all/indicator/<CODE>?format=json&mrnev=1",
+        "apiUrl": "https://api.worldbank.org/v2/country/all/indicator/<CODE>?format=json&date=1990:2024",
         "license": "CC BY 4.0"
       },
       {
@@ -39,6 +39,15 @@
         "lastUpdated": "2026-11-11"
       },
       {
+        "code": "NY.GDP.PCAP.CD",
+        "name": "PIB per capita",
+        "category": "ECONOMY",
+        "unit": "USD",
+        "sourcePrimary": "Banco Mundial",
+        "sourceUrl": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD",
+        "lastUpdated": "2026-11-11"
+      },
+      {
         "code": "AG.SRF.TOTL.K2",
         "name": "Área de Superfície",
         "category": "GEOGRAPHY",
@@ -64,15 +73,36 @@
         "sourcePrimary": "Banco Mundial",
         "sourceUrl": "https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS",
         "lastUpdated": "2026-11-11"
+      },
+      {
+        "code": "EG.FEC.RNEW.ZS",
+        "name": "Consumo de Energia Renovável",
+        "category": "GEOGRAPHY",
+        "unit": "%",
+        "sourcePrimary": "Banco Mundial",
+        "sourceUrl": "https://data.worldbank.org/indicator/EG.FEC.RNEW.ZS",
+        "lastUpdated": "2026-11-11"
+      },
+      {
+        "code": "EN.GHG.CO2.PC.CE.AR5",
+        "name": "Emissões de CO₂ per capita",
+        "category": "GEOGRAPHY",
+        "unit": "t CO₂e/hab",
+        "sourcePrimary": "Banco Mundial",
+        "sourceUrl": "https://data.worldbank.org/indicator/EN.GHG.CO2.PC.CE.AR5",
+        "lastUpdated": "2026-11-11"
       }
     ],
     "coverage": {
       "totalCatalogCountries": 177,
       "withPopulation": 170,
       "withGdp": 169,
+      "withGdpPerCapita": 169,
       "withArea": 169,
       "withLifeExpectancy": 170,
       "withMilitaryExpenditure": 160,
+      "withRenewableEnergy": 169,
+      "withCo2PerCapita": 165,
       "withRestCountriesMetadata": 176,
       "withoutWorldBankData": [
         "ATA",
@@ -84,7 +114,7 @@
         "TWN"
       ]
     },
-    "notes": "Indicadores socioeconômicos e geográficos ingeridos diretamente da API oficial do Banco Mundial (mrnev=1: valor oficial mais recente não nulo) e metadados administrativos do dataset canônico REST Countries (mledoze/countries). Ausências reais nas fontes oficiais são mantidas como null."
+    "notes": "Indicadores socioeconômicos, ambientais e geográficos ingeridos diretamente da API oficial do Banco Mundial (1990–2024; leitura mais recente não nula) e metadados administrativos do dataset canônico REST Countries (mledoze/countries). Ausências reais nas fontes oficiais são mantidas como null."
   },
   "countries": {
     "AFG": {
@@ -96,11 +126,15 @@
       "currencyName": "Afegane afegão (؋)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 43844111,
-          "year": 2025
+          "value": 42647492,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 17778508876,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 417,
           "year": 2024
         },
         "AG.SRF.TOTL.K2": {
@@ -114,6 +148,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 1.83,
           "year": 2021
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 20,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.28,
+          "year": 2024
         }
       }
     },
@@ -126,12 +168,16 @@
       "currencyName": "Kwanza angolano (Kz)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 39040039,
-          "year": 2025
+          "value": 37885849,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 122174889424,
-          "year": 2025
+          "value": 103080538044,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2721,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1246700,
@@ -142,8 +188,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.4,
-          "year": 2025
+          "value": 1.03,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 52.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.74,
+          "year": 2024
         }
       }
     },
@@ -156,12 +210,16 @@
       "currencyName": "Lek albanês (L)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2349580,
-          "year": 2025
+          "value": 2377128,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 30540188271,
-          "year": 2025
+          "value": 27037474263,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 11374,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 28750,
@@ -172,8 +230,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.03,
-          "year": 2025
+          "value": 1.98,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 41.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.79,
+          "year": 2024
         }
       }
     },
@@ -186,11 +252,15 @@
       "currencyName": "Dirham dos Emirados Árabes Unidos (د.إ)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 11513149,
-          "year": 2025
+          "value": 10986400,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 552324919096,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 50274,
           "year": 2024
         },
         "AG.SRF.TOTL.K2": {
@@ -204,6 +274,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 5.64,
           "year": 2014
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 18.26,
+          "year": 2024
         }
       }
     },
@@ -216,12 +294,16 @@
       "currencyName": "Peso argentino ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 45851378,
-          "year": 2025
+          "value": 45696159,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 683097891619,
-          "year": 2025
+          "value": 638365455340,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 13970,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 2780400,
@@ -232,8 +314,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.56,
-          "year": 2025
+          "value": 0.65,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 9.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.01,
+          "year": 2024
         }
       }
     },
@@ -246,12 +336,16 @@
       "currencyName": "Dram armênio (֏)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3086700,
-          "year": 2025
+          "value": 3033500,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 29243452882,
-          "year": 2025
+          "value": 25955275380,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 8556,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 29740,
@@ -262,8 +356,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 6.09,
-          "year": 2025
+          "value": 5.46,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 9.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.47,
+          "year": 2024
         }
       }
     },
@@ -294,12 +396,16 @@
       "currencyName": "Dólar australiano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 27614411,
-          "year": 2025
+          "value": 27194286,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1798518933689,
-          "year": 2025
+          "value": 1757022451653,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 64610,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 7741220,
@@ -310,8 +416,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.92,
-          "year": 2025
+          "value": 1.9,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 12.3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 14.1,
+          "year": 2024
         }
       }
     },
@@ -324,12 +438,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 9208163,
-          "year": 2025
+          "value": 9177982,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 579470021095,
-          "year": 2025
+          "value": 534790720467,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 58269,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 83879,
@@ -340,8 +458,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.1,
-          "year": 2025
+          "value": 0.99,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 36,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 6.32,
+          "year": 2024
         }
       }
     },
@@ -354,12 +480,16 @@
       "currencyName": "Manat azeri (₼)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10246996,
-          "year": 2025
+          "value": 10202830,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 75937647059,
-          "year": 2025
+          "value": 74426000000,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7295,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 86600,
@@ -370,8 +500,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 6.47,
-          "year": 2025
+          "value": 5.08,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 1.3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.81,
+          "year": 2024
         }
       }
     },
@@ -384,12 +522,16 @@
       "currencyName": "Franco burundiano (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 14390003,
-          "year": 2025
+          "value": 14047786,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 3364713864,
-          "year": 2025
+          "value": 3037579858,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 216,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 27834,
@@ -400,8 +542,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.24,
-          "year": 2025
+          "value": 3.56,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 83,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.07,
+          "year": 2024
         }
       }
     },
@@ -414,12 +564,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 11941781,
-          "year": 2025
+          "value": 11858610,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 725466462860,
-          "year": 2025
+          "value": 670983130619,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 56582,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 30689.2,
@@ -430,8 +584,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.01,
-          "year": 2025
+          "value": 1.28,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 11.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 7.31,
+          "year": 2024
         }
       }
     },
@@ -444,12 +606,16 @@
       "currencyName": "Franco CFA de BCEAO (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 14814460,
-          "year": 2025
+          "value": 14462724,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 24566420904,
-          "year": 2025
+          "value": 21482643706,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1485,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 114760,
@@ -460,8 +626,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.89,
-          "year": 2025
+          "value": 0.78,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 54.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.49,
+          "year": 2024
         }
       }
     },
@@ -474,12 +648,16 @@
       "currencyName": "Franco CFA de BCEAO (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 24074580,
-          "year": 2025
+          "value": 23548781,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 27627297461,
-          "year": 2025
+          "value": 23136514856,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 982,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 274200,
@@ -490,8 +668,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.3,
-          "year": 2025
+          "value": 4.39,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 71.4,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.27,
+          "year": 2024
         }
       }
     },
@@ -504,12 +690,16 @@
       "currencyName": "Taka bengali (৳)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 175686899,
-          "year": 2025
+          "value": 173562364,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 456319229256,
-          "year": 2025
+          "value": 450119432069,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2593,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 147570,
@@ -520,8 +710,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.81,
-          "year": 2025
+          "value": 0.86,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 25,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.72,
+          "year": 2024
         }
       }
     },
@@ -534,12 +732,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 6433302,
-          "year": 2025
+          "value": 6441421,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 130777235530,
-          "year": 2025
+          "value": 113349149167,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 17597,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 111000,
@@ -550,8 +752,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.01,
-          "year": 2025
+          "value": 1.93,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 20.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.31,
+          "year": 2024
         }
       }
     },
@@ -564,11 +774,15 @@
       "currencyName": "Dólar bahamense ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 403033,
-          "year": 2025
+          "value": 401283,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 15832800000,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 39455,
           "year": 2024
         },
         "AG.SRF.TOTL.K2": {
@@ -577,6 +791,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 74.7,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 1.1,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.64,
           "year": 2024
         }
       }
@@ -590,12 +812,16 @@
       "currencyName": "Marco conversível da Bósnia e Herzegovina (KM)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3140095,
-          "year": 2025
+          "value": 3164253,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 32599982936,
-          "year": 2025
+          "value": 29737363103,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 9398,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 51210,
@@ -606,8 +832,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.73,
-          "year": 2025
+          "value": 0.76,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 36.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 6.45,
+          "year": 2024
         }
       }
     },
@@ -620,12 +854,16 @@
       "currencyName": "Rublo bielorrusso (Br)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 9085991,
-          "year": 2025
+          "value": 9132629,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 93397215864,
-          "year": 2025
+          "value": 78591839300,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 8606,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 207629,
@@ -636,8 +874,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.4,
-          "year": 2025
+          "value": 1.98,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 8.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.94,
+          "year": 2024
         }
       }
     },
@@ -650,12 +896,16 @@
       "currencyName": "Dólar belizenho ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 422924,
-          "year": 2025
+          "value": 417072,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 3326500000,
-          "year": 2025
+          "value": 3203631800,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7681,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 22966,
@@ -666,8 +916,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1,
-          "year": 2025
+          "value": 1.08,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 30.8,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.93,
+          "year": 2024
         }
       }
     },
@@ -680,12 +938,16 @@
       "currencyName": "Boliviano da Bolívia (Bs.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 12581843,
-          "year": 2025
+          "value": 12413315,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 64768947525,
-          "year": 2025
+          "value": 54881327453,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4421,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1098580,
@@ -696,8 +958,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.21,
-          "year": 2025
+          "value": 1.22,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 12.8,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.29,
+          "year": 2024
         }
       }
     },
@@ -710,12 +980,16 @@
       "currencyName": "Real brasileiro (R$)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 212812405,
-          "year": 2025
+          "value": 211998573,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 2279920092492,
-          "year": 2025
+          "value": 2185821610689,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 10311,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 8510420,
@@ -726,8 +1000,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.05,
-          "year": 2025
+          "value": 0.96,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 46.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.32,
+          "year": 2024
         }
       }
     },
@@ -740,12 +1022,16 @@
       "currencyName": "Dólar bruneano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 466330,
-          "year": 2025
+          "value": 462721,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 15031980994,
-          "year": 2025
+          "value": 15340808592,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 33153,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 5770,
@@ -757,6 +1043,14 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 3.65,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 20.24,
           "year": 2024
         }
       }
@@ -770,12 +1064,16 @@
       "currencyName": "Ngultrum butanês (Nu.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 796682,
-          "year": 2025
+          "value": 791524,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 3579320145,
-          "year": 2025
+          "value": 3346603859,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4228,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 38390,
@@ -783,6 +1081,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 73.3,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 82.5,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.01,
           "year": 2024
         }
       }
@@ -796,12 +1102,16 @@
       "currencyName": "Pula botsuanesa (P)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2562122,
-          "year": 2025
+          "value": 2521139,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 19928479839,
-          "year": 2025
+          "value": 19286251068,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7650,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 581730,
@@ -812,8 +1122,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.11,
-          "year": 2025
+          "value": 2.68,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 27.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.74,
+          "year": 2024
         }
       }
     },
@@ -826,12 +1144,16 @@
       "currencyName": "Franco CFA de BEAC (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5513282,
-          "year": 2025
+          "value": 5330690,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 3066109226,
-          "year": 2025
+          "value": 2751494281,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 516,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 622980,
@@ -842,8 +1164,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.33,
-          "year": 2025
+          "value": 2.6,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 90.9,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.06,
+          "year": 2024
         }
       }
     },
@@ -856,12 +1186,16 @@
       "currencyName": "Dólar canadense ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 41651653,
-          "year": 2025
+          "value": 41262329,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 2319899772426,
-          "year": 2025
+          "value": 2270076189683,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 55016,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 15634410,
@@ -872,8 +1206,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.63,
-          "year": 2025
+          "value": 1.35,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 23.8,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 14.01,
+          "year": 2024
         }
       }
     },
@@ -886,12 +1228,16 @@
       "currencyName": "Franco suíço (Fr.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 9092436,
-          "year": 2025
+          "value": 9005582,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1043529899251,
-          "year": 2025
+          "value": 969919786395,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 107702,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 41290.7,
@@ -902,8 +1248,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.76,
-          "year": 2025
+          "value": 0.7,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 27.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.75,
+          "year": 2024
         }
       }
     },
@@ -916,12 +1270,16 @@
       "currencyName": "Peso chileno ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 19859921,
-          "year": 2025
+          "value": 19764771,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 357371159575,
-          "year": 2025
+          "value": 329260633699,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 16659,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 756556.4,
@@ -932,8 +1290,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.52,
-          "year": 2025
+          "value": 1.67,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 24.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.94,
+          "year": 2024
         }
       }
     },
@@ -946,12 +1312,16 @@
       "currencyName": "Yuan chinês (¥)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1406585000,
-          "year": 2025
+          "value": 1408975000,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 19498039388043,
-          "year": 2025
+          "value": 18729668435848,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 13293,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 9562910,
@@ -962,8 +1332,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.72,
-          "year": 2025
+          "value": 1.66,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 15.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 9.32,
+          "year": 2024
         }
       }
     },
@@ -976,12 +1354,16 @@
       "currencyName": "Franco CFA de BCEAO (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 32711547,
-          "year": 2025
+          "value": 31934230,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 99773555666,
-          "year": 2025
+          "value": 87113179149,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2728,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 322460,
@@ -992,8 +1374,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.77,
-          "year": 2025
+          "value": 0.76,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 58.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.59,
+          "year": 2024
         }
       }
     },
@@ -1006,12 +1396,16 @@
       "currencyName": "Franco CFA de BEAC (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 29879337,
-          "year": 2025
+          "value": 29123744,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 58933453924,
-          "year": 2025
+          "value": 53296694320,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1830,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 475442,
@@ -1022,8 +1416,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.06,
-          "year": 2025
+          "value": 1,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 79.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.35,
+          "year": 2024
         }
       }
     },
@@ -1036,12 +1438,16 @@
       "currencyName": "Franco congolês (FC)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 112832473,
-          "year": 2025
+          "value": 109276265,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 91030531317,
-          "year": 2025
+          "value": 75716176105,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 693,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 2345410,
@@ -1052,8 +1458,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.38,
-          "year": 2025
+          "value": 1.22,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 96.3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.06,
+          "year": 2024
         }
       }
     },
@@ -1066,12 +1480,16 @@
       "currencyName": "Franco CFA de BEAC (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 6484437,
-          "year": 2025
+          "value": 6332961,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 16306633779,
-          "year": 2025
+          "value": 15719986077,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2482,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 342000,
@@ -1082,8 +1500,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.31,
-          "year": 2025
+          "value": 1.23,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 71.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.34,
+          "year": 2024
         }
       }
     },
@@ -1096,12 +1522,16 @@
       "currencyName": "Peso colombiano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 53425635,
-          "year": 2025
+          "value": 52886363,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 457410034203,
-          "year": 2025
+          "value": 420504033143,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7951,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1140619.1,
@@ -1112,8 +1542,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.2,
-          "year": 2025
+          "value": 3.31,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 29.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.8,
+          "year": 2024
         }
       }
     },
@@ -1126,12 +1564,16 @@
       "currencyName": "Colón costarriquenho (₡)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5152950,
-          "year": 2025
+          "value": 5129910,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 102904921157,
-          "year": 2025
+          "value": 96715644331,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 18853,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 51100,
@@ -1143,7 +1585,15 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 0,
-          "year": 2025
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 34.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.63,
+          "year": 2024
         }
       }
     },
@@ -1156,11 +1606,15 @@
       "currencyName": "Peso cubano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10937203,
-          "year": 2025
+          "value": 10979783,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 107352000000,
+          "year": 2020
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 9605,
           "year": 2020
         },
         "AG.SRF.TOTL.K2": {
@@ -1174,6 +1628,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 2.88,
           "year": 2018
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 20.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.91,
+          "year": 2024
         }
       }
     },
@@ -1195,12 +1657,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1370754,
-          "year": 2025
+          "value": 1358282,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 41225787247,
-          "year": 2025
+          "value": 37634551821,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 38674,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 9250,
@@ -1211,8 +1677,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.61,
-          "year": 2025
+          "value": 1.58,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 15.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.4,
+          "year": 2024
         }
       }
     },
@@ -1225,12 +1699,16 @@
       "currencyName": "Coroa tcheca (Kč)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10886878,
-          "year": 2025
+          "value": 10905028,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 391026962800,
-          "year": 2025
+          "value": 347082562221,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 31828,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 78871.4,
@@ -1241,8 +1719,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.84,
-          "year": 2025
+          "value": 1.88,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 17.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 7.13,
+          "year": 2024
         }
       }
     },
@@ -1255,12 +1741,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 83491249,
-          "year": 2025
+          "value": 83516593,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 5050922925047,
-          "year": 2025
+          "value": 4685592577805,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 56104,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 357680,
@@ -1271,8 +1761,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.27,
-          "year": 2025
+          "value": 1.84,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 17.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 6.94,
+          "year": 2024
         }
       }
     },
@@ -1285,12 +1783,16 @@
       "currencyName": "Franco djiboutiano (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1184076,
-          "year": 2025
+          "value": 1168722,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 4624533092,
-          "year": 2025
+          "value": 4152145940,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 3553,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 23200,
@@ -1303,6 +1805,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 2.63,
           "year": 2008
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 26.9,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.77,
+          "year": 2024
         }
       }
     },
@@ -1315,12 +1825,16 @@
       "currencyName": "Coroa dinamarquesa (kr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 6009169,
-          "year": 2025
+          "value": 5976992,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 462526660468,
-          "year": 2025
+          "value": 424524722037,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 71026,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 42920,
@@ -1331,8 +1845,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.25,
-          "year": 2025
+          "value": 2.27,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 39.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.28,
+          "year": 2024
         }
       }
     },
@@ -1345,12 +1867,16 @@
       "currencyName": "Peso dominicano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 11520487,
-          "year": 2025
+          "value": 11427557,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 127407463759,
-          "year": 2025
+          "value": 124282245639,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 10876,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 146839.5,
@@ -1361,8 +1887,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.8,
-          "year": 2025
+          "value": 0.81,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 14.8,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.99,
+          "year": 2024
         }
       }
     },
@@ -1375,12 +1909,16 @@
       "currencyName": "Dinar argelino (د.ج)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 47435312,
-          "year": 2025
+          "value": 46814308,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 287031225988,
-          "year": 2025
+          "value": 269322281665,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 5753,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 2381740,
@@ -1391,8 +1929,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 8.83,
-          "year": 2025
+          "value": 7.97,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.98,
+          "year": 2024
         }
       }
     },
@@ -1405,12 +1951,16 @@
       "currencyName": "Dólar americano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 18289896,
-          "year": 2025
+          "value": 18135478,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 130320560400,
-          "year": 2025
+          "value": 123802374000,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6827,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 256370,
@@ -1421,8 +1971,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.1,
-          "year": 2025
+          "value": 2.31,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 18.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.64,
+          "year": 2024
         }
       }
     },
@@ -1435,12 +1993,16 @@
       "currencyName": "Libra egípcia (£)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 118365995,
-          "year": 2025
+          "value": 116538258,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 365254630180,
-          "year": 2025
+          "value": 389059910593,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 3338,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1001450,
@@ -1451,8 +2013,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.61,
-          "year": 2025
+          "value": 0.67,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 6.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.5,
+          "year": 2024
         }
       }
     },
@@ -1465,11 +2035,15 @@
       "currencyName": "Nakfa da Eritreia (Nfk)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3607003,
-          "year": 2025
+          "value": 3535603,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 2065001626,
+          "year": 2011
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 689,
           "year": 2011
         },
         "AG.SRF.TOTL.K2": {
@@ -1483,6 +2057,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 20.87,
           "year": 2003
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 80.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.22,
+          "year": 2024
         }
       }
     },
@@ -1504,12 +2086,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 49355143,
-          "year": 2025
+          "value": 48848840,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1906453309986,
-          "year": 2025
+          "value": 1725671652742,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 35327,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 505981.3,
@@ -1520,8 +2106,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.13,
-          "year": 2025
+          "value": 1.46,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 19,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.51,
+          "year": 2024
         }
       }
     },
@@ -1534,12 +2128,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1366475,
-          "year": 2025
+          "value": 1372341,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 47030833799,
-          "year": 2025
+          "value": 43130419829,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 31428,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 45340,
@@ -1550,8 +2148,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.37,
-          "year": 2025
+          "value": 3.3,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 38,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 7.76,
+          "year": 2024
         }
       }
     },
@@ -1564,12 +2170,16 @@
       "currencyName": "Birr etíope (Br)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 135472051,
-          "year": 2025
+          "value": 132059767,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 126358758448,
-          "year": 2025
+          "value": 149740297952,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1134,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1129818.8,
@@ -1581,7 +2191,15 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 0.49,
-          "year": 2025
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 90.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.15,
+          "year": 2024
         }
       }
     },
@@ -1594,12 +2212,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5646436,
-          "year": 2025
+          "value": 5619911,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 317039368820,
-          "year": 2025
+          "value": 298729432712,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 53156,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 338485,
@@ -1610,8 +2232,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.57,
-          "year": 2025
+          "value": 2.18,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 50.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.54,
+          "year": 2024
         }
       }
     },
@@ -1624,12 +2254,16 @@
       "currencyName": "Dólar fijiano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 933154,
-          "year": 2025
+          "value": 928784,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 6198013062,
-          "year": 2025
+          "value": 5968125909,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6426,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 18333,
@@ -1640,8 +2274,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.33,
-          "year": 2025
+          "value": 1.31,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 28.4,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.62,
+          "year": 2024
         }
       }
     },
@@ -1663,12 +2305,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 68720337,
-          "year": 2025
+          "value": 68551653,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 3366315927447,
-          "year": 2025
+          "value": 3160442622465,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 46103,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 606410,
@@ -1679,8 +2325,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.03,
-          "year": 2025
+          "value": 2.01,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 16.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4,
+          "year": 2024
         }
       }
     },
@@ -1693,12 +2347,16 @@
       "currencyName": "Franco CFA de BEAC (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2593130,
-          "year": 2025
+          "value": 2538952,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 21427119323,
-          "year": 2025
+          "value": 20895684426,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 8230,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 267670,
@@ -1709,8 +2367,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.66,
-          "year": 2025
+          "value": 1.53,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 91.3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.05,
+          "year": 2024
         }
       }
     },
@@ -1723,12 +2389,16 @@
       "currencyName": "Libra esterlina (£)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 69487000,
-          "year": 2025
+          "value": 69281000,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 4002587541846,
-          "year": 2025
+          "value": 3695539513534,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 53341,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 243610,
@@ -1739,8 +2409,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.35,
-          "year": 2025
+          "value": 2.44,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 12.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.22,
+          "year": 2024
         }
       }
     },
@@ -1753,12 +2431,16 @@
       "currencyName": "Lari georgiano (₾)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3935766,
-          "year": 2025
+          "value": 3812518,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 38143612855,
-          "year": 2025
+          "value": 34189423333,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 8968,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 69700,
@@ -1769,8 +2451,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.75,
-          "year": 2025
+          "value": 1.59,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 25.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.53,
+          "year": 2024
         }
       }
     },
@@ -1783,12 +2473,16 @@
       "currencyName": "Cedi ganês (₵)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 35064272,
-          "year": 2025
+          "value": 34427414,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 114209905279,
-          "year": 2025
+          "value": 83288585604,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2419,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 238539,
@@ -1799,8 +2493,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.48,
-          "year": 2025
+          "value": 0.35,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 39,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.7,
+          "year": 2024
         }
       }
     },
@@ -1813,12 +2515,16 @@
       "currencyName": "Franco guineano (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 15099727,
-          "year": 2025
+          "value": 14754785,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 28346024753,
-          "year": 2025
+          "value": 25008678293,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1695,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 245857,
@@ -1829,8 +2535,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.03,
-          "year": 2025
+          "value": 2.17,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 66.6,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.35,
+          "year": 2024
         }
       }
     },
@@ -1843,12 +2557,16 @@
       "currencyName": "Dalasi gambiano (D)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2822093,
-          "year": 2025
+          "value": 2759988,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 2593673988,
-          "year": 2025
+          "value": 2404888738,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 871,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 11295,
@@ -1859,8 +2577,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.57,
-          "year": 2025
+          "value": 0.6,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 47.7,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.18,
+          "year": 2024
         }
       }
     },
@@ -1873,12 +2599,16 @@
       "currencyName": "Franco CFA de BCEAO (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2249515,
-          "year": 2025
+          "value": 2201352,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 2527930273,
-          "year": 2025
+          "value": 2197777210,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 998,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 36125,
@@ -1889,8 +2619,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.89,
-          "year": 2025
+          "value": 1.04,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 87.4,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.16,
+          "year": 2024
         }
       }
     },
@@ -1903,12 +2641,16 @@
       "currencyName": "Franco CFA de BEAC (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1938431,
-          "year": 2025
+          "value": 1892516,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 12823210426,
-          "year": 2025
+          "value": 13254388261,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7004,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 28051.5,
@@ -1920,7 +2662,15 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 0.9,
-          "year": 2025
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 4.2,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.55,
+          "year": 2024
         }
       }
     },
@@ -1933,12 +2683,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10413962,
-          "year": 2025
+          "value": 10405134,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 280635521324,
-          "year": 2025
+          "value": 256238371778,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 24626,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 131960,
@@ -1949,8 +2703,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.99,
-          "year": 2025
+          "value": 2.88,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 21.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.05,
+          "year": 2024
         }
       }
     },
@@ -1963,11 +2725,15 @@
       "currencyName": "Coroa dinamarquesa (kr.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 56831,
-          "year": 2025
+          "value": 56836,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 3326543974,
+          "year": 2023
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 58499,
           "year": 2023
         },
         "AG.SRF.TOTL.K2": {
@@ -1976,6 +2742,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 70.3,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 11.7,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 10.45,
           "year": 2024
         }
       }
@@ -1989,12 +2763,16 @@
       "currencyName": "Quetzal guatemalteco (Q)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 18687881,
-          "year": 2025
+          "value": 18406359,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 123306008821,
-          "year": 2025
+          "value": 113215575151,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6151,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 108889,
@@ -2005,8 +2783,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.52,
-          "year": 2025
+          "value": 0.4,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 62.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.11,
+          "year": 2024
         }
       }
     },
@@ -2028,12 +2814,16 @@
       "currencyName": "Dólar guianense ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 835986,
-          "year": 2025
+          "value": 831087,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 27097477218,
-          "year": 2025
+          "value": 24662714628,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 29675,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 214970,
@@ -2044,8 +2834,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.99,
-          "year": 2025
+          "value": 0.84,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 12.1,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.56,
+          "year": 2024
         }
       }
     },
@@ -2058,12 +2856,16 @@
       "currencyName": "Lempira hondurenha (L)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 11005850,
-          "year": 2025
+          "value": 10825703,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 39601409103,
-          "year": 2025
+          "value": 36980171442,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 3416,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 112492,
@@ -2074,8 +2876,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.46,
-          "year": 2025
+          "value": 1.48,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 45.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.14,
+          "year": 2024
         }
       }
     },
@@ -2088,12 +2898,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3876200,
-          "year": 2025
+          "value": 3866200,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 105060182186,
-          "year": 2025
+          "value": 92981894168,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 24050,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 88070,
@@ -2104,8 +2918,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.02,
-          "year": 2025
+          "value": 1.86,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 34.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.83,
+          "year": 2024
         }
       }
     },
@@ -2118,12 +2940,16 @@
       "currencyName": "Gourde haitiano (G)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 11906095,
-          "year": 2025
+          "value": 11772557,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 32077278409,
-          "year": 2025
+          "value": 24255657481,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2060,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 27750,
@@ -2134,8 +2960,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.12,
-          "year": 2025
+          "value": 0.08,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 76.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.3,
+          "year": 2024
         }
       }
     },
@@ -2148,12 +2982,16 @@
       "currencyName": "Florim húngaro (Ft)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 9514251,
-          "year": 2025
+          "value": 9562065,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 246490213513,
-          "year": 2025
+          "value": 222848211034,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 23305,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 93030,
@@ -2164,8 +3002,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.04,
-          "year": 2025
+          "value": 2.12,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 15.3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.46,
+          "year": 2024
         }
       }
     },
@@ -2178,12 +3024,16 @@
       "currencyName": "Rupia indonésia (Rp)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 285721236,
-          "year": 2025
+          "value": 283487931,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1445642584164,
-          "year": 2025
+          "value": 1396301788462,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4925,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1916906.8,
@@ -2194,8 +3044,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.04,
-          "year": 2025
+          "value": 0.86,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 20.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.87,
+          "year": 2024
         }
       }
     },
@@ -2208,12 +3066,16 @@
       "currencyName": "Rupia indiana (₹)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1463865525,
-          "year": 2025
+          "value": 1450935791,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 3956067115772,
-          "year": 2025
+          "value": 3760813470501,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2592,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 3287263,
@@ -2224,8 +3086,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.3,
-          "year": 2025
+          "value": 2.22,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 34.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.17,
+          "year": 2024
         }
       }
     },
@@ -2238,12 +3108,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5484367,
-          "year": 2025
+          "value": 5395790,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 721701359046,
-          "year": 2025
+          "value": 609157459747,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 112895,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 70280,
@@ -2255,7 +3129,15 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 0.22,
-          "year": 2025
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 12.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 6.04,
+          "year": 2024
         }
       }
     },
@@ -2268,12 +3150,16 @@
       "currencyName": "Rial iraniano (﷼)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 92417681,
-          "year": 2025
+          "value": 91567738,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 362682115433,
-          "year": 2025
+          "value": 475252089215,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 5190,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1745150,
@@ -2284,8 +3170,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.09,
-          "year": 2025
+          "value": 2.22,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 9.05,
+          "year": 2024
         }
       }
     },
@@ -2298,12 +3192,16 @@
       "currencyName": "Dinar iraquiano (ع.د)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 47020774,
-          "year": 2025
+          "value": 46042015,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 254367293538,
-          "year": 2025
+          "value": 279641257615,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6074,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 435050,
@@ -2314,8 +3212,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.45,
-          "year": 2025
+          "value": 2.27,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 1.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.18,
+          "year": 2024
         }
       }
     },
@@ -2328,12 +3234,16 @@
       "currencyName": "Coroa islandesa (kr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 392404,
-          "year": 2025
+          "value": 386506,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 38582528789,
-          "year": 2025
+          "value": 33186621855,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 85863,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 103000,
@@ -2345,7 +3255,15 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 0,
-          "year": 2025
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 82.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 8.52,
+          "year": 2024
         }
       }
     },
@@ -2358,12 +3276,16 @@
       "currencyName": "Novo shekel israelense (₪)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10122800,
-          "year": 2025
+          "value": 10002200,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 610777842874,
-          "year": 2025
+          "value": 542284494491,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 54217,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 22070,
@@ -2374,8 +3296,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 7.81,
-          "year": 2025
+          "value": 8.47,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 6.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.77,
+          "year": 2024
         }
       }
     },
@@ -2388,12 +3318,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 58915656,
-          "year": 2025
+          "value": 58952704,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 2551556954100,
-          "year": 2025
+          "value": 2383435562458,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 40430,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 302070,
@@ -2404,8 +3338,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.89,
-          "year": 2025
+          "value": 1.59,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 17.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.08,
+          "year": 2024
         }
       }
     },
@@ -2418,12 +3360,16 @@
       "currencyName": "Dólar jamaicano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2837077,
-          "year": 2025
+          "value": 2839175,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 22704903218,
-          "year": 2025
+          "value": 22014429051,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7754,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 10991,
@@ -2434,8 +3380,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.37,
-          "year": 2025
+          "value": 1.39,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 10.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.84,
+          "year": 2024
         }
       }
     },
@@ -2448,12 +3402,16 @@
       "currencyName": "Dinar jordaniano (د.ا)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 11520684,
-          "year": 2025
+          "value": 11552876,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 61610052535,
-          "year": 2025
+          "value": 58618380563,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 5074,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 89318,
@@ -2464,8 +3422,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 4.56,
-          "year": 2025
+          "value": 4.75,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 11.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.09,
+          "year": 2024
         }
       }
     },
@@ -2478,12 +3444,16 @@
       "currencyName": "Iene japonês (¥)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 123366734,
-          "year": 2025
+          "value": 123975371,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 4435162999977,
-          "year": 2025
+          "value": 4190008188359,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 33797,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 377974.7,
@@ -2494,8 +3464,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.41,
-          "year": 2025
+          "value": 1.29,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 8.8,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 7.84,
+          "year": 2024
         }
       }
     },
@@ -2508,12 +3486,16 @@
       "currencyName": "Tenge cazaque (₸)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 20843754,
-          "year": 2025
+          "value": 20592571,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 306239209650,
-          "year": 2025
+          "value": 291480274649,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 14155,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 2724902,
@@ -2524,8 +3506,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.43,
-          "year": 2025
+          "value": 0.4,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 12.57,
+          "year": 2024
         }
       }
     },
@@ -2538,12 +3528,16 @@
       "currencyName": "Xelim queniano (Sh)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 57532493,
-          "year": 2025
+          "value": 56432944,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 135941278879,
-          "year": 2025
+          "value": 120397537850,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2133,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 591970,
@@ -2554,8 +3548,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.07,
-          "year": 2025
+          "value": 1.04,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 67.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.38,
+          "year": 2024
         }
       }
     },
@@ -2568,12 +3570,16 @@
       "currencyName": "Som quirguiz (с)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 7343064,
-          "year": 2025
+          "value": 7221868,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 22623752095,
-          "year": 2025
+          "value": 18161630699,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2515,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 199950,
@@ -2584,8 +3590,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.92,
-          "year": 2025
+          "value": 2.93,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 27.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.49,
+          "year": 2024
         }
       }
     },
@@ -2598,12 +3612,16 @@
       "currencyName": "Riel cambojano (៛)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 17847982,
-          "year": 2025
+          "value": 17638801,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 51267065843,
-          "year": 2025
+          "value": 46352647037,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2628,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 181035,
@@ -2614,8 +3632,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.45,
-          "year": 2025
+          "value": 1.52,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 52.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.1,
+          "year": 2024
         }
       }
     },
@@ -2628,12 +3654,16 @@
       "currencyName": "Won sul-coreano (₩)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 51684564,
-          "year": 2025
+          "value": 51751065,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1872374961553,
-          "year": 2025
+          "value": 1875388209407,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 36239,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 100460,
@@ -2644,8 +3674,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.6,
-          "year": 2025
+          "value": 2.54,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 3.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 11.36,
+          "year": 2024
         }
       }
     },
@@ -2658,12 +3696,16 @@
       "currencyName": "Dinar kuwaitiano (د.ك)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 4865298,
-          "year": 2025
+          "value": 4897263,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 157209026926,
-          "year": 2025
+          "value": 160903106639,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 32856,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 17820,
@@ -2674,8 +3716,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 4.69,
-          "year": 2025
+          "value": 4.44,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 23.67,
+          "year": 2024
         }
       }
     },
@@ -2688,12 +3738,16 @@
       "currencyName": "Kip laosiano (₭)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 7873046,
-          "year": 2025
+          "value": 7769819,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 18302970219,
-          "year": 2025
+          "value": 16502933121,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2124,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 236800,
@@ -2706,6 +3760,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 0.19,
           "year": 2013
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 49.2,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.35,
+          "year": 2024
         }
       }
     },
@@ -2718,11 +3780,15 @@
       "currencyName": "Libra libanesa (ل.ل)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5849421,
-          "year": 2025
+          "value": 5805962,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 25971643441,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4473,
           "year": 2024
         },
         "AG.SRF.TOTL.K2": {
@@ -2734,8 +3800,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.51,
-          "year": 2025
+          "value": 2.25,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 6.8,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.9,
+          "year": 2024
         }
       }
     },
@@ -2748,12 +3822,16 @@
       "currencyName": "Dólar liberiano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5731206,
-          "year": 2025
+          "value": 5612817,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 5245938900,
-          "year": 2025
+          "value": 4779300900,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 851,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 111370,
@@ -2764,8 +3842,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.85,
-          "year": 2025
+          "value": 0.71,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 92.8,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.15,
+          "year": 2024
         }
       }
     },
@@ -2778,12 +3864,16 @@
       "currencyName": "Dinar líbio (ل.د)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 7458555,
-          "year": 2025
+          "value": 7381023,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 48098909614,
-          "year": 2025
+          "value": 48487151215,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6569,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1759540,
@@ -2796,6 +3886,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 3.57,
           "year": 2023
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 3.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 8.66,
+          "year": 2024
         }
       }
     },
@@ -2808,12 +3906,16 @@
       "currencyName": "Rupia cingalesa (Rs රු)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 21756000,
-          "year": 2025
+          "value": 21916000,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 108825231671,
-          "year": 2025
+          "value": 99616111266,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4545,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 65610,
@@ -2824,8 +3926,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.31,
-          "year": 2025
+          "value": 1.28,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 48.8,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.06,
+          "year": 2024
         }
       }
     },
@@ -2838,12 +3948,16 @@
       "currencyName": "Loti lesotiano (L)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2363325,
-          "year": 2025
+          "value": 2337423,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 2573572920,
-          "year": 2025
+          "value": 2391282548,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1023,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 30360,
@@ -2854,8 +3968,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.63,
-          "year": 2025
+          "value": 1.61,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 34.9,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.43,
+          "year": 2024
         }
       }
     },
@@ -2868,12 +3990,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2888774,
-          "year": 2025
+          "value": 2888278,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 95210150818,
-          "year": 2025
+          "value": 85503938574,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 29604,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 65290,
@@ -2884,8 +4010,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.08,
-          "year": 2025
+          "value": 3.14,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 33.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.49,
+          "year": 2024
         }
       }
     },
@@ -2898,12 +4032,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 686970,
-          "year": 2025
+          "value": 677012,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 101157829491,
-          "year": 2025
+          "value": 93279851863,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 137782,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 2590,
@@ -2914,8 +4052,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.85,
-          "year": 2025
+          "value": 0.66,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 20.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 10.56,
+          "year": 2024
         }
       }
     },
@@ -2928,12 +4074,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1847785,
-          "year": 2025
+          "value": 1866124,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 48618869160,
-          "year": 2025
+          "value": 44001275013,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 23579,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 64590,
@@ -2944,8 +4094,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.61,
-          "year": 2025
+          "value": 3.3,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 44,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.65,
+          "year": 2024
         }
       }
     },
@@ -2958,12 +4116,16 @@
       "currencyName": "Dirham marroquino (د.م.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 38430770,
-          "year": 2025
+          "value": 38081173,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 182374250612,
-          "year": 2025
+          "value": 160610994055,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4153,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 446550,
@@ -2974,8 +4136,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.54,
-          "year": 2025
+          "value": 3.44,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 10.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.84,
+          "year": 2024
         }
       }
     },
@@ -2988,12 +4158,16 @@
       "currencyName": "Leu moldávio (L)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2360527,
-          "year": 2025
+          "value": 2402306,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 20351796275,
-          "year": 2025
+          "value": 18206842141,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7579,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 33849,
@@ -3004,8 +4178,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.56,
-          "year": 2025
+          "value": 0.6,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 21.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.42,
+          "year": 2024
         }
       }
     },
@@ -3018,12 +4200,16 @@
       "currencyName": "Ariary malgaxe (Ar)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 32740678,
-          "year": 2025
+          "value": 31964956,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 19620352036,
-          "year": 2025
+          "value": 17592832696,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 550,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 591896,
@@ -3034,8 +4220,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.62,
-          "year": 2025
+          "value": 0.71,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 83.1,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.15,
+          "year": 2024
         }
       }
     },
@@ -3048,12 +4242,16 @@
       "currencyName": "Peso mexicano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 131946900,
-          "year": 2025
+          "value": 130861007,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1832641364776,
-          "year": 2025
+          "value": 1830489311089,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 13988,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1957193.9,
@@ -3064,8 +4262,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.74,
-          "year": 2025
+          "value": 1.13,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 13,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.64,
+          "year": 2024
         }
       }
     },
@@ -3078,12 +4284,16 @@
       "currencyName": "Dinar macedônio (den)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1820909,
-          "year": 2025
+          "value": 1824359,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 19101199817,
-          "year": 2025
+          "value": 16951682221,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 9292,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 25713,
@@ -3094,8 +4304,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.97,
-          "year": 2025
+          "value": 1.77,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 19.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4,
+          "year": 2024
         }
       }
     },
@@ -3108,12 +4326,16 @@
       "currencyName": "Franco CFA de BCEAO (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 25198821,
-          "year": 2025
+          "value": 24478595,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 30069148581,
-          "year": 2025
+          "value": 26761281077,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1093,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1241238,
@@ -3124,8 +4346,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.87,
-          "year": 2025
+          "value": 4.25,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 71.1,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.3,
+          "year": 2024
         }
       }
     },
@@ -3138,12 +4368,16 @@
       "currencyName": "Quiate mianmarense (Ks)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 54850648,
-          "year": 2025
+          "value": 54500091,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 81665773810,
-          "year": 2025
+          "value": 74068349524,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1359,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 676578,
@@ -3155,6 +4389,14 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 6.6,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 62.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.58,
           "year": 2024
         }
       }
@@ -3168,12 +4410,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 623129,
-          "year": 2025
+          "value": 623525,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 9232801465,
-          "year": 2025
+          "value": 8274290506,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 13270,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 13883,
@@ -3184,8 +4430,12 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.89,
-          "year": 2025
+          "value": 1.81,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 39.6,
+          "year": 2021
         }
       }
     },
@@ -3198,12 +4448,16 @@
       "currencyName": "Tugrik mongol (₮)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3568978,
-          "year": 2025
+          "value": 3524788,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 25369107325,
-          "year": 2025
+          "value": 23794540025,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6751,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1564115.7,
@@ -3214,8 +4468,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.88,
-          "year": 2025
+          "value": 0.76,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 7.85,
+          "year": 2024
         }
       }
     },
@@ -3228,12 +4490,16 @@
       "currencyName": "Metical moçambicano (MT)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 35631653,
-          "year": 2025
+          "value": 34631766,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 22337997046,
-          "year": 2025
+          "value": 22752244245,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 657,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 799380,
@@ -3244,8 +4510,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.87,
-          "year": 2025
+          "value": 2.12,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 76.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.29,
+          "year": 2024
         }
       }
     },
@@ -3258,12 +4532,16 @@
       "currencyName": "Ouguiya mauritana (UM)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5315065,
-          "year": 2025
+          "value": 5169395,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 11679910946,
-          "year": 2025
+          "value": 10879212033,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2105,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1030700,
@@ -3274,8 +4552,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.75,
-          "year": 2025
+          "value": 2.55,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 19.6,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.97,
+          "year": 2024
         }
       }
     },
@@ -3288,12 +4574,16 @@
       "currencyName": "Kwacha malauiana (MK)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 22216120,
-          "year": 2025
+          "value": 21655286,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 14918276698,
-          "year": 2025
+          "value": 11311971400,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 522,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 118484,
@@ -3304,8 +4594,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.15,
-          "year": 2025
+          "value": 1.06,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 62.9,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.22,
+          "year": 2024
         }
       }
     },
@@ -3318,12 +4616,16 @@
       "currencyName": "Ringgit malaio (RM)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 35977838,
-          "year": 2025
+          "value": 35557673,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 472193128645,
-          "year": 2025
+          "value": 422227005429,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 11874,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 330534,
@@ -3335,7 +4637,15 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 1.04,
-          "year": 2025
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 7.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 8.32,
+          "year": 2024
         }
       }
     },
@@ -3348,12 +4658,16 @@
       "currencyName": "Dólar namibiano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3092816,
-          "year": 2025
+          "value": 3030131,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 15080340654,
-          "year": 2025
+          "value": 13641190683,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4502,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 824292,
@@ -3364,8 +4678,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.77,
-          "year": 2025
+          "value": 2.75,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 30,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.2,
+          "year": 2024
         }
       }
     },
@@ -3378,11 +4700,15 @@
       "currencyName": "Franco CFP (₣)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 295333,
-          "year": 2025
+          "value": 292639,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 8548919387,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 29213,
           "year": 2024
         },
         "AG.SRF.TOTL.K2": {
@@ -3391,6 +4717,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 78.9,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 9.6,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 17.08,
           "year": 2024
         }
       }
@@ -3404,12 +4738,16 @@
       "currencyName": "Franco CFA de BCEAO (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 27917831,
-          "year": 2025
+          "value": 27032412,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 21646191388,
-          "year": 2025
+          "value": 19729786047,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 730,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1267000,
@@ -3420,8 +4758,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.14,
-          "year": 2025
+          "value": 2.2,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 79.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.12,
+          "year": 2024
         }
       }
     },
@@ -3434,12 +4780,16 @@
       "currencyName": "Naira nigeriana (₦)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 237527782,
-          "year": 2025
+          "value": 232679478,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 290794361542,
-          "year": 2025
+          "value": 252261880140,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1084,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 923768,
@@ -3450,8 +4800,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.91,
-          "year": 2025
+          "value": 0.56,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 80.3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.57,
+          "year": 2024
         }
       }
     },
@@ -3464,12 +4822,16 @@
       "currencyName": "Córdoba nicaraguense (C$)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 7007502,
-          "year": 2025
+          "value": 6916140,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 22237167113,
-          "year": 2025
+          "value": 19696311850,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2848,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 130370,
@@ -3480,8 +4842,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.56,
-          "year": 2025
+          "value": 0.55,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 50.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.83,
+          "year": 2024
         }
       }
     },
@@ -3494,12 +4864,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 18087633,
-          "year": 2025
+          "value": 17993485,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1332767651100,
-          "year": 2025
+          "value": 1213936238063,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 67465,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 41540,
@@ -3510,8 +4884,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.19,
-          "year": 2025
+          "value": 1.94,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 12.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 6.6,
+          "year": 2024
         }
       }
     },
@@ -3524,12 +4906,16 @@
       "currencyName": "Coroa norueguesa (kr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5610870,
-          "year": 2025
+          "value": 5572279,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 530755719439,
-          "year": 2025
+          "value": 500886328034,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 89889,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 624500,
@@ -3540,8 +4926,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.28,
-          "year": 2025
+          "value": 2.23,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 61.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 7.18,
+          "year": 2024
         }
       }
     },
@@ -3554,12 +4948,16 @@
       "currencyName": "Rupia nepalesa (₨)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 29618118,
-          "year": 2025
+          "value": 29651054,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 45489810283,
-          "year": 2025
+          "value": 43298911700,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1460,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 147181,
@@ -3570,8 +4968,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.97,
-          "year": 2025
+          "value": 1.02,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 73.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.54,
+          "year": 2024
         }
       }
     },
@@ -3584,12 +4990,16 @@
       "currencyName": "Dólar neozelandês ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5324700,
-          "year": 2025
+          "value": 5290000,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 264057413740,
-          "year": 2025
+          "value": 261497198364,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 49432,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 267710,
@@ -3600,8 +5010,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.1,
-          "year": 2025
+          "value": 1.16,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 28.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 6.01,
+          "year": 2024
         }
       }
     },
@@ -3614,12 +5032,16 @@
       "currencyName": "Rial omanense (ر.ع.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5494691,
-          "year": 2025
+          "value": 5281538,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 109604780696,
-          "year": 2025
+          "value": 107137198700,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 20285,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 309500,
@@ -3630,8 +5052,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 5.68,
-          "year": 2025
+          "value": 5.59,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 18.65,
+          "year": 2024
         }
       }
     },
@@ -3644,12 +5074,16 @@
       "currencyName": "Rupia paquistanesa (₨)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 255219554,
-          "year": 2025
+          "value": 251269164,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 407307214476,
-          "year": 2025
+          "value": 371747087751,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1479,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 796100,
@@ -3660,8 +5094,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.91,
-          "year": 2025
+          "value": 2.73,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 41.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.81,
+          "year": 2024
         }
       }
     },
@@ -3674,12 +5116,16 @@
       "currencyName": "Balboa panamenho (B/.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 4571189,
-          "year": 2025
+          "value": 4515577,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 90462600000,
-          "year": 2025
+          "value": 86523959100,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 19161,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 75320,
@@ -3691,7 +5137,15 @@
         },
         "MS.MIL.XPND.GD.ZS": {
           "value": 0,
-          "year": 2025
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 28,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.74,
+          "year": 2024
         }
       }
     },
@@ -3704,12 +5158,16 @@
       "currencyName": "Novo sol peruano (S/.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 34576665,
-          "year": 2025
+          "value": 34217848,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 334854659182,
-          "year": 2025
+          "value": 291751523019,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 8526,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1285215.6,
@@ -3720,8 +5178,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.81,
-          "year": 2025
+          "value": 0.88,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 30.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.02,
+          "year": 2024
         }
       }
     },
@@ -3734,12 +5200,16 @@
       "currencyName": "Peso filipino (₱)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 116786962,
-          "year": 2025
+          "value": 115843670,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 487086123720,
-          "year": 2025
+          "value": 461671157905,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 3985,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 300000,
@@ -3750,8 +5220,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.3,
-          "year": 2025
+          "value": 1.19,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 28,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.5,
+          "year": 2024
         }
       }
     },
@@ -3764,12 +5242,16 @@
       "currencyName": "Kina papuásia (K)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10762817,
-          "year": 2025
+          "value": 10576502,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 32498658654,
-          "year": 2025
+          "value": 30803971189,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2912,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 462840,
@@ -3780,8 +5262,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.35,
-          "year": 2025
+          "value": 0.31,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 54.6,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.52,
+          "year": 2024
         }
       }
     },
@@ -3794,12 +5284,16 @@
       "currencyName": "Zloty polonês (zł)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 36435861,
-          "year": 2025
+          "value": 36559233,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1035491784197,
-          "year": 2025
+          "value": 917767106147,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 25104,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 313940,
@@ -3810,8 +5304,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 4.5,
-          "year": 2025
+          "value": 3.75,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 15.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 7.55,
+          "year": 2024
         }
       }
     },
@@ -3824,12 +5326,16 @@
       "currencyName": "Dólar americano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3184835,
-          "year": 2025
+          "value": 3202521,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 129368484000,
-          "year": 2025
+          "value": 126029527034,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 39353,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 8870,
@@ -3837,6 +5343,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 81.9,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 2.5,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.82,
           "year": 2024
         }
       }
@@ -3850,8 +5364,8 @@
       "currencyName": "Won norte-coreano (₩)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 26571036,
-          "year": 2025
+          "value": 26498823,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 120540,
@@ -3859,6 +5373,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 73.7,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 14.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.5,
           "year": 2024
         }
       }
@@ -3872,12 +5394,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10804871,
-          "year": 2025
+          "value": 10694681,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 346639825142,
-          "year": 2025
+          "value": 313656884871,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 29328,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 92230,
@@ -3888,8 +5414,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.71,
-          "year": 2025
+          "value": 1.44,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 32.3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.32,
+          "year": 2024
         }
       }
     },
@@ -3902,12 +5436,16 @@
       "currencyName": "Guarani paraguaio (₲)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 7013078,
-          "year": 2025
+          "value": 6929153,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 49278227554,
-          "year": 2025
+          "value": 44738819362,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6457,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 406752,
@@ -3918,8 +5456,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.88,
-          "year": 2025
+          "value": 0.93,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 58.8,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.16,
+          "year": 2024
         }
       }
     },
@@ -3932,12 +5478,16 @@
       "currencyName": "Libra egípcia (E£)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5413596,
-          "year": 2025
+          "value": 5289152,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 17167100000,
-          "year": 2025
+          "value": 16016900000,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 3028,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 6025,
@@ -3946,6 +5496,10 @@
         "SP.DYN.LE00.IN": {
           "value": 69.2,
           "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 15.4,
+          "year": 2022
         }
       }
     },
@@ -3958,12 +5512,16 @@
       "currencyName": "Rial catariano (ر.ق)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2972215,
-          "year": 2025
+          "value": 2857822,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 215559615385,
-          "year": 2025
+          "value": 216294505495,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 75685,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 11636.8,
@@ -3976,6 +5534,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 6.5,
           "year": 2022
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 47.33,
+          "year": 2024
         }
       }
     },
@@ -3988,12 +5554,16 @@
       "currencyName": "Leu romeno (lei)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 19020271,
-          "year": 2025
+          "value": 19051804,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 428677977855,
-          "year": 2025
+          "value": 382564217989,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 20080,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 238397,
@@ -4004,8 +5574,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.28,
-          "year": 2025
+          "value": 2.17,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 23.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.72,
+          "year": 2024
         }
       }
     },
@@ -4018,12 +5596,16 @@
       "currencyName": "Rublo russo (₽)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 143513328,
-          "year": 2025
+          "value": 143669648,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 2561310169359,
-          "year": 2025
+          "value": 2186462268813,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 14962,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 17125190,
@@ -4034,8 +5616,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 7.5,
-          "year": 2025
+          "value": 6.87,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 3.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 13.98,
+          "year": 2024
         }
       }
     },
@@ -4048,12 +5638,16 @@
       "currencyName": "Franco ruandês (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 14569341,
-          "year": 2025
+          "value": 14256567,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 16372132990,
-          "year": 2025
+          "value": 15111064182,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1060,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 26340,
@@ -4064,8 +5658,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.29,
-          "year": 2025
+          "value": 1.23,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 79.9,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.16,
+          "year": 2024
         }
       }
     },
@@ -4078,12 +5680,16 @@
       "currencyName": "Riyal saudita (ر.س)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 36973555,
-          "year": 2025
+          "value": 35300280,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1276942933333,
-          "year": 2025
+          "value": 1254140800000,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 35528,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 2149690,
@@ -4094,8 +5700,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 6.48,
-          "year": 2025
+          "value": 6.41,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 18.48,
+          "year": 2024
         }
       }
     },
@@ -4108,12 +5722,16 @@
       "currencyName": "Libra sudanesa (PT)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 51662147,
-          "year": 2025
+          "value": 50448963,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 60162634574,
-          "year": 2025
+          "value": 49672435513,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 985,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1878000,
@@ -4126,6 +5744,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 0.93,
           "year": 2021
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 61,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.43,
+          "year": 2024
         }
       }
     },
@@ -4138,12 +5764,16 @@
       "currencyName": "Franco CFA de BCEAO (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 18931966,
-          "year": 2025
+          "value": 18501984,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 37006536238,
-          "year": 2025
+          "value": 32169996052,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1739,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 196710,
@@ -4154,8 +5784,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.56,
-          "year": 2025
+          "value": 1.97,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 35.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.77,
+          "year": 2024
         }
       }
     },
@@ -4168,12 +5806,16 @@
       "currencyName": "Dólar das Ilhas Salomão ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 838645,
-          "year": 2025
+          "value": 819198,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1749572443,
-          "year": 2025
+          "value": 1583964704,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1934,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 28446,
@@ -4181,6 +5823,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 70.7,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 50.1,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.38,
           "year": 2024
         }
       }
@@ -4194,12 +5844,16 @@
       "currencyName": "Leone de Serra Leoa (Le)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 8819794,
-          "year": 2025
+          "value": 8642022,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 7464157904,
-          "year": 2025
+          "value": 6971127234,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 807,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 72300,
@@ -4210,8 +5864,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.37,
-          "year": 2025
+          "value": 0.66,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 71.6,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.17,
+          "year": 2024
         }
       }
     },
@@ -4224,12 +5886,16 @@
       "currencyName": "Dólar americano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 6365503,
-          "year": 2025
+          "value": 6338193,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 36708110000,
-          "year": 2025
+          "value": 34879730000,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 5503,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 21040,
@@ -4240,8 +5906,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.34,
-          "year": 2025
+          "value": 1.39,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 21.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.51,
+          "year": 2024
         }
       }
     },
@@ -4254,12 +5928,16 @@
       "currencyName": "Xelim somali (Sh)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 19654739,
-          "year": 2025
+          "value": 19009151,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 12995200000,
-          "year": 2025
+          "value": 11967000000,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 630,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 637657,
@@ -4270,8 +5948,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.54,
-          "year": 2025
+          "value": 1.66,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 95.4,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.05,
+          "year": 2024
         }
       }
     },
@@ -4284,12 +5970,16 @@
       "currencyName": "Dinar sérvio (дин.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 6549143,
-          "year": 2025
+          "value": 6586476,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 99953324473,
-          "year": 2025
+          "value": 90088366320,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 13678,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 88490,
@@ -4300,8 +5990,12 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.76,
-          "year": 2025
+          "value": 2.67,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 27.2,
+          "year": 2021
         }
       }
     },
@@ -4314,11 +6008,15 @@
       "currencyName": "Libra sul-sudanesa (£)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 12188788,
-          "year": 2025
+          "value": 11943408,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 11997800760,
+          "year": 2015
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1080,
           "year": 2015
         },
         "AG.SRF.TOTL.K2": {
@@ -4330,8 +6028,12 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.42,
-          "year": 2025
+          "value": 6.55,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 32.4,
+          "year": 2021
         }
       }
     },
@@ -4344,12 +6046,16 @@
       "currencyName": "Dólar surinamês ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 639850,
-          "year": 2025
+          "value": 634431,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 4523657797,
-          "year": 2025
+          "value": 4416775113,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6962,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 163820,
@@ -4357,6 +6063,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 73.8,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 14.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.06,
           "year": 2024
         }
       }
@@ -4370,12 +6084,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 5413813,
-          "year": 2025
+          "value": 5422069,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 154530066507,
-          "year": 2025
+          "value": 140934076532,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 25993,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 49030,
@@ -4386,8 +6104,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.03,
-          "year": 2025
+          "value": 1.98,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 17.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.51,
+          "year": 2024
         }
       }
     },
@@ -4400,12 +6126,16 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 2130986,
-          "year": 2025
+          "value": 2127400,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 79648204979,
-          "year": 2025
+          "value": 72972015197,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 34301,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 20480,
@@ -4416,8 +6146,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.54,
-          "year": 2025
+          "value": 1.34,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 23.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 6.27,
+          "year": 2024
         }
       }
     },
@@ -4430,12 +6168,16 @@
       "currencyName": "Coroa sueca (kr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10596620,
-          "year": 2025
+          "value": 10569709,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 668998664082,
-          "year": 2025
+          "value": 604827393489,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 57223,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 528860,
@@ -4446,8 +6188,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.47,
-          "year": 2025
+          "value": 1.99,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 57.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.57,
+          "year": 2024
         }
       }
     },
@@ -4460,12 +6210,16 @@
       "currencyName": "Lilangeni suazi (L)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1256174,
-          "year": 2025
+          "value": 1242822,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 5160679613,
-          "year": 2025
+          "value": 4858885841,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 3910,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 17364,
@@ -4476,8 +6230,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.6,
-          "year": 2025
+          "value": 1.54,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 64.7,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.88,
+          "year": 2024
         }
       }
     },
@@ -4490,11 +6252,15 @@
       "currencyName": "Libra síria (£)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 25620427,
-          "year": 2025
+          "value": 24672760,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 23737634644,
+          "year": 2022
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1057,
           "year": 2022
         },
         "AG.SRF.TOTL.K2": {
@@ -4508,6 +6274,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 4.06,
           "year": 2010
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 1.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 1.27,
+          "year": 2024
         }
       }
     },
@@ -4520,12 +6294,16 @@
       "currencyName": "Franco CFA de BEAC (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 21003705,
-          "year": 2025
+          "value": 20299123,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 21472835225,
-          "year": 2025
+          "value": 19906706690,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 981,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1284000,
@@ -4536,8 +6314,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.19,
-          "year": 2025
+          "value": 2.98,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 70,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.14,
+          "year": 2024
         }
       }
     },
@@ -4550,12 +6336,16 @@
       "currencyName": "Franco CFA de BCEAO (Fr)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 8591626,
-          "year": 2025
+          "value": 8406558,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 11889949067,
-          "year": 2025
+          "value": 10643440332,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1266,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 56785,
@@ -4566,8 +6356,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.87,
-          "year": 2025
+          "value": 2.18,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 75.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.31,
+          "year": 2024
         }
       }
     },
@@ -4580,12 +6378,16 @@
       "currencyName": "Baht tailandês (฿)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 71619863,
-          "year": 2025
+          "value": 71668011,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 577009981112,
-          "year": 2025
+          "value": 529385520942,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7387,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 513115,
@@ -4596,8 +6398,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.04,
-          "year": 2025
+          "value": 1.05,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 19,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.96,
+          "year": 2024
         }
       }
     },
@@ -4610,12 +6420,16 @@
       "currencyName": "Somoni tadjique (ЅМ)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 10786734,
-          "year": 2025
+          "value": 10590927,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 17660626562,
-          "year": 2025
+          "value": 14425113700,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1362,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 141379,
@@ -4626,8 +6440,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.47,
-          "year": 2025
+          "value": 1.33,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 34.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.92,
+          "year": 2024
         }
       }
     },
@@ -4640,12 +6462,16 @@
       "currencyName": "Manat turcomeno (m)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 7618847,
-          "year": 2025
+          "value": 7494498,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 49828621356,
-          "year": 2025
+          "value": 44249447717,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 5904,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 491209,
@@ -4658,6 +6484,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 3.11,
           "year": 1999
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0.1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 10.86,
+          "year": 2024
         }
       }
     },
@@ -4670,12 +6504,16 @@
       "currencyName": "Dólar americano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1418517,
-          "year": 2025
+          "value": 1400638,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1902180258,
-          "year": 2025
+          "value": 1865608515,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1332,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 14870,
@@ -4686,8 +6524,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.25,
-          "year": 2025
+          "value": 2.15,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 11.4,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.5,
+          "year": 2024
         }
       }
     },
@@ -4700,12 +6546,16 @@
       "currencyName": "Dólar de Trinidad e Tobago ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1367764,
-          "year": 2025
+          "value": 1368333,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 25942749718,
-          "year": 2025
+          "value": 25633544529,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 18733,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 5128,
@@ -4716,8 +6566,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.94,
-          "year": 2025
+          "value": 0.98,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 0.5,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 19.58,
+          "year": 2024
         }
       }
     },
@@ -4730,12 +6588,16 @@
       "currencyName": "Dinar tunisiano (د.ت)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 12348573,
-          "year": 2025
+          "value": 12277109,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 57502836548,
-          "year": 2025
+          "value": 51412122480,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4188,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 163610,
@@ -4746,8 +6608,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.49,
-          "year": 2025
+          "value": 2.5,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 11.6,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.62,
+          "year": 2024
         }
       }
     },
@@ -4760,12 +6630,16 @@
       "currencyName": "Lira turca (₺)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 85878556,
-          "year": 2025
+          "value": 85518661,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1597293229287,
-          "year": 2025
+          "value": 1359123768774,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 15893,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 785350,
@@ -4776,8 +6650,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.91,
-          "year": 2025
+          "value": 1.84,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 12,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 5.38,
+          "year": 2024
         }
       }
     },
@@ -4799,12 +6681,16 @@
       "currencyName": "Xelim tanzaniano (Sh)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 70545865,
-          "year": 2025
+          "value": 68560157,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 90143496090,
-          "year": 2025
+          "value": 79235713445,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1193,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 945500,
@@ -4815,8 +6701,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.16,
-          "year": 2025
+          "value": 1.17,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 78.3,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.31,
+          "year": 2024
         }
       }
     },
@@ -4829,12 +6723,16 @@
       "currencyName": "Xelim ugandense (Sh)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 51384894,
-          "year": 2025
+          "value": 50015092,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 61985829288,
-          "year": 2025
+          "value": 53911907079,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1078,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 241551,
@@ -4845,8 +6743,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.96,
-          "year": 2025
+          "value": 1.97,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 90.9,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.17,
+          "year": 2024
         }
       }
     },
@@ -4859,12 +6765,16 @@
       "currencyName": "Hryvnia ucraniano (₴)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 38980376,
-          "year": 2025
+          "value": 37860221,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 214233312784,
-          "year": 2025
+          "value": 190833835445,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 5392,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 603550,
@@ -4875,8 +6785,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 39.56,
-          "year": 2025
+          "value": 33.96,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 8.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.13,
+          "year": 2024
         }
       }
     },
@@ -4889,12 +6807,16 @@
       "currencyName": "Peso uruguaio ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 3384688,
-          "year": 2025
+          "value": 3386588,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 85347696278,
-          "year": 2025
+          "value": 82322859144,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 24308,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 176215,
@@ -4905,8 +6827,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.28,
-          "year": 2025
+          "value": 1.96,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 57.8,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 2.57,
+          "year": 2024
         }
       }
     },
@@ -4919,12 +6849,16 @@
       "currencyName": "Dólar americano ($)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 341784857,
-          "year": 2025
+          "value": 340003797,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 30769700000000,
-          "year": 2025
+          "value": 29298013000000,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 86170,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 9831510,
@@ -4935,8 +6869,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 3.12,
-          "year": 2025
+          "value": 3.43,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 10.9,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 13.62,
+          "year": 2024
         }
       }
     },
@@ -4949,12 +6891,16 @@
       "currencyName": "Som uzbeque (so'm)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 37053428,
-          "year": 2025
+          "value": 36361859,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 147038081129,
-          "year": 2025
+          "value": 121356065241,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 3337,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 448923,
@@ -4967,6 +6913,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 2.49,
           "year": 2018
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 1,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.09,
+          "year": 2024
         }
       }
     },
@@ -4979,12 +6933,16 @@
       "currencyName": "Bolívar venezuelano (Bs.S.)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 28516896,
-          "year": 2025
+          "value": 28405543,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 99661244156,
-          "year": 2025
+          "value": 120566112397,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4244,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 912050,
@@ -4997,6 +6955,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 2.23,
           "year": 2017
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 33.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 3.39,
+          "year": 2024
         }
       }
     },
@@ -5009,12 +6975,16 @@
       "currencyName": "Dong vietnamita (₫)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 101598527,
-          "year": 2025
+          "value": 100987686,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 514697215165,
-          "year": 2025
+          "value": 476324572784,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 4717,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 331338.3,
@@ -5025,8 +6995,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 2.15,
-          "year": 2025
+          "value": 1.8,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 24.2,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 4.27,
+          "year": 2024
         }
       }
     },
@@ -5039,12 +7017,16 @@
       "currencyName": "Vatu de Vanuatu (Vt)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 335169,
-          "year": 2025
+          "value": 327777,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 1353658841,
-          "year": 2025
+          "value": 1297956615,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 3960,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 12189,
@@ -5052,6 +7034,14 @@
         },
         "SP.DYN.LE00.IN": {
           "value": 71.7,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 25,
+          "year": 2022
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.87,
           "year": 2024
         }
       }
@@ -5065,20 +7055,24 @@
       "currencyName": "Euro (€)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 1576876,
-          "year": 2025
+          "value": 1594353,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 12456403307,
-          "year": 2025
+          "value": 11203038332,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 7027,
+          "year": 2024
         },
         "SP.DYN.LE00.IN": {
           "value": 78.2,
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.85,
-          "year": 2025
+          "value": 1.48,
+          "year": 2024
         }
       }
     },
@@ -5091,11 +7085,15 @@
       "currencyName": "Rial iemenita (﷼)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 41773878,
-          "year": 2025
+          "value": 40583164,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
           "value": 21606160663,
+          "year": 2018
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 634,
           "year": 2018
         },
         "AG.SRF.TOTL.K2": {
@@ -5109,6 +7107,14 @@
         "MS.MIL.XPND.GD.ZS": {
           "value": 3.97,
           "year": 2014
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 3.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.26,
+          "year": 2024
         }
       }
     },
@@ -5121,12 +7127,16 @@
       "currencyName": "Rand sul-africano (R)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 64747319,
-          "year": 2025
+          "value": 64007187,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 427184325997,
-          "year": 2025
+          "value": 401144998374,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 6267,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 1219602,
@@ -5137,8 +7147,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.74,
-          "year": 2025
+          "value": 0.76,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 9.7,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 6.88,
+          "year": 2024
         }
       }
     },
@@ -5151,12 +7169,16 @@
       "currencyName": "Kwacha zambiano (ZK)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 21913874,
-          "year": 2025
+          "value": 21314956,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 28879806220,
-          "year": 2025
+          "value": 25303185342,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 1187,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 752612,
@@ -5167,8 +7189,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 1.26,
-          "year": 2025
+          "value": 1.33,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 83,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.54,
+          "year": 2024
         }
       }
     },
@@ -5181,12 +7211,16 @@
       "currencyName": "Pula botsuanesa (P)",
       "indicators": {
         "SP.POP.TOTL": {
-          "value": 16950795,
-          "year": 2025
+          "value": 16634373,
+          "year": 2024
         },
         "NY.GDP.MKTP.CD": {
-          "value": 51215643906,
-          "year": 2025
+          "value": 41521975830,
+          "year": 2024
+        },
+        "NY.GDP.PCAP.CD": {
+          "value": 2496,
+          "year": 2024
         },
         "AG.SRF.TOTL.K2": {
           "value": 390760,
@@ -5197,8 +7231,16 @@
           "year": 2024
         },
         "MS.MIL.XPND.GD.ZS": {
-          "value": 0.56,
-          "year": 2025
+          "value": 0.35,
+          "year": 2024
+        },
+        "EG.FEC.RNEW.ZS": {
+          "value": 82.4,
+          "year": 2021
+        },
+        "EN.GHG.CO2.PC.CE.AR5": {
+          "value": 0.77,
+          "year": 2024
         }
       }
     }
