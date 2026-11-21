@@ -176,8 +176,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T20 | Migrations Prisma e restrições do schema | Backend | P2 | M | DONE | antigravity | — | G-ESTUDOS |
 | T21 | Consolidar texturas duplicadas | Assets | P2 | P | DONE | claude | — | G-GLOBO |
 | T22 | Acessibilidade (labels, teclado, foco) | A11y | P2 | M | TODO | — | D14 | G-SHELL |
-| T23 | Limpezas menores | Qualidade | P2 | P | TODO | — | — | G-TIMELINE |
-| T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | REVIEW | antigravity | — | G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS |
+| T23 | Limpezas menores | Qualidade | P2 | P | IN_PROGRESS | antigravity | — | G-TIMELINE, G-PAIS |
+| T25 | Reduzir bundle inicial (408 kB) | Performance | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS |
 | T26 | Ingestão de indicadores reais do Banco Mundial (177 países) | Dados | P1 | G | DONE | antigravity | T03 | G-PAIS, G-PIPELINE |
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | DONE | antigravity | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | DONE | claude | D01 | G-GLOBO, G-EPOCA |
@@ -896,8 +896,8 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 ### T23 · Limpezas menores
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P2 · **Área:** Qualidade · **Tamanho:** P · **Depende de:** — · **Grupos:** G-TIMELINE
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t23-minor-cleanups · **Worktree:** ../telluspedia-wt/antigravity-t23
+- **Prioridade:** P2 · **Área:** Qualidade · **Tamanho:** P · **Depende de:** — · **Grupos:** G-TIMELINE, G-PAIS
 
 **Contexto / problema**
 - `components/timeline/TimelineBar.tsx:190`: condição fixa `startYear === 1947 && endYear === 1991` para exibir contexto da Guerra Fria.
@@ -916,12 +916,13 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
+- 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (a750555). Grupos G-TIMELINE e G-PAIS (para `lib/api-client.ts`) livres; `G-EPOCA`/`G-SHELL` reservados por D12.
 
 ---
 
 ### T25 · Reduzir bundle inicial (408 kB)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t25-reduce-initial-bundle · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t25-reduce-initial-bundle · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Performance · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA, G-TIMELINE, G-GLOBO, G-OBS, G-PAIS
 
 **Contexto / problema**
@@ -943,6 +944,7 @@ Em `apps/web/public/textures/` há cópias idênticas (mesmo md5): `paleo_pangea
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (55e0e68). Grupos G-SHELL e G-INFRA livres.
 - 2026-11-21 · antigravity · IN_PROGRESS · Adicionados grupos G-TIMELINE, G-GLOBO, G-OBS e G-PAIS (todos livres, sem tarefas IN_PROGRESS/BLOCKED): diagnóstico do `@next/bundle-analyzer` mostrou `three` (166 kB gzip) entrando em `/` via `observatoryStore → satellites → astronomy.ts` (apenas por `calculateSubsolarPoint`) e `tellus-bridge/catalog` (30,7 kB gzip) entrando via `StudyContext` em `TimelineBar`/`MilestonePin`, além de pré-carregamento no hover do `InspectorHUD`.
 - 2026-11-21 · antigravity · REVIEW · Relatório `@next/bundle-analyzer` (`pnpm analyze`, `ANALYZE=true next build`): **Antes** — First Load JS em `/`, `/pais/[iso]`, `/compare` e `/study/[slug]` = **485 kB** (106 kB shared + 379 kB da rota: `three.module.js` 166,1 kB gz / 665,9 kB parsed; chunk de app/painéis/modais 131,8 kB gz; `tellus-bridge/catalog` + `registry.json` 30,7 kB gz; `@radix-ui/react-dialog` + foco/portal 14,5 kB gz; `satellite.js` 9,9 kB gz + `lucide-react` 11,4 kB gz + `d3-geo` 1,2 kB gz). **Mudanças:** (1) adicionado `@next/bundle-analyzer@15.1.0`, script `pnpm analyze` e `experimental.optimizePackageImports: ["lucide-react"]` em `next.config.mjs`; (2) painéis, overlays e modais fechados por padrão no `GlobeExperienceShell` (`RightDock`, `CosmicInspectorHUD`, `ReaderMode`, `CountryComparator`, `StudyShareModal`, `CitationModal`, `HistoricalEraBadge`, `PaleoEraBadge`, `HistoricalRouteOverlay`, `EntityLaunch`, `ForkStudyBanner`) carregados sob demanda via `next/dynamic` e montados apenas quando ativos; (3) `StudyContext` em `TimelineBar` e `MilestonePin` carregado via `next/dynamic` (retira `tellus-bridge/catalog` + `registry.json` de `/`); (4) extraído `calculateSubsolarPoint` (trigonometria pura NOAA, sem Three.js) para `lib/astronomy-solar.ts`, re-exportado em `lib/astronomy.ts`, consumido por `lib/satellites.ts` e removido import morto de `geo-spatial` em `lib/observatory-data.ts` (elimina 100% de `three` de `/`); (5) pré-carregamento idempotente no hover/foco (`lib/panel-preload.ts`) nos botões de `TopNavBar`, `InspectorHUD` e `MilestonePin`; (6) suíte de regressão `test/bundle-budget.test.ts` (6 testes). **Depois** — First Load JS em `/`, `/pais/[iso]`, `/compare` e `/study/[slug]` = **222 kB** (**−263 kB / −54,2%**, meta `< 250 kB` atingida com margem; 0 ocorrências de `three`, `recharts`, `framer-motion`, `@radix-ui/react-dialog`, `tellus-bridge/catalog`, `paleo-data` e `astronomy-planets` no chunk inicial de `/`). Validação: `pnpm typecheck`, `pnpm lint`, `pnpm test` (534/534) e `pnpm build` verdes + smoke test HTTP 200 em `/`, `/pais/BRA`, `/compare?c=BRA,DEU`, `/dossies/dom-pedro-ii` e `/telluslab` via `next start` na porta 3003. Verificação interativa no navegador pendente do Ayrton (Chromium headless indisponível neste container). Commit: a024df7.
+- 2026-11-21 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
