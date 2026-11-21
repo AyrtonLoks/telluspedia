@@ -216,7 +216,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | REVIEW | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
-| D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | TODO | — | — | G-COSMOS |
+| D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | IN_PROGRESS | claude | — | G-COSMOS |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | TODO | — | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | TODO | — | — | G-CONTEUDO, G-EPOCA |
@@ -1969,7 +1969,7 @@ A D14 criou tokens e primitivos e migrou navbar, Observatório, Inspector do pa�
 
 ### D21 · Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d21-texturas-planetas · **Worktree:** ../telluspedia-wt/claude-d21
 - **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS
 
 **Contexto / problema**
@@ -1986,6 +1986,7 @@ No modo Cosmos, apenas Terra e Lua possuem texturas fotográficas reais; `Planet
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 
+- 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada: G-SHELL, G-EPOCA e G-TIMELINE ocupados pela T22 (codex), então D19 (fase 8) e D24 não são elegíveis; G-COSMOS livre (D18 em REVIEW) e D21 é a primeira TODO da fase 9.
 ---
 
 ### D22 · Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala
