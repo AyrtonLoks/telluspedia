@@ -218,7 +218,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
-| D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | IN_PROGRESS | antigravity | T30 | G-ESTUDOS, G-SHELL |
+| D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | REVIEW | antigravity | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | IN_PROGRESS | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO |
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | TODO | — | — | G-OBS, G-GLOBO |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
@@ -2044,7 +2044,7 @@ O TellusPedia já possui indicadores reais do Banco Mundial para 170/177 países
 
 ### D23 · Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d23-dock-and-study-exit · **Worktree:** ../telluspedia-wt/antigravity-d23d
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d23-dock-and-study-exit · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Produto · **Tamanho:** G · **Depende de:** T30 · **Grupos:** G-ESTUDOS, G-SHELL
 
 **Contexto / problema**
@@ -2067,6 +2067,7 @@ Hoje só é possível criar estudos (`POST /api/studies`) e abrir por link exato
 - 2026-11-21 · ayrton · IN_PROGRESS · Ao clicar em "Fazer fork" e navegar para `/study/fork-...`, React 19 disparou `Cannot update a component (CategoryFilterPills) while rendering a different component (GlobeExperienceShell)` porque `GlobeExperienceShell` chamava `applyInitialGlobeState` sincronamente durante o render no cliente. Worktree `../telluspedia-wt/antigravity-d23c`.
 - 2026-11-21 · antigravity · REVIEW · Correção em `1a4050e`. Em `GlobeExperienceShell.tsx`, a hidratação síncrona durante o render (`applyInitialGlobeState`) agora é restrita a SSR (`typeof window === "undefined"`), enquanto no cliente a atualização dos stores Zustand roda em `useIsomorphicLayoutEffect` (`useLayoutEffect` antes da pintura, sem flash e sem mutar `useTimelineStore`/`CategoryFilterPills` durante o render ao navegar entre `/study/[a]` e `/study/[fork]`). Adicionada asserção de regressão em `test/studies-gallery.test.tsx`. Validação: `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 674/675 ok (0 falhas, 1 skip), `pnpm build` ok (`/` = 232 kB).
 - 2026-11-21 · ayrton · IN_PROGRESS · Dois bugs reportados com capturas: (1) aba lateral (`RightDock`) com enorme espaço vazio acima da aba ativa (ex. Cosmos com Brasil aberto) porque `.flex` sobrescrevia `[hidden]` do Radix `TabsContent`; (2) ao clicar para voltar à era atual / resetar visão a partir de `/study/[slug]`, o cartão do estudo (`ForkStudyBanner`) permanecia na tela. Worktree `../telluspedia-wt/antigravity-d23d`.
+- 2026-11-21 · antigravity · REVIEW · Correções em `ecfdb9f`. **(1) Aba lateral (`Tabs.tsx` e `RightDock.tsx`):** adicionado `data-[state=inactive]:hidden` em `TabsContent` (e no `RightDock`), impedindo que `.flex` sobrescrevesse o atributo `hidden` do Radix nas abas inativas e roubasse metade da altura do painel. **(2) Saída do estudo (`GlobeExperienceShell.tsx`, `TopNavBar.tsx`, `ForkStudyBanner.tsx`):** clicar em "Restaurar Cartografia Atual", "Restaurar Geografia Contemporânea", "Resetar visão da Terra" (`RotateCcw`), presets contemporâneos ou no novo botão "Sair do estudo" (`×`) agora limpa `useStudyStore`, oculta o `ForkStudyBanner` instantaneamente (sem recarregar o WebGL) e atualiza a URL para `/` (`history.replaceState`), protegido por `observedStudyActiveRef` contra corrida no Strict Mode. **Validação:** `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 674/675 ok (0 falhas, 1 skip), `pnpm build` ok (`/` = 233 kB); validado em Chromium real (`playwright:v1.60.0-noble`): (a) `/?visao=1&pais=BRA&modo=cosmos&corpo=JUPITER&painel=cosmos` mediu `inactiveDisplay: "none"`, `inactiveHeight: 0`, `gapPx: 0`; (b) em `/study/guerra-fria-br-de-k9x2`, "Restaurar Cartografia Atual" e "Resetar visão da Terra" removeram `fork-study-banner` e restauraram `/`; (c) "Fazer fork" navegou para `/study/fork-...` com `totalConsoleErrors: 0`.
 
 ---
 
