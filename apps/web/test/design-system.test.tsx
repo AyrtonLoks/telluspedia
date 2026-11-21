@@ -71,9 +71,9 @@ describe("D14: primitivos", () => {
     const on = html(<Chip pressed tone="cat-war">Guerras</Chip>);
     const off = html(<Chip pressed={false} tone="cat-war">Guerras</Chip>);
     assert.match(on, /aria-pressed="true"/);
-    assert.match(on, /bg-cat-war\/15/);
+    assert.match(on, /bg-cat-war\/10/);
     assert.match(off, /aria-pressed="false"/);
-    assert.doesNotMatch(off, /bg-cat-war\/15/);
+    assert.doesNotMatch(off, /bg-cat-war\/10/);
   });
 
   test("Badge vazado não depende só da cor e não usa <div> (pode ficar dentro de <p>)", () => {

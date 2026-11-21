@@ -122,21 +122,15 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
     assert.equal(htmlInactive, "");
   });
 
-  test("3. PaleoEraBadge exibe badge e reposiciona dinamicamente contra o ForkStudyBanner", () => {
+  test("3. PaleoEraBadge renderiza no fluxo compartilhado dos avisos do globo", () => {
     // 1. Pangeia (250 Ma)
     const htmlPangea = renderToStaticMarkup(React.createElement(PaleoEraBadge, { geologicalMa: 250 }));
     assert.ok(htmlPangea.includes("data-testid=\"paleo-era-badge\""));
     assert.ok(htmlPangea.includes("Pangeia"));
     assert.ok(htmlPangea.includes("250 Ma") || htmlPangea.includes("~250 Ma"));
     assert.ok(htmlPangea.includes("Restaurar Geografia Contemporânea"));
-    // Sem estudo ativo, usa posição top padrão
-    assert.ok(htmlPangea.includes("top-16"));
-
-    // 2. Reposicionamento com estudo ativo
-    useStudyStore.getState().setStudy({ id: "study-pangea-test", title: "Pangea Study" });
-    const htmlWithStudy = renderToStaticMarkup(React.createElement(PaleoEraBadge, { geologicalMa: 250 }));
-    assert.ok(htmlWithStudy.includes("top-24"));
-    useStudyStore.getState().resetStudy();
+    assert.ok(htmlPangea.includes("flex-row"));
+    assert.ok(!htmlPangea.includes("fixed"));
 
     // 3. Gondwana (150 Ma)
     const htmlGondwana = renderToStaticMarkup(React.createElement(PaleoEraBadge, { geologicalMa: 150 }));

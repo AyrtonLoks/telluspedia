@@ -195,23 +195,19 @@ describe("Componente 4: Persistência & Compartilhamento de Estudos (RN16) e Com
     assert.equal(resolveHistoricalEra(contempYear).id, "CONTEMPORARY");
   });
 
-  test("8. HistoricalEraBadge: dynamically offsets layout when study banner is active and handles restore reset", () => {
+  test("8. HistoricalEraBadge: renders in the banner layout and handles restore reset", () => {
     useTimelineStore.getState().selectYear(1870);
 
-    // Without study open -> top-16 sm:top-5
-    useStudyStore.getState().resetStudy();
-    let html = renderToStaticMarkup(React.createElement(HistoricalEraBadge));
-    assert.ok(html.includes("top-16 sm:top-5"), "Default positioning when no study is active");
+    const html = renderToStaticMarkup(React.createElement(HistoricalEraBadge));
     assert.ok(html.includes("1870 — Unificação Alemã & Reino da Prússia") || html.includes("1870 — Unificação Alemã &amp; Reino da Prússia"));
+    assert.ok(html.includes("flex-row"));
+    assert.ok(!html.includes("fixed"));
 
-    // With active study banner mounted -> top-24 sm:top-20 to avoid visual occlusion
     useStudyStore.getState().setStudy({
       id: "estudo-teste-posicao",
       title: "Estudo de Teste",
       historicalEra: "PRUSSIA_1870",
     });
-    html = renderToStaticMarkup(React.createElement(HistoricalEraBadge));
-    assert.ok(html.includes("top-24 sm:top-20"), "Lower positioning when study banner is active");
 
     // Test Restore Cartography: resets timeline, clears studyStore era, and migrates historical entity to modern successor
     selectCountry("PRU");

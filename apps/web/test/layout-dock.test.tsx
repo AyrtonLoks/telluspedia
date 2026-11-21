@@ -142,6 +142,12 @@ describe("D15: invariantes de layout no código", () => {
     assert.match(shell, /<CosmicInspectorHUD placement="floating" \/>/);
   });
 
+  test("banner de estudo e avisos de época compartilham a faixa de anotações", () => {
+    const shell = read("src/components/shell/GlobeExperienceShell.tsx");
+    assert.match(shell, /className="map-annotations[^"]*"[^>]*>[\s\S]+?<ForkStudyBanner[\s\S]+?<HistoricalEraBadge[\s\S]+?<PaleoEraBadge/);
+    assert.match(read("src/styles/globals.css"), /--map-overlay-top: calc\(var\(--map-annotation-top\) \+ var\(--annotation-obstruction, 0px\)\)/);
+  });
+
   test("overlays da esquerda ficam abaixo do botão 'Iluminação de estudo' e acima da timeline", () => {
     for (const f of [
       "src/components/scenes/ScenePlayerOverlay.tsx",

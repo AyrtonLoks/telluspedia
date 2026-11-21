@@ -5,7 +5,7 @@ import { useEffect, type RefObject } from "react";
 /** Keeps the floating cards clear of fixed panels whose height depends on viewport and content. */
 export function useShellObstruction(
   elementRef: RefObject<HTMLElement | null>,
-  property: "--timeline-obstruction" | "--dock-obstruction",
+  property: "--timeline-obstruction" | "--dock-obstruction" | "--annotation-obstruction",
   enabled = true,
 ) {
   useEffect(() => {
@@ -15,7 +15,9 @@ export function useShellObstruction(
     if (!element || !shell) return;
     const measure = () => {
       const height = element.offsetHeight;
-      const bottom = Number.parseFloat(getComputedStyle(element).bottom) || 0;
+      const bottom = property === "--annotation-obstruction"
+        ? 0
+        : Number.parseFloat(getComputedStyle(element).bottom) || 0;
       shell.style.setProperty(property, `${height ? height + bottom + 12 : 0}px`);
     };
     const observer = new ResizeObserver(measure);

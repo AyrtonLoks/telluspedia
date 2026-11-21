@@ -74,24 +74,21 @@ body {
 /* Shared positions for the map UI. The dock and timeline report their real height. */
 [data-map-shell] {
   --map-tools-top: 4rem;
-  --map-badge-top: calc(var(--map-tools-top) + 2.75rem);
-  --map-overlay-top: var(--map-badge-top);
+  --map-annotation-top: calc(var(--map-tools-top) + 2.75rem);
+  --map-overlay-top: calc(var(--map-annotation-top) + var(--annotation-obstruction, 0px));
   --map-overlay-bottom: max(1rem, var(--timeline-obstruction, 0px), var(--dock-obstruction, 0px));
   --map-overlay-available: calc(100dvh - var(--map-overlay-top) - var(--map-overlay-bottom));
   --map-overlay-height: max(0px, var(--map-overlay-available));
-}
-
-[data-map-epoch="true"] {
-  --map-overlay-top: calc(var(--map-badge-top) + 4rem);
 }
 
 [data-map-stacked="true"] {
   --map-overlay-height: max(0px, calc((var(--map-overlay-available) - 0.75rem) / 2));
 }
 
-.map-epoch-badge {
+.map-annotations {
   left: 50%;
-  top: var(--map-badge-top);
+  top: var(--map-annotation-top);
+  max-width: calc(100% - 1.5rem);
 }
 
 @media (min-width: 1024px) {
@@ -99,7 +96,7 @@ body {
     --map-overlay-bottom: max(1rem, var(--timeline-obstruction, 0px));
   }
 
-  [data-map-dock="true"] .map-epoch-badge {
+  [data-map-dock="true"] .map-annotations {
     left: calc((100% - 26.5rem) / 2);
     max-width: calc(100% - 28rem);
   }

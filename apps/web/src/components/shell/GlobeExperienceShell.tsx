@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { TopNavBar } from "@/components/nav/TopNavBar";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
+import { useShellObstruction } from "@/components/layout/useShellObstruction";
 import { useRightDock } from "@/components/layout/useRightDock";
 import { DockSkeleton } from "@/components/layout/DockSkeleton";
 import { ModalSkeleton } from "@/components/ui/Skeleton";
@@ -149,6 +150,8 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   initialState = { kind: "default" },
 }) => {
   const stateKey = getInitialGlobeStateKey(initialState);
+  const annotations = useRef<HTMLDivElement>(null);
+  useShellObstruction(annotations, "--annotation-obstruction");
   const viewCamera = useRef<ViewCamera>({ offset: DEFAULT_CAMERA_OFFSET, restore: null, onChange: null }).current;
   const hydratedKeyRef = useRef<string | null>(null);
 
@@ -190,17 +193,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
 
   return (
     <>
-      {initialState.kind === "study" && (
-        <ForkStudyBanner
-          studyId={initialState.study.id}
-          parentId={initialState.study.parentId}
-          title={initialState.study.title}
-        />
-      )}
       <main
         data-map-shell=""
         data-map-dock={dockPresence.mounted}
-        data-map-epoch={showHistoricalBadge || showPaleoBadge}
         data-map-stacked={scenePresence.mounted && epoch.isContemporary && hasTelemetry}
         className="relative h-dvh w-full overflow-hidden bg-bg select-none"
       >
@@ -214,11 +209,17 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         <SceneLinkSync />
         <ExplorerUrlSync view={viewCamera} immutable={initialState.kind === "study"} />
 
-        {/* Floating Historical Era Badge */}
-        {showHistoricalBadge && <HistoricalEraBadge />}
-
-        {/* Floating Paleogeographical Deep-Time Era Badge (RN10 & RN11) */}
-        {showPaleoBadge && <PaleoEraBadge />}
+        <div ref={annotations} className="map-annotations pointer-events-none fixed z-20 flex w-max -translate-x-1/2 flex-col items-center gap-2">
+          {initialState.kind === "study" && (
+            <ForkStudyBanner
+              studyId={initialState.study.id}
+              parentId={initialState.study.parentId}
+              title={initialState.study.title}
+            />
+          )}
+          {showHistoricalBadge && <HistoricalEraBadge />}
+          {showPaleoBadge && <PaleoEraBadge />}
+        </div>
 
         {/* Floating Historical Expedition / Magellan Route HUD Overlay (RN12) */}
         {scenePresence.mounted && sceneId && <ScenePlayerOverlay sceneId={sceneId} closing={scenePresence.closing} />}

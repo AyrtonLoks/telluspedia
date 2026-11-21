@@ -88,7 +88,7 @@ describe("T02 — Timeline responsive layout, overflow prevention & axis tick se
     assert.ok(html.includes('data-testid="timeline-speed-toggle"'));
     assert.ok(html.includes('aria-label="Ano inicial"'));
     assert.ok(html.includes('aria-label="Ano final"'));
-    assert.ok(html.includes('aria-label="Recolher timeline"'));
+    assert.ok(html.includes('aria-label="Recolher linha do tempo"'));
   });
 
   test("3. TimelineBar reserves free space whenever any right-side panel is open (InspectorHUD, ObservatoryPanel, CosmicInspectorHUD)", () => {
