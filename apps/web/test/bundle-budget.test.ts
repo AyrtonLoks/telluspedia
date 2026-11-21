@@ -19,7 +19,7 @@ describe("T25 · Orçamento de bundle inicial e carregamento sob demanda", () =>
       "EntityLaunch",
       "HistoricalEraBadge",
       "PaleoEraBadge",
-      "HistoricalRouteOverlay",
+      "ScenePlayerOverlay",
       "RightDock",
       "CosmicInspectorHUD",
       "ReaderMode",
