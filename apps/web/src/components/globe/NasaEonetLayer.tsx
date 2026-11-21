@@ -9,6 +9,7 @@ import { createEonetIndex, getEonetMarkers, type EonetMarker } from "@/lib/eonet
 import type { EonetCategory, EonetEvent } from "@/lib/observatory-data";
 import { createEonetIcon } from "./eonet-icons";
 
+import { isDragRelease } from "@/lib/pointer-intent";
 const MARKER_RADIUS = 1.012;
 const EVENT_SIZE = 27;
 const CLUSTER_SIZE = 36;
@@ -74,6 +75,7 @@ function MarkerSprite({ position, texture, px, opacity, label, spin, onSelect }:
       onClick={(event) => {
         if (opacity <= 0) return;
         event.stopPropagation();
+        if (isDragRelease(event)) return;
         onSelect();
       }}
     >

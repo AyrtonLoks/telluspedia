@@ -6,6 +6,7 @@ import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import type { SatRec } from "satellite.js";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { isDragRelease } from "@/lib/pointer-intent";
 import {
   ISS_NORAD_ID,
   REFERENCE_ISS_TLE,
@@ -397,6 +398,7 @@ export const IssOrbitLayer: React.FC = () => {
 
   const onIssClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
+    if (isDragRelease(e)) return;
     refreshIssTelemetry();
     const telemetry = useObservatoryStore.getState().issTelemetry;
     if (telemetry) setSelectedEntity({ type: "ISS", data: telemetry });
@@ -406,6 +408,7 @@ export const IssOrbitLayer: React.FC = () => {
     const s = e.index !== undefined ? others[e.index] : undefined;
     if (!s) return;
     e.stopPropagation();
+    if (isDragRelease(e)) return;
     const now = Date.now();
     const st = propagateState(s.rec, new Date(now));
     if (!st) return;

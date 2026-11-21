@@ -8,6 +8,7 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { frpColor, frpSize } from "@/lib/firms-display";
 import type { FirmsHotspot } from "@/lib/observatory-data";
 
+import { isDragRelease } from "@/lib/pointer-intent";
 /**
  * Camada de queimadas (D05). Princípio: cada ponto é UM foco detectado por satélite, em qualquer
  * zoom — nada de manchas sintéticas. A densidade aparece porque focos reais se acumulam.
@@ -293,6 +294,7 @@ export const NasaFirmsLayer: React.FC = () => {
     const h = pick(e);
     if (!h) return;
     e.stopPropagation();
+    if (isDragRelease(e)) return;
     setSelectedEntity({ type: "FIRMS", data: h });
   };
 

@@ -221,3 +221,30 @@ describe("D24 — cartão do marco não cobre o player", () => {
     assert.match(pin, /onMouseLeave=\{\(\) => setHoverSuppressed\(false\)\}/);
   });
 });
+
+describe("D24 — arrastar não é clique também no Cosmos e no Observatório", () => {
+  test("todo clique 3D que seleciona algo exige clique de verdade", () => {
+    const G = (f: string) => fs.readFileSync(path.join(__dirname, "../src/components/globe", f), "utf-8");
+    const expected: Record<string, number> = {
+      // Observatório
+      "AirTrafficLayer.tsx": 2,
+      "VesselFleet.tsx": 2,
+      "MaritimeRoutesLayer.tsx": 1,
+      "NasaEonetLayer.tsx": 1,
+      "NasaFirmsLayer.tsx": 1,
+      "IssOrbitLayer.tsx": 2,
+      // Cosmos (o segundo clique do Halley é a etiqueta HTML, fora do canvas)
+      "PlanetarySystem.tsx": 1,
+      "SunCore.tsx": 1,
+      "OrbitingMoon.tsx": 1,
+      "CometHalleyTrajectory.tsx": 1,
+      // Globo
+      "EarthSphere.tsx": 1,
+    };
+    for (const [file, n] of Object.entries(expected)) {
+      const src = G(file);
+      assert.equal((src.match(/if \(isDragRelease\((?:e|event)\)\) return;/g) ?? []).length, n, file);
+      assert.match(src, /import \{ isDragRelease \} from "@\/lib\/pointer-intent";/, `${file}: import`);
+    }
+  });
+});

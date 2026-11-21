@@ -9,6 +9,7 @@ import { ASTROPHYSICAL_CATALOG } from "@/lib/astronomy-planets";
 import { bodySceneRadius, celestialLabelPriority, SUN_GEOMETRY_RADIUS } from "@/lib/cosmic-scale";
 import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
 
+import { isDragRelease } from "@/lib/pointer-intent";
 const sunVertexShader = `
 varying vec2 vUv;
 varying vec3 vNormal;
@@ -153,6 +154,7 @@ export const SunCore: React.FC = () => {
         material={sunMat}
         onClick={(e) => {
           e.stopPropagation();
+          if (isDragRelease(e)) return;
           focusBody("SUN");
         }}
         onPointerOver={(e) => {

@@ -15,6 +15,7 @@ import {
 import { AIRCRAFT_MAX_LIMIT, AIRCRAFT_POLL_MS } from "@/lib/aircraft-config";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 
+import { isDragRelease } from "@/lib/pointer-intent";
 const MODEL_URL = "/models/aircraft.glb";
 const LOD_DISTANCE = 2.35;
 const IGNORE_RAYCAST = () => null;
@@ -177,7 +178,7 @@ function AirTrafficModels() {
         args={[nearGeometry, material, AIRCRAFT_MAX_LIMIT]}
         count={0}
         frustumCulled={false}
-        onClick={(event) => { event.stopPropagation(); selectAircraft(event.instanceId); }}
+        onClick={(event) => { event.stopPropagation(); if (isDragRelease(event)) return; selectAircraft(event.instanceId); }}
       />
       <instancedMesh
         ref={farMesh}
@@ -185,7 +186,7 @@ function AirTrafficModels() {
         args={[farGeometry, material, AIRCRAFT_MAX_LIMIT]}
         count={0}
         frustumCulled={false}
-        onClick={(event) => { event.stopPropagation(); selectAircraft(event.instanceId); }}
+        onClick={(event) => { event.stopPropagation(); if (isDragRelease(event)) return; selectAircraft(event.instanceId); }}
       />
       <lineSegments name="aircraft-trails" geometry={trail.geometry} frustumCulled={false} raycast={IGNORE_RAYCAST}>
         <lineBasicMaterial vertexColors transparent depthWrite={false} toneMapped={false} />

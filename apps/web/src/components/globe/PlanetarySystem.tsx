@@ -14,6 +14,7 @@ import {
 import { bodySceneRadius, celestialLabelPriority, focusHaloRatio } from "@/lib/cosmic-scale";
 import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
 import { PlanetBody } from "./PlanetBody";
+import { isDragRelease } from "@/lib/pointer-intent";
 
 const PLANET_IDS: Array<Exclude<CelestialBodyId, "SUN" | "MOON" | "HALLEY">> = [
   "MERCURY",
@@ -105,6 +106,7 @@ export const PlanetarySystem: React.FC = () => {
                   focused={isFocused}
                   onSelect={(e) => {
                     e.stopPropagation();
+                    if (isDragRelease(e)) return;
                     focusBody(id);
                   }}
                   onHover={(e) => {

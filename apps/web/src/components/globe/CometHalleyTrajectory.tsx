@@ -16,6 +16,7 @@ import {
 import { celestialLabelPriority } from "@/lib/cosmic-scale";
 import { CelestialLabel } from "./CelestialLabel";
 
+import { isDragRelease } from "@/lib/pointer-intent";
 const ION_PARTICLE_COUNT = 320;
 const DUST_PARTICLE_COUNT = 380;
 
@@ -951,6 +952,7 @@ export const CometHalleyTrajectory: React.FC = () => {
           material={pickMat}
           onClick={(e) => {
             e.stopPropagation();
+            if (isDragRelease(e)) return;
             handleSelectHalley();
           }}
           onPointerOver={(e) => {

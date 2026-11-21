@@ -15,6 +15,7 @@ import { bodySceneRadius, celestialLabelPriority, earthSystemScale } from "@/lib
 import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
 import { sceneHasTrajectoryKind } from "@/lib/scenes/catalog";
 
+import { isDragRelease } from "@/lib/pointer-intent";
 const MOON_RADIUS = 0.27;
 
 const moonVertexShader = `
@@ -347,6 +348,7 @@ export const OrbitingMoon: React.FC = () => {
         material={moonMat}
         onClick={(e) => {
           e.stopPropagation();
+          if (isDragRelease(e)) return;
           focusCelestialBody("MOON");
         }}
         onPointerOver={(e) => {

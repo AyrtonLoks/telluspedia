@@ -11,6 +11,7 @@ import type { ObservatoryMeta } from "@/lib/observatory-source";
 import { buildVesselGeometry } from "@/lib/vessel-model";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 
+import { isDragRelease } from "@/lib/pointer-intent";
 const MARKER_RADIUS = 1.004;
 const EARTH_METERS = 6_371_000;
 const KNOT_METERS_PER_SECOND = 1852 / 3600;
@@ -73,6 +74,7 @@ function VesselGroupMarker({ marker, meta, opacity, selectedId }: {
       renderOrder={8}
       onClick={(event) => {
         event.stopPropagation();
+        if (isDragRelease(event)) return;
         useObservatoryStore.getState().setSelectedEntity({
           type: "VESSEL_GROUP",
           data: { ...vector3ToLatLng(position), vessels: marker.members.map(({ data }) => data) },
@@ -147,6 +149,7 @@ function VesselModels({ kind, models, meta, opacity, selectedId }: {
         const model = event.instanceId == null ? undefined : models[event.instanceId];
         if (!model) return;
         event.stopPropagation();
+        if (isDragRelease(event)) return;
         useObservatoryStore.getState().setSelectedEntity({ type: "VESSEL", data: model.data, meta });
       }}
     >

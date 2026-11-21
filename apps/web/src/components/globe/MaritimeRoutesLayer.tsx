@@ -9,6 +9,7 @@ import { latLngToVector3, slerpVectors } from "@/lib/geo-spatial";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { VesselFleet } from "./VesselFleet";
 
+import { isDragRelease } from "@/lib/pointer-intent";
 const ROUTE_RADIUS = 1.003;
 const ROUTE_COLOR = "#63c0ad";
 const ignoreRaycast = () => {};
@@ -85,6 +86,7 @@ export function MaritimeRoutesLayer() {
               depthWrite={false}
               onClick={(event) => {
                 event.stopPropagation();
+                if (isDragRelease(event)) return;
                 select({ type: "MARITIME", data: route });
               }}
             />
