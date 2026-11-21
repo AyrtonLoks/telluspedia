@@ -203,7 +203,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
-| T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | IN_PROGRESS | codex | — | G-INFRA |
+| T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | REVIEW | antigravity | — | G-PAIS |
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | TODO | — | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
@@ -1033,7 +1033,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ### T28 · Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`)
 
-- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t28-next-security · **Worktree:** ../telluspedia-wt/codex-t28
+- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t28-next-security · **Worktree:** ../telluspedia-wt/codex-t28
 - **Prioridade:** P0 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -1045,12 +1045,13 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 3. Confirmar `pnpm audit --prod --audit-level=high` zerado.
 
 **Critérios de aceite**
-- [ ] `pnpm audit --prod --audit-level=high` retorna 0 vulnerabilidades.
-- [ ] Build, suíte de testes e smoke E2E verdes sem regressão de bundle (`/` < 250 kB).
+- [x] `pnpm audit --prod --audit-level=high` retorna 0 vulnerabilidades.
+- [x] Build, suíte de testes e smoke E2E verdes sem regressão de bundle (`/` < 250 kB).
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa elegível. G-SHELL reservado pela D17; G-INFRA livre.
+- 2026-11-21 · codex · REVIEW · Next.js, eslint-config-next e bundle analyzer em 15.5.29. Sharp 0.35.5 resolvido pela dependência opcional do Next e PostCSS 8.5.30 por override no consumidor que fixa a versão vulnerável. Typecheck gera os tipos de rotas em checkout limpo. A raiz do tracing aponta para o monorepo. `pnpm audit --prod --audit-level=high` passou com zero alertas em produção, ante 46 (5 críticos, 15 altos). SHA-256 de `pnpm-lock.yaml` antes `982b070f31f66497de120c5aa1c89347103eebf35a573ab389980d35f98e4fae` e depois `eab8c9b5a1706744010b6f56e0abb3b93b8e5a77a2c3892351345656b1afcdff`. Instalação congelada, typecheck, lint, 568 testes, build e 4 E2E passaram. Smoke HTTP com PostgreSQL descartável validou home, país, comparador, estudo, dossiê e os PNGs Open Graph de país e estudo (1200 × 630). First Load JS de / em 222 kB. Implementação em `de7b4d8`.
 
 ---
 
