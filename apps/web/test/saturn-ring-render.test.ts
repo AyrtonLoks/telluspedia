@@ -4,7 +4,7 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import type { AddressInfo } from "node:net";
-import { build } from "esbuild";
+import ts from "typescript";
 import { SUN_LIGHT_INTENSITY } from "../src/components/globe/SunCore";
 
 /**
@@ -28,17 +28,24 @@ const diffCount = (a: Rows, b: Rows, y0 = 0, y1 = a.length) => {
 
 describe("D21: sombras de Saturno renderizadas", { skip: !CHROME && "sem Chrome no ambiente" }, () => {
   test("anel iluminado e sombras mútuas visíveis", async () => {
-    const bundle = await build({
-      entryPoints: [path.join(root, "test/fixtures/saturn-ring/scene.ts")],
-      bundle: true,
-      write: false,
-      format: "iife",
-      nodePaths: [path.join(root, "node_modules")],
-      logLevel: "silent",
-    });
+    // Sem bundler (só dependências diretas do app): transpila os .ts e resolve `three` por import map.
+    const transpile = (rel: string) =>
+      ts.transpileModule(fs.readFileSync(path.join(root, rel), "utf-8"), {
+        compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 },
+      }).outputText;
+    const scene = transpile("test/fixtures/saturn-ring/scene.ts").replace(
+      "../../../src/components/globe/planetShading",
+      "/planetShading.js"
+    );
+    assert.match(scene, /from "\/planetShading\.js"/, "import da cena reescrito");
+    const html =
+      '<!doctype html><body style="margin:0"><script type="importmap">{"imports":{"three":"/three.js"}}</script>' +
+      '<script type="module" src="/scene.js"></script>';
     const files: Record<string, [string, Buffer]> = {
-      "/": ["text/html", Buffer.from('<!doctype html><body style="margin:0"><script src="/scene.js"></script>')],
-      "/scene.js": ["text/javascript", Buffer.from(bundle.outputFiles[0].contents)],
+      "/": ["text/html", Buffer.from(html)],
+      "/scene.js": ["text/javascript", Buffer.from(scene)],
+      "/planetShading.js": ["text/javascript", Buffer.from(transpile("src/components/globe/planetShading.ts"))],
+      "/three.js": ["text/javascript", fs.readFileSync(path.join(root, "node_modules/three/build/three.module.js"))],
       "/ring.png": ["image/png", fs.readFileSync(path.join(root, "public/textures/planets/saturn_ring.png"))],
     };
     const server = http.createServer((req, res) => {
@@ -47,7 +54,7 @@ describe("D21: sombras de Saturno renderizadas", { skip: !CHROME && "sem Chrome 
       res.end(f ? f[1] : "");
     });
     await new Promise<void>((r) => server.listen(0, r));
-    const { chromium } = await import("playwright");
+    const { chromium } = await import("@playwright/test");
     const browser = await chromium.launch({
       executablePath: CHROME,
       args: ["--no-sandbox", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
