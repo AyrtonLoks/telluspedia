@@ -218,7 +218,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
-| D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | IN_PROGRESS | antigravity | T30 | G-ESTUDOS, G-SHELL |
+| D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | REVIEW | antigravity | T30 | G-ESTUDOS, G-SHELL |
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | IN_PROGRESS | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO |
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | TODO | — | — | G-OBS, G-GLOBO |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
@@ -2044,7 +2044,7 @@ O TellusPedia já possui indicadores reais do Banco Mundial para 170/177 países
 
 ### D23 · Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d23-public-studies-gallery · **Worktree:** ../telluspedia-wt/antigravity-d23
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d23-public-studies-gallery · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Produto · **Tamanho:** G · **Depende de:** T30 · **Grupos:** G-ESTUDOS, G-SHELL
 
 **Contexto / problema**
@@ -2056,11 +2056,12 @@ Hoje só é possível criar estudos (`POST /api/studies`) e abrir por link exato
 3. Adicionar exportação de estudo em **Markdown acadêmico** (com citações ABNT/APA) e JSON portátil.
 
 **Critérios de aceite**
-- [ ] `/studies` lista e filtra estudos persistidos; forks navegam ao pai; exportação Markdown inclui fontes primárias.
+- [x] `/studies` lista e filtra estudos persistidos; forks navegam ao pai; exportação Markdown inclui fontes primárias.
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (abaf9ba). Fase 10 concluída; D23 (Fase 11 · P1, T30 DONE) com grupos G-ESTUDOS e G-SHELL 100% livres e disjuntos da D24 do claude (G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO).
+- 2026-11-21 · antigravity · REVIEW · Implementação em `4e9b40a`. **API paginada (`GET /api/studies`, `src/lib/study-gallery.ts`, `src/app/api/studies/route.ts`):** suporta paginação (`page`, `pageSize` 1–24) e filtros validados (`q` em título/descrição case-insensitive, `era` validada em `HISTORICAL_ERAS`, `country` ISO válido via `has`, `cosmic` booleano), retornando `parentTitle` e `forkCount` com `Cache-Control: CACHE_POLICY.study` (T30) em banco real, `503` + `no-store` em produção se o DB falhar (T08) e fallback em memória apenas em desenvolvimento (`X-Study-Persistence: memory`, `no-store`). **Galeria SSR (`/studies`, `src/app/studies/page.tsx`):** construída com tokens D14 (registrada em `MIGRATED`), formulário GET acessível com filtros combináveis, paginação preservando query params, cartões com período, países, modo/era, link para estudo pai, contagem de forks e exportação direta; atalho discreto "Galeria de estudos" adicionado ao `StudyShareModal` e `ForkStudyBanner`. **Linhagem de forks em `/study/[slug]` (`loadStudyWithLineage` em `server-loaders.ts`, `study/[slug]/page.tsx`, `ForkStudyBanner.tsx`):** exibe link clicável para o estudo pai (`parentId` + título) e contador expansível listando forks derivados clicáveis. **Exportação acadêmica (`src/lib/study-export.ts`, `src/components/study/StudyExportActions.tsx`):** gera **Markdown acadêmico** (`.md`) com metadados, linhagem de forks, indicadores auditados por país com códigos oficiais, seção **Fontes Primárias (RN02)** com URLs diretas e citações prontas **ABNT (NBR 6023)** e **APA 7**, além de **JSON portátil** (`telluspedia.study.v1`) com sanitização de nome de arquivo. **Testes e validação:** 6 novos testes em `apps/web/test/studies-gallery.test.tsx`; 2 novos arquivos adicionados a `MIGRATED` no `design-system.test.tsx` (72/72 D14 verdes); `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 673/674 ok (0 falhas, 1 skip), `pnpm build` ok (`/` mantido em **232 kB** — 0 kB de aumento; `/studies` = 6,13 kB / 187 kB; `bundle-budget.test.ts` pós-build verde). Verificação visual interativa pendente do Ayrton.
 
 ---
 
