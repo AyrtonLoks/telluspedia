@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, test } from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -15,7 +16,7 @@ import { GET as eonetGET } from "../src/app/api/observatory/eonet/route";
 import { GET as firmsGET } from "../src/app/api/observatory/firms/route";
 import { encodeFirmsColumns } from "../src/lib/firms-aggregate";
 
-const firmsReq = (query = "") => new Request(`http://localhost/api/observatory/firms${query}`);
+const firmsReq = (query = "") => new NextRequest(`http://localhost/api/observatory/firms${query}`);
 import { GET as issGET } from "../src/app/api/observatory/iss/route";
 import { GET as trafficGET } from "../src/app/api/observatory/traffic/route";
 import { useObservatoryStore } from "../src/stores/observatoryStore";

@@ -85,7 +85,7 @@ Abra [http://localhost:3000](http://localhost:3000) no seu navegador para intera
 O projeto conta com **180 testes unitários automatizados distribuídos em 24 suítes**, cobrindo 100% das regras matemáticas, geoespaciais, cartografia histórica, paleogeografia, telemetria orbital da NASA, tráfego aéreo/marítimo, expansão cósmica do Sistema Solar e formatação acadêmica:
 
 ```bash
-# Executar a suíte de testes unitários (180 testes / 24 suítes passando)
+# Executar os testes por domínio e os testes dos handlers de API
 pnpm test
 
 # Executar linting do código (0 erros / 0 warnings)
@@ -99,6 +99,18 @@ pnpm build
 ```
 
 ---
+
+### Smoke e regressão visual
+
+A suíte Playwright usa o build de produção e abre a porta 3002. Ela verifica a seleção de país no globo, a fonte carregada e a timeline em larguras de 1366 e 1920 px. As capturas abrangem os controles da interface com o canvas oculto para estabilizar a comparação.
+
+```bash
+pnpm --filter web exec playwright install --with-deps chromium
+pnpm build
+pnpm test:e2e
+```
+
+Os baselines Linux estão em `apps/web/test/e2e/snapshots/`. Para uma alteração visual intencional, gere as capturas no Chromium do projeto em Linux com `pnpm test:e2e --update-snapshots`.
 
 ## 🪐 Expansão Cósmica & Sistema Solar 3D (Horizonte 4 Concluído)
 

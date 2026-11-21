@@ -1,0 +1,4 @@
+/* The smoke test exercises the globe. Base visual comparisons cover its DOM controls. */
+canvas {
+  visibility: hidden !important;
+}

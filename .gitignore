@@ -63,3 +63,6 @@ Thumbs.db
 
 # Originais das texturas (ver assets-src/README.md)
 assets-src/raw/
+
+# Playwright run artifacts
+/apps/web/test-results/

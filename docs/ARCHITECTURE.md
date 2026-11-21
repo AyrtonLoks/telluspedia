@@ -158,8 +158,8 @@ apps/web/
 │       ├── apollo11.ts                # Física orbital e telemetria da Apollo 11
 │       └── observatory-data.ts        # Propagação orbital SGP4 da ISS, tipos e fallbacks
 └── test/
-    ├── unit.test.ts                   # 180 testes automatizados em 24 suítes cobrindo todas as regras
-    └── cosmic.test.ts                 # Testes unitários focados nas efemérides cósmicas Standish
+    ├── *.test.ts / *.test.tsx          # Testes por domínio e handlers de API
+    └── e2e/                           # Smoke e snapshots de desktop com Playwright
 ```
 
 ### 2.2. Engenharia Gráfica 3D (Shaders e Picking)

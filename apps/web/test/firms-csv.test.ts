@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
+import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, test } from "node:test";
 import { parseFirmsCsv } from "../src/lib/firms-csv";
 import { resetObservatorySources } from "../src/lib/observatory-sources";
 import { GET as firmsGET } from "../src/app/api/observatory/firms/route";
 
-const firmsReq = (query = "") => new Request(`http://localhost/api/observatory/firms${query}`);
+const firmsReq = (query = "") => new NextRequest(`http://localhost/api/observatory/firms${query}`);
 
 // Cabeçalhos reais da API "area" do FIRMS (VIIRS_SNPP_NRT e MODIS_NRT).
 const VIIRS_HEADER =

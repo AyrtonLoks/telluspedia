@@ -10,7 +10,8 @@
     "lint": "next lint",
     "test": "node --import tsx --test test/*.test.ts test/*.test.tsx",
     "typecheck": "tsc --noEmit",
-    "textures:build": "node scripts/textures/build-earth-textures.mjs"
+    "textures:build": "node scripts/textures/build-earth-textures.mjs",
+    "test:e2e": "playwright test"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -48,6 +49,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "15.1.0",
+    "@playwright/test": "1.60.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/d3-geo": "^3.1.0",
     "@types/node": "^22.10.0",
