@@ -2,6 +2,7 @@ import registryJson from "./contract/registry.json";
 import manifestJson from "./contract/manifest.json";
 import { labUrl, parsePediaLink, validateManifest, validateRegistry } from "./contract/index.mjs";
 import type { CurriculumNode } from "./contract/types.mjs";
+import { resolveLabEntityParam } from "./lab-compat";
 
 export const registry = validateRegistry(registryJson);
 export const manifest = validateManifest(manifestJson, registry);
@@ -11,7 +12,8 @@ export const books = new Map(registry.domains.flatMap(domain => domain.books.map
 
 export function studyUrl(slug: string, nodeId?: CurriculumNode["id"], entityId?: string, trackId?: string) {
   const base = process.env.NEXT_PUBLIC_TELLUSLAB_URL || "http://127.0.0.1:4175";
-  return labUrl(base, { slug, nodeId, entityId, trackId });
+  const compatibleEntityId = resolveLabEntityParam(entityId, nodeId);
+  return labUrl(base, { slug, nodeId, entityId: compatibleEntityId, trackId });
 }
 
 export function resolveLaunch(query: URLSearchParams) {

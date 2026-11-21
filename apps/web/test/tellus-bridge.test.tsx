@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { CurriculumLinks } from "../src/components/tellus-bridge/StudyContext";
 import { StudyHub } from "../src/components/tellus-bridge/StudyHub";
 import { books, entities, manifest, nodes, registry, resolveLaunch, studyUrl } from "../src/lib/tellus-bridge/catalog";
+import { TELLUSLAB_SYNCED_ENTITY_NODES } from "../src/lib/tellus-bridge/lab-compat";
 import { findMilestoneById, NUMERIC_TO_ISO } from "../src/lib/country-data";
 import { getPublishedDossier } from "../src/lib/dossiers-catalog";
 import { HISTORICAL_ERAS } from "../src/lib/historical-entities";
@@ -128,4 +129,48 @@ test("D26 · cobertura curricular ≥ 85% dos 299 nós, todas as eras, cenas D24
     assert.equal(entry.target, `/dossies/${slug}`, `Target inesperado para ${entry.entityId}`);
     assert.ok(getPublishedDossier(slug), `Dossiê publicado ausente para ${entry.entityId}`);
   }
+});
+
+test("D26 · todos os 73 vínculos abrem o domínio e macrotema corretos no TellusLab sem rejeição de parseLabLink", () => {
+  // Simula o manifesto base (31 vínculos) ainda em execução no TellusLab antes de um bridge:sync
+  const baselineLabManifest = {
+    kind: "TellusCrossLinkManifestV1" as const,
+    schemaVersion: "1.0.0" as const,
+    links: manifest.links
+      .filter((entry) => Object.hasOwn(TELLUSLAB_SYNCED_ENTITY_NODES, entry.entityId))
+      .map((entry) => {
+        const synced = new Set(TELLUSLAB_SYNCED_ENTITY_NODES[entry.entityId]);
+        return {
+          ...entry,
+          nodeIds: entry.nodeIds.filter((nid) => synced.has(nid)),
+        };
+      }),
+  };
+
+  // Caso reportado: figure:albert-einstein (DOM-PHYS:5.1 e DOM-PHYS:5.2) não pode enviar entity
+  // desconhecida ao TellusLab, senão parseLabLink lança erro e cai em Matemática 1.1.
+  const einstein = entities.get("figure:albert-einstein")!;
+  const einsteinHtml = renderToStaticMarkup(<CurriculumLinks link={einstein} snapshot={null} />);
+  assert.match(einsteinHtml, /\/lab\?domain=physics&amp;node=DOM-PHYS%3A5\.1"/);
+  assert.match(einsteinHtml, /\/lab\?domain=physics&amp;node=DOM-PHYS%3A5\.2"/);
+  assert.doesNotMatch(einsteinHtml, /entity=figure%3Aalbert-einstein/);
+
+  // Vínculos já sincronizados no TellusLab continuam preservando ref=telluspedia&entity=...
+  const cosmosUrl = new URL(studyUrl("physics", "DOM-PHYS:6.5", "observatory:COSMOS"));
+  assert.equal(cosmosUrl.searchParams.get("ref"), "telluspedia");
+  assert.equal(cosmosUrl.searchParams.get("entity"), "observatory:COSMOS");
+
+  // Garantia exaustiva: TODOS os 73 vínculos × TODOS os nós passam em parseLabLink contra o Lab base
+  let checkedLinks = 0;
+  for (const entry of manifest.links) {
+    for (const nid of entry.nodeIds) {
+      const { domain } = nodes.get(nid)!;
+      const href = studyUrl(domain.slug, nid, entry.entityId);
+      const parsed = parseLabLink(new URL(href).search, registry, baselineLabManifest);
+      assert.equal(parsed.domain.slug, domain.slug, `Domínio divergente em ${entry.entityId} -> ${nid}`);
+      assert.equal(parsed.nodeId, nid, `Nó divergente em ${entry.entityId} -> ${nid}`);
+      checkedLinks++;
+    }
+  }
+  assert.ok(checkedLinks >= 500, `Esperava validar centenas de deep-links, validou ${checkedLinks}`);
 });
