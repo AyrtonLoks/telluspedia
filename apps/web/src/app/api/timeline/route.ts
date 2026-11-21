@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import { prisma } from "@/lib/prisma";
 import { GLOBAL_MILESTONES, PILOT_COUNTRIES } from "@/lib/country-data";
 import { parseTimelineQuery } from "@/lib/cosmos-validation";
 
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
   const queryResult = parseTimelineQuery(req.nextUrl.searchParams);
   if (!queryResult.ok) {
     return NextResponse.json({ error: queryResult.error }, { status: 400 });
@@ -58,3 +59,6 @@ export async function GET(req: NextRequest) {
   filtered.sort((a, b) => a.year - b.year);
   return NextResponse.json(filtered);
 }
+
+// T30: Cache-Control coerente (2xx pela política; erros e escrita sem cache).
+export const GET = withCachePolicy(getHandler, CACHE_POLICY.staticData);

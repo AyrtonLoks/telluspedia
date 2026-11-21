@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import { prisma } from "@/lib/prisma";
 import { getCountryData } from "@/lib/country-data";
 
-export async function GET(
+async function getHandler(
   req: NextRequest,
   { params }: { params: Promise<{ iso: string }> }
 ) {
@@ -46,3 +47,6 @@ export async function GET(
 
   return NextResponse.json({ error: "Country not found" }, { status: 404 });
 }
+
+// T30: Cache-Control coerente (2xx pela política; erros e escrita sem cache).
+export const GET = withCachePolicy(getHandler, CACHE_POLICY.staticData);

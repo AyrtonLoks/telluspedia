@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import { prisma } from "@/lib/prisma";
 import { getAllCountries } from "@/lib/country-data";
 
-export async function GET() {
+async function getHandler() {
   const catalogCountries = getAllCountries();
   const dbByIso = new Map<
     string,
@@ -90,3 +91,6 @@ export async function GET() {
 
   return NextResponse.json(response);
 }
+
+// T30: Cache-Control coerente (2xx pela política; erros e escrita sem cache).
+export const GET = withCachePolicy(getHandler, CACHE_POLICY.staticData);

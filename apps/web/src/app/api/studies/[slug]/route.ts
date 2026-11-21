@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { restoreStudyRecord } from "@/lib/studies-store";
@@ -6,7 +7,7 @@ import { readDevelopmentStudy, studyDatabaseFailure, temporaryStudyResponse } fr
 
 type StudyWithRelations = Prisma.StudyGetPayload<{ include: { parent: true; forks: true } }>;
 
-export async function GET(
+async function getHandler(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
@@ -30,3 +31,6 @@ export async function GET(
 
   return NextResponse.json({ error: "Study not found" }, { status: 404 });
 }
+
+// T30: Cache-Control coerente (2xx pela política; erros e escrita sem cache).
+export const GET = withCachePolicy(getHandler, CACHE_POLICY.study);

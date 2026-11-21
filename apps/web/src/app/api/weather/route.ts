@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import type { WeatherData } from "@/lib/api-client";
 
 const COORDINATE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
@@ -16,7 +17,7 @@ function numberOrNull(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const lat = parseCoordinate(searchParams.get("lat"), 90);
   const lng = parseCoordinate(searchParams.get("lng"), 180);
@@ -78,3 +79,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Weather fetch failed" }, { status: 502 });
   }
 }
+
+// T30: Cache-Control coerente (2xx pela política; erros e escrita sem cache).
+export const GET = withCachePolicy(getHandler, CACHE_POLICY.weather);

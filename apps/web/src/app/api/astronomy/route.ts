@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import { calculateSubsolarPoint, getSunDirectionVector } from "@/lib/astronomy";
 
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const dtStr = searchParams.get("dt");
   const date = dtStr ? new Date(dtStr) : new Date();
@@ -16,3 +17,6 @@ export async function GET(req: NextRequest) {
     sun_direction: [sunDir.x, sunDir.y, sunDir.z],
   });
 }
+
+// T30: Cache-Control coerente (2xx pela política; erros e escrita sem cache).
+export const GET = withCachePolicy(getHandler, (req: NextRequest) => (req.nextUrl.searchParams.get("dt") ? CACHE_POLICY.astronomyAt : CACHE_POLICY.astronomyNow));

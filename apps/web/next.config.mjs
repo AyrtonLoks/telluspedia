@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
+import { securityHeaders } from "./security-headers.mjs";
 
 const withBundleAnalyzer = createBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -24,8 +25,15 @@ const nextConfig = {
   },
 };
 
-export default (phase) =>
-  withBundleAnalyzer({
+export default (phase) => {
+  const dev = phase === PHASE_DEVELOPMENT_SERVER;
+  return withBundleAnalyzer({
     ...nextConfig,
-    distDir: phase === PHASE_DEVELOPMENT_SERVER ? ".next-dev" : ".next",
+    // T30: sem "X-Powered-By: Next.js" e com cabeçalhos de segurança em todas as respostas.
+    poweredByHeader: false,
+    async headers() {
+      return [{ source: "/:path*", headers: securityHeaders({ dev }) }];
+    },
+    distDir: dev ? ".next-dev" : ".next",
   });
+};

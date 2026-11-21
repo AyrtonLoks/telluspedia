@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import { nanoid } from "nanoid";
 import type { StudyRecord } from "@/lib/studies-store";
 import { persistStudy } from "@/lib/study-persistence";
@@ -37,7 +38,7 @@ async function readBody(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
   const retryAfter = studyCreationRetryAfter(req.headers);
   if (retryAfter) {
     return NextResponse.json({ error: "Too many study creations" }, {
@@ -73,3 +74,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to create study" }, { status: 500 });
   }
 }
+
+// T30: Cache-Control coerente (2xx pela política; erros e escrita sem cache).
+export const POST = withCachePolicy(postHandler, CACHE_POLICY.noStore);
