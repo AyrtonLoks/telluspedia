@@ -204,7 +204,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | TODO | — | — | G-INFRA |
-| T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | IN_PROGRESS | antigravity | — | G-PAIS |
+| T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | REVIEW | antigravity | — | G-PAIS |
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | TODO | — | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | TODO | — | T29 | G-PAIS, G-PIPELINE |
@@ -1055,7 +1055,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ### T29 · Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t29-honest-comparator-177 · **Worktree:** ../telluspedia-wt/antigravity-t29
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t29-honest-comparator-177 · **Worktree:** —
 - **Prioridade:** P0 · **Área:** Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PAIS
 
 **Contexto / problema**
@@ -1068,13 +1068,14 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 4. Adicionar testes de regressão proibindo interpolação sintética e validando comparação de países fora dos 6 piloto (ex.: `ARG`, `CHN`, `IND`, `FRA`).
 
 **Critérios de aceite**
-- [ ] Nenhum número sintético ou curva fabricada em `ComparisonCharts.tsx`.
-- [ ] É possível pesquisar, adicionar e comparar até 4 países dentre todos os 177 no modal e via `/compare?c=ARG,CHN,IND,FRA`.
-- [ ] Países sem dado para a métrica selecionada são sinalizados explicitamente sem valor falso.
+- [x] Nenhum número sintético ou curva fabricada em `ComparisonCharts.tsx`.
+- [x] É possível pesquisar, adicionar e comparar até 4 países dentre todos os 177 no modal e via `/compare?c=ARG,CHN,IND,FRA`.
+- [x] Países sem dado para a métrica selecionada são sinalizados explicitamente sem valor falso.
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (c746570). Grupo G-PAIS livre (D17 em G-SHELL sem conflito).
+- 2026-11-21 · antigravity · REVIEW · Removida integralmente a interpolação linear fabricada (1990–2023), os fallbacks inventados (`1e12`/`0.8`/`1.5`) e a dependência de `PILOT_COUNTRIES` no Comparador: (1) criado `lib/comparator-data.ts` com `buildComparisonDataset` (resolve todos os 177 países via `getCountryData`, preserva ano real, fonte primária e URL oficial RN02, e isola países sem dado em `missing` sem nunca inserir zero ou estimativa) e `searchComparableCountries` (busca sem acento por nome comum/oficial, ISO-2/ISO-3 e continente/região sobre os 177 países); (2) reescrito `ComparisonCharts.tsx` com gráfico de barras honesto (`BarChart`) das leituras reais mais recentes (PIB, População, Expectativa de vida, Defesa e IDH), lista textual acessível com ano e link oficial por país, e aviso explícito para países sem dado; (3) atualizado `CountryComparator.tsx` com busca instantânea entre todos os 177 países (preservando `<Dialog open={isOpen}>` da D17 e os tokens D14); (4) adicionados 6 testes de regressão em `test/comparator-honesty.test.tsx`. Validação: `pnpm typecheck`, `pnpm lint`, `pnpm test` (568/568), `pnpm build` (`/` em 225 kB) e smoke HTTP 200 em `/compare?c=ARG,CHN,IND,FRA` via `next start` na porta 3003. Verificação interativa no navegador pendente do Ayrton. Commit: 39d2059.
 
 ---
 
