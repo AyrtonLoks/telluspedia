@@ -199,13 +199,13 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
-| D17 | Movimento e transições | Design | P2 | M | REVIEW | claude | D14 | G-SHELL |
+| D17 | Movimento e transições | Design | P2 | M | DONE | claude | D14 | G-SHELL |
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | IN_PROGRESS | codex | D14 | G-SHELL, G-EPOCA, G-COSMOS |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
-| T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | TODO | — | — | G-INFRA, G-ESTUDOS |
+| T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | IN_PROGRESS | claude | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | REVIEW | antigravity | T29 | G-PAIS, G-PIPELINE |
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | TODO | — | — | G-SHELL, G-PAIS |
@@ -1085,7 +1085,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ### T30 · Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t30-cabecalhos-seguranca · **Worktree:** ../telluspedia-wt/claude-t30
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA, G-ESTUDOS
 
 **Contexto / problema**
@@ -1101,6 +1101,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada após a D17 ir para DONE. Elegibilidade: G-SHELL, G-EPOCA e G-COSMOS ocupados pela D18 (codex) — T22/D19 (fase 8) e D21/D24 (fase 9) bloqueadas; T30 é a primeira da fase 10 com G-INFRA e G-ESTUDOS livres.
 
 ---
 
@@ -1841,7 +1842,7 @@ No painel do Observatório, cada card repete um botão grande "Aprofundar no Tel
 
 ### D17 · Movimento e transições
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d17-movimento · **Worktree:** ../telluspedia-wt/claude-d17
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d17-movimento · **Worktree:** ../telluspedia-wt/claude-d17
 - **Prioridade:** P2 · **Área:** Design · **Tamanho:** M · **Depende de:** D14 · **Grupos:** G-SHELL
 
 **Contexto / problema**
@@ -1871,6 +1872,7 @@ Painéis aparecem/somem sem transição coerente; troca Terra → Cosmos é um c
 - 2026-11-21 · claude · IN_PROGRESS · **Verificação no navegador achou erro** (`fix(movimento): rótulos ocultos, não desmontados, na descida do Cosmos [D17]`): o overlay de dev do Next acusou "Attempted to synchronously unmount a root while React was already rendering" em `CelestialLabel` — o rótulo desmontava o `<Html>` do drei (raiz React própria) quando a saída começava, e a saída começa num layout effect, durante a renderização. Agora o rótulo fica montado e só oculto (`visibility: hidden`) na descida (teste). Validação: 544/548 (as 4 do Prisma), lint ok.
 - 2026-11-21 · claude · IN_PROGRESS · **Folha de contato da volta (6,5 s)** (`fix(movimento): corpo some quando a câmera passa perto na descida [D17]`): o esmaecimento funciona (aos 1,8 s o sistema solar já sumiu; descida contínua até a vista da Terra), mas, com o Sol agora na tela, a descida passou rente a ele num quadro (Sol enchendo a tela) — acontece quando a Terra está atrás do Sol vista do ponto de partida. Agora cada malha também some pela distância da câmera à superfície (inteira a partir de 4 raios, invisível a 1 raio). Testes. Validação: 550/554 (as 4 do Prisma), lint ok.
 - 2026-11-21 · claude · REVIEW · **Volta conferida no navegador** (servidor atualizado, 12 quadros em 4 s): sem erros no overlay do Next; o sistema solar esmaece e some por volta de 1,8 s; descida contínua até a vista padrão da Terra; quando a descida passa perto do Sol, ele aparece como uma fração da tela já esmaecendo (não enche mais) e some no quadro seguinte. Pronto para aceite.
+- 2026-11-21 · ayrton · DONE · Aprovado (registrado por claude).
 
 ---
 
