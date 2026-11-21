@@ -172,6 +172,34 @@ eixo Y invertido porque o `KTX2Loader` usa `flipY = false`.
 
 ---
 
+## Anexo — Texturas dos planetas (D21, 2026-11-21)
+
+Arquivos em `apps/web/public/textures/planets/`, gerados por `apps/web/scripts/textures/build-planet-textures.mjs`
+(`pnpm --filter web textures:planets`) a partir dos originais em `assets-src/raw/planets/` (fora do git; URLs em
+`assets-src/README.md`). Mesmas convenções do globo: KTX2 (Basis, mipmaps, Y invertido) + JPG/PNG de fallback.
+São carregados só ao entrar no Cosmos: 1K para todos os corpos e 2K apenas para o corpo em foco; cada textura é
+descartada quando sai de uso.
+
+| Arquivo | Origem | Licença | Processamento |
+|---|---|---|---|
+| `mercury_*`, `venus_*`, `mars_*`, `jupiter_*`, `saturn_*`, `uranus_*`, `neptune_*` (`_1k`/`_2k`, `.jpg`/`.ktx2`) | **Solar System Scope** — texturas de 2K (`2k_mercury.jpg`, `2k_venus_atmosphere.jpg`, `2k_mars.jpg`, `2k_jupiter.jpg`, `2k_saturn.jpg`, `2k_uranus.jpg`, `2k_neptune.jpg`), baseadas em dados da NASA ([página](https://www.solarsystemscope.com/textures/)) | **CC BY 4.0** (atribuição obrigatória: Solar System Scope / INOVE) | 2048×1024 → 1024×512 e 2048×1024 (Lanczos); JPEG q86; KTX2 ETC1S sRGB |
+| `saturn_ring.png`/`.ktx2` | Solar System Scope — `2k_saturn_ring_alpha.png` (faixa radial com alfa) | **CC BY 4.0** | 2048×125 → 1024×64 (blocos 4×4 do Basis); KTX2 UASTC com alfa. `u = 0` na borda interna, `u = 1` na externa |
+| `pluto_1k.jpg`/`.ktx2` | **NASA / Johns Hopkins APL / Southwest Research Institute / Lunar and Planetary Institute** — *Pluto New Horizons Global Mosaic 300m*, julho de 2017 (LORRI + MVIC), versão de 1024 px publicada pelo USGS ([página](https://www.usgs.gov/media/images/pluto-global-mosaic-new-horizons-july-2017)) | Domínio público (USGS: “Public Domain”) | Monocromático, gravado em RGB; 1024×512. Não há versão 2K |
+
+**Ressalvas.** Segundo a própria Solar System Scope, as áreas que as sondas não mapearam foram preenchidas com
+terreno fictício e as cores foram levemente saturadas: as texturas são representações artísticas fiéis no
+conjunto, não mosaicos científicos. Vênus mostra o topo das nuvens (o que se vê no visível), não a superfície. O
+hemisfério de Plutão que a New Horizons viu de longe tem resolução muito menor, e o mosaico é em tons de cinza.
+
+**Eixo e rotação.** O eixo de cada planeta é o polo de rotação J2000 (NASA Planetary Fact Sheets / IAU WGCCRE),
+na convenção do polo positivo, de modo que Vênus, Urano e Plutão aparecem invertidos e giram para trás em
+relação à eclíptica; o ângulo com a órbita reproduz a obliquidade do catálogo (`planet-orientation.ts`). A
+velocidade de rotação é proporcional à real numa escala comprimida (raiz quadrada da frequência), porque a real
+não cabe na tela; a reprodução da linha do tempo acelera todos pelo mesmo fator. As sombras entre Saturno e os
+anéis são calculadas analiticamente no shader.
+
+---
+
 ## Anexo — Indicadores e Séries Históricas do Banco Mundial e Metadados de Países (T26 / T32, atualizado em 2026-11-21)
 
 Arquivos versionados em `apps/web/public/data/countries-worldbank-indicators.json` (leitura mais recente) e `apps/web/public/data/worldbank-timeseries.json` (séries anuais reais **1990–2024**, carregadas sob demanda no Comparador), gerados de forma determinística e reproduzível pelo script `apps/web/scripts/ingest-worldbank-indicators.mjs` para todos os **177 países/territórios** do catálogo Natural Earth 1:110m (`apps/web/public/data/countries-ne-110m.json`).

@@ -16,3 +16,14 @@ As luzes noturnas (`earth_night_*.jpg`) já estão em `public/textures/` e são 
 
 O encoder KTX2 roda em WebAssembly (`ktx2-encoder`) e é pesado: a diurna de 4K leva ~3 min e pede
 alguns GB de RAM.
+
+## Planetas (D21)
+
+Para `pnpm --filter web textures:planets`, baixe para `assets-src/raw/planets/`:
+
+| Arquivo em `raw/planets/` | URL | Licença |
+|---|---|---|
+| `2k_mercury.jpg`, `2k_venus_atmosphere.jpg`, `2k_mars.jpg`, `2k_jupiter.jpg`, `2k_saturn.jpg`, `2k_uranus.jpg`, `2k_neptune.jpg`, `2k_saturn_ring_alpha.png` | `https://www.solarsystemscope.com/textures/download/<arquivo>` | CC BY 4.0 — Solar System Scope |
+| `pluto_usgs_1024.jpg` | https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/Pluto_NewHorizons_Global_Mosaic_300m_Jul2017_1024.jpg (da [página do USGS](https://www.usgs.gov/media/images/pluto-global-mosaic-new-horizons-july-2017)) | Domínio público — NASA/JHUAPL/SwRI/LPI |
+
+SHA-256 dos originais usados: ver `assets-src/planets.sha256`.

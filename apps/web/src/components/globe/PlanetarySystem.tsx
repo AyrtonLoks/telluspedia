@@ -11,8 +11,9 @@ import {
   CelestialBodyId,
   ASTROPHYSICAL_CATALOG,
 } from "@/lib/astronomy-planets";
-import { bodySceneRadius, celestialLabelPriority, RING_RATIOS } from "@/lib/cosmic-scale";
+import { bodySceneRadius, celestialLabelPriority } from "@/lib/cosmic-scale";
 import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
+import { PlanetBody } from "./PlanetBody";
 
 const PLANET_IDS: Array<Exclude<CelestialBodyId, "SUN" | "MOON" | "HALLEY">> = [
   "MERCURY",
@@ -75,9 +76,8 @@ export const PlanetarySystem: React.FC = () => {
         const isFocused = focusedBodyId === id;
         const isHovered = hoveredBodyId === id;
 
-        // Raio pela política única de escala (D11) e inclinação axial
+        // Raio pela política única de escala (D11); eixo, rotação e texturas ficam no PlanetBody (D21)
         const radius = bodySceneRadius(meta.equatorialRadiusKm, scaleMode);
-        const axialTiltRad = (meta.axialTiltDeg * Math.PI) / 180;
 
         return (
           <group key={id} name={`planet-group-${id}`}>
@@ -96,55 +96,21 @@ export const PlanetarySystem: React.FC = () => {
             {/* Planet Body at Calculated Scene Position (Earth is rendered by high-res EarthSphere) */}
             <group position={planet.scenePosition}>
               {id !== "EARTH" && (
-                <mesh
-                  rotation={[0, 0, axialTiltRad]}
-                  onClick={(e) => {
+                <PlanetBody
+                  id={id}
+                  radius={radius}
+                  color={planet.color}
+                  focused={isFocused}
+                  onSelect={(e) => {
                     e.stopPropagation();
                     focusBody(id);
                   }}
-                  onPointerOver={(e) => {
+                  onHover={(e) => {
                     e.stopPropagation();
                     setHoveredBody(id);
                   }}
-                  onPointerOut={() => setHoveredBody(null)}
-                >
-                  <sphereGeometry args={[radius, 32, 32]} />
-                  <meshStandardMaterial
-                    color={planet.color}
-                    roughness={id === "VENUS" ? 0.35 : 0.7}
-                    metalness={0.1}
-                    emissive={isFocused ? planet.color : "#000000"}
-                    emissiveIntensity={isFocused ? 0.2 : 0}
-                  />
-                </mesh>
-              )}
-
-              {/* Rings for Saturn */}
-              {id === "SATURN" && meta.hasRings && (
-                <mesh rotation={[-Math.PI / 2 + axialTiltRad, 0, 0]}>
-                  <ringGeometry args={[radius * RING_RATIOS.SATURN[0], radius * RING_RATIOS.SATURN[1], 64]} />
-                  <meshStandardMaterial
-                    color="#e2d8b8"
-                    side={THREE.DoubleSide}
-                    transparent
-                    opacity={0.7}
-                    roughness={0.8}
-                  />
-                </mesh>
-              )}
-
-              {/* Rings for Uranus */}
-              {id === "URANUS" && meta.hasRings && (
-                <mesh rotation={[-Math.PI / 2 + axialTiltRad, 0, 0]}>
-                  <ringGeometry args={[radius * RING_RATIOS.URANUS[0], radius * RING_RATIOS.URANUS[1], 64]} />
-                  <meshStandardMaterial
-                    color="#bae6fd"
-                    side={THREE.DoubleSide}
-                    transparent
-                    opacity={0.45}
-                    roughness={0.8}
-                  />
-                </mesh>
+                  onLeave={() => setHoveredBody(null)}
+                />
               )}
 
               {/* Selection Halo / Indicator */}

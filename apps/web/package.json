@@ -13,6 +13,7 @@
     "textures:build": "node scripts/textures/build-earth-textures.mjs",
     "test:e2e": "playwright test",
     "scenes:wikidata": "tsx scripts/ingest-wikidata.ts",
+    "textures:planets": "node scripts/textures/build-planet-textures.mjs",
     "textures:ktx2-worker": "tsx scripts/textures/build-ktx2-worker.ts"
   },
   "prisma": {

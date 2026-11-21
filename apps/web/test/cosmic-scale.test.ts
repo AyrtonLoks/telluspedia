@@ -55,7 +55,7 @@ describe("D11: política única de escala", () => {
   test("anéis proporcionais ao raio do planeta (Saturno ~1,2–2,3 R)", () => {
     assert.deepEqual(RING_RATIOS.SATURN, [1.22, 2.3]);
     assert.ok(RING_RATIOS.URANUS[1] < RING_RATIOS.SATURN[1]);
-    const src = read("src/components/globe/PlanetarySystem.tsx");
+    const src = read("src/components/globe/PlanetBody.tsx");
     assert.match(src, /radius \* RING_RATIOS\.SATURN\[0\], radius \* RING_RATIOS\.SATURN\[1\]/);
     assert.doesNotMatch(src, /ringInnerRadius \|\|/);
   });
