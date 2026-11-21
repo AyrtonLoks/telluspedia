@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Share2, Copy, Check } from "lucide-react";
+import Link from "next/link";
+import { Share2, Copy, Check, Library } from "lucide-react";
 import { useStudyStore } from "@/stores/studyStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
@@ -186,6 +187,14 @@ export const StudyShareModal: React.FC = () => {
         description="Salve o estado atual do globo, linha do tempo e camadas como um link permanente."
         footer={
           <>
+            <Link
+              href="/studies"
+              onClick={() => setShareModalOpen(false)}
+              className="mr-auto inline-flex h-8 items-center gap-1.5 rounded-control px-2.5 text-caption font-medium text-accent transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-accent-hover"
+            >
+              <Library aria-hidden="true" className="h-3.5 w-3.5" />
+              <span>Galeria de estudos</span>
+            </Link>
             <Button variant="ghost" size="sm" onClick={() => setShareModalOpen(false)}>
               Cancelar
             </Button>

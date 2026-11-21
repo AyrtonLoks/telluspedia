@@ -2,7 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
 import { prisma } from "./prisma";
-import { restoreStudyRecord, type StudyRecord } from "./studies-store";
+import {
+  getMemoryStudyLineage,
+  restoreStudyRecord,
+  type StudyLineageInfo,
+  type StudyRecord,
+} from "./studies-store";
 import { readDevelopmentStudy } from "./study-persistence";
 import { getCountryData, type CountryData } from "./country-data";
 
@@ -31,6 +36,64 @@ export async function loadStudyBySlug(slug: string): Promise<StudyRecord | null>
 
   const devStudy = readDevelopmentStudy(cleanSlug, "read");
   return devStudy ? restoreStudyRecord(devStudy) : null;
+}
+
+export interface LoadedStudyWithLineage {
+  study: StudyRecord;
+  lineage: StudyLineageInfo;
+}
+
+/**
+ * Loads an immutable study together with its parent reference and direct forks (`parentId`).
+ * Preserves T08 semantics (PostgreSQL first, development memory fallback only when NODE_ENV !== "production").
+ */
+export async function loadStudyWithLineage(slug: string): Promise<LoadedStudyWithLineage | null> {
+  const cleanSlug = (slug || "").trim();
+  if (!cleanSlug || cleanSlug.length > 128) return null;
+
+  try {
+    const row = await prisma.study.findUnique({
+      where: { id: cleanSlug },
+      include: {
+        parent: { select: { id: true, title: true, createdAt: true } },
+        forks: {
+          select: { id: true, title: true, createdAt: true },
+          orderBy: { createdAt: "desc" },
+          take: 50,
+        },
+        _count: { select: { forks: true } },
+      },
+    });
+    if (row) {
+      return {
+        study: restoreStudyRecord(row),
+        lineage: {
+          parent: row.parent
+            ? {
+                id: row.parent.id,
+                title: row.parent.title,
+                createdAt: row.parent.createdAt.toISOString(),
+              }
+            : null,
+          forks: row.forks.map((fork) => ({
+            id: fork.id,
+            title: fork.title,
+            createdAt: fork.createdAt.toISOString(),
+          })),
+          forkCount: row._count.forks,
+        },
+      };
+    }
+  } catch (error) {
+    console.error("[ssr/study] Failed to load study lineage from database", { slug: cleanSlug, error });
+  }
+
+  const devStudy = readDevelopmentStudy(cleanSlug, "read");
+  if (!devStudy) return null;
+  return {
+    study: restoreStudyRecord(devStudy),
+    lineage: getMemoryStudyLineage(cleanSlug),
+  };
 }
 
 /**

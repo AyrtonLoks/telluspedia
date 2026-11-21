@@ -11,7 +11,7 @@ import { DockSkeleton } from "@/components/layout/DockSkeleton";
 import { ModalSkeleton } from "@/components/ui/Skeleton";
 import { usePresence, useLastDefined } from "@/components/ui/motion";
 import { useEpochState } from "@/lib/epoch/useEpochState";
-import type { StudyRecord } from "@/lib/studies-store";
+import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
 import { restoreStudySnapshot, selectCountry } from "@/stores/actions";
 import { SceneLinkSync } from "@/components/scenes/SceneLinkSync";
 import { ExplorerUrlSync } from "@/components/explore/ExplorerUrlSync";
@@ -94,7 +94,7 @@ function EntityLaunchGate() {
 
 export type InitialGlobeState =
   | { kind: "default" }
-  | { kind: "study"; study: StudyRecord }
+  | { kind: "study"; study: StudyRecord; lineage?: StudyLineageInfo }
   | { kind: "country"; iso: string; latitude: number | null; longitude: number | null }
   | { kind: "compare"; isos: string[] };
 
@@ -218,6 +218,8 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
               studyId={initialState.study.id}
               parentId={initialState.study.parentId}
               title={initialState.study.title}
+              study={initialState.study}
+              lineage={initialState.lineage}
             />
           )}
           {showHistoricalBadge && <HistoricalEraBadge />}

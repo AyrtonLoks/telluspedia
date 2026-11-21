@@ -29,6 +29,23 @@ export interface StudyRecord {
   createdAt: string;
 }
 
+export interface StudyLineageRef {
+  id: string;
+  title: string;
+  createdAt: string;
+}
+
+export interface StudyLineageInfo {
+  parent: StudyLineageRef | null;
+  forks: StudyLineageRef[];
+  forkCount: number;
+}
+
+export interface StudyListItem extends StudyRecord {
+  parentTitle: string | null;
+  forkCount: number;
+}
+
 const memoryStudies: Map<string, StudyRecord> = new Map();
 
 // Seed initial example study
@@ -63,6 +80,31 @@ export function saveMemoryStudy(study: StudyRecord) {
 
 export function getMemoryStudy(id: string): StudyRecord | undefined {
   return memoryStudies.get(id);
+}
+
+export function listMemoryStudies(): StudyRecord[] {
+  return Array.from(memoryStudies.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function getMemoryStudyLineage(id: string): StudyLineageInfo {
+  const current = memoryStudies.get(id);
+  const parentStudy = current?.parentId ? memoryStudies.get(current.parentId) : undefined;
+  const forks: StudyLineageRef[] = Array.from(memoryStudies.values())
+    .filter((item) => item.parentId === id)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      createdAt: item.createdAt,
+    }));
+
+  return {
+    parent: parentStudy
+      ? { id: parentStudy.id, title: parentStudy.title, createdAt: parentStudy.createdAt }
+      : null,
+    forks,
+    forkCount: forks.length,
+  };
 }
 
 export function forkStudyRecord(original: StoredStudy, newId?: string): StudyRecord {

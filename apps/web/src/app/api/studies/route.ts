@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import { nanoid } from "nanoid";
 import type { StudyRecord } from "@/lib/studies-store";
+import { listStudies, parseStudyListQuery } from "@/lib/study-gallery";
 import { persistStudy } from "@/lib/study-persistence";
 import { sanitizeStudy, studyInput } from "@/lib/study-schema";
 import { studyCreationRetryAfterAsync } from "@/lib/study-rate-limit";
@@ -75,5 +76,29 @@ async function postHandler(req: NextRequest) {
   }
 }
 
-// T30: Cache-Control coerente (2xx pela política; erros e escrita sem cache).
+async function getHandler(req: NextRequest) {
+  const query = parseStudyListQuery(req.nextUrl.searchParams);
+  const result = await listStudies(query);
+
+  if (result.persistence === "unavailable") {
+    return NextResponse.json(
+      { error: "O banco de dados de estudos está indisponível. Tente novamente em instantes." },
+      { status: 503, headers: { "Cache-Control": "no-store" } }
+    );
+  }
+
+  if (result.persistence === "memory") {
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "no-store",
+        "X-Study-Persistence": "memory",
+      },
+    });
+  }
+
+  return NextResponse.json(result);
+}
+
+// T30/D23: Cache-Control coerente (listagem pública com cache curto; memória/erros e escrita sem cache).
+export const GET = withCachePolicy(getHandler, CACHE_POLICY.study);
 export const POST = withCachePolicy(postHandler, CACHE_POLICY.noStore);
