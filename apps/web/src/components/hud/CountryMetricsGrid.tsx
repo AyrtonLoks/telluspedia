@@ -60,12 +60,14 @@ type IconType = React.ComponentType<{ className?: string; "aria-hidden"?: boolea
  */
 const SourceFooter: React.FC<{
   source: string;
+  /** Rótulo exibido; sem ele, a fonte é abreviada por `formatSourceBadge`. */
+  sourceLabel?: string;
   sourceUrl: string;
   title: string;
   detail?: string;
   citeLabel: string;
   onCite?: () => void;
-}> = ({ source, sourceUrl, title, detail, citeLabel, onCite }) => (
+}> = ({ source, sourceLabel, sourceUrl, title, detail, citeLabel, onCite }) => (
   <div className="mt-auto flex min-w-0 items-center gap-1 pt-1 text-caption text-fg-muted">
     <a
       href={sourceUrl}
@@ -75,7 +77,7 @@ const SourceFooter: React.FC<{
       className="inline-flex shrink-0 items-center gap-0.5 text-accent hover:text-accent-hover hover:underline"
       title={title}
     >
-      <span>{formatSourceBadge(source)}</span>
+      <span>{sourceLabel ?? formatSourceBadge(source)}</span>
       <ExternalLink aria-hidden="true" className="h-3 w-3" />
     </a>
     {detail && <span className="min-w-0 truncate font-mono tabular-nums" title={detail}>· {detail}</span>}
@@ -350,6 +352,7 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           {(governmentType || headOfState) && (
             <SourceFooter
               source="Constituições / ONU"
+              sourceLabel="Constituições / ONU"
               sourceUrl={getSourceUrl("ONU")}
               title="Fonte Primária: Constituições Nacionais e Divisão de Assuntos Políticos da ONU (Abrir Repositório)"
               citeLabel="Gerar citação institucional"

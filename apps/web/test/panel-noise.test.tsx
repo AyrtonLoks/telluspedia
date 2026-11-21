@@ -35,6 +35,9 @@ describe("D16: Observatório compacto", () => {
     assert.equal(count(html, "Aprofundar no TellusLab"), 0, "TellusLab não é repetido em cada card");
     assert.ok(!html.includes(">Anomalias térmicas globais"), "descrição longa fica nas opções (só no title do nome)");
     assert.equal(count(html, 'aria-expanded="false"'), 5);
+    assert.match(html, /Altitude: \d{3}(,\d)? km/, "altitude em pt-BR, da telemetria calculada");
+    assert.match(html, />\d+ voos</);
+    assert.match(html, />\d+ embarcações</);
   });
 
   test("ao abrir as opções: descrição, controles, opacidade e o TellusLab como ação secundária", () => {
@@ -90,6 +93,7 @@ describe("D16: Inspector do país", () => {
     assert.match(html, /group-hover:opacity-100/, "citação aparece ao passar o mouse");
     assert.match(html, /focus-visible:opacity-100/, "e ao focar pelo teclado");
     assert.ok(html.includes('aria-label="Gerar citação institucional"'));
+    assert.ok(html.includes(">Constituições / ONU<"), "fonte institucional por extenso, sem abreviar");
   });
 
   test("marcos: o cartão é um botão; ações só no marco selecionado", () => {

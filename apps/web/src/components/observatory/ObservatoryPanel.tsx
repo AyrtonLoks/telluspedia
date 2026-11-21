@@ -73,7 +73,10 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Estação Espacial Internacional e satélites: posição real, órbita e rastro na superfície.",
     icon: Radio,
     tone: "layer-satellites",
-    badgeText: (s) => `Altitude: ${s.issTelemetry?.altitudeKm || 408} km`,
+    badgeText: (s) =>
+      typeof s.issTelemetry?.altitudeKm === "number"
+        ? `Altitude: ${s.issTelemetry.altitudeKm.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km`
+        : "Calculando órbita…",
   },
   {
     id: "FLIGHTS_OPENSKY",
@@ -82,7 +85,7 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Amostra global de aeronaves em voo. A posição entre transmissões é estimada.",
     icon: Plane,
     tone: "layer-aircraft",
-    badgeText: (s) => `${s.aircraftFleet?.length || 0} voos rastreados`,
+    badgeText: (s) => `${(s.aircraftFleet?.length ?? 0).toLocaleString("pt-BR")} voos`,
   },
   {
     id: "MARITIME_ROUTES",
@@ -91,7 +94,7 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Amostra AIS em seis regiões monitoradas. Os números variam conforme as posições recebidas.",
     icon: Anchor,
     tone: "layer-maritime",
-    badgeText: (s) => `${s.ais.vessels.length} embarcações na amostra`,
+    badgeText: (s) => `${s.ais.vessels.length.toLocaleString("pt-BR")} embarcações`,
   },
 ];
 
