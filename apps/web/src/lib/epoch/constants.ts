@@ -43,6 +43,12 @@ export const SPACE_AGE_START_YEAR = 1957;
 export type EpochMode = "CONTEMPORARY" | "HISTORICAL" | "GEOLOGICAL";
 export type EpochScene = "MAGELLAN" | "APOLLO11";
 
+/** Cena de dados de cada modo especial (D12c). A D12d troca o modo pelo id da cena ativa. */
+export const EPOCH_SCENE_DATA_IDS: Record<EpochScene, string> = {
+  MAGELLAN: MAGELLAN_ROUTE_ID,
+  APOLLO11: APOLLO11_GLOBAL_MILESTONE_ID,
+};
+
 export function isGeologicalMilestoneId(id: string | null | undefined): id is GeologicalMilestoneId {
   return !!id && Object.prototype.hasOwnProperty.call(GEOLOGICAL_MILESTONE_MA, id);
 }

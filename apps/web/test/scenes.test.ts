@@ -151,3 +151,58 @@ describe("D12b: migração sem perda para cenas", () => {
     assert.doesNotMatch(fs.readFileSync(path.join(__dirname, "../src/lib/apollo11.ts"), "utf-8"), /historicalGET: "/);
   });
 });
+
+import * as THREE from "three";
+import { cislunarControlPoints, cislunarMoonPosition, createCislunarCurve, MOON_RADIUS_SCENE } from "../src/lib/scenes/cislunar";
+import { createSurfaceTrajectoryCurve, ROUTE_ALTITUDE } from "../src/lib/scenes/surface";
+import { getApollo11ControlPoints, MOON_DEFAULT_POSITION } from "../src/lib/apollo11";
+
+describe("D12c: player genérico (camadas 3D)", () => {
+  const apollo = getScene("glo-1969")!.trajectories[0];
+
+  test("Terra–Lua: a Apollo 11 pelos dados gera exatamente a mesma trajetória de antes", () => {
+    if (apollo.kind !== "cislunar") throw new Error();
+    assert.ok(cislunarMoonPosition(apollo).distanceTo(MOON_DEFAULT_POSITION) < 1e-12, "Lua no instante do pouso");
+    const generic = cislunarControlPoints(apollo, cislunarMoonPosition(apollo));
+    const legacy = getApollo11ControlPoints();
+    assert.equal(generic.length, 12);
+    generic.forEach((p, i) => assert.ok(p.distanceTo(legacy[i]) < 1e-9, `ponto ${i}`));
+    const end = createCislunarCurve(apollo).getPoint(1);
+    assert.ok(Math.abs(end.distanceTo(MOON_DEFAULT_POSITION) - MOON_RADIUS_SCENE) < 1e-9, "termina na superfície da Lua");
+  });
+
+  test("Terra–Lua sem pouso (missão orbital) termina em órbita lunar", () => {
+    if (apollo.kind !== "cislunar") throw new Error();
+    const orbital = { ...apollo, landingSite: undefined, phases: apollo.phases.slice(0, 3) };
+    const pts = cislunarControlPoints(orbital, cislunarMoonPosition(orbital));
+    assert.equal(pts.length, 9);
+    const moon = cislunarMoonPosition(orbital);
+    assert.ok(pts[pts.length - 1].distanceTo(moon) > MOON_RADIUS_SCENE, "fora da Lua");
+  });
+
+  test("superfície: qualquer lista de pontos vira spline geodésica na altitude da rota", () => {
+    const { curve, waypoints3D } = createSurfaceTrajectoryCurve([
+      { lat: 48.85, lng: 2.35 },
+      { lat: 41.9, lng: 12.5 },
+      { lat: 37.98, lng: 23.73 },
+    ]);
+    assert.equal(waypoints3D.length, 3);
+    for (let u = 0; u <= 1; u += 0.05) {
+      const r = curve.getPointAt(u).length();
+      assert.ok(r > 1 && Math.abs(r - ROUTE_ALTITUDE) < 2e-3, `raio ${r}`);
+    }
+    assert.ok(curve.getPoint(0) instanceof THREE.Vector3);
+  });
+
+  test("o globo usa o player genérico; nada de componente 3D por evento", () => {
+    const canvas = fs.readFileSync(path.join(__dirname, "../src/components/globe/GlobeCanvas.tsx"), "utf-8");
+    assert.match(canvas, /<ScenePlayer scene=\{activeSceneData\} \/>/);
+    assert.doesNotMatch(canvas, /Apollo11Trajectory|HistoricalRouteTrajectory/);
+    assert.ok(!fs.existsSync(path.join(__dirname, "../src/components/globe/Apollo11Trajectory.tsx")));
+    assert.ok(!fs.existsSync(path.join(__dirname, "../src/components/globe/HistoricalRouteTrajectory.tsx")));
+    const player = fs.readFileSync(path.join(__dirname, "../src/components/scenes/ScenePlayer.tsx"), "utf-8");
+    assert.doesNotMatch(player, /magellan|apollo|1519|1969/i, "o player não conhece eventos pelo nome");
+    const surface = fs.readFileSync(path.join(__dirname, "../src/components/scenes/SurfaceTrajectoryLayer.tsx"), "utf-8");
+    assert.match(surface, /isShip \?/, "veículo conforme o tipo");
+  });
+});

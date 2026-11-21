@@ -19,9 +19,10 @@ import { CountryBorders } from "./CountryBorders";
 import { OrbitingMoon } from "./OrbitingMoon";
 import { SkyStars } from "./SkyStars";
 import { CameraFlyToController } from "./CameraFlyToController";
-import { Apollo11Trajectory } from "./Apollo11Trajectory";
 import { Apollo11TelemetryOverlay } from "./Apollo11TelemetryOverlay";
-import { HistoricalRouteTrajectory } from "./HistoricalRouteTrajectory";
+import { ScenePlayer } from "@/components/scenes/ScenePlayer";
+import { getScene } from "@/lib/scenes/catalog";
+import { EPOCH_SCENE_DATA_IDS } from "@/lib/epoch/constants";
 import { PaleoPlatesLayer } from "./PaleoPlatesLayer";
 import { NasaFirmsLayer } from "./NasaFirmsLayer";
 import { NasaEonetLayer } from "./NasaEonetLayer";
@@ -74,6 +75,8 @@ export const GlobeCanvas: React.FC = () => {
   const epoch = useEpochState();
   const isGeological = epoch.mode === "GEOLOGICAL";
   const activeScene = epoch.activeScene;
+  // D12c: o player recebe a cena de dados; a D12d troca o modo pelo id da cena ativa.
+  const activeSceneData = activeScene ? getScene(EPOCH_SCENE_DATA_IDS[activeScene]) : undefined;
   const isContemporary = epoch.isContemporary;
 
   const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
@@ -165,11 +168,8 @@ export const GlobeCanvas: React.FC = () => {
           {/* Paleogeographic Tectonic Plates & Suture Zones (Pangea) */}
           {isGeological && <PaleoPlatesLayer />}
 
-          {/* 3D Circumnavigation Trajectory & Animated Nau Victoria */}
-          {activeScene === "MAGELLAN" && <HistoricalRouteTrajectory />}
-
-          {/* 3D Translunar Trajectory & Animated Apollo 11 Spacecraft */}
-          {activeScene === "APOLLO11" && <Apollo11Trajectory />}
+          {/* Player genérico de cenas (trajetórias de Magalhães, Apollo 11 e qualquer cena com dados) */}
+          {activeSceneData && <ScenePlayer scene={activeSceneData} />}
 
           {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
           {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}

@@ -3,66 +3,24 @@
 import { historicalRouteActions } from "@/stores/actions";
 
 import React, { useRef, useMemo, useEffect, useState } from "react";
-import { MAGELLAN_DEPARTURE_MILESTONE_ID } from "@/lib/epoch/constants";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import { MAGELLAN_ROUTE, HistoricalRouteWaypoint } from "@/lib/historical-routes";
-import { latLngToVector3, slerpVectors } from "@/lib/geo-spatial";
+import { createSurfaceTrajectoryCurve, ROUTE_ALTITUDE } from "@/lib/scenes/surface";
+import type { SceneTrajectory } from "@/lib/scenes/schema";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useHistoricalRouteStore } from "@/stores/historicalRouteStore";
 
-// Trajectory altitude strictly at 1.004 to eliminate clipping or internal intersection with Earth (0, 0, 0)
-export const ROUTE_ALTITUDE = 1.004;
+export { ROUTE_ALTITUDE };
 
-export interface MagellanTrajectoryData {
-  curve: THREE.CatmullRomCurve3;
-  curvePoints: THREE.Vector3[];
-  waypoints3D: { point: THREE.Vector3; waypoint: HistoricalRouteWaypoint; index: number }[];
-}
+type SurfaceTrajectory = Extract<SceneTrajectory, { kind: "surface" }>;
 
 /**
- * Builds the continuous spherical 3D spline of Magellan's circumnavigation
- * interpolating great-circle arcs between historic waypoints at altitude 1.004.
+ * Camada genérica de trajetória de superfície (D12c): spline geodésica em ROUTE_ALTITUDE, pontos
+ * clicáveis e veículo animado conforme o tipo (`ship` usa a nau; os demais, um marcador).
+ * Substitui o antigo `HistoricalRouteTrajectory`, específico de Magalhães.
  */
-export function createMagellanTrajectoryCurve(): MagellanTrajectoryData {
-  const waypoints = MAGELLAN_ROUTE.waypoints;
-  const waypoints3D = waypoints.map((wp: HistoricalRouteWaypoint, index: number) => ({
-    point: latLngToVector3(wp.lat, wp.lng, ROUTE_ALTITUDE),
-    waypoint: wp,
-    index,
-  }));
-
-  const finePoints: THREE.Vector3[] = [];
-  const subdivisions = 18;
-
-  for (let i = 0; i < waypoints.length - 1; i++) {
-    const pA = waypoints3D[i].point;
-    const pB = waypoints3D[i + 1].point;
-
-    for (let s = 0; s < subdivisions; s++) {
-      const t = s / subdivisions;
-      const interp = slerpVectors(pA, pB, t);
-      // Strictly enforce spherical altitude
-      interp.normalize().multiplyScalar(ROUTE_ALTITUDE);
-      finePoints.push(interp);
-    }
-  }
-
-  // Final waypoint: return to Sanlúcar de Barrameda / Sevilha
-  const finalPt = waypoints3D[waypoints3D.length - 1].point.clone();
-  finePoints.push(finalPt);
-
-  const curve = new THREE.CatmullRomCurve3(finePoints, false, "centripetal", 0.05);
-
-  return {
-    curve,
-    curvePoints: finePoints,
-    waypoints3D,
-  };
-}
-
-export const HistoricalRouteTrajectory: React.FC = () => {
+export const SurfaceTrajectoryLayer: React.FC<{ sceneId: string; trajectory: SurfaceTrajectory }> = ({ sceneId, trajectory }) => {
   const shipRef = useRef<THREE.Group>(null);
   const wakeMeshRef = useRef<THREE.Mesh>(null);
   const [hoveredWpIndex, setHoveredWpIndex] = useState<number | null>(null);
@@ -71,9 +29,8 @@ export const HistoricalRouteTrajectory: React.FC = () => {
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
 
   // Construct trajectory curve and waypoints
-  const { curve, waypoints3D } = useMemo(() => {
-    return createMagellanTrajectoryCurve();
-  }, []);
+  const { curve, waypoints3D } = useMemo(() => createSurfaceTrajectoryCurve(trajectory.points), [trajectory]);
+  const isShip = trajectory.vehicle === "ship";
 
   // Geometries for the trajectory line and glowing aura
   const { coreTubeGeometry, glowTubeGeometry, lineSegmentsGeometry } = useMemo(() => {
@@ -313,7 +270,7 @@ export const HistoricalRouteTrajectory: React.FC = () => {
   });
 
   return (
-    <group name="historical-route-magellan-1519">
+    <group name={`scene-trajectory-${sceneId}-${trajectory.id}`}>
       {/* 1. Core Gold Trajectory Tube */}
       <mesh geometry={coreTubeGeometry} material={materials.coreMat} />
 
@@ -333,7 +290,7 @@ export const HistoricalRouteTrajectory: React.FC = () => {
         const isHovered = hoveredWpIndex === index;
         const isSelectedMilestone =
           selectedMilestoneId === `magellan-${index}` ||
-          (index === 0 && selectedMilestoneId === MAGELLAN_DEPARTURE_MILESTONE_ID) ||
+          (index === 0 && selectedMilestoneId === sceneId) ||
           (index === 6 && selectedMilestoneId === "magellan-strait");
 
         const isKeyMilestone =
@@ -385,6 +342,8 @@ export const HistoricalRouteTrajectory: React.FC = () => {
         );
       })}
 
+      {isShip && (
+        <>
       {/* 4. Dynamic Water Wake Ribbon (Foam trailing the Nau Victoria) */}
       <mesh
         ref={wakeMeshRef}
@@ -393,8 +352,13 @@ export const HistoricalRouteTrajectory: React.FC = () => {
         frustumCulled={false}
       />
 
+        </>
+      )}
+
       {/* 5. Stylized 3D Model: Nau Victoria (16th-Century Spanish Carrack) */}
-      <group ref={shipRef} name="nau-victoria-ship" scale={[1.2, 1.2, 1.2]}>
+      <group ref={shipRef} name={isShip ? "nau-victoria-ship" : `scene-vehicle-${trajectory.vehicle}`} scale={[1.2, 1.2, 1.2]}>
+        {isShip ? (
+          <>
         {/* Main Oak Hull */}
         <mesh position={[0, 0.003, 0]}>
           <boxGeometry args={[0.008, 0.006, 0.024]} />
@@ -484,6 +448,13 @@ export const HistoricalRouteTrajectory: React.FC = () => {
           <boxGeometry args={[0.0015, 0.0012, 0.004]} />
           <meshBasicMaterial color="#dc2626" />
         </mesh>
+          </>
+        ) : (
+          <mesh>
+            <sphereGeometry args={[0.006, 16, 16]} />
+            <meshBasicMaterial color="#fbbf24" toneMapped={false} />
+          </mesh>
+        )}
       </group>
     </group>
   );

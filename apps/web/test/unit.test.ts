@@ -86,11 +86,16 @@ import {
   interpolateGeodesicSegment,
 } from "../src/lib/historical-routes";
 import { EarthShader, createEarthMaterial } from "../src/components/globe/EarthShaderMaterial";
-import {
-  HistoricalRouteTrajectory,
-  createMagellanTrajectoryCurve,
-  ROUTE_ALTITUDE,
-} from "../src/components/globe/HistoricalRouteTrajectory";
+import { SurfaceTrajectoryLayer as HistoricalRouteTrajectory, ROUTE_ALTITUDE } from "../src/components/scenes/SurfaceTrajectoryLayer";
+import { createSurfaceTrajectoryCurve } from "../src/lib/scenes/surface";
+import { getScene } from "../src/lib/scenes/catalog";
+
+// D12c: a trajetória de Magalhães agora vem da cena de dados e passa pela camada genérica.
+const createMagellanTrajectoryCurve = () => {
+  const t = getScene("magellan-1519")!.trajectories[0];
+  if (t.kind !== "surface") throw new Error("Magalhães deveria ter trajetória de superfície");
+  return createSurfaceTrajectoryCurve(t.points);
+};
 import {
   PaleoPlatesLayer,
   PALEO_PLATES_ALTITUDE,

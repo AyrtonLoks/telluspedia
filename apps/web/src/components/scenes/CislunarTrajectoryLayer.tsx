@@ -3,17 +3,20 @@
 import React, { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import {
-  APOLLO11_WIDE_CAMERA,
-  createApollo11TrajectoryCurve,
-  getApollo11ControlPoints,
-  MOON_DEFAULT_POSITION,
-} from "@/lib/apollo11";
+import { cislunarControlPoints, cislunarMoonPosition, createCislunarCurve } from "@/lib/scenes/cislunar";
+import type { Scene, SceneTrajectory } from "@/lib/scenes/schema";
 import { useApollo11Store } from "@/stores/apollo11Store";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 
-export const Apollo11Trajectory: React.FC = () => {
+type CislunarTrajectory = Extract<SceneTrajectory, { kind: "cislunar" }>;
+
+/**
+ * Camada genérica de missão Terra–Lua (D12c): spline calculada a partir dos locais de lançamento e
+ * pouso da cena e da posição real da Lua no instante do pouso; nave animada pelo progresso.
+ * Substitui o antigo `Apollo11Trajectory`.
+ */
+export const CislunarTrajectoryLayer: React.FC<{ scene: Scene; trajectory: CislunarTrajectory }> = ({ scene, trajectory }) => {
   const isPlaying = useApollo11Store((s) => s.isPlaying);
   const playbackSpeed = useApollo11Store((s) => s.playbackSpeed);
   const setProgress = useApollo11Store((s) => s.setProgress);
@@ -41,15 +44,14 @@ export const Apollo11Trajectory: React.FC = () => {
     return () => unsub();
   }, []);
 
-  // When 1969 Apollo 11 activates, smoothly frame Cape Canaveral and the real 1969-07-20 Moon
+  // Ao abrir a cena, enquadra pela câmera inicial dos dados (lançamento, arco translunar e Lua)
+  const camera = scene.camera;
   useEffect(() => {
-    if (!hasFlownToOrbit.current) {
+    if (!hasFlownToOrbit.current && camera) {
       hasFlownToOrbit.current = true;
-      useGlobeStore
-        .getState()
-        .flyTo(APOLLO11_WIDE_CAMERA.lat, APOLLO11_WIDE_CAMERA.lng, APOLLO11_WIDE_CAMERA.altitude);
+      useGlobeStore.getState().flyTo(camera.lat, camera.lng, camera.altitude);
     }
-  }, [selectedYear, selectedMilestoneId]);
+  }, [selectedYear, selectedMilestoneId, camera]);
 
   // Construct trajectory curve and geometries
   const {
@@ -63,7 +65,8 @@ export const Apollo11Trajectory: React.FC = () => {
     landingRingQuat,
     coreLineObject,
   } = useMemo(() => {
-    const c = createApollo11TrajectoryCurve();
+    const moonPos = cislunarMoonPosition(trajectory);
+    const c = createCislunarCurve(trajectory, moonPos);
     const points = c.getPoints(250);
 
     const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
@@ -77,7 +80,7 @@ export const Apollo11Trajectory: React.FC = () => {
     });
     const lineObj = new THREE.Line(lineGeo, lineMat);
 
-    const ctrlPts = getApollo11ControlPoints();
+    const ctrlPts = cislunarControlPoints(trajectory, moonPos);
     const launch = ctrlPts[0];
     const landing = ctrlPts[ctrlPts.length - 1];
 
@@ -88,7 +91,7 @@ export const Apollo11Trajectory: React.FC = () => {
       launchNormal
     );
 
-    const landingNormal = landing.clone().sub(MOON_DEFAULT_POSITION).normalize();
+    const landingNormal = landing.clone().sub(moonPos).normalize();
     const landingQ = new THREE.Quaternion().setFromUnitVectors(
       new THREE.Vector3(0, 0, 1),
       landingNormal
@@ -105,7 +108,7 @@ export const Apollo11Trajectory: React.FC = () => {
       landingRingQuat: landingQ,
       coreLineObject: lineObj,
     };
-  }, []);
+  }, [trajectory]);
 
   // Dispose geometries and materials on unmount to prevent GPU buffer leaks (AGENTS.md invariant)
   useEffect(() => {
@@ -181,7 +184,7 @@ export const Apollo11Trajectory: React.FC = () => {
   });
 
   return (
-    <group name="apollo-11-mission-trajectory">
+    <group name={`scene-trajectory-${scene.id}-${trajectory.id}`}>
       {/* 1. Core Glowing Trajectory Line (rendered via primitive to avoid SVG line tag conflict) */}
       <primitive object={coreLineObject} />
 
