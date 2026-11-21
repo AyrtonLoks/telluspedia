@@ -4,6 +4,7 @@ import React from "react";
 import { useFrame } from "@react-three/fiber";
 import { useSceneStore } from "@/stores/sceneStore";
 import type { Scene } from "@/lib/scenes/schema";
+import { useScene } from "@/lib/scenes/useScene";
 import { SurfaceTrajectoryLayer } from "./SurfaceTrajectoryLayer";
 import { CislunarTrajectoryLayer } from "./CislunarTrajectoryLayer";
 
@@ -20,15 +21,19 @@ const ScenePlaybackDriver: React.FC = () => {
   return null;
 };
 
-export const ScenePlayer: React.FC<{ scene: Scene }> = ({ scene }) => (
-  <group name={`scene-player-${scene.id}`}>
-    <ScenePlaybackDriver />
-    {scene.trajectories.map((t) =>
-      t.kind === "surface" ? (
-        <SurfaceTrajectoryLayer key={t.id} sceneId={scene.id} trajectory={t} />
-      ) : (
-        <CislunarTrajectoryLayer key={t.id} scene={scene} trajectory={t} />
-      )
-    )}
-  </group>
-);
+export const ScenePlayer: React.FC<{ scene: Scene }> = ({ scene: indexed }) => {
+  // A cena pode chegar do índice leve (D24): as trajetórias aparecem quando a parte pesada carrega.
+  const scene = useScene(indexed.id) ?? indexed;
+  return (
+    <group name={`scene-player-${scene.id}`}>
+      <ScenePlaybackDriver />
+      {scene.trajectories.map((t) =>
+        t.kind === "surface" ? (
+          <SurfaceTrajectoryLayer key={t.id} sceneId={scene.id} trajectory={t} />
+        ) : (
+          <CislunarTrajectoryLayer key={t.id} scene={scene} trajectory={t} />
+        )
+      )}
+    </group>
+  );
+};

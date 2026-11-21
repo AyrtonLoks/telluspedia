@@ -1,0 +1,430 @@
+{
+  "id": "gama-1497",
+  "title": "Viagem de Vasco da Gama à Índia",
+  "summary": "A primeira viagem marítima direta da Europa à Índia, pelo Cabo da Boa Esperança, abre a rota portuguesa das especiarias.",
+  "category": "ECONOMY",
+  "date": {
+    "start": "1497-07-08",
+    "end": "1499-07-10",
+    "precision": "day"
+  },
+  "country": "PRT",
+  "countries": [
+    "PRT",
+    "ZAF",
+    "MOZ",
+    "KEN",
+    "IND"
+  ],
+  "location": {
+    "lat": 38.6966,
+    "lng": -9.2061
+  },
+  "camera": {
+    "lat": -5,
+    "lng": 30,
+    "altitude": 3.4
+  },
+  "subtitle": "Lisboa → Calecute → Lisboa (1497–1499)",
+  "sources": [
+    {
+      "label": "Roteiro da viagem de Vasco da Gama (ed. Herculano e Paiva, 1861)",
+      "title": "Roteiro da viagem de Vasco da Gama em MCCCCXCVII",
+      "authors": "Álvaro Velho (atribuído); A. Herculano e Barão do Castelo de Paiva (eds.)",
+      "publication": "Imprensa Nacional, Lisboa",
+      "year": 1861,
+      "url": "https://digital.bbm.usp.br/handle/bbm/4244"
+    },
+    {
+      "label": "Ravenstein (trad.), A Journal of the First Voyage of Vasco da Gama (Hakluyt Society, 1898)",
+      "title": "A Journal of the First Voyage of Vasco da Gama, 1497-1499",
+      "authors": "E. G. Ravenstein (trad. e ed.)",
+      "publication": "Hakluyt Society",
+      "year": 1898,
+      "url": "https://www.gutenberg.org/ebooks/46440"
+    },
+    {
+      "label": "Edição semidiplomática do manuscrito 804 da Biblioteca Pública Municipal do Porto",
+      "publication": "Boletim do Museu Paraense Emílio Goeldi — Ciências Humanas",
+      "url": "https://scielo.br/j/bgoeldi/a/syc9g86cgC3cQTxCfJNWFyt"
+    }
+  ],
+  "facts": {
+    "capitaoMor": "Vasco da Gama",
+    "navios": 4,
+    "tripulacaoPartida": "cerca de 170",
+    "sobreviventes": "cerca de 55",
+    "duracao": "cerca de 2 anos"
+  },
+  "participants": [
+    {
+      "name": "São Gabriel",
+      "role": "Nau capitânia",
+      "description": "Comandada por Vasco da Gama, com o piloto Pêro de Alenquer, que já navegara com Bartolomeu Dias."
+    },
+    {
+      "name": "São Rafael",
+      "role": "Nau",
+      "description": "Comandada por Paulo da Gama, irmão do capitão-mor. Queimada em janeiro de 1499 por falta de tripulação."
+    },
+    {
+      "name": "Bérrio",
+      "role": "Caravela",
+      "description": "Comandada por Nicolau Coelho; a primeira a voltar a Lisboa, em julho de 1499."
+    },
+    {
+      "name": "Navio de mantimentos",
+      "role": "Apoio",
+      "description": "Comandado por Gonçalo Nunes; desmanchado e queimado na Angra de São Brás em novembro de 1497."
+    },
+    {
+      "name": "Vasco da Gama",
+      "role": "Capitão-mor",
+      "description": "Fidalgo da casa de D. Manuel I; voltaria à Índia em 1502 e morreria em Cochim em 1524, como vice-rei."
+    },
+    {
+      "name": "Tripulação",
+      "role": "Cerca de 170 homens",
+      "description": "Marinheiros, soldados, intérpretes e degredados. Só cerca de 55 regressaram, segundo Ravenstein (1898)."
+    }
+  ],
+  "chronicle": [
+    {
+      "date": "1497-07-08",
+      "place": "Restelo, Lisboa",
+      "text": "Partida da armada de quatro navios."
+    },
+    {
+      "date": "1497-08-03",
+      "place": "Santiago, Cabo Verde",
+      "text": "Início da grande volta pelo Atlântico Sul, longe da costa africana."
+    },
+    {
+      "date": "1497-11-04",
+      "place": "Costa da atual África do Sul",
+      "text": "Terra à vista depois de cerca de três meses em mar aberto."
+    },
+    {
+      "date": "1497-11-22",
+      "place": "Cabo da Boa Esperança",
+      "text": "A armada dobra o cabo."
+    },
+    {
+      "date": "1498-04-24",
+      "place": "Melinde",
+      "text": "Partida para a Índia com um piloto cedido pelo xeque de Melinde."
+    },
+    {
+      "date": "1498-05-20",
+      "place": "Calecute",
+      "text": "Chegada à costa do Malabar.",
+      "quote": {
+        "text": "Vimos buscar cristãos e especiaria.",
+        "source": "Roteiro, 21 de maio de 1498"
+      }
+    },
+    {
+      "date": "1498-05-28",
+      "place": "Calecute",
+      "text": "Vasco da Gama é recebido pelo samorim."
+    },
+    {
+      "date": "1498-08-29",
+      "place": "Calecute",
+      "text": "Partida de volta, com especiarias e alguns reféns malabares."
+    },
+    {
+      "date": "1499-01-07",
+      "place": "Melinde",
+      "text": "Fim da travessia do Índico contra a monção, com dezenas de mortos por escorbuto."
+    },
+    {
+      "date": "1499-03-20",
+      "place": "Cabo da Boa Esperança",
+      "text": "O cabo é dobrado de volta."
+    },
+    {
+      "date": "1499-07-10",
+      "place": "Lisboa",
+      "text": "O Bérrio chega a Lisboa com a notícia do caminho marítimo para a Índia."
+    }
+  ],
+  "trajectories": [
+    {
+      "kind": "surface",
+      "id": "armada-gama",
+      "label": "Armada de Vasco da Gama",
+      "vehicle": "ship",
+      "points": [
+        {
+          "id": "LISBOA",
+          "name": "Lisboa — praia do Restelo",
+          "lat": 38.6966,
+          "lng": -9.2061,
+          "time": "1497-07-08T12:00:00Z",
+          "description": "A armada parte do Restelo, junto a Lisboa, com quatro navios e cerca de 170 homens, sob o comando do capitão-mor Vasco da Gama.",
+          "facts": {
+            "dayOfVoyage": 0,
+            "fleet": "4 navios",
+            "region": "Portugal"
+          },
+          "quote": {
+            "text": "Em nome de Deus, amém. Na era de 1497, mandou el-rei D. Manuel descobrir…",
+            "source": "Roteiro da primeira viagem (atrib. Álvaro Velho), abertura (grafia atualizada)"
+          }
+        },
+        {
+          "id": "CANARIAS",
+          "name": "Ilhas Canárias",
+          "lat": 28.3,
+          "lng": -15.0,
+          "time": "1497-07-15T12:00:00Z",
+          "description": "A frota avista as Canárias uma semana depois da partida e segue costeando a África rumo ao sul.",
+          "facts": {
+            "dayOfVoyage": 7,
+            "fleet": "4 navios",
+            "region": "Atlântico — Canárias"
+          }
+        },
+        {
+          "id": "CABO_VERDE",
+          "name": "Ilha de Santiago (Cabo Verde)",
+          "lat": 14.918,
+          "lng": -23.509,
+          "time": "1497-07-27T12:00:00Z",
+          "description": "Separados por um nevoeiro, os navios se reencontram e reabastecem em Santiago. Partem em 3 de agosto para a grande volta pelo Atlântico Sul.",
+          "facts": {
+            "dayOfVoyage": 19,
+            "fleet": "4 navios",
+            "region": "Cabo Verde"
+          }
+        },
+        {
+          "id": "SANTA_HELENA",
+          "name": "Baía de Santa Helena",
+          "lat": -32.75,
+          "lng": 18.05,
+          "time": "1497-11-07T12:00:00Z",
+          "description": "Depois de cerca de três meses sem ver terra — a mais longa travessia em mar aberto feita por europeus até então —, a armada ancora na costa da atual África do Sul.",
+          "facts": {
+            "dayOfVoyage": 122,
+            "fleet": "4 navios",
+            "region": "África do Sul",
+            "openSeaDays": 93
+          }
+        },
+        {
+          "id": "BOA_ESPERANCA",
+          "name": "Cabo da Boa Esperança",
+          "lat": -34.357,
+          "lng": 18.474,
+          "time": "1497-11-22T12:00:00Z",
+          "description": "A armada dobra o cabo com vento de popa, dez anos depois de Bartolomeu Dias ter aberto a passagem.",
+          "facts": {
+            "dayOfVoyage": 137,
+            "fleet": "4 navios",
+            "region": "África do Sul"
+          }
+        },
+        {
+          "id": "SAO_BRAS",
+          "name": "Angra de São Brás (Mossel Bay)",
+          "lat": -34.183,
+          "lng": 22.146,
+          "time": "1497-11-25T12:00:00Z",
+          "description": "O navio de mantimentos é desmanchado e queimado; a carga passa para os outros três. Há trocas e um desentendimento com os pastores khoikhoi; os portugueses erguem um padrão.",
+          "facts": {
+            "dayOfVoyage": 140,
+            "fleet": "3 navios",
+            "region": "África do Sul"
+          }
+        },
+        {
+          "id": "NATAL",
+          "name": "Costa do Natal",
+          "lat": -31.6,
+          "lng": 29.6,
+          "time": "1497-12-25T12:00:00Z",
+          "description": "No dia de Natal, a frota navega diante de uma costa a que dá o nome de Terra do Natal.",
+          "facts": {
+            "dayOfVoyage": 170,
+            "fleet": "3 navios",
+            "region": "África do Sul"
+          }
+        },
+        {
+          "id": "MOCAMBIQUE",
+          "name": "Ilha de Moçambique",
+          "lat": -15.035,
+          "lng": 40.735,
+          "time": "1498-03-02T12:00:00Z",
+          "description": "Primeiro contato com as redes de comércio do Índico: mercadores muçulmanos, ouro, prata, especiarias e navios de outras costas. As relações azedam quando se percebe que os portugueses são cristãos.",
+          "facts": {
+            "dayOfVoyage": 237,
+            "fleet": "3 navios",
+            "region": "Moçambique"
+          }
+        },
+        {
+          "id": "MOMBACA",
+          "name": "Mombaça",
+          "lat": -4.062,
+          "lng": 39.677,
+          "time": "1498-04-07T12:00:00Z",
+          "description": "Recebidos com desconfiança, os portugueses escapam de uma tentativa de tomar os navios e seguem para o norte.",
+          "facts": {
+            "dayOfVoyage": 273,
+            "fleet": "3 navios",
+            "region": "Quênia"
+          }
+        },
+        {
+          "id": "MELINDE",
+          "name": "Melinde (Malindi)",
+          "lat": -3.218,
+          "lng": 40.117,
+          "time": "1498-04-14T12:00:00Z",
+          "description": "O xeque de Melinde, rival de Mombaça, faz aliança com Vasco da Gama e lhe cede um piloto que conhecia a rota das monções. A armada parte para a Índia em 24 de abril.",
+          "facts": {
+            "dayOfVoyage": 280,
+            "fleet": "3 navios",
+            "region": "Quênia"
+          }
+        },
+        {
+          "id": "CALECUTE",
+          "name": "Calecute (Kozhikode)",
+          "lat": 11.2588,
+          "lng": 75.7804,
+          "time": "1498-05-20T12:00:00Z",
+          "description": "A armada chega à costa do Malabar. No dia seguinte, um degredado desembarca e, perguntado pelo que vinham buscar, responde com a frase que resume a viagem. Vasco da Gama é recebido pelo samorim em 28 de maio, mas os presentes portugueses decepcionam e o comércio rende pouco.",
+          "facts": {
+            "dayOfVoyage": 316,
+            "fleet": "3 navios",
+            "region": "Índia"
+          },
+          "quote": {
+            "text": "Vimos buscar cristãos e especiaria.",
+            "source": "Roteiro da primeira viagem (atrib. Álvaro Velho), 21 de maio de 1498 (grafia atualizada)"
+          }
+        },
+        {
+          "id": "ANGEDIVA",
+          "name": "Ilhas de Angediva",
+          "lat": 14.757,
+          "lng": 74.116,
+          "time": "1498-10-05T12:00:00Z",
+          "description": "Depois de deixar Calecute em 29 de agosto, a frota reabastece e repara os navios nestas ilhas da costa ocidental indiana e parte para atravessar o Índico — agora contra a monção.",
+          "facts": {
+            "dayOfVoyage": 454,
+            "fleet": "3 navios",
+            "region": "Índia"
+          }
+        },
+        {
+          "id": "MELINDE_RETORNO",
+          "name": "Melinde — regresso",
+          "lat": -3.218,
+          "lng": 40.117,
+          "time": "1499-01-07T12:00:00Z",
+          "description": "A travessia de volta leva quase três meses; o escorbuto mata cerca de trinta homens. Sem gente para três navios, o São Rafael é queimado logo depois, perto de Mombaça.",
+          "facts": {
+            "dayOfVoyage": 548,
+            "fleet": "2 navios",
+            "region": "Quênia"
+          }
+        },
+        {
+          "id": "BOA_ESPERANCA_RETORNO",
+          "name": "Cabo da Boa Esperança — regresso",
+          "lat": -34.357,
+          "lng": 18.474,
+          "time": "1499-03-20T12:00:00Z",
+          "description": "O São Gabriel e o Bérrio dobram o cabo de volta para o Atlântico.",
+          "facts": {
+            "dayOfVoyage": 620,
+            "fleet": "2 navios",
+            "region": "África do Sul"
+          }
+        },
+        {
+          "id": "RIO_GRANDE",
+          "name": "Rio Grande (Guiné-Bissau)",
+          "lat": 11.6,
+          "lng": -15.0,
+          "time": "1499-04-25T12:00:00Z",
+          "description": "Aqui termina o Roteiro: o manuscrito para na chegada a este rio da costa da Guiné. Os dois navios se separam numa tempestade.",
+          "facts": {
+            "dayOfVoyage": 656,
+            "fleet": "2 navios",
+            "region": "Guiné-Bissau"
+          }
+        },
+        {
+          "id": "LISBOA_RETORNO",
+          "name": "Lisboa — regresso",
+          "lat": 38.6966,
+          "lng": -9.2061,
+          "time": "1499-07-10T12:00:00Z",
+          "description": "Nicolau Coelho, no Bérrio, é o primeiro a chegar a Lisboa. Vasco da Gama, que se detivera na ilha Terceira com o irmão Paulo, à morte, chega semanas depois (as fontes divergem entre o fim de agosto e setembro de 1499).",
+          "facts": {
+            "dayOfVoyage": 732,
+            "fleet": "Bérrio",
+            "region": "Portugal"
+          }
+        }
+      ]
+    }
+  ],
+  "hud": {
+    "badge": "CAMINHO DA ÍNDIA",
+    "subtitle": "Roteiro da primeira viagem",
+    "period": "1497–1499",
+    "startLabel": "Lisboa (1497)",
+    "endLabel": "Lisboa (1499)",
+    "progressLabel": "Progresso da viagem de Vasco da Gama",
+    "stepStats": [
+      {
+        "fact": "dayOfVoyage",
+        "label": "Dia de viagem",
+        "unit": "dias"
+      },
+      {
+        "fact": "fleet",
+        "label": "Frota"
+      },
+      {
+        "fact": "region",
+        "label": "Região (atual)"
+      }
+    ],
+    "quoteTitle": "Roteiro da primeira viagem (1497–1499)",
+    "cameras": [
+      {
+        "label": "Visão ampla",
+        "lat": -5,
+        "lng": 30,
+        "altitude": 3.4
+      },
+      {
+        "label": "Cabo",
+        "lat": -34.36,
+        "lng": 18.47,
+        "altitude": 2.0
+      },
+      {
+        "label": "Malabar",
+        "lat": 11.26,
+        "lng": 75.78,
+        "altitude": 2.0
+      }
+    ],
+    "speeds": [
+      0.5,
+      1,
+      2,
+      5
+    ],
+    "durationSeconds": 90
+  }
+}

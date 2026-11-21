@@ -1,0 +1,97 @@
+{
+  "participants": [
+    {
+      "name": "Neil A. Armstrong",
+      "role": "Comandante",
+      "description": "Primeiro ser humano a pisar na Lua, em 21 de julho de 1969, às 02:56:15 UTC.",
+      "facts": {
+        "nascimento": "1930, Wapakoneta (Ohio)"
+      }
+    },
+    {
+      "name": "Edwin E. \"Buzz\" Aldrin Jr.",
+      "role": "Piloto do módulo lunar",
+      "description": "Desceu à superfície cerca de 19 minutos depois de Armstrong."
+    },
+    {
+      "name": "Michael Collins",
+      "role": "Piloto do módulo de comando",
+      "description": "Permaneceu em órbita lunar a bordo do Columbia durante a estadia na superfície."
+    },
+    {
+      "name": "Columbia (CSM-107)",
+      "role": "Módulo de comando e serviço",
+      "description": "Levou a tripulação à órbita lunar e de volta à Terra; o único módulo que retornou."
+    },
+    {
+      "name": "Eagle (LM-5)",
+      "role": "Módulo lunar",
+      "description": "Pousou no Mar da Tranquilidade; o estágio de descida ficou na Lua."
+    },
+    {
+      "name": "Saturn V (SA-506)",
+      "role": "Foguete lançador",
+      "description": "Lançou a missão da plataforma 39A do Centro Espacial Kennedy."
+    },
+    {
+      "name": "Controle da Missão (Houston)",
+      "role": "Centro de controle",
+      "description": "Durante a descida, o diretor de voo Gene Kranz e o CAPCOM Charles Duke autorizaram o pouso apesar dos alarmes 1201 e 1202 do computador de bordo."
+    }
+  ],
+  "chronicle": [
+    {
+      "date": "1969-07-16",
+      "place": "Centro Espacial Kennedy, LC-39A",
+      "text": "Lançamento às 13:32 UTC."
+    },
+    {
+      "date": "1969-07-16",
+      "place": "Órbita terrestre",
+      "text": "Injeção translunar às 16:22 UTC (GET 002:50:13)."
+    },
+    {
+      "date": "1969-07-19",
+      "place": "Órbita lunar",
+      "text": "Inserção em órbita lunar às 17:21 UTC (GET 075:49:50)."
+    },
+    {
+      "date": "1969-07-20",
+      "place": "Órbita lunar",
+      "text": "O Eagle se separa do Columbia às 17:44 UTC."
+    },
+    {
+      "date": "1969-07-20",
+      "place": "Mar da Tranquilidade",
+      "text": "Início da descida motorizada às 20:05 UTC; pouso às 20:17:39 UTC.",
+      "quote": {
+        "text": "Houston, Tranquility Base here. The Eagle has landed.",
+        "source": "Neil Armstrong, GET 102:45:58"
+      }
+    },
+    {
+      "date": "1969-07-21",
+      "place": "Base da Tranquilidade",
+      "text": "Escotilha aberta às 02:39 UTC; primeiro passo às 02:56:15 UTC.",
+      "quote": {
+        "text": "That's one small step for (a) man; one giant leap for mankind.",
+        "source": "Neil Armstrong, GET 109:24:48 (Apollo Lunar Surface Journal)"
+      }
+    },
+    {
+      "date": "1969-07-21",
+      "place": "Base da Tranquilidade",
+      "text": "Decolagem do estágio de subida do Eagle às 17:54 UTC; acoplagem com o Columbia às 21:35 UTC."
+    },
+    {
+      "date": "1969-07-22",
+      "place": "Órbita lunar",
+      "text": "Injeção transterrestre às 04:55 UTC."
+    },
+    {
+      "date": "1969-07-24",
+      "place": "Oceano Pacífico",
+      "text": "Amerissagem às 16:50:35 UTC; a tripulação é recolhida pelo porta-aviões USS Hornet."
+    }
+  ]
+}

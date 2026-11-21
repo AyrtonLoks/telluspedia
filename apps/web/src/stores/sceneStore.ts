@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getScene, isPlayableScene, sceneOpenedBy, sceneStartYear, sceneStepIndex, sceneStepStarts, sceneStepYear } from "../lib/scenes/catalog";
+import { getScene, isPlayableScene, isSceneLoaded, loadScene, sceneOpenedBy, sceneStartYear, sceneStepIndex, sceneStepStarts, sceneStepYear } from "../lib/scenes/catalog";
 import { useTimelineStore } from "./timelineStore";
 import { useGlobeStore } from "./globeStore";
 
@@ -129,6 +129,19 @@ export const useSceneStore = create<SceneState>((set, get) => {
         stepIndex: sceneStepIndex(scene, start),
       });
       if (options.applyTimeline) useTimelineStore.setState({ geologicalMa: null, selectedYear: sceneStartYear(scene) });
+      // Cena sob demanda (D24): quando a parte pesada chega, recalcula o passo e o ano da timeline.
+      if (!isSceneLoaded(id)) {
+        void loadScene(id).then(() => {
+          if (get().activeSceneId !== id) return;
+          const full = getScene(id);
+          // O HUD também chega agora: aplica o progresso inicial se ninguém mexeu ainda.
+          const begin = full?.hud?.startProgress ?? 0;
+          if (get().progress === 0 && begin > 0) set({ progress: begin });
+          const stepIndex = sceneStepIndex(full, get().progress);
+          set({ stepIndex });
+          syncYear(stepIndex);
+        });
+      }
       return true;
     },
 

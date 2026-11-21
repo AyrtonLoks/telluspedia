@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { BookOpen, Calendar, ChevronLeft, ChevronRight, Eye, MapPin, Maximize2, Minimize2, Pause, Play, RotateCcw, X } from "lucide-react";
+import { BookOpen, Calendar, ChevronLeft, ChevronRight, Eye, MapPin, Maximize2, Minimize2, Pause, Play, RotateCcw, ScrollText, Users, X } from "lucide-react";
 import { useSceneStore } from "@/stores/sceneStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useEpochState } from "@/lib/epoch/useEpochState";
-import { getScene } from "@/lib/scenes/catalog";
+import { isPlayableScene, isSceneLoaded } from "@/lib/scenes/catalog";
+import { useScene } from "@/lib/scenes/useScene";
 import type { Scene, SceneTrajectory } from "@/lib/scenes/schema";
 import { cislunarTelemetry } from "@/lib/scenes/cislunar";
 import { Panel } from "@/components/ui/Panel";
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/components/ui/cn";
+import { PanelSkeleton } from "@/components/ui/Skeleton";
 
 /**
  * Painel genérico do player de cenas (D12c, parte 2). Mostra a cena ativa com os textos e as
@@ -66,7 +68,16 @@ const fmtDate = (iso: string) => {
 export const ScenePlayerOverlay: React.FC<{ sceneId?: string; closing?: boolean }> = ({ sceneId, closing = false }) => {
   const activeScene = useEpochState().activeScene;
   const id = sceneId ?? activeScene ?? undefined;
-  const scene = id ? getScene(id) : undefined;
+  const scene = useScene(id);
+  // Cena sob demanda (D24): enquanto a trajetória não chega, um esqueleto no lugar do painel. (Cenas
+  // que já têm trajetória no bundle aparecem na hora; só a crônica e os participantes chegam depois.)
+  if (scene && !isSceneLoaded(scene.id) && scene.trajectories.length === 0 && isPlayableScene(scene)) {
+    return (
+      <Panel data-testid="scene-player-overlay-loading" className="fixed left-3 top-[var(--map-overlay-top)] z-20 w-96 max-w-[calc(100vw-1.5rem)] animate-rise-in">
+        <PanelSkeleton label={`Carregando ${scene.title}`} rows={3} />
+      </Panel>
+    );
+  }
   const trajectory = scene?.trajectories[0];
   if (!scene || !trajectory || !scene.hud) return null;
   return <SceneHud scene={scene} trajectory={trajectory} closing={closing} />;
@@ -180,6 +191,9 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
             ) : (
               step.description && <p className="border-t border-line pt-1.5 text-caption leading-snug text-fg-secondary">{step.description}</p>
             )}
+            {step.kind === "surface" && step.description && !step.quoteText && (
+              <p className="border-t border-line pt-1.5 text-caption leading-snug text-fg-secondary">{step.description}</p>
+            )}
           </div>
 
           {/* Fases (missões Terra–Lua): saltar para uma fase */}
@@ -287,6 +301,8 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
             <p className="mt-3 rounded-card border border-success/30 bg-success/10 p-2.5 text-caption italic text-fg">&ldquo;{hud.finalQuote.text}&rdquo;</p>
           )}
 
+          <SceneDetails scene={scene} />
+
           <p className="mt-3 border-t border-line pt-2 text-caption text-fg-muted">
             Fonte: {scene.sources.map((s) => s.label).join(" · ")}
           </p>
@@ -305,3 +321,58 @@ const Stat: React.FC<{ label: string; value: string; unit?: string; note?: strin
     {note && <span className="truncate text-caption text-fg-muted">{note}</span>}
   </div>
 );
+
+/** Data parcial ISO ("1500", "1500-04", "1500-04-22") no formato brasileiro. */
+export function fmtPartialDate(iso: string): string {
+  const [y, m, d] = iso.split(/(?<=\d)-/);
+  if (d) return `${d}/${m}/${y}`;
+  if (m) return `${m}/${y}`;
+  return y;
+}
+
+/** Participantes e crônica da cena (D24), recolhidos por padrão para não alongar o painel. */
+const SceneDetails: React.FC<{ scene: Scene }> = ({ scene }) => {
+  if (scene.participants.length === 0 && scene.chronicle.length === 0) return null;
+  return (
+    <div className="mt-3 space-y-2 border-t border-line pt-2.5">
+      {scene.participants.length > 0 && (
+        <details className="group rounded-card border border-line bg-surface-raised" data-testid="scene-participants">
+          <summary className="flex cursor-pointer items-center gap-1.5 p-2.5 text-label font-medium text-fg">
+            <Users aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-accent" />
+            Participantes <span className="font-mono text-caption tabular-nums text-fg-muted">({scene.participants.length})</span>
+          </summary>
+          <ul className="space-y-2 px-2.5 pb-2.5">
+            {scene.participants.map((p) => (
+              <li key={p.name} className="text-caption leading-snug">
+                <span className="font-medium text-fg">{p.name}</span> <span className="text-fg-muted">· {p.role}</span>
+                {p.description && <p className="text-fg-secondary">{p.description}</p>}
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+      {scene.chronicle.length > 0 && (
+        <details className="group rounded-card border border-line bg-surface-raised" data-testid="scene-chronicle">
+          <summary className="flex cursor-pointer items-center gap-1.5 p-2.5 text-label font-medium text-fg">
+            <ScrollText aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-accent" />
+            Crônica <span className="font-mono text-caption tabular-nums text-fg-muted">({scene.chronicle.length})</span>
+          </summary>
+          <ol className="space-y-2.5 px-2.5 pb-2.5">
+            {scene.chronicle.map((c, i) => (
+              <li key={`${c.date}-${i}`} className="border-l-2 border-line pl-2 text-caption leading-snug">
+                <span className="font-mono tabular-nums text-fg-muted">{fmtPartialDate(c.date)}</span>
+                {c.place && <span className="text-fg-muted"> · {c.place}</span>}
+                <p className="text-fg-secondary">{c.text}</p>
+                {c.quote && (
+                  <blockquote className="mt-1 font-serif italic text-fg">
+                    &ldquo;{c.quote.text}&rdquo; <span className="font-sans not-italic text-fg-muted">— {c.quote.source}</span>
+                  </blockquote>
+                )}
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
+    </div>
+  );
+};

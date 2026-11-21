@@ -1,0 +1,407 @@
+{
+  "id": "glo-1914",
+  "title": "Eclosão da Primeira Guerra Mundial",
+  "summary": "Assassinato do Arquiduque Francisco Ferdinando em Sarajevo deflagra o primeiro conflito em escala global.",
+  "category": "WAR_MILITARY",
+  "date": {
+    "start": "1914-07-28",
+    "end": "1918-11-11",
+    "precision": "day"
+  },
+  "country": "BIH",
+  "countries": [
+    "AHU",
+    "DEU",
+    "RUS",
+    "FRA",
+    "GBR",
+    "TUR_HIST"
+  ],
+  "location": {
+    "lat": 43.8563,
+    "lng": 18.4131
+  },
+  "camera": {
+    "lat": 49,
+    "lng": 14,
+    "altitude": 2.8
+  },
+  "subtitle": "Primeira Guerra Mundial (1914–1918)",
+  "sources": [
+    {
+      "label": "Imperial War Museum",
+      "url": "https://www.iwm.org.uk/"
+    },
+    {
+      "label": "Terms of the Armistice with Germany, 11 nov. 1918 (FRUS, Paris Peace Conference, vol. II)",
+      "publication": "Foreign Relations of the United States — Office of the Historian",
+      "url": "https://history.state.gov/historicaldocuments/frus1919Parisv02/d1"
+    },
+    {
+      "label": "The World War I Document Archive (Brigham Young University)",
+      "url": "https://net.lib.byu.edu/~rdh7/wwi/"
+    }
+  ],
+  "facts": {
+    "duracao": "4 anos, 3 meses e 2 semanas",
+    "mortosMilitares": "cerca de 9 milhões (estimativas de 8,5 a 10 milhões)",
+    "fim": "Armistício de Compiègne (1918) e Tratado de Versalhes (1919)"
+  },
+  "participants": [
+    {
+      "name": "Aliados (Entente)",
+      "role": "Coalizão",
+      "description": "França, Império Britânico e Rússia (até 1917), com Sérvia, Bélgica, Japão, Itália (desde 1915), Romênia (desde 1916) e Estados Unidos (desde 1917, como potência associada), entre outros."
+    },
+    {
+      "name": "Potências Centrais",
+      "role": "Coalizão",
+      "description": "Alemanha, Áustria-Hungria, Império Otomano (desde o fim de 1914) e Bulgária (desde 1915)."
+    },
+    {
+      "name": "Francisco Ferdinando",
+      "role": "Arquiduque da Áustria",
+      "description": "Herdeiro do trono austro-húngaro, assassinado em Sarajevo em 28 de junho de 1914."
+    },
+    {
+      "name": "Gavrilo Princip",
+      "role": "Autor do atentado",
+      "description": "Membro da Jovem Bósnia, com apoio de oficiais sérvios ligados à Mão Negra."
+    },
+    {
+      "name": "Paul von Hindenburg e Erich Ludendorff",
+      "role": "Comando alemão",
+      "description": "Vitoriosos em Tannenberg; dirigiram o esforço de guerra alemão a partir de 1916."
+    },
+    {
+      "name": "Ferdinand Foch",
+      "role": "Comandante supremo aliado (1918)",
+      "description": "Coordenou as ofensivas finais e recebeu a delegação alemã em Compiègne."
+    }
+  ],
+  "chronicle": [
+    {
+      "date": "1914-06-28",
+      "place": "Sarajevo",
+      "text": "Assassinato do arquiduque Francisco Ferdinando."
+    },
+    {
+      "date": "1914-07-28",
+      "place": "Viena",
+      "text": "A Áustria-Hungria declara guerra à Sérvia."
+    },
+    {
+      "date": "1914-08-04",
+      "place": "Londres",
+      "text": "O Reino Unido declara guerra à Alemanha depois da invasão da Bélgica.",
+      "quote": {
+        "text": "As lâmpadas estão se apagando em toda a Europa.",
+        "source": "Edward Grey (memórias, 1925)"
+      }
+    },
+    {
+      "date": "1914-09-12",
+      "place": "Marne",
+      "text": "Fim da primeira batalha do Marne; começa a guerra de trincheiras."
+    },
+    {
+      "date": "1915-05-23",
+      "place": "Roma",
+      "text": "A Itália entra na guerra ao lado dos Aliados."
+    },
+    {
+      "date": "1916-12-18",
+      "place": "Verdun",
+      "text": "Fim da batalha de Verdun, depois de dez meses."
+    },
+    {
+      "date": "1917-04-06",
+      "place": "Washington",
+      "text": "Os Estados Unidos declaram guerra à Alemanha."
+    },
+    {
+      "date": "1918-03-03",
+      "place": "Brest-Litovsk",
+      "text": "Paz em separado entre a Rússia soviética e as Potências Centrais."
+    },
+    {
+      "date": "1918-11-11",
+      "place": "Compiègne",
+      "text": "Armistício: o combate termina às 11h.",
+      "quote": {
+        "text": "Cessação das operações em terra e no ar seis horas após a assinatura.",
+        "source": "Armistício com a Alemanha, cláusula I"
+      }
+    },
+    {
+      "date": "1919-06-28",
+      "place": "Versalhes",
+      "text": "Assinatura do Tratado de Versalhes, exatamente cinco anos depois do atentado de Sarajevo."
+    }
+  ],
+  "trajectories": [
+    {
+      "kind": "surface",
+      "id": "frentes-1914-1918",
+      "label": "Principais frentes e batalhas",
+      "vehicle": "army",
+      "points": [
+        {
+          "id": "SARAJEVO",
+          "name": "Sarajevo",
+          "lat": 43.8563,
+          "lng": 18.4131,
+          "time": "1914-06-28T12:00:00Z",
+          "description": "Gavrilo Princip, nacionalista sérvio-bósnio, mata o arquiduque Francisco Ferdinando, herdeiro da Áustria-Hungria, e sua esposa, Sofia. Um mês de ultimatos e mobilizações transforma o atentado em guerra europeia.",
+          "facts": {
+            "front": "Bálcãs",
+            "phase": "Crise de julho",
+            "warDay": 0
+          }
+        },
+        {
+          "id": "BELGRADO",
+          "name": "Belgrado",
+          "lat": 44.8176,
+          "lng": 20.4569,
+          "time": "1914-07-29T12:00:00Z",
+          "description": "Um dia depois de a Áustria-Hungria declarar guerra à Sérvia, Belgrado é bombardeada. Rússia, Alemanha, França e Reino Unido entram na guerra na semana seguinte.",
+          "facts": {
+            "front": "Bálcãs",
+            "phase": "Eclosão",
+            "warDay": 1
+          }
+        },
+        {
+          "id": "LIEGE",
+          "name": "Liège",
+          "lat": 50.6326,
+          "lng": 5.5797,
+          "time": "1914-08-05T12:00:00Z",
+          "description": "A Alemanha invade a Bélgica neutra para flanquear a França (Plano Schlieffen) e ataca os fortes de Liège; a violação da neutralidade belga leva o Reino Unido a declarar guerra em 4 de agosto.",
+          "facts": {
+            "front": "Ocidental",
+            "phase": "Guerra de movimento",
+            "warDay": 8
+          },
+          "quote": {
+            "text": "As lâmpadas estão se apagando em toda a Europa.",
+            "source": "Edward Grey, secretário do Exterior britânico, 3 de agosto de 1914, segundo suas memórias (1925)"
+          }
+        },
+        {
+          "id": "TANNENBERG",
+          "name": "Tannenberg (Prússia Oriental)",
+          "lat": 53.58,
+          "lng": 20.28,
+          "time": "1914-08-26T12:00:00Z",
+          "description": "Em quatro dias, o 8º Exército alemão de Hindenburg e Ludendorff cerca e destrói o 2º Exército russo.",
+          "facts": {
+            "front": "Oriental",
+            "phase": "Guerra de movimento",
+            "warDay": 29
+          }
+        },
+        {
+          "id": "MARNE",
+          "name": "Rio Marne",
+          "lat": 48.96,
+          "lng": 2.88,
+          "time": "1914-09-06T12:00:00Z",
+          "description": "A contraofensiva franco-britânica detém o avanço alemão a poucas dezenas de quilômetros de Paris. Os dois lados cavam trincheiras que vão do mar do Norte à Suíça.",
+          "facts": {
+            "front": "Ocidental",
+            "phase": "Fim da guerra de movimento",
+            "warDay": 40
+          }
+        },
+        {
+          "id": "GALLIPOLI",
+          "name": "Galípoli (enseada de Anzac)",
+          "lat": 40.24,
+          "lng": 26.28,
+          "time": "1915-04-25T12:00:00Z",
+          "description": "Tropas britânicas, francesas, australianas e neozelandesas desembarcam para abrir os Dardanelos e tirar o Império Otomano da guerra. A campanha fracassa e termina com a retirada, em janeiro de 1916.",
+          "facts": {
+            "front": "Dardanelos",
+            "phase": "Guerra de trincheiras",
+            "warDay": 271
+          }
+        },
+        {
+          "id": "VERDUN",
+          "name": "Verdun",
+          "lat": 49.16,
+          "lng": 5.39,
+          "time": "1916-02-21T12:00:00Z",
+          "description": "A ofensiva alemã contra a fortaleza de Verdun abre a batalha mais longa da guerra, até dezembro de 1916, com centenas de milhares de mortos dos dois lados.",
+          "facts": {
+            "front": "Ocidental",
+            "phase": "Guerra de atrito",
+            "warDay": 573
+          }
+        },
+        {
+          "id": "JUTLANDIA",
+          "name": "Mar do Norte — Jutlândia",
+          "lat": 56.7,
+          "lng": 5.9,
+          "time": "1916-05-31T12:00:00Z",
+          "description": "A maior batalha naval da guerra: a frota alemã afunda mais navios, mas a Marinha britânica mantém o bloqueio e o controle do mar do Norte.",
+          "facts": {
+            "front": "Mar do Norte",
+            "phase": "Guerra no mar",
+            "warDay": 673
+          }
+        },
+        {
+          "id": "BRUSILOV",
+          "name": "Lutsk — ofensiva Brusilov",
+          "lat": 50.75,
+          "lng": 25.34,
+          "time": "1916-06-04T12:00:00Z",
+          "description": "A ofensiva russa do general Brusilov rompe as linhas austro-húngaras na Galícia e na Volínia, uma das maiores vitórias aliadas da guerra.",
+          "facts": {
+            "front": "Oriental",
+            "phase": "Guerra de atrito",
+            "warDay": 677
+          }
+        },
+        {
+          "id": "SOMME",
+          "name": "Rio Somme",
+          "lat": 50.05,
+          "lng": 2.69,
+          "time": "1916-07-01T12:00:00Z",
+          "description": "No primeiro dia da ofensiva do Somme, o Exército britânico sofre cerca de 57 mil baixas, quase 20 mil mortos — o dia mais sangrento de sua história. A batalha segue até novembro.",
+          "facts": {
+            "front": "Ocidental",
+            "phase": "Guerra de atrito",
+            "warDay": 704
+          }
+        },
+        {
+          "id": "PETROGRADO",
+          "name": "Petrogrado",
+          "lat": 59.9343,
+          "lng": 30.3351,
+          "time": "1917-11-07T12:00:00Z",
+          "description": "A Revolução de Outubro leva os bolcheviques ao poder. Em abril, os Estados Unidos haviam entrado na guerra contra a Alemanha.",
+          "facts": {
+            "front": "Oriental",
+            "phase": "1917: revoluções e Estados Unidos",
+            "warDay": 1198
+          }
+        },
+        {
+          "id": "BREST_LITOVSK",
+          "name": "Brest-Litovsk",
+          "lat": 52.0976,
+          "lng": 23.7341,
+          "time": "1918-03-03T12:00:00Z",
+          "description": "A Rússia soviética assina a paz em separado e cede vastos territórios; a Alemanha transfere divisões para o oeste.",
+          "facts": {
+            "front": "Oriental",
+            "phase": "Saída da Rússia",
+            "warDay": 1314
+          }
+        },
+        {
+          "id": "SAINT_QUENTIN",
+          "name": "Saint-Quentin — Ofensiva da Primavera",
+          "lat": 49.85,
+          "lng": 3.29,
+          "time": "1918-03-21T12:00:00Z",
+          "description": "A Alemanha lança sua última grande ofensiva, que avança dezenas de quilômetros, mas se esgota antes da chegada maciça das tropas americanas.",
+          "facts": {
+            "front": "Ocidental",
+            "phase": "Ofensivas finais",
+            "warDay": 1332
+          }
+        },
+        {
+          "id": "AMIENS",
+          "name": "Amiens",
+          "lat": 49.894,
+          "lng": 2.2957,
+          "time": "1918-08-08T12:00:00Z",
+          "description": "A ofensiva aliada de Amiens abre os Cem Dias que empurram o Exército alemão de volta à fronteira.",
+          "facts": {
+            "front": "Ocidental",
+            "phase": "Ofensiva dos Cem Dias",
+            "warDay": 1472
+          }
+        },
+        {
+          "id": "COMPIEGNE",
+          "name": "Clareira do Armistício, Compiègne",
+          "lat": 49.427,
+          "lng": 2.906,
+          "time": "1918-11-11T11:00:00+01:00",
+          "description": "Assinado às 5h no vagão do marechal Foch, o armistício entra em vigor às 11h. A paz só é assinada em Versalhes, em junho de 1919.",
+          "facts": {
+            "front": "Ocidental",
+            "phase": "Armistício",
+            "warDay": 1567
+          },
+          "quote": {
+            "text": "Cessação das operações em terra e no ar seis horas após a assinatura do armistício.",
+            "source": "Armistício com a Alemanha, cláusula I (11 de novembro de 1918)"
+          }
+        }
+      ]
+    }
+  ],
+  "hud": {
+    "badge": "GRANDE GUERRA",
+    "subtitle": "Frentes e batalhas decisivas",
+    "period": "1914–1918",
+    "startLabel": "Sarajevo (1914)",
+    "endLabel": "Armistício (1918)",
+    "progressLabel": "Progresso da Primeira Guerra Mundial",
+    "stepStats": [
+      {
+        "fact": "front",
+        "label": "Frente"
+      },
+      {
+        "fact": "phase",
+        "label": "Fase"
+      },
+      {
+        "fact": "warDay",
+        "label": "Dia de guerra",
+        "unit": "dias",
+        "note": "desde 28 jul 1914"
+      }
+    ],
+    "quoteTitle": "Documentos da guerra",
+    "cameras": [
+      {
+        "label": "Europa",
+        "lat": 49,
+        "lng": 14,
+        "altitude": 2.8
+      },
+      {
+        "label": "Frente Ocidental",
+        "lat": 49.6,
+        "lng": 3.5,
+        "altitude": 1.8
+      },
+      {
+        "label": "Frente Oriental",
+        "lat": 52,
+        "lng": 24,
+        "altitude": 2.0
+      }
+    ],
+    "speeds": [
+      0.5,
+      1,
+      2,
+      5
+    ],
+    "durationSeconds": 90
+  }
+}

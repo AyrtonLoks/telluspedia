@@ -1,0 +1,311 @@
+{
+  "id": "glo-1989",
+  "title": "Queda do Muro de Berlim",
+  "summary": "Abertura dos postos de controle entre Berlim Oriental e Ocidental, sinalizando o fim da Guerra Fria.",
+  "category": "POLITICS_REGIMES",
+  "date": {
+    "start": "1989-11-09",
+    "precision": "day"
+  },
+  "country": "DEU",
+  "countries": [
+    "GDR",
+    "FRG"
+  ],
+  "location": {
+    "lat": 52.5163,
+    "lng": 13.3777
+  },
+  "camera": {
+    "lat": 50.5,
+    "lng": 14.5,
+    "altitude": 2.0
+  },
+  "subtitle": "Da fronteira húngara à reunificação (1989–1990)",
+  "sources": [
+    {
+      "label": "Bundesarchiv"
+    },
+    {
+      "label": "Bundeszentrale für politische Bildung — Deutschland-Chronik, 9. November 1989",
+      "url": "https://www.bpb.de/themen/zeit-kulturgeschichte/deutschland-chronik/132175/9-november-1989/"
+    },
+    {
+      "label": "Bundesregierung — Transcrição da coletiva de Günter Schabowski (9 nov. 1989)",
+      "url": "https://www.bundesregierung.de/breg-de/themen/deutsche-einheit/ausschnitt-aus-der-pressekonferenz-von-sed-politbuero-mitglied-guenter-schabowski-am-9-november-1989-in-berlin-403860"
+    },
+    {
+      "label": "Land Berlin — Opening and fall of the Berlin Wall",
+      "url": "https://berlin.de/mauer/en/history/opening-of-the-wall"
+    }
+  ],
+  "facts": {
+    "muroConstruido": "13 de agosto de 1961",
+    "aberturaDosPostos": "noite de 9 para 10 de novembro de 1989",
+    "reunificacao": "3 de outubro de 1990"
+  },
+  "participants": [
+    {
+      "name": "Manifestantes da RDA",
+      "role": "Revolução Pacífica",
+      "description": "As manifestações de Leipzig, Berlim e outras cidades pressionaram o regime sem violência."
+    },
+    {
+      "name": "Günter Schabowski",
+      "role": "Porta-voz do Politburo do SED",
+      "description": "Anunciou por engano a validade imediata da nova regra de viagens."
+    },
+    {
+      "name": "Harald Jäger",
+      "role": "Oficial do posto da Bornholmer Straße",
+      "description": "Abriu a barreira na noite de 9 de novembro, sem ordens superiores."
+    },
+    {
+      "name": "Egon Krenz",
+      "role": "Secretário-geral do SED (outubro–dezembro de 1989)"
+    },
+    {
+      "name": "Mikhail Gorbachev",
+      "role": "Líder da União Soviética",
+      "description": "Sua política de não intervenção deixou os regimes do Leste sem a garantia dos tanques soviéticos."
+    },
+    {
+      "name": "Hans-Dietrich Genscher",
+      "role": "Ministro do Exterior da Alemanha Ocidental"
+    },
+    {
+      "name": "Helmut Kohl",
+      "role": "Chanceler da Alemanha Ocidental",
+      "description": "Conduziu a reunificação de 1990."
+    }
+  ],
+  "chronicle": [
+    {
+      "date": "1989-08-19",
+      "place": "Sopron",
+      "text": "Piquenique Pan-Europeu: centenas de alemães orientais fogem pela fronteira húngara."
+    },
+    {
+      "date": "1989-09-11",
+      "place": "Hungria",
+      "text": "Abertura da fronteira com a Áustria para cidadãos da RDA."
+    },
+    {
+      "date": "1989-10-07",
+      "place": "Berlim Oriental",
+      "text": "40 anos da RDA, com Gorbachev presente e protestos reprimidos."
+    },
+    {
+      "date": "1989-10-09",
+      "place": "Leipzig",
+      "text": "Cerca de 70 mil manifestantes; o regime não intervém.",
+      "quote": {
+        "text": "Nós somos o povo!",
+        "source": "Lema das manifestações de segunda-feira"
+      }
+    },
+    {
+      "date": "1989-10-18",
+      "place": "Berlim Oriental",
+      "text": "Erich Honecker é substituído por Egon Krenz."
+    },
+    {
+      "date": "1989-11-04",
+      "place": "Alexanderplatz",
+      "text": "A maior manifestação da história da RDA."
+    },
+    {
+      "date": "1989-11-09",
+      "place": "Berlim",
+      "text": "Coletiva de Schabowski e abertura dos postos de fronteira durante a noite.",
+      "quote": {
+        "text": "Imediatamente, sem demora.",
+        "source": "Günter Schabowski, 9 de novembro de 1989"
+      }
+    },
+    {
+      "date": "1989-12-22",
+      "place": "Portão de Brandemburgo",
+      "text": "Reabertura do portão."
+    },
+    {
+      "date": "1990-03-18",
+      "place": "RDA",
+      "text": "Primeiras eleições livres da RDA."
+    },
+    {
+      "date": "1990-10-03",
+      "place": "Berlim",
+      "text": "Reunificação da Alemanha."
+    }
+  ],
+  "trajectories": [
+    {
+      "kind": "surface",
+      "id": "outono-1989",
+      "label": "Da fronteira húngara à reunificação",
+      "vehicle": "generic",
+      "points": [
+        {
+          "id": "SOPRON",
+          "name": "Sopron — Piquenique Pan-Europeu",
+          "lat": 47.7369,
+          "lng": 16.6418,
+          "time": "1989-08-19T12:00:00Z",
+          "description": "Durante um piquenique pela abertura das fronteiras, um portão entre Hungria e Áustria fica aberto por algumas horas e cerca de 600 alemães orientais fogem para o Ocidente.",
+          "facts": {
+            "place": "Fronteira Hungria–Áustria",
+            "actor": "Movimento Pan-Europeu e oposição húngara"
+          }
+        },
+        {
+          "id": "HEGYESHALOM",
+          "name": "Hegyeshalom — Hungria abre a fronteira",
+          "lat": 47.913,
+          "lng": 17.159,
+          "time": "1989-09-11T00:00:00+02:00",
+          "description": "A Hungria deixa os cidadãos da RDA cruzarem livremente para a Áustria. Em poucas semanas, dezenas de milhares saem por ali.",
+          "facts": {
+            "place": "Fronteira Hungria–Áustria",
+            "actor": "Governo húngaro"
+          }
+        },
+        {
+          "id": "PRAGA",
+          "name": "Embaixada da Alemanha Ocidental em Praga",
+          "lat": 50.0886,
+          "lng": 14.4005,
+          "time": "1989-09-30T12:00:00Z",
+          "description": "Do balcão da embaixada, o chanceler Hans-Dietrich Genscher anuncia aos milhares de refugiados alemães orientais acampados no jardim que poderão partir para o Ocidente.",
+          "facts": {
+            "place": "Praga, Tchecoslováquia",
+            "actor": "Hans-Dietrich Genscher"
+          }
+        },
+        {
+          "id": "LEIPZIG",
+          "name": "Leipzig — manifestação de segunda-feira",
+          "lat": 51.3404,
+          "lng": 12.3779,
+          "time": "1989-10-09T12:00:00Z",
+          "description": "Cerca de 70 mil pessoas marcham pelo anel viário de Leipzig sem que o regime use a força. O lema 'Wir sind das Volk' — 'Nós somos o povo' — se espalha pela RDA.",
+          "facts": {
+            "place": "Leipzig, RDA",
+            "actor": "Manifestantes"
+          },
+          "quote": {
+            "text": "Nós somos o povo!",
+            "source": "Lema das manifestações de segunda-feira em Leipzig, outono de 1989"
+          }
+        },
+        {
+          "id": "ALEXANDERPLATZ",
+          "name": "Alexanderplatz, Berlim Oriental",
+          "lat": 52.5219,
+          "lng": 13.4132,
+          "time": "1989-11-04T12:00:00Z",
+          "description": "A maior manifestação da história da RDA reúne centenas de milhares de pessoas (as estimativas vão de 200 mil a mais de 500 mil) por liberdade de imprensa, de reunião e de viagem.",
+          "facts": {
+            "place": "Berlim Oriental",
+            "actor": "Artistas e movimentos civis"
+          }
+        },
+        {
+          "id": "COLETIVA",
+          "name": "Centro Internacional de Imprensa — coletiva de Schabowski",
+          "lat": 52.5114,
+          "lng": 13.3893,
+          "time": "1989-11-09T18:57:00+01:00",
+          "description": "Ao fim de uma coletiva transmitida ao vivo, o porta-voz do Politburo, Günter Schabowski, lê a nova regra de viagens e, perguntado sobre quando ela vale, responde que imediatamente. A notícia corre pela televisão ocidental.",
+          "facts": {
+            "place": "Berlim Oriental",
+            "actor": "Günter Schabowski"
+          },
+          "quote": {
+            "text": "Isso entra em vigor, pelo que sei… imediatamente, sem demora.",
+            "source": "Günter Schabowski, coletiva de imprensa, 9 de novembro de 1989 (trad. livre)"
+          }
+        },
+        {
+          "id": "BORNHOLMER",
+          "name": "Posto de fronteira da Bornholmer Straße",
+          "lat": 52.5548,
+          "lng": 13.3977,
+          "time": "1989-11-09T23:30:00+01:00",
+          "description": "Diante de milhares de pessoas e sem ordens superiores, o oficial Harald Jäger manda abrir a barreira. Os outros postos de Berlim abrem nas horas seguintes.",
+          "facts": {
+            "place": "Berlim",
+            "actor": "Harald Jäger e a multidão"
+          }
+        },
+        {
+          "id": "BRANDEMBURGO",
+          "name": "Portão de Brandemburgo",
+          "lat": 52.5163,
+          "lng": 13.3777,
+          "time": "1989-12-22T12:00:00Z",
+          "description": "O portão, fechado desde 1961, é reaberto para pedestres numa cerimônia com Helmut Kohl e o primeiro-ministro da RDA, Hans Modrow.",
+          "facts": {
+            "place": "Berlim",
+            "actor": "Helmut Kohl e Hans Modrow"
+          }
+        },
+        {
+          "id": "REICHSTAG",
+          "name": "Reichstag — Reunificação",
+          "lat": 52.5186,
+          "lng": 13.3762,
+          "time": "1990-10-03T00:00:00+02:00",
+          "description": "À meia-noite, a RDA deixa de existir e seus estados passam a integrar a República Federal da Alemanha.",
+          "facts": {
+            "place": "Berlim",
+            "actor": "As duas Alemanhas"
+          }
+        }
+      ]
+    }
+  ],
+  "hud": {
+    "badge": "MURO DE BERLIM",
+    "subtitle": "A Revolução Pacífica de 1989",
+    "period": "1989–1990",
+    "startLabel": "Sopron (ago 1989)",
+    "endLabel": "Reunificação (out 1990)",
+    "progressLabel": "Progresso da queda do Muro de Berlim",
+    "stepStats": [
+      {
+        "fact": "place",
+        "label": "Onde"
+      },
+      {
+        "fact": "actor",
+        "label": "Quem"
+      }
+    ],
+    "quoteTitle": "Vozes de 1989",
+    "cameras": [
+      {
+        "label": "Europa Central",
+        "lat": 50.5,
+        "lng": 14.5,
+        "altitude": 2.0
+      },
+      {
+        "label": "Berlim",
+        "lat": 52.52,
+        "lng": 13.4,
+        "altitude": 1.6
+      }
+    ],
+    "speeds": [
+      0.5,
+      1,
+      2,
+      5
+    ],
+    "durationSeconds": 75
+  },
+  "openedBy": [
+    "deu-1989"
+  ]
+}

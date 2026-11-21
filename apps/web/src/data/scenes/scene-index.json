@@ -1,0 +1,193 @@
+[
+  {
+    "id": "polo-1271",
+    "title": "Marco Polo na Rota da Seda",
+    "summary": "A viagem dos Polo de Veneza à corte de Cublai Cã e a volta por mar pelo Índico, que deu à Europa sua imagem da Ásia mongol.",
+    "category": "ECONOMY",
+    "date": {
+      "start": "1271",
+      "end": "1295",
+      "precision": "year"
+    },
+    "country": "ITA",
+    "countries": [
+      "ITA",
+      "TUR",
+      "IRN",
+      "AFG",
+      "CHN",
+      "IDN"
+    ],
+    "location": {
+      "lat": 45.4371,
+      "lng": 12.3326
+    },
+    "camera": {
+      "lat": 35,
+      "lng": 70,
+      "altitude": 3.4
+    },
+    "sources": [
+      {
+        "label": "Marco Polo e Rustichello de Pisa, O Livro de Marco Polo (ed. Yule-Cordier, 1903)",
+        "title": "The Travels of Marco Polo — The Complete Yule-Cordier Edition, vol. 1",
+        "authors": "Marco Polo; Rustichello de Pisa; H. Yule (trad.); H. Cordier (ed.)",
+        "year": 1903,
+        "url": "https://www.gutenberg.org/ebooks/10636"
+      }
+    ],
+    "trajectoryKinds": [
+      "surface"
+    ]
+  },
+  {
+    "id": "gama-1497",
+    "title": "Viagem de Vasco da Gama à Índia",
+    "summary": "A primeira viagem marítima direta da Europa à Índia, pelo Cabo da Boa Esperança, abre a rota portuguesa das especiarias.",
+    "category": "ECONOMY",
+    "date": {
+      "start": "1497-07-08",
+      "end": "1499-07-10",
+      "precision": "day"
+    },
+    "country": "PRT",
+    "countries": [
+      "PRT",
+      "ZAF",
+      "MOZ",
+      "KEN",
+      "IND"
+    ],
+    "location": {
+      "lat": 38.6966,
+      "lng": -9.2061
+    },
+    "camera": {
+      "lat": -5,
+      "lng": 30,
+      "altitude": 3.4
+    },
+    "sources": [
+      {
+        "label": "Roteiro da viagem de Vasco da Gama (ed. Herculano e Paiva, 1861)",
+        "title": "Roteiro da viagem de Vasco da Gama em MCCCCXCVII",
+        "authors": "Álvaro Velho (atribuído); A. Herculano e Barão do Castelo de Paiva (eds.)",
+        "publication": "Imprensa Nacional, Lisboa",
+        "year": 1861,
+        "url": "https://digital.bbm.usp.br/handle/bbm/4244"
+      }
+    ],
+    "trajectoryKinds": [
+      "surface"
+    ]
+  },
+  {
+    "id": "glo-1914",
+    "title": "Eclosão da Primeira Guerra Mundial",
+    "summary": "Assassinato do Arquiduque Francisco Ferdinando em Sarajevo deflagra o primeiro conflito em escala global.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1914-07-28",
+      "end": "1918-11-11",
+      "precision": "day"
+    },
+    "country": "BIH",
+    "countries": [
+      "AHU",
+      "DEU",
+      "RUS",
+      "FRA",
+      "GBR",
+      "TUR_HIST"
+    ],
+    "location": {
+      "lat": 43.8563,
+      "lng": 18.4131
+    },
+    "camera": {
+      "lat": 49,
+      "lng": 14,
+      "altitude": 2.8
+    },
+    "sources": [
+      {
+        "label": "Imperial War Museum",
+        "url": "https://www.iwm.org.uk/"
+      }
+    ],
+    "trajectoryKinds": [
+      "surface"
+    ]
+  },
+  {
+    "id": "glo-1939",
+    "title": "Início da Segunda Guerra Mundial",
+    "summary": "Invasão da Polônia por forças da Alemanha nazista deflagra a Segunda Guerra Mundial na Europa.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "1939-09-01",
+      "end": "1945-09-02",
+      "precision": "day"
+    },
+    "country": "POL",
+    "countries": [
+      "DEU",
+      "POL",
+      "SUN",
+      "GBR",
+      "FRA"
+    ],
+    "location": {
+      "lat": 54.4069,
+      "lng": 18.6738
+    },
+    "camera": {
+      "lat": 40,
+      "lng": 40,
+      "altitude": 3.6
+    },
+    "sources": [
+      {
+        "label": "Bundesarchiv / Polish Institute"
+      }
+    ],
+    "trajectoryKinds": [
+      "surface"
+    ]
+  },
+  {
+    "id": "glo-1989",
+    "title": "Queda do Muro de Berlim",
+    "summary": "Abertura dos postos de controle entre Berlim Oriental e Ocidental, sinalizando o fim da Guerra Fria.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "1989-11-09",
+      "precision": "day"
+    },
+    "country": "DEU",
+    "countries": [
+      "GDR",
+      "FRG"
+    ],
+    "location": {
+      "lat": 52.5163,
+      "lng": 13.3777
+    },
+    "camera": {
+      "lat": 50.5,
+      "lng": 14.5,
+      "altitude": 2
+    },
+    "sources": [
+      {
+        "label": "Bundesarchiv"
+      }
+    ],
+    "openedBy": [
+      "deu-1989"
+    ],
+    "trajectoryKinds": [
+      "surface"
+    ]
+  }
+]

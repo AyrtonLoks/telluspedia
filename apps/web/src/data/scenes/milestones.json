@@ -120,34 +120,6 @@
     ]
   },
   {
-    "id": "glo-1914",
-    "title": "Eclosão da Primeira Guerra Mundial",
-    "summary": "Assassinato do Arquiduque Francisco Ferdinando em Sarajevo deflagra o primeiro conflito em escala global.",
-    "category": "WAR_MILITARY",
-    "date": {
-      "start": "1914-07-28",
-      "precision": "day"
-    },
-    "country": "BIH",
-    "countries": [
-      "AHU",
-      "DEU",
-      "RUS",
-      "FRA",
-      "GBR",
-      "TUR_HIST"
-    ],
-    "location": {
-      "lat": 43.8563,
-      "lng": 18.4131
-    },
-    "sources": [
-      {
-        "label": "Imperial War Museum"
-      }
-    ]
-  },
-  {
     "id": "glo-1919",
     "title": "Tratado de Versalhes e Liga das Nações",
     "summary": "Assinatura do tratado de paz no Salão dos Espelhos em Versalhes e fundação da primeira organização internacional de segurança coletiva.",
@@ -164,33 +136,6 @@
     "sources": [
       {
         "label": "Liga das Nações / Arquivo de Versalhes"
-      }
-    ]
-  },
-  {
-    "id": "glo-1939",
-    "title": "Início da Segunda Guerra Mundial",
-    "summary": "Invasão da Polônia por forças da Alemanha nazista deflagra a Segunda Guerra Mundial na Europa.",
-    "category": "WAR_MILITARY",
-    "date": {
-      "start": "1939-09-01",
-      "precision": "day"
-    },
-    "country": "POL",
-    "countries": [
-      "DEU",
-      "POL",
-      "SUN",
-      "GBR",
-      "FRA"
-    ],
-    "location": {
-      "lat": 54.4069,
-      "lng": 18.6738
-    },
-    "sources": [
-      {
-        "label": "Bundesarchiv / Polish Institute"
       }
     ]
   },
@@ -410,30 +355,6 @@
     "sources": [
       {
         "label": "IEA"
-      }
-    ]
-  },
-  {
-    "id": "glo-1989",
-    "title": "Queda do Muro de Berlim",
-    "summary": "Abertura dos postos de controle entre Berlim Oriental e Ocidental, sinalizando o fim da Guerra Fria.",
-    "category": "POLITICS_REGIMES",
-    "date": {
-      "start": "1989-11-09",
-      "precision": "day"
-    },
-    "country": "DEU",
-    "countries": [
-      "GDR",
-      "FRG"
-    ],
-    "location": {
-      "lat": 52.5163,
-      "lng": 13.3777
-    },
-    "sources": [
-      {
-        "label": "Bundesarchiv"
       }
     ]
   },

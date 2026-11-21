@@ -1,8 +1,10 @@
+import { create } from "zustand";
 import milestonesJson from "../../data/scenes/milestones.json";
 import magellanJson from "../../data/scenes/magellan-1519.json";
 import apolloJson from "../../data/scenes/glo-1969.json";
+import sceneIndexJson from "../../data/scenes/scene-index.json";
 import type { Scene } from "./schema";
-import { sceneStartYear } from "./catalog-utils";
+import { sceneStartYear, type TrajectoryKind } from "./catalog-utils";
 
 /**
  * Catálogo de cenas (D12b): carrega e valida os JSON de `src/data/scenes/`. Para adicionar um
@@ -41,11 +43,40 @@ export function normalizeScene(raw: unknown): Scene {
   } as Scene;
 }
 
-/** Arquivos de cena (para a validação nos testes). */
+/** Arquivos de cena do bundle (para a validação nos testes; os sob demanda estão em `lazy-files.ts`). */
 export const SCENE_SOURCES: ReadonlyArray<readonly [string, unknown[]]> = SCENE_FILES;
 
+/*
+ * Carga sob demanda (D24). Cenas grandes não entram no bundle de `/`: o índice leve
+ * (`scene-index.json`) traz o que a linha do tempo, a busca e os links precisam, e o arquivo completo
+ * chega por `import()` quando a cena abre. Até lá, `getScene` devolve a cena do índice, com as
+ * trajetórias, a crônica e os participantes vazios; `isSceneLoaded` diz se já está completa.
+ * Os mapas abaixo e `LAZY_SCENE_FILES` precisam bater (teste `scenes.test.ts`).
+ */
+type Loader = () => Promise<unknown>;
+const LAZY_LOADERS: Record<string, Loader> = {
+  "polo-1271": () => import("../../data/scenes/polo-1271.json").then((m) => m.default),
+  "gama-1497": () => import("../../data/scenes/gama-1497.json").then((m) => m.default),
+  "glo-1914": () => import("../../data/scenes/glo-1914.json").then((m) => m.default),
+  "glo-1939": () => import("../../data/scenes/glo-1939.json").then((m) => m.default),
+  "glo-1989": () => import("../../data/scenes/glo-1989.json").then((m) => m.default),
+};
+/** Cenas do bundle com detalhes à parte (a Apollo 11 trava o relógio astronômico, então fica no bundle). */
+const DETAIL_LOADERS: Record<string, Loader> = {
+  "glo-1969": () => import("../../data/scenes/glo-1969.details.json").then((m) => m.default),
+};
+export const LAZY_SCENE_IDS: readonly string[] = Object.keys(LAZY_LOADERS);
+export const DETAIL_SCENE_IDS: readonly string[] = Object.keys(DETAIL_LOADERS);
+
+type IndexEntry = Record<string, unknown> & { id: string; trajectoryKinds: TrajectoryKind[] };
+const KINDS = new Map<string, TrajectoryKind[]>();
+const INDEX_SCENES = (sceneIndexJson as unknown as IndexEntry[]).map(({ trajectoryKinds, ...rest }) => {
+  KINDS.set(rest.id, trajectoryKinds);
+  return normalizeScene(rest);
+});
+
 export const ALL_SCENES: Scene[] = (() => {
-  const all = SCENE_FILES.flatMap(([, items]) => items.map(normalizeScene));
+  const all = [...SCENE_FILES.flatMap(([, items]) => items.map(normalizeScene)), ...INDEX_SCENES];
   const seen = new Set<string>();
   for (const s of all) {
     if (seen.has(s.id)) throw new Error(`cenas: id duplicado entre arquivos (${s.id})`);
@@ -60,6 +91,57 @@ export const PUBLISHED_SCENES: Scene[] = ALL_SCENES.filter((s) => s.published);
 const BY_ID = new Map(ALL_SCENES.map((s) => [s.id, s]));
 export function getScene(id: string): Scene | undefined {
   return BY_ID.get(id);
+}
+
+const loaded = new Set<string>(ALL_SCENES.filter((s) => !(s.id in LAZY_LOADERS) && !(s.id in DETAIL_LOADERS)).map((s) => s.id));
+const pending = new Map<string, Promise<Scene | undefined>>();
+
+/** Versão dos dados de cena: muda a cada carga, para os componentes re-renderizarem (`useScene`). */
+export const useSceneDataVersion = create<{ version: number }>(() => ({ version: 0 }));
+
+/** A cena já tem trajetórias, crônica e participantes (ou nunca foi sob demanda). */
+export function isSceneLoaded(id: string): boolean {
+  return loaded.has(id);
+}
+
+function replaceScene(next: Scene) {
+  BY_ID.set(next.id, next);
+  const i = ALL_SCENES.findIndex((s) => s.id === next.id);
+  if (i >= 0) ALL_SCENES[i] = next;
+  const j = PUBLISHED_SCENES.findIndex((s) => s.id === next.id);
+  if (j >= 0) PUBLISHED_SCENES[j] = next;
+}
+
+/** Carrega a parte pesada da cena (uma vez; chamadas repetidas reaproveitam a mesma promessa). */
+export function loadScene(id: string): Promise<Scene | undefined> {
+  if (loaded.has(id)) return Promise.resolve(BY_ID.get(id));
+  const isLazy = id in LAZY_LOADERS;
+  const loader = isLazy ? LAZY_LOADERS[id] : id in DETAIL_LOADERS ? DETAIL_LOADERS[id] : null;
+  if (!loader) return Promise.resolve(undefined);
+  let p = pending.get(id);
+  if (!p) {
+    p = loader()
+      .then((raw) => {
+        const base = BY_ID.get(id);
+        const next = isLazy ? normalizeScene(raw) : normalizeScene({ ...base, ...(raw as object) });
+        replaceScene(next);
+        loaded.add(id);
+        useSceneDataVersion.setState((s) => ({ version: s.version + 1 }));
+        return next;
+      })
+      .catch((error) => {
+        pending.delete(id); // permite tentar de novo
+        console.warn(`[cenas] falha ao carregar ${id}`, error);
+        return BY_ID.get(id);
+      });
+    pending.set(id, p);
+  }
+  return p;
+}
+
+/** Tipos das trajetórias da cena, mesmo antes de carregá-la (vêm do índice). */
+export function sceneTrajectoryKinds(id: string): TrajectoryKind[] {
+  return KINDS.get(id) ?? BY_ID.get(id)?.trajectories.map((t) => t.kind) ?? [];
 }
 
 /** Formato de marco usado pela linha do tempo e pelo HUD (compatível com o anterior à D12). */
@@ -128,7 +210,7 @@ export function fact<T extends string | number>(facts: Record<string, string | n
 
 /** Cena "tocável" (tem trajetória para o player). Marcos simples não abrem o player. */
 export function isPlayableScene(scene: Scene | undefined): scene is Scene {
-  return Boolean(scene && scene.published && scene.trajectories.length > 0);
+  return Boolean(scene && scene.published && (scene.trajectories.length > 0 || sceneTrajectoryKinds(scene.id).length > 0));
 }
 
 /** Cena aberta por um marco: a própria cena com o mesmo id ou a que o lista em `openedBy`. */
@@ -149,7 +231,7 @@ export function sceneLockedInstant(sceneId: string | null | undefined): Date | n
 }
 
 export function sceneHasTrajectoryKind(sceneId: string | null | undefined, kind: "surface" | "cislunar"): boolean {
-  return Boolean(sceneId && getScene(sceneId)?.trajectories.some((t) => t.kind === kind));
+  return Boolean(sceneId && sceneTrajectoryKinds(sceneId).includes(kind));
 }
 
 /** Progresso (0..1) em que começa cada passo da cena: pontos da rota (igualmente espaçados) ou fases. */

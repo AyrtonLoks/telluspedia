@@ -1,0 +1,415 @@
+{
+  "id": "glo-1939",
+  "title": "Início da Segunda Guerra Mundial",
+  "summary": "Invasão da Polônia por forças da Alemanha nazista deflagra a Segunda Guerra Mundial na Europa.",
+  "category": "WAR_MILITARY",
+  "date": {
+    "start": "1939-09-01",
+    "end": "1945-09-02",
+    "precision": "day"
+  },
+  "country": "POL",
+  "countries": [
+    "DEU",
+    "POL",
+    "SUN",
+    "GBR",
+    "FRA"
+  ],
+  "location": {
+    "lat": 54.4069,
+    "lng": 18.6738
+  },
+  "camera": {
+    "lat": 40,
+    "lng": 40,
+    "altitude": 3.6
+  },
+  "subtitle": "Segunda Guerra Mundial (1939–1945)",
+  "sources": [
+    {
+      "label": "Bundesarchiv / Polish Institute"
+    },
+    {
+      "label": "U.S. National Archives — Surrender of Japan (1945)",
+      "publication": "Milestone Documents",
+      "url": "https://www.archives.gov/milestone-documents/surrender-of-japan"
+    },
+    {
+      "label": "National Diet Library — Instrument of Surrender (Tóquio, 2 set. 1945)",
+      "url": "https://www.ndl.go.jp/constitution/e/etc/c05.html"
+    },
+    {
+      "label": "Franklin D. Roosevelt, discurso ao Congresso (8 dez. 1941)"
+    }
+  ],
+  "facts": {
+    "duracao": "6 anos e 1 dia",
+    "mortos": "estimativas entre 70 e 85 milhões, militares e civis",
+    "fim": "Rendição da Alemanha (8 maio 1945) e do Japão (2 set. 1945)"
+  },
+  "participants": [
+    {
+      "name": "Aliados",
+      "role": "Coalizão",
+      "description": "Reino Unido e Commonwealth, França (e França Livre), União Soviética (desde 1941), Estados Unidos (desde dezembro de 1941), China e muitos outros."
+    },
+    {
+      "name": "Eixo",
+      "role": "Coalizão",
+      "description": "Alemanha, Itália (até 1943) e Japão, com aliados como Hungria, Romênia e Bulgária."
+    },
+    {
+      "name": "Winston Churchill",
+      "role": "Primeiro-ministro britânico (1940–1945)"
+    },
+    {
+      "name": "Josef Stalin",
+      "role": "Líder da União Soviética"
+    },
+    {
+      "name": "Franklin D. Roosevelt",
+      "role": "Presidente dos Estados Unidos (1933–1945)"
+    },
+    {
+      "name": "Adolf Hitler",
+      "role": "Ditador da Alemanha nazista",
+      "description": "Responsável pela guerra de agressão e pelo Holocausto, no qual o regime nazista assassinou cerca de seis milhões de judeus."
+    }
+  ],
+  "chronicle": [
+    {
+      "date": "1939-09-01",
+      "place": "Polônia",
+      "text": "A Alemanha invade a Polônia."
+    },
+    {
+      "date": "1939-09-03",
+      "place": "Londres e Paris",
+      "text": "Reino Unido e França declaram guerra à Alemanha."
+    },
+    {
+      "date": "1940-06-22",
+      "place": "Compiègne",
+      "text": "Armistício franco-alemão."
+    },
+    {
+      "date": "1941-06-22",
+      "place": "Fronteira soviética",
+      "text": "Início da Operação Barbarossa."
+    },
+    {
+      "date": "1941-12-07",
+      "place": "Pearl Harbor",
+      "text": "Ataque japonês; os Estados Unidos entram na guerra.",
+      "quote": {
+        "text": "Uma data que viverá na infâmia.",
+        "source": "Franklin D. Roosevelt, 8 de dezembro de 1941"
+      }
+    },
+    {
+      "date": "1942-01-20",
+      "place": "Wannsee, Berlim",
+      "text": "Dirigentes nazistas coordenam a deportação e o extermínio dos judeus da Europa."
+    },
+    {
+      "date": "1943-02-02",
+      "place": "Stalingrado",
+      "text": "Rendição do 6º Exército alemão."
+    },
+    {
+      "date": "1944-06-06",
+      "place": "Normandia",
+      "text": "Dia D: desembarque aliado."
+    },
+    {
+      "date": "1945-01-27",
+      "place": "Auschwitz",
+      "text": "O Exército Vermelho liberta o campo de extermínio de Auschwitz-Birkenau."
+    },
+    {
+      "date": "1945-05-08",
+      "place": "Berlim-Karlshorst",
+      "text": "Rendição incondicional da Alemanha."
+    },
+    {
+      "date": "1945-08-06",
+      "place": "Hiroshima",
+      "text": "Primeira bomba atômica usada em guerra."
+    },
+    {
+      "date": "1945-09-02",
+      "place": "Baía de Tóquio",
+      "text": "O Japão assina o Instrumento de Rendição.",
+      "quote": {
+        "text": "Proclamamos a rendição incondicional às Potências Aliadas…",
+        "source": "Instrumento de Rendição"
+      }
+    }
+  ],
+  "trajectories": [
+    {
+      "kind": "surface",
+      "id": "teatros-1939-1945",
+      "label": "Principais teatros e batalhas",
+      "vehicle": "army",
+      "points": [
+        {
+          "id": "WESTERPLATTE",
+          "name": "Westerplatte, Danzig (Gdańsk)",
+          "lat": 54.4069,
+          "lng": 18.6738,
+          "time": "1939-09-01T12:00:00Z",
+          "description": "O encouraçado alemão Schleswig-Holstein abre fogo contra a guarnição polonesa de Westerplatte enquanto a Wehrmacht invade a Polônia. Reino Unido e França declaram guerra à Alemanha em 3 de setembro; a URSS invade o leste polonês em 17 de setembro.",
+          "facts": {
+            "theater": "Europa",
+            "phase": "Invasão da Polônia",
+            "warDay": 0
+          }
+        },
+        {
+          "id": "DUNQUERQUE",
+          "name": "Dunquerque",
+          "lat": 51.0343,
+          "lng": 2.3768,
+          "time": "1940-05-26T12:00:00Z",
+          "description": "Cercadas depois da ofensiva alemã através das Ardenas, as tropas britânicas e francesas são retiradas por mar: cerca de 338 mil soldados chegam à Inglaterra até 4 de junho.",
+          "facts": {
+            "theater": "Europa",
+            "phase": "Queda da França",
+            "warDay": 268
+          }
+        },
+        {
+          "id": "COMPIEGNE_1940",
+          "name": "Clareira do Armistício, Compiègne",
+          "lat": 49.427,
+          "lng": 2.906,
+          "time": "1940-06-22T12:00:00Z",
+          "description": "Hitler impõe o armistício à França no mesmo vagão e no mesmo lugar do armistício de 1918. O norte e a costa atlântica ficam ocupados; o regime de Vichy governa o sul.",
+          "facts": {
+            "theater": "Europa",
+            "phase": "Queda da França",
+            "warDay": 295
+          }
+        },
+        {
+          "id": "LONDRES",
+          "name": "Londres — Batalha da Inglaterra",
+          "lat": 51.5072,
+          "lng": -0.1276,
+          "time": "1940-07-10T12:00:00Z",
+          "description": "A Luftwaffe tenta conquistar o domínio do ar para invadir a Grã-Bretanha. A RAF resiste; a invasão é adiada e, a partir de setembro, começam os bombardeios noturnos da Blitz.",
+          "facts": {
+            "theater": "Europa",
+            "phase": "Guerra aérea",
+            "warDay": 313
+          }
+        },
+        {
+          "id": "BREST",
+          "name": "Fortaleza de Brest — Operação Barbarossa",
+          "lat": 52.0833,
+          "lng": 23.6556,
+          "time": "1941-06-22T12:00:00Z",
+          "description": "A Alemanha invade a União Soviética com mais de três milhões de soldados: começa a frente mais mortífera da guerra.",
+          "facts": {
+            "theater": "Frente Oriental",
+            "phase": "Barbarossa",
+            "warDay": 660
+          }
+        },
+        {
+          "id": "MOSCOU",
+          "name": "Moscou",
+          "lat": 55.7558,
+          "lng": 37.6173,
+          "time": "1941-12-05T12:00:00Z",
+          "description": "O Exército Vermelho contra-ataca diante de Moscou e afasta a ameaça sobre a capital: a guerra-relâmpago fracassa no leste.",
+          "facts": {
+            "theater": "Frente Oriental",
+            "phase": "Barbarossa",
+            "warDay": 826
+          }
+        },
+        {
+          "id": "PEARL_HARBOR",
+          "name": "Pearl Harbor, Havaí",
+          "lat": 21.3649,
+          "lng": -157.95,
+          "time": "1941-12-07T07:48:00-10:30",
+          "description": "O ataque aéreo japonês à frota americana do Pacífico leva os Estados Unidos à guerra. Quatro dias depois, Alemanha e Itália declaram guerra aos Estados Unidos.",
+          "facts": {
+            "theater": "Pacífico",
+            "phase": "Guerra mundial",
+            "warDay": 828
+          },
+          "quote": {
+            "text": "Ontem, 7 de dezembro de 1941 — uma data que viverá na infâmia…",
+            "source": "Franklin D. Roosevelt, discurso ao Congresso, 8 de dezembro de 1941"
+          }
+        },
+        {
+          "id": "MIDWAY",
+          "name": "Atol de Midway",
+          "lat": 28.2072,
+          "lng": -177.3735,
+          "time": "1942-06-04T12:00:00Z",
+          "description": "A Marinha americana afunda quatro porta-aviões japoneses e muda o equilíbrio no Pacífico.",
+          "facts": {
+            "theater": "Pacífico",
+            "phase": "Virada",
+            "warDay": 1007
+          }
+        },
+        {
+          "id": "EL_ALAMEIN",
+          "name": "El Alamein",
+          "lat": 30.8333,
+          "lng": 28.95,
+          "time": "1942-10-23T12:00:00Z",
+          "description": "O 8º Exército britânico de Montgomery derrota as forças ítalo-alemãs de Rommel e afasta o Eixo do Egito e do canal de Suez.",
+          "facts": {
+            "theater": "Norte da África",
+            "phase": "Virada",
+            "warDay": 1148
+          }
+        },
+        {
+          "id": "STALINGRADO",
+          "name": "Stalingrado",
+          "lat": 48.708,
+          "lng": 44.5133,
+          "time": "1942-11-19T12:00:00Z",
+          "description": "A Operação Urano cerca o 6º Exército alemão dentro da cidade em ruínas. Os últimos sobreviventes se rendem em 2 de fevereiro de 1943.",
+          "facts": {
+            "theater": "Frente Oriental",
+            "phase": "Virada",
+            "warDay": 1175
+          }
+        },
+        {
+          "id": "KURSK",
+          "name": "Kursk",
+          "lat": 51.7304,
+          "lng": 36.1926,
+          "time": "1943-07-05T12:00:00Z",
+          "description": "A última grande ofensiva alemã no leste fracassa numa das maiores batalhas de blindados da história; a iniciativa passa definitivamente aos soviéticos.",
+          "facts": {
+            "theater": "Frente Oriental",
+            "phase": "Avanço aliado",
+            "warDay": 1403
+          }
+        },
+        {
+          "id": "NORMANDIA",
+          "name": "Normandia — praia de Omaha",
+          "lat": 49.3697,
+          "lng": -0.8731,
+          "time": "1944-06-06T12:00:00Z",
+          "description": "No Dia D, cerca de 156 mil soldados aliados desembarcam em cinco praias da Normandia, abrindo a frente ocidental. Paris é libertada em agosto.",
+          "facts": {
+            "theater": "Europa",
+            "phase": "Avanço aliado",
+            "warDay": 1740
+          }
+        },
+        {
+          "id": "BERLIM",
+          "name": "Berlim — Reichstag",
+          "lat": 52.5186,
+          "lng": 13.3762,
+          "time": "1945-05-02T12:00:00Z",
+          "description": "Berlim capitula ao Exército Vermelho dois dias depois do suicídio de Hitler. A Alemanha assina a rendição incondicional em Reims (7 de maio) e em Berlim-Karlshorst (8 de maio).",
+          "facts": {
+            "theater": "Europa",
+            "phase": "Fim na Europa",
+            "warDay": 2070
+          }
+        },
+        {
+          "id": "HIROSHIMA",
+          "name": "Hiroshima",
+          "lat": 34.3853,
+          "lng": 132.4553,
+          "time": "1945-08-06T08:15:00+09:00",
+          "description": "Primeira bomba atômica usada em guerra; Nagasaki é atingida em 9 de agosto, mesmo dia em que a URSS invade a Manchúria. O Japão anuncia a rendição em 15 de agosto.",
+          "facts": {
+            "theater": "Pacífico",
+            "phase": "Fim no Pacífico",
+            "warDay": 2166
+          }
+        },
+        {
+          "id": "BAIA_DE_TOQUIO",
+          "name": "Baía de Tóquio — USS Missouri",
+          "lat": 35.35,
+          "lng": 139.75,
+          "time": "1945-09-02T09:04:00+09:00",
+          "description": "O ministro do Exterior Mamoru Shigemitsu assina o Instrumento de Rendição a bordo do encouraçado Missouri: termina a Segunda Guerra Mundial.",
+          "facts": {
+            "theater": "Pacífico",
+            "phase": "Rendição do Japão",
+            "warDay": 2193
+          },
+          "quote": {
+            "text": "Proclamamos a rendição incondicional às Potências Aliadas…",
+            "source": "Instrumento de Rendição do Japão, 2 de setembro de 1945"
+          }
+        }
+      ]
+    }
+  ],
+  "hud": {
+    "badge": "SEGUNDA GUERRA",
+    "subtitle": "Teatros e batalhas decisivas",
+    "period": "1939–1945",
+    "startLabel": "Polônia (1939)",
+    "endLabel": "Tóquio (1945)",
+    "progressLabel": "Progresso da Segunda Guerra Mundial",
+    "stepStats": [
+      {
+        "fact": "theater",
+        "label": "Teatro"
+      },
+      {
+        "fact": "phase",
+        "label": "Fase"
+      },
+      {
+        "fact": "warDay",
+        "label": "Dia de guerra",
+        "unit": "dias",
+        "note": "desde 1 set 1939"
+      }
+    ],
+    "quoteTitle": "Documentos da guerra",
+    "cameras": [
+      {
+        "label": "Visão ampla",
+        "lat": 40,
+        "lng": 40,
+        "altitude": 3.6
+      },
+      {
+        "label": "Europa",
+        "lat": 50,
+        "lng": 15,
+        "altitude": 2.6
+      },
+      {
+        "label": "Pacífico",
+        "lat": 25,
+        "lng": 165,
+        "altitude": 3.2
+      }
+    ],
+    "speeds": [
+      0.5,
+      1,
+      2,
+      5
+    ],
+    "durationSeconds": 100
+  }
+}

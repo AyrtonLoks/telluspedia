@@ -1,0 +1,470 @@
+{
+  "id": "polo-1271",
+  "title": "Marco Polo na Rota da Seda",
+  "summary": "A viagem dos Polo de Veneza à corte de Cublai Cã e a volta por mar pelo Índico, que deu à Europa sua imagem da Ásia mongol.",
+  "category": "ECONOMY",
+  "date": {
+    "start": "1271",
+    "end": "1295",
+    "precision": "year"
+  },
+  "country": "ITA",
+  "countries": [
+    "ITA",
+    "TUR",
+    "IRN",
+    "AFG",
+    "CHN",
+    "IDN"
+  ],
+  "location": {
+    "lat": 45.4371,
+    "lng": 12.3326
+  },
+  "camera": {
+    "lat": 35,
+    "lng": 70,
+    "altitude": 3.4
+  },
+  "subtitle": "Veneza → Cambalique → Veneza (1271–1295)",
+  "sources": [
+    {
+      "label": "Marco Polo e Rustichello de Pisa, O Livro de Marco Polo (ed. Yule-Cordier, 1903)",
+      "title": "The Travels of Marco Polo — The Complete Yule-Cordier Edition, vol. 1",
+      "authors": "Marco Polo; Rustichello de Pisa; H. Yule (trad.); H. Cordier (ed.)",
+      "year": 1903,
+      "url": "https://www.gutenberg.org/ebooks/10636"
+    },
+    {
+      "label": "Ed. Yule-Cordier, vol. 2",
+      "title": "The Travels of Marco Polo — The Complete Yule-Cordier Edition, vol. 2",
+      "authors": "Marco Polo; Rustichello de Pisa; H. Yule (trad.); H. Cordier (ed.)",
+      "year": 1903,
+      "url": "https://www.gutenberg.org/ebooks/12410"
+    }
+  ],
+  "facts": {
+    "viajantes": "Marco, Niccolò e Maffeo Polo",
+    "duracao": "cerca de 24 anos",
+    "datas": "aproximadas: o Livro raramente data as etapas"
+  },
+  "participants": [
+    {
+      "name": "Marco Polo",
+      "role": "Viajante e narrador",
+      "description": "Mercador veneziano (c. 1254–1324). Partiu aos 17 anos e voltou aos 41."
+    },
+    {
+      "name": "Niccolò Polo",
+      "role": "Mercador, pai de Marco",
+      "description": "Já estivera na corte de Cublai entre c. 1260 e 1269, com o irmão Maffeo."
+    },
+    {
+      "name": "Maffeo Polo",
+      "role": "Mercador, tio de Marco",
+      "description": "Companheiro de Niccolò nas duas viagens."
+    },
+    {
+      "name": "Cublai Cã",
+      "role": "Grão-Cã mongol e imperador Yuan",
+      "description": "Neto de Gengis Cã; reinou de 1260 a 1294 e recebeu os Polo em sua corte."
+    },
+    {
+      "name": "Kököchin",
+      "role": "Princesa mongol",
+      "description": "Escoltada pelos Polo da China à Pérsia (1291–1293) para casar com o ilcã."
+    },
+    {
+      "name": "Rustichello de Pisa",
+      "role": "Escritor, coautor do Livro",
+      "description": "Companheiro de prisão de Marco em Gênova, onde escreveu o relato, por volta de 1298."
+    }
+  ],
+  "chronicle": [
+    {
+      "date": "1271",
+      "place": "Veneza",
+      "text": "Partida de Marco, Niccolò e Maffeo Polo."
+    },
+    {
+      "date": "1271",
+      "place": "Acre",
+      "text": "Os Polo recebem cartas do papa Gregório X para o Grão-Cã."
+    },
+    {
+      "date": "1275",
+      "place": "Shangdu",
+      "text": "Chegada à corte de verão de Cublai Cã."
+    },
+    {
+      "date": "1291",
+      "place": "Quanzhou",
+      "text": "Partida por mar, escoltando a princesa Kököchin."
+    },
+    {
+      "date": "1293",
+      "place": "Pérsia",
+      "text": "Entrega da princesa à corte do Ilcanato."
+    },
+    {
+      "date": "1295",
+      "place": "Veneza",
+      "text": "Regresso dos Polo depois de 24 anos."
+    },
+    {
+      "date": "1298",
+      "place": "Gênova",
+      "text": "Preso pelos genoveses, Marco dita o relato a Rustichello de Pisa.",
+      "quote": {
+        "text": "Grandes príncipes, imperadores e reis, duques e marqueses…",
+        "source": "O Livro de Marco Polo, prólogo"
+      }
+    }
+  ],
+  "trajectories": [
+    {
+      "kind": "surface",
+      "id": "caravana-polo",
+      "label": "Viagem dos Polo",
+      "vehicle": "generic",
+      "points": [
+        {
+          "id": "VENEZA",
+          "name": "Veneza",
+          "lat": 45.4371,
+          "lng": 12.3326,
+          "time": "1271-06-01T12:00:00Z",
+          "description": "Marco, com 17 anos, parte com o pai, Niccolò, e o tio, Maffeo, que voltavam à corte do Grão-Cã depois de uma primeira viagem.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 0,
+            "region": "Itália",
+            "dateNote": "data aproximada"
+          },
+          "quote": {
+            "text": "Grandes príncipes, imperadores e reis, duques e marqueses…",
+            "source": "O Livro de Marco Polo (trad. livre da ed. Yule-Cordier), prólogo"
+          }
+        },
+        {
+          "id": "ACRE",
+          "name": "Acre (São João d'Acre)",
+          "lat": 32.9234,
+          "lng": 35.0716,
+          "time": "1271-11-01T12:00:00Z",
+          "description": "Os Polo recebem cartas do novo papa, Gregório X, para o Grão-Cã. Dos cem sábios que Cublai pedira, seguem apenas dois frades, que desistem pouco depois.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 0,
+            "region": "Israel",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "LAIAZZO",
+          "name": "Laiazzo (Ayas), Armênia Cilícia",
+          "lat": 36.77,
+          "lng": 35.79,
+          "time": "1271-12-01T12:00:00Z",
+          "description": "Porto do reino armênio da Cilícia, ponto de partida das caravanas para o interior da Ásia.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 0,
+            "region": "Turquia",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "TABRIZ",
+          "name": "Tabriz",
+          "lat": 38.08,
+          "lng": 46.29,
+          "time": "1272-03-01T12:00:00Z",
+          "description": "Grande mercado do Ilcanato mongol da Pérsia, onde, segundo o Livro, se comerciavam sedas e pedras preciosas de muitas terras.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 1,
+            "region": "Irã",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "ORMUZ",
+          "name": "Ormuz",
+          "lat": 27.1,
+          "lng": 57.0,
+          "time": "1272-07-01T12:00:00Z",
+          "description": "Os Polo descem até o Golfo Pérsico, talvez para seguir por mar, mas desistem ao ver os navios costurados com fibra de coco e voltam ao caminho por terra.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 1,
+            "region": "Irã",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "BALKH",
+          "name": "Balkh",
+          "lat": 36.76,
+          "lng": 66.9,
+          "time": "1273-01-01T12:00:00Z",
+          "description": "Antiga capital da Báctria, ainda marcada pela destruição da conquista mongol meio século antes.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 2,
+            "region": "Afeganistão",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "BADAKHSHAN",
+          "name": "Badaquexão",
+          "lat": 37.12,
+          "lng": 70.58,
+          "time": "1273-06-01T12:00:00Z",
+          "description": "Marco adoece e a família fica cerca de um ano nas montanhas, terra de rubis-balaios e lápis-lazúli, até ele se recuperar.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 2,
+            "region": "Afeganistão",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "PAMIR",
+          "name": "Planalto do Pamir",
+          "lat": 37.0,
+          "lng": 73.5,
+          "time": "1274-01-01T12:00:00Z",
+          "description": "Travessia do 'teto do mundo': o Livro descreve o frio intenso, a falta de aves e as ovelhas de chifres enormes, hoje chamadas Ovis ammon polii.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 3,
+            "region": "Afeganistão / Tadjiquistão",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "KASHGAR",
+          "name": "Kashgar",
+          "lat": 39.47,
+          "lng": 75.99,
+          "time": "1274-03-01T12:00:00Z",
+          "description": "Oásis no extremo ocidental da bacia do Tarim, nó das rotas da seda ao norte e ao sul do deserto de Taklamakan.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 3,
+            "region": "China",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "KHOTAN",
+          "name": "Khotan (Hotan)",
+          "lat": 37.11,
+          "lng": 79.93,
+          "time": "1274-06-01T12:00:00Z",
+          "description": "Cidade do jade na rota sul do Tarim, a caminho do deserto de Lop.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 3,
+            "region": "China",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "SHAZHOU",
+          "name": "Shazhou (Dunhuang)",
+          "lat": 40.14,
+          "lng": 94.66,
+          "time": "1274-10-01T12:00:00Z",
+          "description": "Depois de cerca de um mês atravessando o deserto de Lop, a caravana chega ao portal ocidental da China.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 3,
+            "region": "China",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "GANZHOU",
+          "name": "Ganzhou (Zhangye)",
+          "lat": 38.93,
+          "lng": 100.45,
+          "time": "1275-01-01T12:00:00Z",
+          "description": "Segundo o Livro, os Polo passam um ano nesta cidade do corredor do Gansu, a serviço de seus negócios.",
+          "facts": {
+            "stage": "Ida",
+            "yearsAway": 4,
+            "region": "China",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "SHANGDU",
+          "name": "Shangdu (Xanadu)",
+          "lat": 42.36,
+          "lng": 116.18,
+          "time": "1275-05-01T12:00:00Z",
+          "description": "Chegada à capital de verão de Cublai Cã, cerca de três anos e meio depois da partida de Veneza.",
+          "facts": {
+            "stage": "Na corte do Grão-Cã",
+            "yearsAway": 4,
+            "region": "China",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "KHANBALIQ",
+          "name": "Cambalique (Dadu, atual Pequim)",
+          "lat": 39.9,
+          "lng": 116.4,
+          "time": "1276-01-01T12:00:00Z",
+          "description": "Durante cerca de 17 anos, Marco serve à corte da dinastia Yuan e, segundo o Livro, viaja em missões pelo império.",
+          "facts": {
+            "stage": "Na corte do Grão-Cã",
+            "yearsAway": 5,
+            "region": "China",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "QUANZHOU",
+          "name": "Zaiton (Quanzhou)",
+          "lat": 24.87,
+          "lng": 118.67,
+          "time": "1291-01-01T12:00:00Z",
+          "description": "Os Polo partem do maior porto da China numa frota que escolta a princesa Kököchin, prometida ao ilcã da Pérsia.",
+          "facts": {
+            "stage": "Volta por mar",
+            "yearsAway": 20,
+            "region": "China",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "SUMATRA",
+          "name": "Samudra, Sumatra",
+          "lat": 5.2,
+          "lng": 97.3,
+          "time": "1291-09-01T12:00:00Z",
+          "description": "A frota espera cerca de cinco meses pela monção favorável na costa norte de Sumatra.",
+          "facts": {
+            "stage": "Volta por mar",
+            "yearsAway": 20,
+            "region": "Indonésia",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "ORMUZ_VOLTA",
+          "name": "Ormuz — chegada por mar",
+          "lat": 27.1,
+          "lng": 57.0,
+          "time": "1293-02-01T12:00:00Z",
+          "description": "Depois de cerca de dois anos de viagem e de muitas mortes na frota, a princesa chega à Pérsia; o ilcã Arghun já morrera e ela se casa com o filho dele, Ghazan.",
+          "facts": {
+            "stage": "Volta por mar",
+            "yearsAway": 22,
+            "region": "Irã",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "TREBIZONDA",
+          "name": "Trebizonda",
+          "lat": 41.0,
+          "lng": 39.72,
+          "time": "1295-01-01T12:00:00Z",
+          "description": "Já perto do mar Negro, os viajantes são roubados de parte de seus bens.",
+          "facts": {
+            "stage": "Volta por terra",
+            "yearsAway": 24,
+            "region": "Turquia",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "CONSTANTINOPLA",
+          "name": "Constantinopla",
+          "lat": 41.01,
+          "lng": 28.98,
+          "time": "1295-03-01T12:00:00Z",
+          "description": "Última grande escala antes de Veneza.",
+          "facts": {
+            "stage": "Volta por terra",
+            "yearsAway": 24,
+            "region": "Turquia",
+            "dateNote": "data aproximada"
+          }
+        },
+        {
+          "id": "VENEZA_VOLTA",
+          "name": "Veneza — regresso",
+          "lat": 45.4371,
+          "lng": 12.3326,
+          "time": "1295-10-01T12:00:00Z",
+          "description": "Os Polo voltam a Veneza depois de 24 anos. Poucos anos depois, preso em Gênova, Marco dita o relato a Rustichello de Pisa.",
+          "facts": {
+            "stage": "Regresso",
+            "yearsAway": 24,
+            "region": "Itália",
+            "dateNote": "data aproximada"
+          }
+        }
+      ]
+    }
+  ],
+  "hud": {
+    "badge": "ROTA DA SEDA",
+    "subtitle": "O Livro de Marco Polo",
+    "period": "1271–1295",
+    "startLabel": "Veneza (1271)",
+    "endLabel": "Veneza (1295)",
+    "progressLabel": "Progresso da viagem de Marco Polo",
+    "stepStats": [
+      {
+        "fact": "stage",
+        "label": "Etapa"
+      },
+      {
+        "fact": "yearsAway",
+        "label": "Anos fora de Veneza",
+        "unit": "anos",
+        "note": "datas aproximadas"
+      },
+      {
+        "fact": "region",
+        "label": "Região (atual)"
+      }
+    ],
+    "quoteTitle": "O Livro de Marco Polo (c. 1298)",
+    "cameras": [
+      {
+        "label": "Visão ampla",
+        "lat": 35,
+        "lng": 70,
+        "altitude": 3.4
+      },
+      {
+        "label": "Pamir",
+        "lat": 37.0,
+        "lng": 73.5,
+        "altitude": 2.0
+      },
+      {
+        "label": "Cambalique",
+        "lat": 39.9,
+        "lng": 116.4,
+        "altitude": 2.2
+      }
+    ],
+    "speeds": [
+      0.5,
+      1,
+      2,
+      5
+    ],
+    "durationSeconds": 100
+  }
+}

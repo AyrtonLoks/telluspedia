@@ -103,8 +103,13 @@ describe("D12b: migração sem perda para cenas", () => {
   const before = JSON.parse(fs.readFileSync(path.join(__dirname, "fixtures/pre-d12b-events.json"), "utf-8"));
 
   test("os 28 marcos globais e os 17 dos países, idênticos aos anteriores", () => {
-    assert.equal(GLOBAL_MILESTONES.length, 28);
-    assert.deepStrictEqual(JSON.parse(JSON.stringify(GLOBAL_MILESTONES)), before.global);
+    // D24 acrescentou duas cenas novas (Marco Polo e Vasco da Gama); as 28 anteriores seguem idênticas,
+    // inclusive as três promovidas a cenas completas (glo-1914, glo-1939, glo-1989).
+    const D24_NEW = ["polo-1271", "gama-1497"];
+    assert.equal(GLOBAL_MILESTONES.length, 28 + D24_NEW.length);
+    assert.deepStrictEqual(D24_NEW.filter((id) => GLOBAL_MILESTONES.some((m) => m.id === id)), D24_NEW);
+    const previous = GLOBAL_MILESTONES.filter((m) => !D24_NEW.includes(m.id));
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(previous)), before.global);
     for (const [iso, list] of Object.entries(before.pilot)) {
       assert.deepStrictEqual(JSON.parse(JSON.stringify(PILOT_COUNTRIES[iso].milestones)), list, iso);
     }
@@ -130,15 +135,20 @@ describe("D12b: migração sem perda para cenas", () => {
 
   test("cada arquivo de cena passa no schema e a normalização do cliente bate com o zod", () => {
     const parsed = SCENE_SOURCES.flatMap(([file, items]) => parseSceneCollection(items, file));
-    assert.deepStrictEqual(JSON.parse(JSON.stringify(ALL_SCENES)), JSON.parse(JSON.stringify(parsed)));
+    // As cenas sob demanda (D24) entram no catálogo pelo índice leve; são validadas em scenes-lazy.test.ts.
+    const eager = ALL_SCENES.filter((s) => parsed.some((p) => p.id === s.id));
+    assert.equal(eager.length, parsed.length);
+    // Cenas com detalhes à parte podem já ter sido completadas por outro teste: compara sem esses campos.
+    const strip = (list: unknown[]) => JSON.parse(JSON.stringify(list), (k, v) => (k === "participants" || k === "chronicle" ? undefined : v));
+    assert.deepStrictEqual(strip(eager), strip(parsed));
     const catalog = fs.readFileSync(path.join(__dirname, "../src/lib/scenes/catalog.ts"), "utf-8");
     assert.doesNotMatch(catalog, /from "zod"|import \{[^}]*\} from "\.\/schema"/, "zod fora do bundle do cliente");
   });
 
-  test("catálogo: 45 cenas publicadas, todas com fonte, ids únicos, ordem cronológica dos globais", () => {
-    assert.equal(ALL_SCENES.length, 45);
+  test("catálogo: 47 cenas publicadas, todas com fonte, ids únicos, ordem cronológica dos globais", () => {
+    assert.equal(ALL_SCENES.length, 47);
     assert.ok(ALL_SCENES.every((s) => s.sources.length > 0 && s.sources[0].label.length > 1));
-    assert.equal(new Set(ALL_SCENES.map((s) => s.id)).size, 45);
+    assert.equal(new Set(ALL_SCENES.map((s) => s.id)).size, 47);
     const years = globalMilestones().map((m) => m.year);
     assert.deepEqual(years, [...years].sort((a, b) => a - b));
   });
