@@ -33,13 +33,13 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 
 | Grupo | Escopo (arquivos/conceitos principais) | Tarefas |
 |---|---|---|
-| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24 |
+| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D23 |
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40 |
-| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40 |
+| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
@@ -200,7 +200,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D15 | Gerenciador de layout de painéis | Design | P1 | M | DONE | claude | D14 | G-SHELL, G-PAIS, G-COSMOS, G-OBS, G-TIMELINE, G-EPOCA |
 | D16 | Reduzir ruído visual dos painéis | Design | P2 | M | DONE | claude | D14, T05 | G-SHELL, G-OBS |
 | D17 | Movimento e transições | Design | P2 | M | REVIEW | claude | D14 | G-SHELL |
-| D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | IN_PROGRESS | codex | D14 | G-SHELL |
+| D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | IN_PROGRESS | codex | D14 | G-SHELL, G-EPOCA, G-COSMOS |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
 | T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
@@ -1877,7 +1877,7 @@ Painéis aparecem/somem sem transição coerente; troca Terra → Cosmos é um c
 ### D18 · Busca universal, ⌘K e estado na URL
 
 - **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/d18-busca-universal · **Worktree:** ../telluspedia-wt/codex-d18
-- **Prioridade:** P2 · **Área:** Frontend · **Tamanho:** G · **Depende de:** D14 · **Grupos:** G-SHELL
+- **Prioridade:** P2 · **Área:** Frontend · **Tamanho:** G · **Depende de:** D14 · **Grupos:** G-SHELL, G-EPOCA, G-COSMOS
 
 **Contexto / problema**
 A busca da navbar cobre só países/ISO. Não há paleta de comandos, sugestões contextuais, nem reflexo do estado da tela na URL (só existem rotas específicas como `/pais/[iso]`).
@@ -1896,6 +1896,7 @@ A busca da navbar cobre só países/ISO. Não há paleta de comandos, sugestões
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 - 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa disponível na fase 7. D14 concluída e G-SHELL livre.
+- 2026-11-21 · codex · IN_PROGRESS · G-EPOCA e G-COSMOS reservados para integrar a captura e restauração da câmera ao canvas e às transições do Cosmos. Grupos livres no remoto.
 
 ---
 
