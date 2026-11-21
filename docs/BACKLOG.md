@@ -203,7 +203,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
-| T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | TODO | — | — | G-INFRA |
+| T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | IN_PROGRESS | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | REVIEW | antigravity | — | G-PAIS |
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | TODO | — | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
@@ -1033,7 +1033,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ### T28 · Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** codex · **Branch:** task/t28-next-security · **Worktree:** ../telluspedia-wt/codex-t28
 - **Prioridade:** P0 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -1050,6 +1050,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa elegível. G-SHELL reservado pela D17; G-INFRA livre.
 
 ---
 
