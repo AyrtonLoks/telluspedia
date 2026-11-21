@@ -1,30 +1,16 @@
 import { PrismaClient, DossierDimension, MilestoneCategory } from "@prisma/client";
-import worldAtlas from "world-atlas/countries-110m.json";
-import { PILOT_COUNTRIES, GLOBAL_MILESTONES, NUMERIC_TO_ISO } from "../src/lib/country-data";
+import { PILOT_COUNTRIES, GLOBAL_MILESTONES } from "../src/lib/country-data";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("🌱 Starting TellusPedia database seeding...");
 
-  // Extract geometries from world atlas
-  const topology = worldAtlas as any;
-  const geometries = topology.objects.countries.geometries;
-  const geometryMap: Record<string, any> = {};
-
-  for (const geom of geometries) {
-    const numericId = String(geom.id).padStart(3, "0");
-    const iso = NUMERIC_TO_ISO[numericId];
-    if (iso) {
-      geometryMap[iso] = geom;
-    }
-  }
-
   // 1. Seed Pilot Countries
   for (const [iso, data] of Object.entries(PILOT_COUNTRIES)) {
     console.log(`Seeding country: ${data.nameCommon} (${iso})...`);
 
-    const country = await prisma.country.upsert({
+    await prisma.country.upsert({
       where: { isoCode: iso },
       update: {
         nameCommon: data.nameCommon,
@@ -41,7 +27,6 @@ async function main() {
         governmentType: data.governmentType,
         headOfState: data.headOfState,
         headOfGov: data.headOfGov || null,
-        geometryJson: geometryMap[iso] || {},
       },
       create: {
         isoCode: iso,
@@ -62,7 +47,6 @@ async function main() {
         governmentType: data.governmentType,
         headOfState: data.headOfState,
         headOfGov: data.headOfGov || null,
-        geometryJson: geometryMap[iso] || {},
       },
     });
 

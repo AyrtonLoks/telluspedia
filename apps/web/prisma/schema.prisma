@@ -28,8 +28,7 @@ model Country {
   governmentType  String
   headOfState     String
   headOfGov       String?
-  geometryJson    Json     // TopoJSON / GeoJSON simplificado
-  
+
   // Relacionamentos
   indicators      CountryIndicator[]
   dossierSections CountryDossierSection[]
@@ -112,30 +111,30 @@ model TimelineMilestone {
 }
 
 model Study {
-  id                  String    @id // Nanoid slug único imutável (ex: "guerra-fria-br-de-k9x2")
-  parentId            String?   // Rastreabilidade de Fork
-  title               String
-  description         String?   @db.Text
-  timelineStartYear   Int
-  timelineEndYear     Int
-  selectedCountryIsos String[]
-  activeCategories    String[]
-  cameraLat           Float
-  cameraLng           Float
-  cameraAltitude      Float
-  markdownNotes       String?   @db.Text
-  historicalEra       String?
-  isApollo11Active    Boolean?  @default(false)
-  geologicalMa        Float?
-  activeRouteId       String?
-  activeObservatoryLayers String[]  @default([])
-  isCosmicMode          Boolean?  @default(false)
-  focusedCelestialBody  String?
-  activeCosmicLayers    String[]  @default([])
-  createdAt           DateTime  @default(now())
+  id                      String   @id @db.VarChar(128) // Nanoid slug único imutável (ex: "guerra-fria-br-de-k9x2")
+  parentId                String?  @db.VarChar(128) // Rastreabilidade de Fork
+  title                   String   @db.VarChar(200)
+  description             String?  @db.VarChar(2000)
+  timelineStartYear       Int
+  timelineEndYear         Int
+  selectedCountryIsos     String[] @db.VarChar(32)
+  activeCategories        String[] @db.VarChar(64)
+  cameraLat               Float
+  cameraLng               Float
+  cameraAltitude          Float
+  markdownNotes           String?  @db.VarChar(50000)
+  historicalEra           String?  @db.VarChar(64)
+  isApollo11Active        Boolean? @default(false)
+  geologicalMa            Float?
+  activeRouteId           String?  @db.VarChar(64)
+  activeObservatoryLayers String[] @default([]) @db.VarChar(64)
+  isCosmicMode            Boolean? @default(false)
+  focusedCelestialBody    String?  @db.VarChar(64)
+  activeCosmicLayers      String[] @default([]) @db.VarChar(64)
+  createdAt               DateTime @default(now())
 
-  parent              Study?    @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)
-  forks               Study[]   @relation("StudyForks")
+  parent                  Study?   @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)
+  forks                   Study[]  @relation("StudyForks")
 
   @@index([parentId])
 }

@@ -10,10 +10,11 @@ import { MAX_CAMERA_ALTITUDE, MIN_CAMERA_ALTITUDE } from "../stores/globeStore";
 import { ALL_CATEGORIES } from "../stores/timelineStore";
 import type { StudyRecord } from "./studies-store";
 
+export const MAX_STUDY_SLUG_LENGTH = 128;
 export const MAX_STUDY_TITLE_LENGTH = 200;
 export const MAX_STUDY_DESCRIPTION_LENGTH = 2000;
 export const MAX_STUDY_NOTES_LENGTH = 50000;
-const MAX_STUDY_ITEMS = 50;
+export const MAX_STUDY_ITEMS = 50;
 const DEFAULT_START_YEAR = 1974;
 const DEFAULT_END_YEAR = 2024;
 const country = z.enum([
@@ -35,7 +36,7 @@ const year = z.number().int().min(TIMELINE_MIN_YEAR).max(TIMELINE_MAX_YEAR);
 const latitude = z.number().min(-90).max(90);
 const longitude = z.number().min(-180).max(180);
 const altitude = z.number().min(MIN_CAMERA_ALTITUDE).max(MAX_CAMERA_ALTITUDE);
-const slug = z.string().max(128).regex(/^[A-Za-z0-9_-]+$/);
+const slug = z.string().max(MAX_STUDY_SLUG_LENGTH).regex(/^[A-Za-z0-9_-]+$/);
 
 export const studyInput = z.object({
   parentId: slug.nullish(),

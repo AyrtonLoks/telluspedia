@@ -48,18 +48,27 @@ Toda a documentação técnica, científica e de negócios do projeto está cent
 pnpm install
 ```
 
-### 2. Iniciar a Infraestrutura (PostgreSQL, Redis e FastAPI)
+### 2. Configurar Variáveis de Ambiente e Iniciar a Infraestrutura (PostgreSQL, Redis e FastAPI)
 ```bash
-# Sobe os containers em background
+# Copie o exemplo de variáveis de ambiente do app web (inclui DATABASE_URL do Docker Compose)
+cp apps/web/.env.example apps/web/.env
+
+# Sobe os containers (PostGIS 16, Redis 7 e FastAPI) em background
 pnpm docker:up
 ```
 
-### 3. Rodar as Migrações e Carregar o Seed Inicial
+### 3. Rodar as Migrações Prisma e Carregar o Seed Inicial
+O fluxo completo de banco de dados em ambiente limpo é **`pnpm docker:up` → `pnpm db:migrate` → `pnpm db:seed`**:
+
 ```bash
-# Executa migrações do Prisma e popula os países piloto e geometrias
+# Aplica as migrations versionadas em apps/web/prisma/migrations/ e gera o Prisma Client
 pnpm db:migrate
+
+# Popula países piloto, indicadores, dossiês, marcos históricos e estudo de referência
 pnpm db:seed
 ```
+
+> **Reset completo (desenvolvimento):** `pnpm --filter web prisma migrate reset` recria o banco do zero, reaplica todas as migrations versionadas e executa o seed automaticamente. Em produção/CI, utilize `pnpm --filter web prisma migrate deploy`.
 
 ### 4. Iniciar o Servidor de Desenvolvimento
 ```bash
@@ -147,7 +156,7 @@ O TellusPedia inclui suporte nativo a reconstituição histórica, paleogeográf
 telluspedia/
 ├── apps/
 │   └── web/                               # Aplicação Web Next.js 15 + Three.js/R3F
-│       ├── prisma/                        # Schema Prisma e seed de dados
+│       ├── prisma/                        # Schema Prisma, migrations versionadas e seed de dados
 │       ├── src/
 │       │   ├── app/                       # Rotas da aplicação (/, /pais/[iso], /study/[slug], /api/observatory/cosmos)
 │       │   ├── components/                # Globe 3D, Sistema Solar, HUDs, Reader Mode, Timeline
