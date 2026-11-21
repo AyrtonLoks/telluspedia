@@ -1405,13 +1405,14 @@ Os eventos históricos estão "chumbados": 28 marcos globais em `lib/country-dat
 
 **Critérios de aceite**
 - [x] Nenhum pin sobreposto em qualquer nível de zoom.
-- [ ] Navegação fluida (60 FPS) ao arrastar/zoom.
+- [x] Navegação fluida (60 FPS) ao arrastar/zoom.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada após a D11 ir para REVIEW. Primeira TODO elegível da fase 7 (D12 depende da T20 em andamento; D16 compartilha G-OBS com a D08). G-TIMELINE sem tarefas em andamento.
 - 2026-11-20 · claude · REVIEW · Commit `feat(timeline): eixo com zoom, pan, ticks adaptativos, grupos de marcos e scrubber [D13]`. **Eixo (`lib/timeline/axis.ts` + `TimelineAxis`):** janela visível local com zoom ancorado no cursor (roda/trackpad com listener não passivo; Ctrl+roda = pinça do trackpad; pinça com dois dedos por pointer events), pan por arrasto e roda horizontal, teclado (+ − ← → 0) e botão "período inteiro" quando há zoom; mínimo de 3 meses; troca de preset volta ao período inteiro. Ticks adaptativos século → década → ano → mês ("fev 1990"), sempre com ≥ 80 px entre si. **Marcos:** posição pela data exata (`exactDate`) quando existe; agrupamento que funde o par vizinho mais próximo até todos ficarem a ≥ 22 px — nenhum marcador se sobrepõe em nenhum zoom (teste varre larguras, zooms e janelas com todos os marcos globais e dos países). `MilestoneCluster`: contagem com a cor da categoria (tokens D14), prévia com data, título e categoria dos membros (clicáveis) e clique que aproxima o eixo até separar. **Scrubber:** alça do ano selecionado (fim do período quando não há ano), arrastável e com setas (`role="slider"`), que atualiza `selectedYear` — o Sol, a Lua e as fronteiras do globo reagem como já faziam. **Fora do escopo/limites:** a prévia não tem imagem (os marcos não têm imagem nos dados; nada foi inventado); "abrir a cena" fica para a D12; o eixo geológico não mudou. **Testes:** `test/timeline-axis.test.tsx` (9) + os existentes de layout/design system. **Validação:** lint ok; typecheck ok exceto o Prisma não gerado; 456/460 (as 4 falhas são `@prisma/client did not initialize`, sem acesso a binaries.prisma.sh aqui). **Não verificado:** FPS ao arrastar/zoom e aparência no navegador — critério de 60 FPS fica aberto até a medição.
+- 2026-11-20 · claude · REVIEW · **Verificação no navegador (:3001, Intel Iris Xe, viewport 1600×900, globo renderizando):** zoom contínuo pela roda 59,9 FPS (p95 24,8 ms) e arrasto contínuo 59,6 FPS (p95 24,9 ms), sem long tasks; eixo, grupo de marcos ("2" em 1991), scrubber e botão "período inteiro" aparecem; ticks mudam com o zoom (ex.: 1995–2020 de 5 em 5 numa janela 1991–2022). **Correção** (`fix(timeline): eventos de roda/pinça no mesmo quadro somam o zoom`): vários eventos de roda no mesmo quadro recalculavam a partir da janela antiga e "perdiam" passos; a ref da janela agora é atualizada na hora (teste de regressão). Validação após rebase: 456/460 (as 4 do Prisma), lint ok.
 ---
 
 ### D14 · Design system (tokens + primitivos)
