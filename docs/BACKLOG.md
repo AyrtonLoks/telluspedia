@@ -189,7 +189,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | IN_PROGRESS | codex | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
-| D11 | Política de escala e labels do sistema solar | 3D | P2 | M | IN_PROGRESS | claude | D10 | G-COSMOS |
+| D11 | Política de escala e labels do sistema solar | 3D | P2 | M | REVIEW | claude | D10 | G-COSMOS |
 | D12 | Eventos históricos dirigidos por dados (player de cenas) | Arquitetura | P1 | GG | TODO | — | T12, T20 | G-EPOCA |
 | D13 | Eixo da timeline: zoom, clusters, prévias | Design | P2 | G | TODO | — | T02, D14 | G-TIMELINE |
 | D14 | Design system (tokens + primitivos) | Design | P0 | G | DONE | claude | T01 | G-SHELL, G-OBS, G-TIMELINE, G-PAIS |
@@ -1334,7 +1334,7 @@ Observação: a posição (≈ 35 UA em 2026) está **correta** — o afélio fo
 
 ### D11 · Política de escala e labels do sistema solar
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/d11-escala-labels · **Worktree:** ../telluspedia-wt/claude-d11
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d11-escala-labels · **Worktree:** ../telluspedia-wt/claude-d11
 - **Prioridade:** P2 · **Área:** 3D · **Tamanho:** M · **Depende de:** D10 · **Grupos:** G-COSMOS
 
 **Contexto / problema**
@@ -1347,13 +1347,14 @@ Cada corpo do modo Cosmos decide o próprio tamanho e estilo de label (`Planetar
 4. Respeitar as regras de handover de câmera e desduplicação da Terra do `AGENTS.md`.
 
 **Critérios de aceite**
-- [ ] Todos os corpos usam a mesma política e o mesmo componente de label.
-- [ ] Labels não se sobrepõem na vista geral do sistema solar.
+- [x] Todos os corpos usam a mesma política e o mesmo componente de label.
+- [x] Labels não se sobrepõem na vista geral do sistema solar.
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
 
 - 2026-11-20 · claude · IN_PROGRESS · Tarefa reivindicada. É a única TODO elegível da fase 6 (D10 em DONE); G-COSMOS sem tarefas em andamento (em andamento: T26 em G-PAIS/G-PIPELINE e D08 em G-OBS).
+- 2026-11-20 · claude · REVIEW · Commit `feat(cosmos): política única de escala e rótulos com anticolisão [D11]`. **Escala (`lib/cosmic-scale.ts`, documentada em `docs/ARCHITECTURE.md` §2.4.1):** distâncias sempre pela lei de potência `mapDistanceToSceneRadius`; raios por uma regra só a partir do raio equatorial real — visual `r = (R/R⊕)^0,43` (Terra 1, Sol 7,5, Júpiter 2,8, Mercúrio 0,66; substitui a tabela manual de `visualRadius`) e real `r = 0,11·R/R⊕` (o maior fator que mantém o Sol com coroa dentro do periélio de Mercúrio). O grupo Terra + Lua é escalado por `earthSystemScale` no modo Cosmos (modo Terra inalterado); anéis em múltiplos do raio; a câmera multiplica o offset de foco pela razão entre os raios, com Terra ≥ 1,5 e Lua ≥ 0,4 (AGENTS.md) e reenquadra ao trocar a escala. **Rótulos:** `<CelestialLabel>` único (px fixos, sem `distanceFactor`, `CelestialLabelChip` com tokens D14) em Sol, planetas, Lua e Halley; `CelestialLabelManager` resolve a anticolisão em tela a cada quadro (`lib/label-layout.ts`, prioridade foco > hover > raio real; escondido = fade e sem clique). Sol e Lua passaram a ter rótulo. **UI:** "Camadas Cósmicas → Tamanho dos corpos: Visual / Real". **Mudança visual (antes → depois):** antes os rótulos dos planetas cresciam/encolhiam com o zoom (`distanceFactor`) e se empilhavam na vista geral (Terra, Lua e Vênus se cobriam); Mercúrio/Marte/Plutão tinham raios escolhidos à mão. Depois, rótulos de tamanho fixo; na sobreposição fica o de maior prioridade; no modo visual Mercúrio, Marte, Plutão e a Lua (no Cosmos) ficam um pouco maiores e Júpiter um pouco menor; no modo real os planetas internos viram pontos com rótulo. **Testes:** `test/cosmic-scale.test.ts` (11: leis de raio, fator único, Sol × periélio de Mercúrio, anéis, câmera e mínimos, store, anticolisão, uso do componente sem `distanceFactor`, desduplicação da Terra, documentação). **Validação após rebase:** lint ok; typecheck ok exceto os erros do Prisma não gerado; 443/447 testes (as 4 falhas são `@prisma/client did not initialize`, por falta de acesso a binaries.prisma.sh neste ambiente); build compila e para só na checagem de tipos do Prisma. **Não verificado:** a aparência no navegador (conferir a vista geral e o modo real em :3000).
 ---
 
 ### D12 · Eventos históricos dirigidos por dados (player de cenas)
