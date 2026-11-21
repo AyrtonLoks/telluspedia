@@ -33,17 +33,18 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 
 | Grupo | Escopo (arquivos/conceitos principais) | Tarefas |
 |---|---|---|
-| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02 |
-| `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13 |
-| `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13 |
-| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15 |
-| `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15 |
-| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15 |
-| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15 |
-| `G-PIPELINE` | `services/data-pipeline`, `/api/weather` | T06, T10, T26 |
-| `G-INFRA` | `package.json`, `next.config.mjs`, CI, estrutura de testes | T07, T11, T18, T19, T25, T27 |
+| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24 |
+| `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27 |
+| `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22 |
+| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
+| `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D23 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27 |
+| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36 |
+| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25 |
+| `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
+| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37 |
+| `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26 |
 
 Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está listado nela: **pare**, adicione o grupo à tarefa no Quadro (commit + push, como na reivindicação) e reavalie se ela ainda pode seguir.
 
@@ -145,6 +146,9 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | 6 | Fidelidade visual | D02, D03, D09, D10, D11, T14, T15 |
 | 7 | Eventos históricos e interface | D12, D13, D16, D17, D18 |
 | 8 | Qualidade contínua | T16, T17, T19, T20, T21, T22, T23, T25, D19 |
+| 9 | Ciclo 2 — Segurança crítica, integridade e conteúdo imediato | T28, T29, D21, D24 |
+| 10 | Ciclo 2 — Resiliência, produção, SEO e séries históricas reais | T30, T31, T32, T33, T34 |
+| 11 | Ciclo 2 — Diferenciação científica, 3D avançado e higiene | D22, D23, D25, D26, D27, D28, T35, T36, T37, T38, T39 |
 
 ---
 
@@ -199,6 +203,26 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | TODO | — | D14 | G-SHELL |
 | D19 | Responsividade e contraste | Design | P2 | M | TODO | — | D14, T19 | G-SHELL |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
+| T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | TODO | — | — | G-INFRA |
+| T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | IN_PROGRESS | antigravity | — | G-PAIS |
+| T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | TODO | — | — | G-INFRA, G-ESTUDOS |
+| T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | TODO | — | — | G-SHELL, G-GLOBO |
+| T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | TODO | — | T29 | G-PAIS, G-PIPELINE |
+| T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | TODO | — | — | G-SHELL, G-PAIS |
+| T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | TODO | — | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
+| T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | TODO | — | — | G-PAIS, G-OBS, G-SHELL |
+| T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | TODO | — | — | G-PAIS, G-COSMOS, G-INFRA |
+| T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
+| T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | TODO | — | T32 | G-PAIS |
+| T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
+| D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | TODO | — | — | G-COSMOS |
+| D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | TODO | — | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL |
+| D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | TODO | — | T30 | G-ESTUDOS, G-SHELL |
+| D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | TODO | — | — | G-CONTEUDO, G-EPOCA |
+| D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | TODO | — | — | G-OBS, G-GLOBO |
+| D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | TODO | — | D24 | G-CONTEUDO |
+| D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
+| D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
 
 ---
 
@@ -1007,6 +1031,262 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ---
 
+### T28 · Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P0 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-INFRA
+
+**Contexto / problema**
+`pnpm audit --prod` reporta **46 vulnerabilidades (5 críticas, 15 altas)**, concentradas em `next@15.1.0` (incluindo RCE no protocolo React Flight `GHSA-9qr9-h5gf-34mp`, bypass de middleware `GHSA-f82v-jwr5-mffw` e vazamento cross-client `GHSA-pc58-hwjq-p385`).
+
+**O que fazer**
+1. Atualizar `next`, `eslint-config-next` e `@next/bundle-analyzer` para a última versão segura da série 15.5.x (e transitivas sinalizadas pelo `pnpm audit`).
+2. Validar todas as rotas SSR, imagens OG e `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+3. Confirmar `pnpm audit --prod --audit-level=high` zerado.
+
+**Critérios de aceite**
+- [ ] `pnpm audit --prod --audit-level=high` retorna 0 vulnerabilidades.
+- [ ] Build, suíte de testes e smoke E2E verdes sem regressão de bundle (`/` < 250 kB).
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T29 · Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países
+
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t29-honest-comparator-177 · **Worktree:** ../telluspedia-wt/antigravity-t29
+- **Prioridade:** P0 · **Área:** Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PAIS
+
+**Contexto / problema**
+`components/comparator/ComparisonCharts.tsx:30-60` ainda fabrica curvas históricas lineares falsas (1990–2023) com fórmulas artificiais (`0.35 + 0.65 * growthFactor`, `hdi - 0.15 + 0.15 * growthFactor`) e fallbacks inventados (`1e12`, `0.8`, `1.5`), além de consultar apenas os 6 `PILOT_COUNTRIES`. `CountryComparator.tsx:25-27` também limita o seletor de adição aos 6 países piloto, ignorando os 171 países já ingeridos na T26.
+
+**O que fazer**
+1. Remover completamente a interpolação linear fabricada e os fallbacks inventados de `ComparisonCharts.tsx`.
+2. Substituir o gráfico por visualização honesta dos valores reais mais recentes disponíveis (gráfico de barras comparativo com ano de referência e fonte primária por país, omitindo países sem dado com aviso explícito até a chegada das séries históricas reais em T32).
+3. Substituir a lista fixa de `PILOT_COUNTRIES` em `CountryComparator.tsx` por seletor pesquisável cobrindo todos os 177 países (`getAllCountries()`).
+4. Adicionar testes de regressão proibindo interpolação sintética e validando comparação de países fora dos 6 piloto (ex.: `ARG`, `CHN`, `IND`, `FRA`).
+
+**Critérios de aceite**
+- [ ] Nenhum número sintético ou curva fabricada em `ComparisonCharts.tsx`.
+- [ ] É possível pesquisar, adicionar e comparar até 4 países dentre todos os 177 no modal e via `/compare?c=ARG,CHN,IND,FRA`.
+- [ ] Países sem dado para a métrica selecionada são sinalizados explicitamente sem valor falso.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (c746570). Grupo G-PAIS livre (D17 em G-SHELL sem conflito).
+
+---
+
+### T30 · Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA, G-ESTUDOS
+
+**Contexto / problema**
+`apps/web/next.config.mjs` não configura nenhum cabeçalho de segurança HTTP, e 14 de 15 rotas em `apps/web/src/app/api/*` não enviam `Cache-Control` (inclusive `/api/studies/[slug]`, que é imutável pela RN16, e `/api/countries`).
+
+**O que fazer**
+1. Adicionar `headers()` em `next.config.mjs` com `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN`, `Permissions-Policy` restritiva e `Content-Security-Policy` compatível com WebGL/WASM (`basis_transcoder.wasm`) e fontes locais.
+2. Definir `Cache-Control` adequado nas rotas de leitura (`/api/studies/[slug]`, `/api/countries`, `/api/countries/[iso]`, `/api/timeline`, `/api/weather`, `/api/astronomy`).
+3. Cobrir os cabeçalhos em testes automatizados.
+
+**Critérios de aceite**
+- [ ] Respostas de `/` e `/api/*` trazem cabeçalhos de segurança e `Cache-Control` coerentes sem quebrar KTX2/WASM.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T31 · Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Frontend/3D · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-GLOBO
+
+**Contexto / problema**
+O App Router não possui `error.tsx`, `global-error.tsx` nem `loading.tsx`, e `GlobeCanvas.tsx` não possui `ErrorBoundary` nem listener de `webglcontextlost`/`webglcontextrestored`. Uma perda de contexto GPU ou ausência de WebGL deixa a tela escura sem recuperação.
+
+**O que fazer**
+1. Criar `apps/web/src/app/error.tsx`, `global-error.tsx` e `loading.tsx` com tokens D14.
+2. Envolver `<GlobeCanvas />` em um `WebGLErrorBoundary` com fallback navegável (acesso a busca, comparador, dossiês e ação para recarregar o contexto 3D).
+3. Tratar `webglcontextlost` e `webglcontextrestored` em `gl.domElement` com aviso discreto e recuperação limpa.
+
+**Critérios de aceite**
+- [ ] Erro de render ou perda de contexto WebGL exibe fallback D14 com recuperação funcional sem travar o restante da interface.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T32 · Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Dados · **Tamanho:** G · **Depende de:** T29 · **Grupos:** G-PAIS, G-PIPELINE
+
+**Contexto / problema**
+`countries-worldbank-indicators.json` armazena apenas a última leitura de 5 indicadores (sem série histórica e sem PIB per capita, emissões de CO₂ ou participação de energia renovável).
+
+**O que fazer**
+1. Estender `scripts/ingest-worldbank-indicators.mjs` para coletar pontos reais (1990–2024) dos indicadores principais e salvar dataset compacto carregado sob demanda (`public/data/worldbank-timeseries.json`).
+2. Adicionar indicadores de alto valor analítico (`NY.GDP.PCAP.CD`, `EG.FEC.RNEW.ZS`, `EN.GHG.CO2.PC.CE.AR5`).
+3. Habilitar no `ComparisonCharts` o modo Série Histórica Real (1990–2024) com `connectNulls={false}` para lacunas reais e citação direta da fonte oficial.
+
+**Critérios de aceite**
+- [ ] Gráfico histórico exibe apenas leituras reais do Banco Mundial (zero interpolação sintética) para os 177 países.
+- [ ] Dataset histórico carregado sob demanda sem aumentar o First Load JS de `/`.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T33 · SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Frontend · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL, G-PAIS
+
+**Contexto / problema**
+As páginas SSR (`/pais/[iso]`, `/dossies/[slug]`, `/compare`, `/telluslab`) já têm metadata e OG images, mas faltam `robots.ts`, `sitemap.ts`, `manifest.ts` e dados estruturados JSON-LD.
+
+**O que fazer**
+1. Criar `apps/web/src/app/robots.ts` (bloqueando `/dev/ui` e `/api/`), `sitemap.ts` (177 países, dossiês, `/`, `/compare`, `/telluslab`) e `manifest.ts` (PWA com tema `#05070B`).
+2. Adicionar JSON-LD (`WebApplication` na home, `Country`/`Place` em `/pais/[iso]`, `Article` em `/dossies/[slug]`).
+
+**Critérios de aceite**
+- [ ] `/robots.txt`, `/sitemap.xml` e `/manifest.webmanifest` respondem `200` no build de produção com URLs válidas e sem `/dev/ui`.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T34 · Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Infra · **Tamanho:** M · **Depende de:** T28 · **Grupos:** G-INFRA, G-ESTUDOS, G-PIPELINE
+
+**Contexto / problema**
+Não há `apps/web/Dockerfile` nem endpoint `/api/health`; `study-rate-limit.ts` usa `Map` em memória de processo único; e o CI não roda `pnpm audit` nem testa `prisma migrate deploy` + `seed` contra PostGIS real.
+
+**O que fazer**
+1. Criar `apps/web/Dockerfile` multi-stage (com suporte a `output: "standalone"`) e serviço `web` opcional (profile `prod`) no `docker-compose.yml`.
+2. Criar `GET /api/health` verificando conectividade de PostgreSQL e `data-pipeline`.
+3. Adicionar suporte opcional a Redis em `study-rate-limit.ts` (mantendo fallback em memória para dev/testes).
+4. Incluir `pnpm audit --prod --audit-level=high` e validação de migrations Prisma contra PostGIS no `.github/workflows/ci.yml`.
+
+**Critérios de aceite**
+- [ ] `docker build` do `apps/web` passa; `/api/health` responde JSON padronizado; CI verde com os novos checks.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T35 · Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js`
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Performance · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PAIS, G-OBS, G-SHELL
+
+**Contexto / problema**
+Mesmo após a T25 (485 → 223 kB), `country-data.ts` + JSONs de indicadores + `historical-entities.ts` + `satellite.js` ainda somam ~65 kB gzip no chunk inicial de `/`.
+
+**O que fazer**
+1. Separar catálogo leve de países (ISO, nome, bandeira, coordenadas) dos dossiês completos e indicadores do Banco Mundial (carregados sob demanda ao selecionar país ou abrir Comparador/Reader).
+2. Carregar `satellite.js` dinamicamente apenas quando a camada `ISS_SATELLITES` for ativada.
+3. Atualizar o teto do teste `bundle-budget.test.ts` para `< 160 kB`.
+
+**Critérios de aceite**
+- [ ] First Load JS de `/` < 150 kB sem perda de SSR nas rotas `/pais/[iso]` e `/compare`.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T36 · Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any`
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Qualidade · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PAIS, G-COSMOS, G-INFRA
+
+**Contexto / problema**
+Cinco arquivos ultrapassam 850 linhas (`country-data.ts` 1.138, `CometHalleyTrajectory.tsx` 1.056, `astronomy-planets.ts` 977, `historical-entities.ts` 931, `paleo-data.ts` 852); `apps/web/package.json` declara 5 pacotes `@radix-ui/*` não importados (`react-hover-card`, `react-popover`, `react-scroll-area`, `react-separator`, `react-slider`); e existem 9 usos explícitos de `any`.
+
+**O que fazer**
+1. Dividir os 5 arquivos grandes em módulos coesos (ex.: separar dados estáticos de lógica/cálculo) mantendo re-exports compatíveis.
+2. Remover os 5 pacotes `@radix-ui/*` não utilizados de `apps/web/package.json` e `pnpm-lock.yaml`.
+3. Substituir os 9 usos de `any` por tipos estritos (`CitationRecord[]`, `OrbitControlsImpl`, `CanvasRenderingContext2D`, etc.).
+
+**Critérios de aceite**
+- [ ] Nenhum arquivo em `apps/web/src` acima de ~600 linhas (exceto JSONs de dados).
+- [ ] Zero ocorrências de `:\s*any\b|as\s+any\b` em `apps/web/src` e zero dependências `@radix-ui/*` ociosas.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T37 · Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache`
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Docs · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA
+
+**Contexto / problema**
+`docs/ROADMAP.md` afirma como concluídos itens ainda não implementados (NASA GIBS, ventos/lixo marítimo) e cita "gaveta glassmorphism" já substituída por D14; `services/data-pipeline/.pytest_cache` aparece no repositório local.
+
+**O que fazer**
+1. Alinhar `docs/ROADMAP.md`, `docs/ARCHITECTURE.md` e `docs/DATA_SOURCES.md` ao estado real do projeto (D12, D14–D16, T20, T25–T27 e Ciclo 2).
+2. Garantir `.pytest_cache` ignorado e removido do índice/workspace se rastreado.
+
+**Critérios de aceite**
+- [ ] Documentação descreve fielmente o que existe hoje versus o que pertence ao Ciclo 2.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T38 · Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Dados/UX · **Tamanho:** G · **Depende de:** T32 · **Grupos:** G-PAIS
+
+**Contexto / problema**
+Apenas os 6 `PILOT_COUNTRIES` possuem dossiês completos no Modo Leitura; os demais 171 países exibem uma ficha enxuta sem contextualização regional ou posição global dos indicadores.
+
+**O que fazer**
+1. Gerar automaticamente no Reader Mode (para qualquer um dos 177 países) a seção **Perfil Analítico & Posição Global**: ranking em PIB, PIB per capita, população, área e expectativa de vida, média da sub-região e países vizinhos mais próximos nos indicadores.
+2. Integrar resumo factual estruturado auditado (com link direto para Banco Mundial / Natural Earth / REST Countries) sem texto inventado.
+
+**Critérios de aceite**
+- [ ] Abrir o Reader Mode em qualquer um dos 177 países entrega análise comparativa real e citável (ABNT/APA/MLA/BibTeX).
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### T39 · Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** 3D/Perf · **Tamanho:** M · **Depende de:** T31 · **Grupos:** G-GLOBO, G-SHELL
+
+**Contexto / problema**
+O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2K/4K) independentemente da GPU do usuário, sem controle de qualidade nem adaptação a quedas sustentadas de FPS ou bateria.
+
+**O que fazer**
+1. Adicionar preset de qualidade gráfica (`Baixo` / `Médio` / `Alto` / `Auto`, persistido em `localStorage`) controlando DPR máximo, resolução de textura (2K vs 4K), contagem de asteroides/estrelas e nuvens.
+2. Em modo `Auto`, ajustar DPR dinamicamente quando o FPS ficar abaixo de 30 fps por janela sustentada.
+
+**Critérios de aceite**
+- [ ] Preset de qualidade acessível na UI (tokens D14), persistido e aplicado sem recriar o contexto WebGL.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
 ## 5. Tarefas — Design, visual e experiência (D)
 
 ### D01 · Globo escuro: color space + tone mapping
@@ -1637,6 +1917,170 @@ A D14 criou tokens e primitivos e migrou navbar, Observatório, Inspector do pa�
 - 2026-11-20 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (1fc3fe4). Grupos G-SHELL, G-PAIS e G-COSMOS livres.
 - 2026-11-20 · antigravity · REVIEW · Migrados todos os componentes e páginas restantes para os primitivos (`@/components/ui/*` por arquivo) e tokens semânticos D14: `hud/CosmicInspectorHUD`, `reader/*` (`CitationModal` → `Dialog`, `ReaderMode` → `Dialog`, `ReaderContent`, `ReaderTableOfContents`, `HoverCardPreview`, `HoverCitationCard` preservando invariante HTML5 sem `<div>`), `comparator/*` (`CountryComparator` → `Dialog`, `ComparisonGrid`, `ComparisonCharts` usando CSS vars em vez de hex no Recharts), `study/*` (`StudyShareModal` → `Dialog`, `ForkStudyBanner`), `tellus-bridge/*` (`EntityLaunch`, `StudyHub`), overlays DOM do globo (`HistoricalEraBadge`, `PaleoEraBadge`, `Apollo11TelemetryOverlay`, `HistoricalRouteOverlay`), `GlobeCanvas` (`bg-[#030712]` → `bg-bg`) e `app/dossies/[slug]/page.tsx`. Ajustado `ui/Dialog.tsx` para suportar SSR/`renderToStaticMarkup` mantendo `RadixDialog.Portal` no cliente (foco preso, Esc, título/descrição acessíveis) e adicionado `as="article"` em `ui/Panel.tsx`. Removidos `cosmic.*` de `tailwind.config.ts` e `.glass-panel`/`.glass-panel-subtle`/`.glass-button` de `globals.css`. Acrescentados 26 arquivos à lista `MIGRATED` em `test/design-system.test.tsx` + 2 novos testes de regressão (`Dialog` nos 4 modais e remoção dos legados `cosmic.*`/`.glass-*`). Validação pós-rebase em `origin/master`: `grep -rnE "text-\[[0-9]|(text|bg|border)-(slate|cyan|sky|amber|emerald|rose|purple|indigo)-" apps/web/src` → **0 ocorrências**, `pnpm typecheck`, `pnpm lint`, `pnpm test` (518/518) e `pnpm build` verdes. Verificação visual no navegador pendente do Ayrton (Chromium headless indisponível neste container). Commit: b79ee3f.
 - 2026-11-20 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
+
+---
+
+### D21 · Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS
+
+**Contexto / problema**
+No modo Cosmos, apenas Terra e Lua possuem texturas fotográficas reais; `PlanetarySystem.tsx` ainda renderiza Mercúrio, Vênus, Marte, Júpiter, Saturno, Urano, Netuno e Plutão como esferas de cor sólida (`useTexture = false`), sem inclinação axial real nem rotação sideral.
+
+**O que fazer**
+1. Criar pipeline reproduzível (`scripts/textures/build-planet-textures.mjs`) gerando mapas KTX2 + fallback JPG (1K/2K) a partir de fontes abertas (NASA / Solar System Scope CC BY 4.0) para todos os planetas e anéis de Saturno.
+2. Carregar texturas sob demanda ao entrar no modo Cosmos (sem impacto no First Load JS de `/`), aplicar inclinação axial (`obliquity`) e rotação sideral proporcional ao playback, e descartar recursos WebGL (`dispose()`) ao desmontar.
+
+**Critérios de aceite**
+- [ ] Todos os planetas exibem mapas superficiais reais, inclinação axial correta e rotação coerente.
+- [ ] Zero impacto no bundle inicial de `/` e zero leak WebGL.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### D22 · Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** T32 · **Grupos:** G-FRONTEIRAS, G-PAIS, G-SHELL
+
+**Contexto / problema**
+O TellusPedia já possui indicadores reais do Banco Mundial para 170/177 países e contagens de queimadas por país, mas não permite visualizar padrões globais espacialmente no globo (mapa temático coroplético).
+
+**O que fazer**
+1. Criar seletor de camada coroplética (PIB, PIB per capita, População, Expectativa de vida, Gasto militar, Queimadas 24h) rasterizando preenchimento por ISO em textura equiretangular offscreen (custo O(1) na GPU, sem criar 177 malhas).
+2. Exibir legenda contínua perceptualmente uniforme (com cor neutra para "Dado indisponível") e tooltip com valor exato + posição no ranking.
+3. Persistir a camada coroplética ativa nos Estudos compartilháveis (`/study/[slug]`).
+
+**Critérios de aceite**
+- [ ] Troca de indicador atualiza o mapa temático em < 100 ms mantendo 60 FPS; países sem dado nunca aparecem como zero.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### D23 · Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Produto · **Tamanho:** G · **Depende de:** T30 · **Grupos:** G-ESTUDOS, G-SHELL
+
+**Contexto / problema**
+Hoje só é possível criar estudos (`POST /api/studies`) e abrir por link exato (`/study/[slug]`), sem página de descoberta, busca, visualização da linhagem de forks (`parentId`) ou exportação para uso acadêmico.
+
+**O que fazer**
+1. Criar `GET /api/studies` paginado (busca por título, era histórica, país, modo cósmico) e página SSR `/studies` com filtros e cards no design system D14.
+2. Exibir em `/study/[slug]` a linhagem de forks (link clicável para o estudo pai e contagem/lista de derivados).
+3. Adicionar exportação de estudo em **Markdown acadêmico** (com citações ABNT/APA) e JSON portátil.
+
+**Critérios de aceite**
+- [ ] `/studies` lista e filtra estudos persistidos; forks navegam ao pai; exportação Markdown inclui fontes primárias.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### D24 · Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-EPOCA
+
+**Contexto / problema**
+O player genérico de cenas (D12) está pronto, mas o catálogo contém apenas 2 cenas (`magellan-1519.json` e `glo-1969.json`, esta última com `participants: 0` e `chronicle: 0`).
+
+**O que fazer**
+1. Completar `src/data/scenes/glo-1969.json` com participantes (tripulação e módulos NASA) e crônica detalhada com fontes primárias.
+2. Criar 5 novas cenas curadas e validadas pelo schema D12 (ex.: *Viagem de Vasco da Gama 1497–1499*, *Rota da Seda*, *Primeira Guerra Mundial 1914–1918*, *Segunda Guerra Mundial 1939–1945* e *Queda do Muro de Berlim 1989*).
+3. Integrar todas à timeline e ao deep-link `?cena=<id>` sem inflar o bundle inicial de `/`.
+
+**Critérios de aceite**
+- [ ] ≥ 7 cenas completas passam na validação Zod (`scenes.test.ts`), com fontes primárias auditáveis e navegação funcional no player.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### D25 · Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO
+
+**Contexto / problema**
+O `docs/ROADMAP.md` prevê camadas científicas de observação terrestre da NASA GIBS no Observatório, mas ainda não há nenhuma integração GIBS no código.
+
+**O que fazer**
+1. Criar rota proxy cacheada `/api/observatory/gibs` (envelope T05 `live`/`fallback`, validação estrita de camada/data) consumindo NASA GIBS WMS/WMTS em projeção EPSG:4326.
+2. Renderizar camada translúcida sobre o globo (cobertura vegetal NDVI, gelo marinho/neve e temperatura superficial) com seletor de data e controle de opacidade no `ObservatoryPanel`.
+
+**Critérios de aceite**
+- [ ] Camada GIBS selecionável no Observatório, com procedência T05 explícita, controle de opacidade e descarte WebGL limpo.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### D26 · Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Conteúdo · **Tamanho:** M · **Depende de:** D24 · **Grupos:** G-CONTEUDO
+
+**Contexto / problema**
+O manifesto atual do TellusBridge possui 31 vínculos cobrindo 181/299 nós (60,5%), com apenas 5 países, 1 era (`era:COLD_WAR`) e 2 figuras históricas — 118 macrotemas curriculares seguem sem ponto de entrada no TellusPedia.
+
+**O que fazer**
+1. Expandir `manifest.json` para cobrir ≥ 85% dos 299 nós do `registry.json`, todas as eras históricas (`PRUSSIA_1870`, `WW1_1914`, `WW2_1939`, `COLD_WAR_1969`), as novas cenas da D24 e 20+ países.
+2. Atualizar `ERA_STUDY_ENTITY_IDS` em `lib/timeline/era-study.ts` e validar integridade de DAGs/links em `tellus-bridge.test.tsx`.
+
+**Critérios de aceite**
+- [ ] Cobertura ≥ 85% dos 299 nós curriculares validada em teste automatizado, sem links quebrados.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### D27 · Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** GG · **Depende de:** D25 · **Grupos:** G-OBS, G-GLOBO
+
+**Contexto / problema**
+Prevista no Horizonte 3 do `docs/ROADMAP.md`, a visualização de fluxos atmosféricos (ventos em altitude/superfície) e correntes oceânicas ainda não foi implementada.
+
+**O que fazer**
+1. Criar endpoint cacheado `/api/observatory/winds` com grade compacta (UV vetorial) a partir de NOAA GFS/OSCAR e fallback climatológico explícito (T05).
+2. Implementar sistema de partículas/streamlines em shader GPU sobre a esfera (`InstancedBufferGeometry` ou textura de campo vetorial) mantendo ≥ 50 FPS e descarte rigoroso de buffers.
+
+**Critérios de aceite**
+- [ ] Camada ativável no Observatório com legenda de velocidade (km/h ou nós), procedência T05 e zero queda severa de FPS.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+
+---
+
+### D28 · Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Produto · **Tamanho:** GG · **Depende de:** — · **Grupos:** G-SHELL, G-PAIS
+
+**Contexto / problema**
+Toda a interface, metadados SSR e nomes de países/indicadores estão fixos em português (`pt-BR`), limitando o alcance educacional e acadêmico internacional.
+
+**O que fazer**
+1. Introduzir camada leve de dicionários (`pt-BR` e `en`) com seletor de idioma na barra superior (persistido em cookie/localStorage) e formatação de números/datas via `Intl` respeitando o locale ativo.
+2. Traduzir textos da UI principal (navbar, timeline, Inspector, Observatório, Cosmos, Comparador, Citações) e adaptar nomes comuns de países via `Intl.DisplayNames`.
+
+**Critérios de aceite**
+- [ ] Alternância `pt-BR` ↔ `en` sem recarregar a cena 3D, cobrindo 100% da UI principal e formatação numérica localizada.
+
+**Log**
+- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 
 ---
 
