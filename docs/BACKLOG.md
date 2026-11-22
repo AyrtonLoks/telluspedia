@@ -224,7 +224,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | DONE | claude | — | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | DONE | antigravity | D24 | G-CONTEUDO, G-TIMELINE |
 | D27a | Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05) | 3D/Dados | P2 | G | DONE | antigravity | D25 | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
-| D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | IN_PROGRESS | antigravity | D27a | G-OBS, G-GLOBO |
+| D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | REVIEW | antigravity | D27a | G-OBS, G-GLOBO |
 | D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
 
 ---
@@ -2235,7 +2235,7 @@ Prevista no Horizonte 3 do `docs/ROADMAP.md` (originalmente `D27`, tamanho `GG`,
 
 ### D27b · Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d27b-ocean-currents · **Worktree:** ../telluspedia-wt/antigravity-d27b
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d27b-ocean-currents · **Worktree:** —
 - **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** D27a · **Grupos:** G-OBS, G-GLOBO
 
 **Contexto / problema**
@@ -2246,11 +2246,12 @@ Segunda metade da `D27` (`GG`): estender o motor de partículas vetoriais sobre 
 2. Adicionar seletor de modo `Ventos` ↔ `Correntes oceânicas` na camada GPU com paleta oceânica e escala dedicada (`m/s` / `nós`) e documentar em `docs/DATA_SOURCES.md`.
 
 **Critérios de aceite**
-- [ ] Modo Correntes Oceânicas ativável no Observatório com máscara oceânica, legenda dedicada (`m/s` / `nós`) e procedência T05.
+- [x] Modo Correntes Oceânicas ativável no Observatório com máscara oceânica, legenda dedicada (`m/s` / `nós`) e procedência T05.
 
 **Log**
 - 2026-11-22 · antigravity · TODO · Criada a partir da quebra de `D27` (`GG`) conforme §1.7.
 - 2026-11-22 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`8cba2ce`). Dependência `D27a` concluída (`DONE`); grupos `G-OBS` e `G-GLOBO` livres.
+- 2026-11-22 · antigravity · REVIEW · Implementação em `b4aa125`. **Backend & Motor Oceânico:** criados `src/lib/currents-data.ts`, `src/lib/currents-source.ts` e `src/app/api/observatory/currents/route.ts` — consulta única à API aberta **Open-Meteo Marine** (Copernicus / NOAA, 144 pontos globais, `ocean_current_velocity` e `ocean_current_direction` na convenção oceanográfica "para onde flui", convertidos para `m/s` com máscara terra/oceano derivada dos `null`s), envelope T05 (`liveTtlMs = 60 min`, `Cache-Control: public, s-maxage=3600, stale-while-revalidate=7200`, tolerância `stale` de 6 h) e fallback climatológico explícito dos grandes giros oceânicos (Golfo, Kuroshio, Humboldt, Benguela, Brasil, Agulhas e Circumpolar Antártica). **Motor GPU Unificado:** `WindParticlesLayer.tsx` alterna `Ventos ↔ Correntes` por `uniform float uPaletteMode` (paleta oceânica dedicada índigo → azul marinho → ciano → turquesa → espuma clara) no mesmo `THREE.LineSegments` sem recriar contexto WebGL; combina a máscara oceânica da grade com o índice espacial Natural Earth 110m (`getContemporarySpatialIndex`) e amostragem por rejeição no respawn para manter 100% das streamlines estritamente sobre oceanos. **UI D14 & Docs:** `WindLayerControls.tsx`, `ObservatoryPanel.tsx` e `observatoryStore.ts` atualizados com seletor segmentado `Ventos` / `Correntes oceânicas`, unidades `m/s` / `nós`, barra de gradiente oceânica (`0` a `1,2+ m/s` / `2,3+ nós`), badge de procedência T05 independente (`currentsMeta`) e documentação completa em `docs/DATA_SOURCES.md`. **Captura antes/depois (§1.5):** antes, a camada exibia apenas ventos atmosféricos (10 m / 250 hPa) sobre todo o globo; depois, o seletor `Correntes oceânicas` troca instantaneamente para a paleta azul-turquesa com recorte costeiro nítido (zero streamlines sobre América do Norte, Central ou do Sul), exibindo `Oceanos · 1,1 m/s · Ao vivo`, escala `0 · 0,3 · 0,6 · 0,9 · 1,2+` e `Pico 1,14 m/s · Média 0,28 m/s`. **Validação:** `pnpm db:generate`, `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 751/752 ok (0 falhas, 1 skip; 5 novos testes em `test/currents.test.tsx`), `pnpm build` ok (`/` mantido em **159 kB**, `bundle-budget.test.ts` 6/6 `< 160 kB`), Playwright E2E **18/18 ok** e verificação WebGL ao vivo em Chromium (`/api/observatory/currents` HTTP `200`, `source: "live"`, `102` células oceânicas, `sameCanvasElement: true`, `webglcontextlost = 0`, `0` erros de console). Aguarda aceite do Ayrton.
 
 ---
 
