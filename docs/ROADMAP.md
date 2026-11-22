@@ -1,6 +1,8 @@
 # Roadmap de Engenharia — TellusPedia
 
-Todas as funcionalidades do TellusPedia são organizadas em **4 Horizontes Evolutivos** para assegurar excelência técnica, performance e rigor científico.
+O TellusPedia evoluiu em **4 Horizontes** de produto, seguidos de dois ciclos de correção e diferenciação coordenados pelo [`BACKLOG.md`](BACKLOG.md). Este documento resume **o que existe hoje** e **o que ainda está planejado**; o estado de cada tarefa (TODO, IN_PROGRESS, REVIEW, DONE) é sempre o do backlog.
+
+> Última sincronização com o código: 2026-11-21 (T37).
 
 ```mermaid
 timeline
@@ -8,94 +10,76 @@ timeline
     section Horizonte 1 (Concluído)
         Core Enciclopédico : Globo 3D R3F
                            : Terminador Solar (NOAA) & Lua
-                           : Timeline Deslizável 50 Anos
-                           : Inspector HUD (Camada 1)
+                           : Linha do Tempo com zoom e clusters
+                           : Painel do País (Camada 1)
                            : Modo Leitura & Citações (Camada 2)
-                           : Comparador (Até 4 Países)
-                           : Estudos Imutáveis & Forks
+                           : Comparador (até 4 países, 177 no catálogo)
+                           : Estudos Imutáveis, Forks & Galeria
     section Horizonte 2 (Concluído)
-        Cartografia Histórica : Mutação de Fronteiras (1870-1969)
-                              : Paleogeografia & Pangeia (250-66 Ma)
-                              : Trajetórias 3D (Apollo 11, Magalhães)
-    section Horizonte 3 (Concluído)
-        Observatório Planetário : Camadas NASA GIBS & FIRMS
-                               : Rastreamento ISS & Satélites
-                               : Tráfego Aéreo & Rotas Marítimas
+        Cartografia Histórica : Fronteiras de 1870, 1914, 1939 e 1969
+                              : Paleogeografia (250–66 Ma)
+                              : Player de cenas históricas (7 cenas)
+    section Horizonte 3 (Concluído, com pendências)
+        Observatório Planetário : FIRMS, EONET e NASA GIBS (4 produtos)
+                               : ISS & satélites (SGP4)
+                               : Tráfego aéreo (OpenSky) & marítimo (AIS)
+                               : Ventos e correntes — planejado (D27)
     section Horizonte 4 (Concluído)
-        Expansão Cósmica : Sistema Solar 3D
-                        : Exploração de Planetas & Órbitas
-                        : Navegação pelo Cosmos & Constelações
-                        : Seleção Interativa da Terra & Lua
+        Expansão Cósmica : Sistema Solar 3D com texturas reais
+                        : Halley, asteroides e meteoros
+                        : Catálogo HYG & 88 constelações
+                        : Seleção interativa da Terra & Lua
 ```
 
 ---
 
-## Detalhamento dos Horizontes
+## 1. O que existe hoje
 
-### Horizonte 1 — Core Enciclopédico, Globo Base & Estudos *(Status: Concluído)*
-- **Globo 3D Base**: Renderização com shader solar dia/noite calculado por efemérides NOAA, Lua em órbita, constelações IAU por data e fronteiras TopoJSON com picking instantâneo (<0.2ms).
-- **Linha do Tempo (50 Anos Padrão)**: Barra horizontal deslizável com nós alternados acima e abaixo do eixo, filtros temáticos (Política, Economia, Guerra, Ciência & Cultura, Saúde) e sincronização bidirecional com a luz solar e a câmera do globo.
-- **Camada 1 (Inspector HUD)**: Ficha técnica padronizada, relógio do fuso horário local (tzdb) e clima ao vivo via Open-Meteo em gaveta glassmorphism.
-- **Camada 2 (Modo Leitura Profunda)**: Dossiê multidisciplinar completo com sumário fixo navegável, notas de rodapé, hover preview de verbetes e gerador de citações formatadas em **ABNT NBR 6023**, **APA 7**, **MLA 9** e **BibTeX (.bib)**.
-- **Comparador Configurável (Até 4 Países)**: Destaque visual quádruplo no globo, colunas equiparadas e gráficos de séries temporais com Recharts.
-- **Estudos Imutáveis e Forks Compartilháveis (RN16)**: Links `/study/[slug]` permanentes no PostgreSQL com suporte nativo a bifurcações rastreáveis (`parentId`).
+### Horizonte 1 — Core enciclopédico, globo e estudos
+- **Globo 3D**: shader dia/noite com normais em espaço mundial, direção solar única por efemérides NOAA (T14), Lua com posição astronômica real (T15), oceanos, relevo, nuvens e atmosfera (D02), fronteiras com espessura real e highlight em cache (D03, T16), picking por raycast lat/long (<0,2 ms).
+- **Linha do tempo**: eixo com zoom, clusters e prévias (D13), filtros por categoria, presets (50 anos, Século XXI, Guerra Fria, Guerras Mundiais, eras geológicas, Magalhães) e seletor único de época `useEpochState` (T12).
+- **Painel do país (Camada 1)**: ficha padronizada, relógio local (tzdb), clima ao vivo (Open-Meteo) e indicadores reais do Banco Mundial para os 177 países (T26, T32) — no painel do design system D14 (a antiga gaveta glassmorphism foi substituída).
+- **Modo Leitura (Camada 2)**: dossiê multidisciplinar com sumário, notas de rodapé e citações ABNT NBR 6023, APA 7, MLA 9 e BibTeX; modo analítico para os 177 países (ranking global, comparação regional, T38).
+- **Comparador**: até 4 países entre os 177, séries históricas reais 1990–2024 sem dados fabricados (T29, T32).
+- **Mapa temático coroplético**: 177 países coloridos por indicador real, com legenda e escala (D22).
+- **Estudos**: links `/study/[slug]` imutáveis com fork rastreável (`parentId`), galeria pública `/studies`, exportação ABNT/APA (D23) e persistência de camadas, era, cena, modo cósmico, mapa temático e camada GIBS.
+- **Busca universal ⌘K e estado na URL** (D18), layout de painéis (D15), movimento e transições (D17), responsividade e contraste (D19), acessibilidade (T22).
 
----
+### Horizonte 2 — Cartografia histórica, paleogeografia e cenas
+- **Fronteiras históricas**: TopoJSON de 1870, 1914, 1939 e 1969 com cross-fade; entidades `PRU`, `SUN`, `AHU`, `GDR`, `FRG`, `TUR_HIST`, `YUG`, `CSK` com bandeira, governantes e dossiê.
+- **Paleogeografia (RN11)**: Pangeia (~250 Ma), fragmentação (~200 Ma), Gondwana & Laurásia (~150 Ma) e K-Pg (~66 Ma), com paleomapas PALEOMAP, placas tectônicas e supressão das luzes urbanas.
+- **Player de cenas dirigido por dados (D12, D24)**: cenas em `src/data/scenes/` com trajetória de superfície ou cislunar, painel genérico e crônica — Apollo 11 (1969), Magalhães–Elcano (1519–1522), Marco Polo (1271), Vasco da Gama (1497), 1914, 1939 e queda do Muro de Berlim (1989). As cenas grandes carregam sob demanda.
 
-### Horizonte 2 — Cartografia Histórica, Paleogeografia e Trajetórias 3D *(Status: Concluído)*
-- **Cartografia Histórica Dinâmica (Concluído)**:
-  - Snapshots TopoJSON para **1870** (Unificação Alemã / Guerra Franco-Prussiana), **1914** (Primeira Guerra Mundial), **1939** (Segunda Guerra Mundial) e **1969** (Guerra Fria) com interpolação de opacidade (*cross-fade*) e descarte de geometria no Three.js.
-  - Catálogo e resolução contínua de entidades históricas (`PRU`, `SUN`, `AHU`, `GDR`, `FRG`, `TUR_HIST`, `YUG`, `CSK`) com bandeiras SVG autênticas, indicadores, governantes e continuidade territorial bidirecional (`resolveHistoricalEntity`).
-  - Raycast picking instantâneo (<0.2ms) adaptado à malha da era histórica ativa.
-  - Badge flutuante contextual (`HistoricalEraBadge`) com proteção contra colisões de layout.
-- **Paleogeografia & Deriva Continental (RN11) (Concluído)**:
-  - Escala geológica em Milhões de Anos (Ma) cobrindo **Pangeia (~250 Ma)**, fragmentação inicial (~200 Ma), **Gondwana & Laurásia (~150 Ma)** e **Cretáceo K-Pg (~66 Ma)**.
-  - Shader `EarthShaderMaterial.ts` com uniforms `uPaleoTexture` e `uPaleoFactor` com interpolação contínua e **supressão física automática de luzes elétricas urbanas** (`cityLightFactor -> 0`).
-  - Camada de placas tectônicas e linhas de fratura paleogeográficas (`PaleoPlatesLayer.tsx`) na altitude $1.002$.
-  - Badge de era geológica (`PaleoEraBadge.tsx`) com retorno imediato à contemporaneidade.
-- **Trajetórias Físicas 3D (RN12) (Concluído)**:
-  - *Missão Apollo 11 (1969)*: Rota translunar 3D Catmull-Rom da Terra ao Mar da Tranquilidade na Lua com nave animada (CSM/LM), folga orbital estrita ($\ge 0.270$) e HUD de telemetria científica (distância, velocidade e GET).
-  - *Circum-navegação de Magalhães-Elcano (1519–1522)*: Traçado geodésico esférico no raio $1.004$ com a *Nau Victoria* animada em base ortonormal, rastro de esteira (*wake effect*), waypoints geográficos e HUD de telemetria náutica com extratos do diário de Antonio Pigafetta.
-- **Persistência de Estudos com Fork Histórico e Geológico (RN16) (Concluído)**:
-  - Serialização imutável dos campos `historicalEra`, `isApollo11Active`, `geologicalMa` e `activeRouteId` em Prisma, endpoints de fork (`/api/studies/[slug]/fork`), modal de compartilhamento e Zustand stores.
+### Horizonte 3 — Observatório planetário e tráfego global
+- **NASA FIRMS**: focos ativos com sprites, heatmap e resumo por país (D05).
+- **NASA EONET**: eventos severos com símbolos, clusters e trilhas (D06).
+- **NASA GIBS**: 4 produtos mensais (NDVI, neve, gelo marinho, temperatura da superfície) com mês, legenda e opacidade, servidos pelo próprio TellusPedia (D25).
+- **ISS e satélites**: SGP4 sobre TLEs do CelesTrak, órbita e rastro (D04); o `satellite.js` só carrega com a camada ligada (T35).
+- **Tráfego aéreo**: OpenSky Network (ADS-B) com modelos glTF e interpolação (D07).
+- **Tráfego marítimo**: amostra AIS (AIS Stream) em seis corredores e malha fixa de rotas de referência (D08).
+- **Procedência explícita** em toda camada: ao vivo, calculado ou simulado (T05), com dados locais de referência quando a fonte cai.
 
----
+### Horizonte 4 — Expansão cósmica
+- **Sistema Solar** com efemérides keplerianas Standish (1992)/JPL, escala visual e real (D11), texturas planetárias reais, inclinação axial, rotação sideral e sombras nos anéis de Saturno (D21).
+- **Halley** com núcleo esculpido, coma e cauda dupla na distância real (D10); cinturão de asteroides instanciado; chuvas de meteoros sazonais.
+- **Céu**: catálogo HYG v4.1 até magnitude 6,5 e as 88 constelações (D09).
+- **Seleção da Terra e da Lua** no modo Cosmos, com reancoramento seguro da câmera.
 
-### Horizonte 3 — Observatório Planetário (NASA) & Tráfego Global *(Status: Concluído)*
-- **Camadas Científicas da NASA**:
-  - **NASA GIBS**: Mais de 1.000 camadas de imagens de satélite atualizadas diariamente (neve/gelo, relevo, cobertura vegetal).
-  - **NASA FIRMS & INPE BDQueimadas**: Monitoramento global de focos ativos de queimadas em tempo quase real.
-  - **NASA EONET**: Rastreamento de eventos severos (tempestades, vulcões, secas).
-  - **Fluxos de Ventos e Lixo Marítimo**: Visualização de correntes oceânicas e microplásticos.
-- **Telemetria de Tráfego Global e Órbita**:
-  - Rastreamento em tempo real da **Estação Espacial Internacional (ISS)** e satélites artificiais via **CelesTrak (TLE)**.
-  - Camada de aeronaves sobrevoando o globo via **OpenSky Network (ADS-B)**.
-  - Principais rotas marítimas comerciais via dados agregados de AIS (**Global Fishing Watch**).
+### Qualidade, segurança e produção (Ciclos 1 e 2)
+- Design system com tokens e primitivos (D14, D20) e regressão automática.
+- CI, testes de API e E2E visual (T18, T19), migrations Prisma (T20).
+- Cabeçalhos de segurança e `Cache-Control` (T30), Error Boundaries e fallback sem GPU (T31), SEO técnico e PWA (T33), empacotamento standalone com `/api/health` e Redis no rate-limit (T34).
+- Bundle inicial de `/` em 158,8 kB gzip (T25, T35) e arquivos acima de 600 linhas divididos (T36).
 
 ---
 
-### Horizonte 4 — Expansão Cósmica *(Status: Concluído)*
-- **Sistema Solar 3D & Efemérides Keplerianas (RN18, RN20) (Concluído)**:
-  - Resolução analítica em tempo real da Equação de Kepler com algoritmo de Newton-Raphson e convergência $< 10^{-10}$ a 60 FPS no loop gráfico, cobrindo todos os 8 planetas do Sistema Solar + Plutão via formulação Standish (1992)/NASA JPL (`apps/web/src/lib/astronomy-planets.ts`).
-  - Mapeamento de escala didática balanceada ($R_{\text{scene}} = 28 \cdot r^{0.55}$) garantindo preservação de ordem, visualização contínua das órbitas internas e externas e supressão de z-fighting no frustum da câmera.
-  - Sol emissivo central (`SunCore.tsx`) com shader GLSL customizado de corona pulsante e `pointLight` com atenuação física.
-  - Planetas com texturas PBR, anéis translúcidos de Saturno e Urano e curvas orbitais fechadas (`generateOrbitalPathPoints`) em `PlanetarySystem.tsx`.
-  - Desduplicação da Terra no modo cósmico (`id !== "EARTH"`), preservando a malha fotorrealista com shader dia/noite e Fresnel de `EarthSphere.tsx`.
-- **Cinturão de Asteroides, Cometa Halley e Meteoros (RN18, RN20) (Concluído)**:
-  - Mais de 3.000 asteroides do cinturão principal entre Marte e Júpiter renderizados via `THREE.InstancedMesh` com matrizes de rotação e tamanhos heterogêneos (`AsteroidBeltLayer.tsx`).
-  - Dinâmica orbital de alta excentricidade ($e = 0.967$) do Cometa 1P/Halley com cauda iônica/poeira orientada radialmente em oposição ao vetor solar e intensidade luminosa inversamente proporcional ao quadrado da distância ao Sol (`CometHalleyTrajectory.tsx`).
-  - Chuvas sazonais de meteoros (Perseidas em Agosto e Geminídeas em Dezembro) renderizadas em feixes pontuais convergentes (`MeteorShowersLayer.tsx`).
-- **Abóbada Celeste HYG & 88 Constelações IAU (RN19) (Concluído)**:
-  - Catálogo estelar HYG com 3.500+ estrelas ($V \le 5.5$) em coordenadas equatoriais J2000 convertidas em coordenadas esféricas tridimensionais no raio $R = 900$ (`hyg-star-data.ts`).
-  - Índice de cor $B-V$ mapeado proceduralmente para classes espectrais reais (azuis $O/B$ a avermelhadas $M$).
-  - Malha vetorial dos 88 asterismos e constelações oficiais da União Astronômica Internacional (IAU) com rótulos tipográficos na abóbada celeste (`SkyStars.tsx`).
-- **HUD de Inspeção Cósmica & Controles de Reprodução (RN03, RN10) (Concluído)**:
-  - Painel lateral em glassmorphism (`CosmicInspectorHUD.tsx`) com ficha técnica astrofísica padronizada (raio, massa, gravidade, período orbital, temperatura média, atmosfera), cálculo dinâmico de distâncias Terra/Sol em UA e km, fases lunares via `getLunarPhase`, missões espaciais históricas e referências acadêmicas com links diretos (NASA/JPL/IAU).
-  - Controles de reprodução e velocidade orbital na `TimelineBar.tsx` ($1\times, 30\times, 365\times$) acoplados à store reativa `useCosmicStore`.
-  - Botão de acesso rápido "Sistema Solar / Cosmos" na barra superior (`TopNavBar.tsx`).
-- **Seleção Interativa da Terra e da Lua (Concluído)**:
-  - Seleção da Terra no modo cosmos: suprime seleção de países, foca a Terra com ficha planetária e botão contextual "Explorar Superfície / Países".
-  - Seleção da Lua no modo normal e no modo cósmico: cálculo e sincronização contínua de `currentMoonWorldPos`, anel luminoso de seleção, HUD com fase lunar e botões contextuais "Voltar à Terra" / "Focar na Terra".
-  - Transição e reancoramento suave de `controls.target` via `CosmicCameraController.tsx` entre o centro da Terra `(0, 0, 0)`, a Lua e qualquer planeta sem causar `NaN` no `OrbitControls`.
-- **Persistência de Estudos Cósmicos com Fork Imutável (RN16) (Concluído)**:
-  - Extensão do esquema Prisma `Study` e `useStudyStore` com os campos `isCosmicMode`, `focusedCelestialBody` e `activeCosmicLayers`, garantindo integridade nos endpoints de fork e modal de compartilhamento (`StudyShareModal.tsx`).
+## 2. Planejado / em andamento
+
+| Item | Tarefa | Situação em 2026-11-21 |
+|---|---|---|
+| Ventos globais e correntes oceânicas (partículas GPU, GFS/NOAA) | D27 | TODO |
+| Internacionalização `pt-BR` / `en` | D28 | TODO |
+| Qualidade gráfica adaptativa (DPR dinâmico, presets) | T39 | Em andamento |
+| Aviso de hidratação no botão Observatório em `/study/<id>` | T41 | TODO |
+| Lixo marítimo e microplásticos | — | Sem tarefa no backlog (citado em versões antigas deste roadmap, não implementado) |
+| INPE BDQueimadas | — | Sem tarefa no backlog (o Observatório usa só o NASA FIRMS) |

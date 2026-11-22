@@ -12,13 +12,13 @@ O **TellusPedia** é concebido sob uma arquitetura de monorepo moderno que equil
 flowchart TD
     subgraph Client["Cliente / Navegador Web"]
         R3F["Motor 3D (React Three Fiber)\nShaders Dia/Noite, Lua, Céu"]
-        HUD["Inspector HUD (Camada 1)\nGlassmorphism, Clima, Tzdb"]
+        HUD["Painel do País (Camada 1)\nDesign system D14, Clima, Tzdb"]
         Reader["Modo Leitura (Camada 2)\nTOC Fixo, Citações ABNT/APA"]
         Timeline["Timeline Deslizável\n50 Anos, Presets, Nós Alternados"]
         Compare["Comparador de Países\nAté 4 Países, Gráficos Recharts"]
-        ObsPanel["Observatório Planetário\nNASA FIRMS, EONET, ISS, Voos, Rotas"]
-        TelemetryHUD["HUD de Telemetria Científica\nISS 408km, 27.600km/h, Eventos"]
-        Zustand["Zustand Stores\n(Globe, Timeline, Reader, Study, Observatory)"]
+        ObsPanel["Observatório Planetário\nFIRMS, EONET, GIBS, ISS, Voos, AIS"]
+        TelemetryHUD["HUD de Telemetria Científica\nISS (SGP4), voos, embarcações, eventos"]
+        Zustand["Zustand Stores\n(Globe, Timeline, Scene, Cosmic, Observatory, Study, ...)"]
 
         R3F <--> Zustand
         HUD <--> Zustand
@@ -30,7 +30,7 @@ flowchart TD
     end
 
     subgraph WebServer["apps/web (Next.js 15 App Router)"]
-        Pages["Páginas SSR & SEO (/pais/[iso], /study/[slug])"]
+        Pages["Páginas SSR & SEO (/pais/[iso], /compare, /study/[slug], /studies, /dossies)"]
         RouteHandlers["Route Handlers (/api/countries, /api/studies, /api/observatory)"]
         PrismaClient["Prisma ORM Client"]
     end
@@ -59,107 +59,66 @@ flowchart TD
 ## 2. Arquitetura do Frontend (`apps/web`)
 
 ### 2.1. Estrutura de Diretórios (Feature-Driven / Layered)
+
+Resumo dos diretórios e dos módulos centrais (2026-11-21). Arquivos grandes de dados foram divididos em módulos coesos na T36; os módulos antigos (`country-data`, `historical-entities`, `astronomy-planets`, `paleo-data`) continuam re-exportando tudo.
+
 ```
 apps/web/
 ├── public/
 │   ├── data/
-│   │   ├── history/                   # Snapshots TopoJSON (borders-1870, 1914, 1939, 1969)
-│   │   └── ne_110m_admin_0_countries.json # TopoJSON contemporâneo (177 países)
-│   ├── flags/                         # Bandeiras contemporâneas e históricas em SVG
-│   └── textures/                      # Texturas NASA (earth_day, earth_night, moon)
-├── prisma/
-│   ├── schema.prisma                  # Esquema Prisma (Country, Indicator, Milestone, Study com historicalEra)
-│   └── seed.ts                        # Seed de países piloto, TopoJSON e marcos históricos
+│   │   ├── countries-ne-110m.json          # Catálogo dos 177 países (Natural Earth 1:110m)
+│   │   ├── countries-worldbank-indicators.json # Indicadores do Banco Mundial (T26)
+│   │   ├── worldbank-timeseries.json       # Séries 1990–2024 (T32), carregadas sob demanda
+│   │   ├── history/                        # TopoJSON de 1870, 1914, 1939 e 1969
+│   │   ├── paleo/                          # Paleomapas PALEOMAP
+│   │   └── sky/                            # HYG v4.1 (binário) e Via Láctea
+│   ├── observatory/gibs/                   # Referências locais e legendas do NASA GIBS (D25)
+│   ├── flags/                              # Bandeiras históricas em SVG
+│   ├── models/                             # Modelos glTF (aeronaves, embarcações)
+│   ├── basis/                              # Transcoder e worker do KTX2 (T30)
+│   └── textures/                           # Terra, planetas e Lua (KTX2 + JPG/PNG)
+├── prisma/                                 # schema.prisma, migrations versionadas e seed
+├── scripts/                                # Ingestão (Banco Mundial, Wikidata), índice de cenas,
+│                                           # tabela do cn (build-tw-merge-table), texturas, testes
 ├── src/
-│   ├── app/                           # App Router (Páginas, SEO e Route Handlers)
-│   │   ├── layout.tsx                 # Root layout com tipografia Cosmic Academic
-│   │   ├── page.tsx                   # Landing Page (Globo + HUD + Timeline)
-│   │   ├── compare/page.tsx           # Comparador de até 4 países (/compare)
-│   │   ├── pais/[iso]/page.tsx        # Página canônica do país para SEO (/pais/BRA)
-│   │   ├── study/[slug]/page.tsx      # Estudo imutável compartilhado (/study/[slug])
-│   │   └── api/                       # Endpoints Next.js com suporte a fork, histórico e observatório
-│   │       ├── countries/             # Metadados e busca de países
-│   │       ├── studies/               # Criação, busca e fork de estudos (/api/studies/[slug]/fork)
-│   │       └── observatory/           # Proxies científicos e telemetria (/firms, /eonet, /iss, /traffic, /cosmos)
+│   ├── app/                                # App Router: /, /pais/[iso], /compare, /study/[slug],
+│   │   │                                   # /studies, /dossies, /telluslab, sitemap, robots, manifest
+│   │   └── api/                            # astronomy, countries, health, observatory/*, studies, timeline, weather
+│   │       └── observatory/                # ais, cosmos, eonet, firms, gibs (+ /image), iss, satellites, traffic
 │   ├── components/
-│   │   ├── globe/                     # Motor 3D Three.js / React Three Fiber
-│   │   │   ├── GlobeCanvas.tsx        # Canvas, iluminação solar sincronizada e render loop
-│   │   │   ├── EarthSphere.tsx        # Esfera da Terra com shader dia/noite e Fresnel
-│   │   │   ├── EarthShaderMaterial.ts # Shader GLSL em espaço mundial
-│   │   │   ├── CountryBorders.tsx     # Malha vetorial esférica com cross-fade histórico
-│   │   │   ├── OrbitingMoon.tsx       # Lua em órbita com fase proporcional e seleção interativa
-│   │   │   ├── SkyStars.tsx           # Abóbada celeste HYG com 3.500+ estrelas e 88 constelações IAU
-│   │   │   ├── CameraFlyToController.tsx # Animação de câmera suave com interpolação esférica
-│   │   │   ├── CosmicCameraController.tsx # Controlador de câmera cósmica e reancoramento de target
-│   │   │   ├── SunCore.tsx            # Sol emissivo central com shader GLSL de corona pulsante
-│   │   │   ├── PlanetarySystem.tsx    # Malhas planetárias PBR, anéis de Saturno/Urano e órbitas
-│   │   │   ├── AsteroidBeltLayer.tsx  # 3.000+ asteroides via THREE.InstancedMesh
-│   │   │   ├── CometHalleyTrajectory.tsx # Órbita excêntrica e cauda iônica oposta ao Sol
-│   │   │   ├── MeteorShowersLayer.tsx # Chuvas sazonais de meteoros (Perseidas e Geminídeas)
-│   │   │   ├── Apollo11Trajectory.tsx # Rota 3D translunar Catmull-Rom e nave animada (CSM/LM)
-│   │   │   ├── Apollo11TelemetryOverlay.tsx # HUD de telemetria científica (velocidade, distância, GET)
-│   │   │   ├── HistoricalRouteTrajectory.tsx # Traçado 3D geodésico da Nau Victoria com rastro de esteira
-│   │   │   ├── HistoricalRouteOverlay.tsx # HUD de telemetria náutica e diário de Pigafetta
-│   │   │   ├── PaleoPlatesLayer.tsx   # Placas tectônicas e linhas de fratura da Pangeia (1.002)
-│   │   │   ├── PaleoEraBadge.tsx      # Badge flutuante de era geológica com reset para contemporâneo
-│   │   │   ├── HistoricalEraBadge.tsx # Badge flutuante de era com reset para contemporâneo
-│   │   │   ├── NasaFirmsLayer.tsx     # Focos de queimadas globais via THREE.Points a R=1.0025
-│   │   │   ├── NasaEonetLayer.tsx     # Marcadores 3D pulsantes de eventos severos a R=1.006
-│   │   │   ├── IssOrbitLayer.tsx      # Malha poligonal 3D e órbita física da ISS a R=1.18
-│   │   │   ├── AirTrafficLayer.tsx    # Frota comercial via THREE.InstancedMesh a R=1.018
-│   │   │   └── MaritimeRoutesLayer.tsx# Arcos geodésicos marinhos mercantes a R=1.003
-│   │   ├── observatory/               # Camada 3: Observatório Planetário & Tráfego Global
-│   │   │   ├── ObservatoryPanel.tsx   # Drawer lateral com toggles de camadas e contadores ao vivo
-│   │   │   └── ObservatoryTelemetryHUD.tsx # HUD flutuante com telemetria contínua da ISS/voos
-│   │   ├── hud/                       # Camada 1: Inspector HUD
-│   │   │   ├── InspectorHUD.tsx       # Drawer lateral flutuante em glassmorphism
-│   │   │   ├── CosmicInspectorHUD.tsx # Drawer lateral de astrofísica planetária e exploração
-│   │   │   ├── CountryHeader.tsx      # Bandeira vetorial, nome oficial e capital
-│   │   │   ├── LiveWeatherWidget.tsx  # Clima ao vivo via Open-Meteo
-│   │   │   ├── LocalClockWidget.tsx   # Relógio no fuso horário local tzdb
-│   │   │   └── CountryMetricsGrid.tsx # Indicadores socioeconômicos rápidos
-│   │   ├── reader/                    # Camada 2: Modo Leitura Profunda
-│   │   │   ├── ReaderMode.tsx         # Layout imersivo de estudo acadêmico
-│   │   │   ├── ReaderTableOfContents.tsx # Sumário fixo navegável (TOC)
-│   │   │   ├── ReaderContent.tsx      # Renderização de texto com notas de rodapé
-│   │   │   ├── HoverCardPreview.tsx   # Card flutuante para links internos
-│   │   │   └── CitationModal.tsx      # Exportador ABNT NBR 6023, APA, MLA, BibTeX
-│   │   ├── timeline/                  # Linha do Tempo Dinâmica
-│   │   │   ├── TimelineBar.tsx        # Barra horizontal deslizável com controles de velocidade orbital
-│   │   │   ├── TimelineAxis.tsx       # Réguas de tempo e escala semântica
-│   │   │   ├── MilestonePin.tsx       # Nós alternados acima/abaixo do eixo
-│   │   │   ├── CategoryFilterPills.tsx# Filtros por categoria temática
-│   │   │   └── PresetSelector.tsx     # Atalhos (Últimos 50 Anos, Guerra Fria, Pangeia, Magalhães)
-│   │   ├── comparator/                # Comparador de até 4 Países (RN15)
-│   │   │   ├── CountryComparator.tsx  # Painel comparativo
-│   │   │   ├── ComparisonGrid.tsx     # Colunas métricas equiparadas
-│   │   │   └── ComparisonCharts.tsx   # Gráficos de séries temporais com Recharts
-│   │   ├── study/                     # Estudos Compartilháveis & Fork (RN16)
-│   │   │   ├── StudyShareModal.tsx    # Modal de criação de link imutável
-│   │   │   └── ForkStudyBanner.tsx    # Banner de estudo com botão "Fazer Fork"
-│   │   └── nav/                       # Barra de navegação superior com alternador "Sistema Solar"
-│   ├── stores/                        # Gerenciamento de Estado Reativo (Zustand)
-│   │   ├── globeStore.ts              # Hover, seleção, câmera e render loop throttling
-│   │   ├── cosmicStore.ts             # Modo cósmico, alvo focado, camadas e velocidade orbital
-│   │   ├── timelineStore.ts           # Anos, marcos, escala geológica (Ma), filtros e presets
-│   │   ├── readerStore.ts             # Dimensão ativa e estado de leitura
-│   │   ├── comparatorStore.ts         # Países selecionados para comparação
-│   │   ├── studyStore.ts              # Recorte de estudo, camadas ativas, modo cósmico e fork
-│   │   ├── observatoryStore.ts        # Camadas ativas, opacidades, seleção de telemetria e cache
-│   │   ├── apollo11Store.ts           # Telemetria e controles da missão Apollo 11
-│   │   └── historicalRouteStore.ts    # Reprodução e waypoints da rota de circum-navegação
-│   └── lib/                           # Utilitários, efemérides, datasets e citações
-│       ├── astronomy-planets.ts       # Modelo analítico Standish/JPL de órbitas keplerianas
-│       ├── hyg-star-data.ts           # Catálogo HYG com 3.500+ estrelas J2000 e 88 constelações IAU
-│       ├── historical-entities.ts     # Resolução contínua de entidades históricas
-│       ├── historical-topology.ts     # Carregamento e cache assíncrono de TopoJSON
-│       ├── historical-routes.ts       # Reconstituição da circum-navegação de Magalhães-Elcano
-│       ├── paleo-data.ts              # Catálogo de eras paleogeográficas e placas da Pangeia
-│       ├── apollo11.ts                # Física orbital e telemetria da Apollo 11
-│       └── observatory-data.ts        # Propagação orbital SGP4 da ISS, tipos e fallbacks
-└── test/
-    ├── *.test.ts / *.test.tsx          # Testes por domínio e handlers de API
-    └── e2e/                           # Smoke e snapshots de desktop com Playwright
+│   │   ├── globe/        # Canvas R3F: EarthSphere/EarthShaderMaterial, CountryBorders, OrbitingMoon,
+│   │   │                 # SkyStars, SunCore, PlanetarySystem/PlanetBody, CometHalleyTrajectory (+ shaders
+│   │   │                 # e geometria), camadas do Observatório (FIRMS, EONET, GIBS, ISS, voos, AIS),
+│   │   │                 # PaleoPlatesLayer, ChoroplethOverlay, câmeras e badges de era
+│   │   ├── scenes/       # Player genérico: ScenePlayer, ScenePlayerOverlay, trajetórias de superfície e cislunar
+│   │   ├── shell/        # GlobeExperienceShell (carrega painéis e overlays sob demanda)
+│   │   ├── layout/       # RightDock e gerenciamento de painéis (D15)
+│   │   ├── nav/          # TopNavBar
+│   │   ├── timeline/     # TimelineBar, TimelineAxis, MilestonePin/Cluster, PresetSelector
+│   │   ├── hud/          # InspectorHUD (país), CosmicInspectorHUD, clima e relógio locais
+│   │   ├── reader/       # Modo Leitura, sumário, conteúdo, hover preview, CitationModal
+│   │   ├── comparator/   # CountryComparator, grade e gráficos (Recharts, sob demanda)
+│   │   ├── choropleth/   # HUD do mapa temático (D22)
+│   │   ├── observatory/  # ObservatoryPanel, controles por camada, HUD de telemetria
+│   │   ├── study/        # StudyShareModal, ForkStudyBanner
+│   │   ├── explore/      # Busca ⌘K e sincronização com a URL (D18)
+│   │   ├── tellus-bridge/# Ponte com o TellusLab (contexto de estudo, lançadores)
+│   │   └── ui/           # Primitivos do design system D14 e cn()
+│   ├── stores/           # Zustand: globe, timeline, scene, cosmic, cosmicExit, observatory,
+│   │                     # choropleth, comparator, reader, study, layout + actions.ts
+│   ├── data/scenes/      # Cenas em JSON (marcos, Magalhães, Apollo 11 e cenas sob demanda) + índice leve
+│   └── lib/              # Domínio e dados, por exemplo:
+│       ├── epoch/        # resolveEpoch, useEpochState, useSunDirection, constantes de época
+│       ├── scenes/       # Catálogo de cenas (com carga sob demanda), schema zod e utilitários
+│       ├── milestones.ts, country-catalog.ts, country-isos.ts   # versões leves para o 1º carregamento
+│       ├── country-data.ts (+ country-types, -pilots, -codes, -global-info)
+│       ├── historical-eras.ts, historical-entities.ts (+ -empires, -cold-war)
+│       ├── astronomy-planets.ts (fachada de astronomy-catalog, kepler, planet-orbits, halley-orbit)
+│       ├── paleo-data.ts (+ paleo-eras, paleo-canvas)
+│       ├── observatory-data.ts, observatory-source(s).ts, observatory-fallback.ts
+│       ├── satellites.ts (SGP4) e satellite-catalog.ts, gibs.ts/gibs-view.ts/gibs-source.ts
+│       └── choropleth*.ts, study-*.ts, studies-store.ts, citations.ts/source-urls.ts
+└── test/                 # Testes unitários por domínio (node:test + tsx) e e2e/ (Playwright)
 ```
 
 ### 2.2. Engenharia Gráfica 3D (Shaders e Picking)
@@ -198,28 +157,21 @@ Quando o usuário expande a Camada 2 (Modo Leitura Profunda), o estado `isReader
 
 ### 2.3. Engenharia do Observatório Planetário & Tráfego Global (Horizonte 3)
 
-O Horizonte 3 introduz uma arquitetura de visualização em tempo quase real de dados científicos e telemetria:
-1. **Queimadas Ativas (NASA FIRMS - RN17)**:
-   - Renderização em nuvem de pontos via `THREE.Points` a $R = 1.0025$.
-   - Buffers `Float32Array` de posição e cor (mapeamento térmico de Fire Radiative Power - FRP) isolados da opacidade para evitar re-alocações desnecessárias na GPU durante a manipulação do painel.
-2. **Eventos Naturais Severos (NASA EONET - RN17)**:
-   - Marcadores esféricos a $R = 1.006$ com anéis pulsantes e raycast picking para inspeção de ciclones, tempestades tropicais e erupções vulcânicas.
-3. **Estação Espacial Internacional (ISS) & Satélites (RN18)**:
-   - Malha poligonal 3D da ISS posicionada em altitude LEO realista ($R = 1.18$).
-   - Propagação contínua a 60 FPS no `useFrame` via `calculateIssPosition(Date.now())` com orientação dos painéis solares pelo vetor velocidade tangente da órbita (inclinação $51.64^\circ$, altitude 408 km e velocidade $27.600\text{ km/h}$).
-   - Traçado de órbita elíptica completa em grande círculo memoizado (`Line`).
-4. **Tráfego Aéreo Comercial (OpenSky ADS-B - RN18)**:
-   - Renderização via `THREE.InstancedMesh` em altitude de cruzeiro $R = 1.018$ orientando as aeronaves em base ortonormal indexada pelo rumo (*heading*).
-5. **Rotas Marítimas Comerciais (AIS - RN18)**:
-   - Grandes estreitos (Suez, Panamá, Malaca) e corredores oceânicos traçados em arcos geodésicos esféricos a $R = 1.003$ com interpolação `slerpVectors`.
-6. **Supressão Automática de Anacronismos (RN09 & RN10)**:
-   - Quando a Linha do Tempo for posicionada antes de 1957 (início da era espacial com o Sputnik) ou em eras geológicas (Pangeia), a função canônica `isContemporaryEpoch` suprime instantaneamente as camadas de satélites e aviação moderna da cena 3D, exibindo banner contextual no `ObservatoryPanel`.
+Cada camada busca os dados por uma rota de `/api/observatory/*`, que responde no envelope T05 (`data` + `meta.source` = `live`, `computed` ou `fallback`, com provedor, horário e motivo). O cliente nunca fala com o provedor externo, e o estado inicial do `observatoryStore` começa vazio: cada camada preenche o seu ao ser ligada, e os dados locais de referência (`observatory-fallback.ts`) só baixam quando o servidor falha (T35).
+
+1. **Queimadas (NASA FIRMS)**: CSV do FIRMS normalizado no servidor (T04), sprites e heatmap no globo e resumo por país (D05).
+2. **Eventos severos (NASA EONET)**: símbolos por categoria, clusters e trilhas (D06); centroide esférico próprio para os polígonos (sem d3-geo no carregamento inicial).
+3. **Imagens de satélite (NASA GIBS)**: 4 produtos mensais via WMS em EPSG:4326, servidos pela própria origem (`/api/observatory/gibs/image`, por causa da CSP), numa esfera translúcida de raio 1,0015 (D25).
+4. **ISS e satélites**: TLEs do CelesTrak propagados por SGP4 (`satellite.js`, carregado sob demanda com a camada) — posição, órbita e rastro da ISS e satélites visíveis (D04).
+5. **Tráfego aéreo (OpenSky ADS-B)**: amostra global de até 2.000 aeronaves, modelos glTF e interpolação entre leituras (D07).
+6. **Tráfego marítimo (AIS)**: amostra do AIS Stream em seis corredores (Malaca, Suez, Canal da Mancha, Santos, Panamá, Cabo da Boa Esperança) e malha fixa de rotas de referência (D08).
+7. **Supressão de anacronismos (RN09, RN10)**: antes de 1957 ou em eras geológicas, `isContemporaryEpoch` desliga as camadas modernas e o painel explica o motivo.
 
 ### 2.4. Engenharia da Expansão Cósmica & Sistema Solar 3D (Horizonte 4)
 
 O Horizonte 4 expande a escala da cena do raio planetário terrestre para o espaço interplanetário e estelar:
 
-1. **Efemérides Keplerianas Analíticas Standish (1992)/NASA JPL (`astronomy-planets.ts`)**:
+1. **Efemérides Keplerianas Analíticas Standish (1992)/NASA JPL (`astronomy-planets.ts`, fachada de `astronomy-catalog.ts`, `kepler.ts`, `planet-orbits.ts` e `halley-orbit.ts`)**:
    - Resolução da Equação de Kepler $M = E - e \sin E$ a 60 FPS por iteração de Newton-Raphson com tolerância $\le 10^{-10}$ (máx. 10 iterações).
    - Elementos orbitais com taxas de variação secular por século juliano ($T$) em relação a J2000.0 cobrindo os 8 planetas e Plutão.
    - Cálculo das coordenadas heliocêntricas no plano orbital e rotação para o referencial de cena tridimensional:
@@ -235,14 +187,14 @@ O Horizonte 4 expande a escala da cena do raio planetário terrestre para o espa
 5. **Cinturão de Asteroides Instanciado (`AsteroidBeltLayer.tsx`)**:
    - Mais de 3.000 asteroides individuais entre 2.2 e 3.2 UA instanciados em uma única chamada de desenho GPU (`THREE.InstancedMesh`), com variações de escala, matrizes de rotação e velocidades angulares keplerianas.
 6. **Dinâmica do Cometa 1P/Halley & Chuvas de Meteoros (`CometHalleyTrajectory.tsx`, `MeteorShowersLayer.tsx`)**:
-   - Trajetória orbital fechada com excentricidade extrema ($e = 0.967$). Cauda do cometa gerada por malha cônica translúcida orientada estritamente no vetor antipodal ao Sol ($\vec{v}_{\text{tail}} = \text{normalize}(\vec{pos} - \vec{0})$), com luminosidade modulada por $1 / r^2$.
+   - Trajetória orbital fechada com excentricidade extrema ($e = 0.967$) na distância real (D10). Núcleo esculpido com shader em espaço mundial, coma e cauda dupla — íons em linha reta antissolar e poeira curvada — ativadas abaixo de 4,5 UA (`comet-halley-shaders.ts`, `comet-halley-geometry.ts`).
    - Chuvas de meteoros sazonais renderizadas em feixes pontuais convergentes durante as janelas orbitais de interseção com a Terra (Perseidas em Agosto e Geminídeas em Dezembro).
 7. **Abóbada Celeste HYG e 88 Constelações IAU (`SkyStars.tsx`, `hyg-star-data.ts`)**:
-   - Catálogo estelar HYG com 3.500+ estrelas reais até magnitude aparente $V \le 5.5$.
+   - Catálogo estelar HYG v4.1 até magnitude aparente $V \le 6.5$ (binário em `public/data/sky`).
    - Coordenadas equatoriais J2000 (Ascensão Reta $\alpha$ e Declinação $\delta$) projetadas na esfera celeste de raio $R = 900$:
      $$x = R \cos \delta \cos \alpha, \quad y = R \sin \delta, \quad z = -R \cos \delta \sin \alpha$$
    - Temperatura de cor e cor espectral estimada via índice $B-V$ com mapeamento procedural de matiz RGB.
-   - Traçado das 88 constelações oficiais padronizadas pela IAU com asterismos e rótulos tipográficos.
+   - Traçado das 88 constelações (linhas modernas do Stellarium v25.4) com rótulos tipográficos.
 8. **Seleção Interativa Integrada da Terra e da Lua**:
    - Seleção da Terra no Modo Cosmos: suprime a inspeção de países soberanos individuais e abre a ficha técnica planetária no `CosmicInspectorHUD`, com botão "Explorar Superfície / Países" que restaura a visão geopolítica normal.
    - Seleção da Lua: interativa tanto na órbita terrestre normal quanto no Modo Cosmos, calculando dinamicamente `currentMoonWorldPos`, renderizando o anel de destaque e oferecendo botões contextuais de navegação ("Voltar à Terra" / "Focar na Terra").
@@ -286,6 +238,17 @@ O microsserviço Python em **FastAPI** segue a **Clean Architecture**, segregado
 
 | Camada de Dados | Fontes | Armazenamento | Política de Cache / TTL |
 | :--- | :--- | :--- | :--- |
+| **Tempo real** | Posição da ISS (SGP4 sobre TLE) e amostra AIS. | Cache em memória da rota (`createObservatorySource`) | **15 s**; com o provedor fora, último dado válido marcado como desatualizado e, depois, dados locais. |
+| **Tráfego aéreo** | OpenSky Network (ADS-B). | Cache em memória da rota | **120 s** com deduplicação de requisições. |
+| **Satélite / eventos** | NASA FIRMS e NASA EONET. | Cache em memória da rota | **15 min** com fallback local rotulado. |
+| **TLEs** | CelesTrak (grupos de estações e visíveis). | Cache em memória da rota | **4 h**. |
+| **Imagens GIBS** | NASA GIBS (WMS). | LRU de 12 imagens no servidor | Envelope `max-age` 1 h (60 s no fallback); imagem 24 h; falhas lembradas por 60 s. |
+| **Cosmos** | Efemérides analíticas Standish (`/api/observatory/cosmos`). | Cache em memória | **1 h**. |
+| **Clima** | Open-Meteo (via serviço Python). | Redis 7 | TTL configurável (`WEATHER_CACHE_TTL_SECONDS`); resposta HTTP `max-age` 10 min. |
+| **Indicadores** | Banco Mundial (instantâneo + séries 1990–2024). | Arquivos em `public/data` gerados por script | Atualizados por ingestão (`scripts/ingest-worldbank-indicators.mjs`); HTTP `max-age` 1 h, `s-maxage` 1 dia. |
+| **Imutável** | Fronteiras TopoJSON, eras paleogeográficas, cenas e estudos compartilhados. | Arquivos estáticos / PostgreSQL | Estudos: `max-age` 60 s, `s-maxage` 10 min, `stale-while-revalidate` 1 dia; efemérides de data fixa `immutable`. |
+
+--- | :--- | :--- | :--- |
 | **Alta Volatilidade (Tempo Real)** | Posição orbital da ISS (CelesTrak / SGP4). | In-Memory Route Proxy | **60 segundos** com renovação automática. |
 | **Alta Volatilidade (Tráfego)** | Tráfego Aéreo (OpenSky ADS-B) e Rotas AIS. | In-Memory Route Proxy | **120 segundos** com deduplicação de requisições. |
 | **Média-Alta Volatilidade (Satélite)** | Queimadas (NASA FIRMS) e Eventos Severos (NASA EONET). | In-Memory Route Proxy / Redis | **15 minutos** com fallbacks integrados. |
@@ -354,6 +317,9 @@ erDiagram
         string activeRouteId "null"
         boolean isCosmicMode "false"
         string focusedCelestialBody "'EARTH'"
-        string[] activeCosmicLayers "['ORBITS', 'ASTEROID_BELT', 'CONSTELLATIONS']"
+        string[] activeCosmicLayers "['ORBITS', 'ASTEROIDS', 'CONSTELLATIONS']"
+        string choroplethIndicator "'SP.DYN.LE00.IN' (D22)"
+        string gibsProduct "'lst' (D25)"
+        string gibsMonth "'2024-07' (D25)"
     }
 ```

@@ -25,8 +25,8 @@ Toda a documentação técnica, científica e de negócios do projeto está cent
 | :--- | :--- |
 | **Frontend Web** | Next.js 15 (App Router, Turbopack, SSR, SEO), React 19, TypeScript. |
 | **Motor Gráfico 3D** | Three.js, React Three Fiber (R3F), Drei, shaders customizados GLSL em espaço mundial. |
-| **Design System & UI** | Tailwind CSS, Radix UI Primitives, Lucide Icons, Glassmorphism (*Cosmic Academic*). |
-| **Estado & Sincronização** | Zustand com stores desacopladas (`globeStore`, `timelineStore`, `studyStore`). |
+| **Design System & UI** | Tailwind CSS com tokens próprios (D14 — “Instrumento sereno”), primitivos em `components/ui` sobre Radix UI (Dialog, Tabs, Tooltip), Lucide Icons. |
+| **Estado & Sincronização** | Zustand com stores desacopladas (globo, linha do tempo, cenas, cosmos, observatório, estudos, layout) e estado compartilhável na URL. |
 | **Visualização de Dados** | Recharts (gráficos temporais comparativos do Banco Mundial) e `d3-geo` / `which-polygon` (picking espacial). |
 | **Backend de Dados** | Python 3.12, FastAPI, Clean Architecture, Pydantic, algoritmos astronômicos NOAA. |
 | **Banco de Dados & ORM** | PostgreSQL 16 com extensão PostGIS, Prisma ORM. |
@@ -122,8 +122,8 @@ O TellusPedia expande a fronteira do conhecimento da Terra para a imensidão do 
 - **Desduplicação da Terra no Modo Cósmico**: A Terra utiliza a malha texturizada com shader dia/noite e Fresnel do globo fotorrealista (`EarthSphere`), sem esferas genéricas duplicadas.
 - **Cinturão de Asteroides Instanciado (`AsteroidBeltLayer`)**: Mais de 3.000 asteroides individuais entre Marte e Júpiter renderizados via `THREE.InstancedMesh` com matrizes de rotação e tamanhos heterogêneos.
 - **Cometa 1P/Halley & Chuvas de Meteoros (`CometHalleyTrajectory`, `MeteorShowersLayer`)**: Órbita excêntrica ($e = 0.967$) com cauda iônica/poeira orientada antipodalmente ao Sol e intensidade $1/r^2$; chuvas sazonais de meteoros (Perseidas e Geminídeas) com feixes luminosos convergentes.
-- **Abóbada Celeste HYG & 88 Constelações IAU (`SkyStars`, `hyg-star-data`)**: Catálogo com 3.500+ estrelas reais ($V \le 5.5$) em coordenadas equatoriais J2000 no raio $R = 900$, temperatura de cor pelo índice $B-V$ e traçado vetorial das 88 constelações oficiais da União Astronômica Internacional (IAU).
-- **HUD de Inspeção Cósmica (`CosmicInspectorHUD`)**: Painel lateral flutuante em glassmorphism com dados astrofísicos (raio, massa, gravidade, período orbital, atmosfera), cálculo dinâmico de distâncias Terra/Sol em UA e km, fases lunares via `getLunarPhase`, missões espaciais históricas e referências acadêmicas com links diretos.
+- **Abóbada Celeste HYG & 88 Constelações (`SkyStars`, `hyg-star-data`)**: Catálogo HYG v4.1 até magnitude $V \le 6.5$ em coordenadas equatoriais J2000 no raio $R = 900$, cor pelo índice $B-V$ e as 88 constelações com as linhas modernas do Stellarium.
+- **HUD de Inspeção Cósmica (`CosmicInspectorHUD`)**: Painel lateral do design system com dados astrofísicos (raio, massa, gravidade, período orbital, atmosfera), cálculo dinâmico de distâncias Terra/Sol em UA e km, fases lunares via `getLunarPhase`, missões espaciais históricas e referências acadêmicas com links diretos.
 - **Seleção Interativa da Terra e da Lua**:
   - *Terra no Modo Cosmos*: Clique ou seleção foca a Terra com ficha planetária e botão contextual "Explorar Superfície / Países".
   - *Lua em Ambos os Modos*: Seleção interativa na órbita terrestre e no modo cósmico com cálculo de posição mundial `currentMoonWorldPos`, anel luminoso e botões contextuais "Voltar à Terra" / "Focar na Terra".
@@ -138,10 +138,12 @@ O TellusPedia expande a fronteira do conhecimento da Terra para a imensidão do 
 O TellusPedia integra telemetria em tempo quase real e camadas científicas das principais agências espaciais e de navegação mundial:
 - **Queimadas e Anomalias Térmicas (NASA FIRMS - RN17)**: Focos ativos das últimas 24h via sensores MODIS e VIIRS renderizados em nuvem de pontos `THREE.Points` a $R = 1.0025$ com buffers `Float32Array` mapeando intensidade térmica (*FRP*), mantendo 60 FPS estáveis na GPU.
 - **Eventos Severos Globais (NASA EONET - RN17)**: Monitoramento geolocalizado de ciclones tropicais, erupções vulcânicas, inundações e tempestades severas em marcadores 3D a $R = 1.006$ com anéis pulsantes e *raycast picking*.
-- **Estação Espacial Internacional (ISS) & Satélites (RN18)**: Malha 3D poligonal da ISS navegando em altitude LEO ($R = 1.18$) com propagação orbital física em tempo real no `useFrame` via `calculateIssPosition(Date.now())` (inclinação $51.64^\circ$, altitude $408\text{ km}$, velocidade $27.600\text{ km/h}$) e traçado de grande círculo da órbita.
-- **Tráfego Aéreo Global (OpenSky Network ADS-B - RN18)**: Frota comercial no ar renderizada via `THREE.InstancedMesh` na altitude de cruzeiro $R = 1.018$, orientando as aeronaves em tempo real na direção de seu rumo (*heading*) em base ortonormal.
-- **Rotas Marítimas Comerciais (AIS - RN18)**: Grandes estreitos geopolíticos (Suez, Panamá, Malaca) e corredores oceânicos de cargueiros renderizados em arcos geodésicos esféricos luminosos a $R = 1.003$ com interpolação `slerpVectors`.
-- **Painel Flutuante do Observatório (`ObservatoryPanel`)**: Drawer lateral em *glassmorphism* acionado na barra superior com alternadores independentes, contadores dinâmicos ao vivo e controles de opacidade.
+- **Imagens de Satélite (NASA GIBS)**: Quatro produtos mensais — vegetação (NDVI), neve, gelo marinho e temperatura da superfície — com seletor de mês, legenda oficial e opacidade, servidos pelo próprio TellusPedia (D25).
+- **Estação Espacial Internacional (ISS) & Satélites (RN18)**: Posição real por SGP4 a partir dos TLEs do CelesTrak (`satellite.js`, carregado só quando a camada é ligada), órbita, rastro na superfície e satélites visíveis a olho nu (D04).
+- **Tráfego Aéreo Global (OpenSky Network ADS-B - RN18)**: Amostra global de até 2.000 aeronaves com modelos glTF orientados pelo rumo e interpolação entre leituras (D07).
+- **Tráfego Marítimo (AIS - RN18)**: Embarcações reais do AIS Stream em seis corredores estratégicos (Malaca, Suez, Canal da Mancha, Santos, Panamá e Cabo da Boa Esperança) sobre a malha fixa de rotas comerciais (D08).
+- **Procedência explícita (T05)**: Cada camada mostra se o dado é ao vivo, calculado ou simulado; com a fonte fora do ar, o servidor devolve o último dado válido ou a referência local, sempre rotulada.
+- **Painel do Observatório (`ObservatoryPanel`)**: Cards compactos por camada, com alternadores, contagens, procedência e opções recolhidas (opacidade, filtros, legenda).
 - **HUD de Telemetria Científica (`ObservatoryTelemetryHUD`)**: Card flutuante com contadores de telemetria atualizados a cada 1 segundo (coordenadas, altitude, velocidade, iluminação orbital dia/noite) e botão interativo para focar a câmera na ISS.
 - **Supressão Automática de Anacronismos (RN09 & RN10)**: Ao navegar na Linha do Tempo para antes de 1957 ou eras paleogeográficas, a telemetria moderna é suprimida do globo e o painel alerta que o recorte histórico pertence ao passado.
 - **Persistência de Estudos com Camadas Ativas (RN16)**: O modelo Prisma `Study` serializa `activeObservatoryLayers String[]`, permitindo compartilhar e fazer *fork* imutável de recortes científicos pelo link `/study/[slug]`.
@@ -152,11 +154,10 @@ O TellusPedia integra telemetria em tempo quase real e camadas científicas das 
 
 O TellusPedia inclui suporte nativo a reconstituição histórica, paleogeográfica e espacial:
 - **Paleogeografia & Deriva Continental (RN11)**: Escala geológica em Milhões de Anos (Ma) cobrindo **Pangeia (~250 Ma)**, fragmentação (~200 Ma), **Gondwana & Laurásia (~150 Ma)** e **Cretáceo K-Pg (~66 Ma)** com blend procedural no shader Three.js (`uPaleoTexture`, `uPaleoFactor`), linhas de fratura tectônica e **supressão física automática de luzes elétricas urbanas** (`cityLightFactor -> 0`).
-- **Circum-navegação de Magalhães-Elcano (1519–1522) (RN12)**: Reconstrução tridimensional geodésica no raio $1.004$ com a *Nau Victoria* navegando em base ortonormal, rastro de esteira (*wake effect*), waypoints históricos e HUD de telemetria naval com extratos do diário de Antonio Pigafetta.
+- **Player de Cenas Históricas (D12, D24)**: Cenas descritas em JSON (`src/data/scenes/`) com trajetória de superfície ou cislunar e um painel genérico — Magalhães–Elcano (1519–1522, com o diário de Pigafetta), Apollo 11 (1969), Marco Polo (1271), Vasco da Gama (1497), 1914, 1939 e a queda do Muro de Berlim (1989). As cenas grandes carregam sob demanda.
 - **Snapshots TopoJSON Históricos**: Mapas mundiais autênticos dos anos **1870**, **1914**, **1939** e **1969** com interpolação de opacidade (*cross-fade*) no Three.js e descarte seguro de buffers de memória GPU.
 - **Entidades Históricas Extintas**: Reconstituição de fronteiras e fichas de nações do passado (Reino da Prússia, União Soviética, Império Austro-Húngaro, Alemanha Oriental/RDA, Alemanha Ocidental/RFA, Império Otomano, Iugoslávia e Tchecoslováquia) com continuidade temporal bidirecional para as nações contemporâneas.
 - **Picking Espacial (<0.2ms)**: Raycasting interativo na esfera unitária que se adapta em tempo de execução ao mapa histórico ativo.
-- **Trajetória 3D da Missão Apollo 11 (1969)**: Reconstrução tridimensional do voo translunar da Terra até o Mar da Tranquilidade na Lua com curva de Catmull-Rom, animação da nave (CSM Columbia / LM Eagle) e HUD de telemetria científica (velocidade, distância e tempo de missão decorrido GET).
 - **Badges de Era Contextuais**: Indicadores flutuantes no globo (`HistoricalEraBadge`, `PaleoEraBadge`) com proteção contra colisões e restauração imediata para 2024.
 - **Estudos Históricos com Fork Imutável**: Preservação do estado da cartografia histórica, era geológica (`geologicalMa`) e rotas ativas (`activeRouteId`) em links compartilháveis `/study/[slug]`.
 
@@ -170,11 +171,12 @@ telluspedia/
 │   └── web/                               # Aplicação Web Next.js 15 + Three.js/R3F
 │       ├── prisma/                        # Schema Prisma, migrations versionadas e seed de dados
 │       ├── src/
-│       │   ├── app/                       # Rotas da aplicação (/, /pais/[iso], /study/[slug], /api/observatory/cosmos)
+│       │   ├── app/                       # Rotas (/, /pais/[iso], /compare, /study/[slug], /studies, /dossies) e APIs (/api/*)
 │       │   ├── components/                # Globe 3D, Sistema Solar, HUDs, Reader Mode, Timeline
-│       │   ├── stores/                    # Stores Zustand (globeStore, cosmicStore, timelineStore, observatoryStore, studyStore)
-│       │   └── lib/                       # Efemérides Standish/JPL, catálogo HYG, órbita ISS, índice espacial e citações
-│       └── test/                          # Testes unitários com Node TAP runner (180 testes / 24 suítes)
+│       │   ├── stores/                    # Stores Zustand (globo, linha do tempo, cenas, cosmos, observatório, estudos, layout)
+│       │   ├── data/scenes/               # Cenas históricas em JSON
+│       │   └── lib/                       # Domínio: épocas, países, entidades históricas, efemérides, Observatório, estudos
+│       └── test/                          # Testes unitários (node:test + tsx, `pnpm test`) e e2e/ (Playwright)
 ├── services/
 │   └── data-pipeline/                     # Microsserviço Python FastAPI
 │       ├── app/                           # Endpoints de efemérides NOAA e clima
@@ -192,7 +194,8 @@ telluspedia/
 
 Este projeto é desenvolvido para fins educacionais, científicos e de pesquisa acadêmica aberta.
 Os dados e camadas geofísicas utilizam serviços públicos com atribuição institucional obrigatória:
-- **NASA** (Earthdata, GIBS, FIRMS, JPL Horizons)
+- **NASA** (Earthdata, GIBS, FIRMS, EONET) e efemérides Standish/JPL
+- **CelesTrak**, **OpenSky Network** e **AIS Stream** (telemetria orbital, aérea e marítima)
 - **Organização Mundial da Saúde (OMS)**
 - **Banco Mundial** (World Development Indicators)
 - **Natural Earth Data** e **Wikidata / Wikimedia Foundation**

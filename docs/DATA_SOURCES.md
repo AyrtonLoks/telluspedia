@@ -20,6 +20,39 @@ Mapear, classificar e documentar todas as APIs públicas, repositórios científ
 
 ---
 
+## 3.1. Estado atual das fontes (sincronizado com o código em 2026-11-21, T37)
+
+A seção 4 é o **mapeamento de discovery**: lista as fontes avaliadas para cada regra de negócio, inclusive as que ainda não foram integradas. A tabela abaixo diz o que o código usa hoje; os anexos ao fim do documento detalham licença, cobertura e procedência das fontes em uso.
+
+| Fonte | Situação | Onde / como |
+|---|---|---|
+| Natural Earth 1:110m | **Em uso** | `public/data/countries-ne-110m.json` (catálogo e fronteiras dos 177 países) |
+| Banco Mundial (WDI) | **Em uso** | Instantâneo e séries 1990–2024 gerados por `scripts/ingest-worldbank-indicators.mjs` (T26, T32) |
+| PNUD (IDH), OMS (GHO), SIPRI, IBGE | **Em uso, pontual** | Indicadores e citações dos países piloto (links via `source-urls.ts`) |
+| Wikidata (SPARQL) | **Em uso, por script** | Ingestão de eventos da linha do tempo (`scripts/ingest-wikidata.ts`, D12e) e QIDs das entidades |
+| Open-Meteo | **Em uso** | Clima ao vivo pelo serviço Python, com cache Redis |
+| NOAA (algoritmo solar) | **Em uso** | Direção solar e terminador (`astronomy-solar.ts`, serviço Python) |
+| IANA tzdb | **Em uso** | Relógio local (via `Intl`) |
+| NASA FIRMS | **Em uso** | `/api/observatory/firms` (D05) |
+| NASA EONET | **Em uso** | `/api/observatory/eonet` (D06) |
+| NASA GIBS | **Em uso, 4 produtos** | NDVI, neve, gelo marinho e temperatura da superfície (D25); não as 1.000+ camadas do catálogo |
+| CelesTrak (TLE) | **Em uso** | `/api/observatory/satellites` + SGP4 no cliente (D04) |
+| OpenSky Network | **Em uso** | `/api/observatory/traffic` (D07) |
+| AIS Stream | **Em uso** | `/api/observatory/ais`, seis corredores (D08) |
+| PALEOMAP / GPlates | **Em uso, estático** | Paleomapas em `public/data/paleo` e citações das eras |
+| HYG v4.1 e Stellarium | **Em uso, estático** | `public/data/sky` e `sky-constellations.json` (D09) |
+| Efemérides Standish (1992)/JPL | **Em uso, analítico** | Cálculo local (`planet-orbits.ts`); a API JPL Horizons **não** é consultada |
+| Texturas planetárias (Solar System Scope, CC BY 4.0) | **Em uso, estático** | `public/textures` (D21) |
+| Space-Track.org, JPL Horizons, Minor Planet Center, SPICE | Planejado | Sem integração |
+| NOAA GFS / OSCAR (ventos e correntes) | Planejado | Tarefa D27 |
+| NOAA Marine Debris, Global Drifter Program, CYGNSS | Planejado | Sem tarefa |
+| Global Fishing Watch, MarineCadastre, OpenSeaMap | Planejado | O tráfego marítimo usa AIS Stream e uma malha fixa de rotas |
+| Wikipedia REST API, GDELT, Crossref/OpenAlex/Citoid | Planejado | Os dossiês e citações são curados no código |
+| OpenHistoricalMap, Clio-Infra/Euratlas, CShapes 2.0, PeriodO | Planejado | As fronteiras históricas vêm de TopoJSON próprios (`public/data/history`) |
+| INPE BDQueimadas, REST Countries | Planejado | Sem integração |
+
+---
+
 ## 4. Regras de Negócio (Mapeamento de Fontes por Domínio do TellusPedia)
 
 ### 4.1. Fontes para Base Enciclopédica, Grafo de Conhecimento e Citações (RN01 a RN05)
