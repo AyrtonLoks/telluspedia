@@ -8,7 +8,7 @@
     "analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --import tsx --test test/*.test.ts test/*.test.tsx",
+    "test": "node scripts/run-tests.mjs",
     "typecheck": "next typegen && tsc --noEmit",
     "textures:build": "node scripts/textures/build-earth-textures.mjs",
     "test:e2e": "playwright test",
