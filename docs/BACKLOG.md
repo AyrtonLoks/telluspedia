@@ -216,7 +216,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | REVIEW | antigravity | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
-| T41 | Corrigir aviso de hidratação do botão Observatório em `/study/<id>` com camadas ativas | Frontend | P2 | P | TODO | — | — | G-SHELL, G-OBS |
+| T41 | Corrigir aviso de hidratação do botão Observatório em `/study/<id>` com camadas ativas | Frontend | P2 | P | IN_PROGRESS | claude | — | G-SHELL, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
 | D22 | Modo Coroplético no Globo 3D: colorir os 177 países por indicador real com legenda e escala | 3D/Dados | P1 | G | DONE | antigravity | T32 | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D23 | Galeria de Estudos Públicos (`/studies` + `GET /api/studies`), árvore de forks (`parentId`) e exportação | Produto | P1 | G | DONE | antigravity | T30 | G-ESTUDOS, G-SHELL |
@@ -1356,7 +1356,7 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 
 ### T41 · Corrigir aviso de hidratação do botão Observatório em `/study/<id>` com camadas ativas
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t41-hidratacao · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Frontend · **Tamanho:** P · **Depende de:** — · **Grupos:** G-SHELL, G-OBS
 
 **Contexto / problema**
@@ -1379,6 +1379,7 @@ Suspeitas: a `TopNavBar` lê `activeLayers`/`isPanelOpen` com `getState()` no se
 
 **Log**
 - 2026-11-21 · claude · TODO · Tarefa criada a pedido do Ayrton, a partir do achado na verificação da D25.
+- 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada: com a T39 em REVIEW, G-SHELL ficou livre; primeira TODO elegível da fase 11.
 
 ---
 
