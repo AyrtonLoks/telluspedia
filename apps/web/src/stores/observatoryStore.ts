@@ -391,7 +391,12 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           },
         },
       }));
-      if (layerId === "ISS_SATELLITES") get().refreshIssTelemetry();
+      if (layerId === "ISS_SATELLITES") {
+        // Sem servidor, a posição de referência sai do SGP4: espera a biblioteca para não deixar
+        // a telemetria nula (o import pode terminar depois do fetch que falhou).
+        await loadSatelliteLib().catch(() => {});
+        get().refreshIssTelemetry();
+      }
       if (layerId === "NASA_GIBS") set({ gibs: gibsLocalReference(get().gibsProduct, get().gibsMonth) });
     } finally {
       set((s) => ({

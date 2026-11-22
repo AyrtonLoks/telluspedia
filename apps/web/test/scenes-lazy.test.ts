@@ -160,7 +160,7 @@ describe("D24 — carga sob demanda: comportamento", () => {
 
 describe("D24 — bundle e painel", () => {
   test("o catálogo só importa as cenas grandes por import() dinâmico", () => {
-    const catalog = fs.readFileSync(path.join(__dirname, "../src/lib/scenes/catalog.ts"), "utf-8");
+    const catalog = fs.readFileSync(path.join(__dirname, "../src/lib/scenes/catalog.ts"), "utf-8").replace(/\r\n/g, "\n");
     for (const f of [...LAZY_SCENE_FILES, ...LAZY_DETAIL_FILES]) {
       assert.doesNotMatch(catalog, new RegExp(`^import .*${f.replace(/\./g, "\\.")}`, "m"), `${f} não pode ser import estático`);
       assert.match(catalog, new RegExp(`import\\("\\.\\./\\.\\./data/scenes/${f.replace(/\./g, "\\.")}"\\)`), `${f} por import()`);
@@ -176,7 +176,7 @@ describe("D24 — bundle e painel", () => {
 
 describe("D24 — camada de superfície genérica", () => {
   test("destaques vêm dos dados e a câmera inicial da cena é aplicada ao abrir", () => {
-    const layer = fs.readFileSync(path.join(__dirname, "../src/components/scenes/SurfaceTrajectoryLayer.tsx"), "utf-8");
+    const layer = fs.readFileSync(path.join(__dirname, "../src/components/scenes/SurfaceTrajectoryLayer.tsx"), "utf-8").replace(/\r\n/g, "\n");
     assert.doesNotMatch(layer, /index === 3 \|\||Guanabara|Mactan|Tidore/, "sem índices da Magalhães no código");
     assert.match(layer, /facts\?\.highlight === 1/);
     assert.match(layer, /getScene\(sceneId\)\?\.camera/);
@@ -190,9 +190,9 @@ describe("D24 — camada de superfície genérica", () => {
 
 describe("D24 — o player aberto por um marco não fecha ao ser usado", () => {
   test("o clique fora do pino poupa o painel do player (inclusive o esqueleto)", () => {
-    const pin = fs.readFileSync(path.join(__dirname, "../src/components/timeline/MilestonePin.tsx"), "utf-8");
+    const pin = fs.readFileSync(path.join(__dirname, "../src/components/timeline/MilestonePin.tsx"), "utf-8").replace(/\r\n/g, "\n");
     assert.match(pin, /closest\("\[data-scene-player-overlay\]"\)/);
-    const overlay = fs.readFileSync(path.join(__dirname, "../src/components/scenes/ScenePlayerOverlay.tsx"), "utf-8");
+    const overlay = fs.readFileSync(path.join(__dirname, "../src/components/scenes/ScenePlayerOverlay.tsx"), "utf-8").replace(/\r\n/g, "\n");
     assert.equal((overlay.match(/data-scene-player-overlay="true"/g) ?? []).length, 2, "painel e esqueleto marcados");
   });
 });
@@ -204,7 +204,7 @@ describe("D24 — arrastar o globo não é clique", () => {
     assert.equal(isDragRelease({ delta: CLICK_DRAG_TOLERANCE_PX }), false);
     assert.equal(isDragRelease({ delta: CLICK_DRAG_TOLERANCE_PX + 1 }), true);
     assert.equal(isDragRelease({}), false);
-    const src = (f: string) => fs.readFileSync(path.join(__dirname, "../src/components", f), "utf-8");
+    const src = (f: string) => fs.readFileSync(path.join(__dirname, "../src/components", f), "utf-8").replace(/\r\n/g, "\n");
     assert.match(src("globe/EarthSphere.tsx"), /handleClick = \(e: ThreeEvent<MouseEvent>\) => \{\n    e\.stopPropagation\(\);\n[^\n]*\n    if \(isDragRelease\(e\)\) return;/, "país só por clique de verdade");
     assert.match(src("scenes/SurfaceTrajectoryLayer.tsx"), /if \(isDragRelease\(e\)\) return;/);
     assert.match(src("timeline/MilestonePin.tsx"), /if \(target\.closest\("canvas"\)\) return;/, "clique fora do pino ignora o globo (o R3F decide)");
@@ -213,7 +213,7 @@ describe("D24 — arrastar o globo não é clique", () => {
 
 describe("D24 — cartão do marco não cobre o player", () => {
   test("com a cena do marco aberta, o cartão fixo do pino é escondido", () => {
-    const pin = fs.readFileSync(path.join(__dirname, "../src/components/timeline/MilestonePin.tsx"), "utf-8");
+    const pin = fs.readFileSync(path.join(__dirname, "../src/components/timeline/MilestonePin.tsx"), "utf-8").replace(/\r\n/g, "\n");
     assert.match(pin, /const showCard = isSelected && !playingHere;/);
     assert.match(pin, /showCard\n\s*\? "pointer-events-auto z-50/);
     assert.match(pin, /const hideOnHover = playingHere \|\| hoverSuppressed;/, "nem no hover, com a cena aberta");

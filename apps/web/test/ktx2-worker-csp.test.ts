@@ -45,8 +45,10 @@ window.run = async (mode) => {
 
 describe("T30: worker do KTX2 sob a CSP de produção", () => {
   test("o arquivo do worker está em sincronia com o three e o transcoder instalados", () => {
-    const expected = buildKtx2WorkerSource(fs.readFileSync(pub("basis/basis_transcoder.js"), "utf-8")) + "\n";
-    assert.equal(fs.readFileSync(pub("basis/ktx2-worker.js"), "utf-8"), expected, "rode: pnpm --filter web textures:ktx2-worker");
+    // Compara sem diferença de fim de linha: no Windows o git pode trazer os dois arquivos com CRLF.
+    const lf = (text: string) => text.replace(/\r\n/g, "\n");
+    const expected = lf(buildKtx2WorkerSource(fs.readFileSync(pub("basis/basis_transcoder.js"), "utf-8")) + "\n");
+    assert.equal(lf(fs.readFileSync(pub("basis/ktx2-worker.js"), "utf-8")), expected, "rode: pnpm --filter web textures:ktx2-worker");
     assert.equal(KTX2_WORKER_URL, KTX2_WORKER_PATH);
     assert.doesNotMatch(expected, /__name\(/, "sem helpers do esbuild no worker");
   });
