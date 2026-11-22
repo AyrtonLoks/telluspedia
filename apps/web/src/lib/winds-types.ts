@@ -3,7 +3,7 @@
  * Separados do motor de interpolação/climatologia para manter o bundle inicial enxuto (T35).
  */
 
-export type FlowMode = "winds" | "currents";
+export type FlowMode = "winds" | "currents" | "both";
 export type WindAltitude = "surface" | "jet250";
 export type WindUnit = "kmh" | "knots";
 export type CurrentUnit = "ms" | "knots";

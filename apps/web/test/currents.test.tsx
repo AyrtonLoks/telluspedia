@@ -4,7 +4,13 @@ import fs from "node:fs";
 import path from "node:path";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { WIND_GRID_POINT_COUNT } from "../src/lib/winds-data";
+import { WIND_GRID_POINT_COUNT, buildClimatologyWindField } from "../src/lib/winds-data";
+import {
+  OCEAN_LAYER_RADIUS,
+  WIND_LAYER_RADIUS,
+  splitParticleCountForBoth,
+  windParticleCountForPreset,
+} from "../src/components/globe/WindParticlesLayer";
 import {
   buildClimatologyCurrentsGrid,
   buildOpenMeteoMarineUrl,
@@ -162,7 +168,31 @@ describe("D27b · Correntes Oceânicas Superficiais (Open-Meteo Marine + motor G
     useObservatoryStore.setState({ flowMode: "winds" });
   });
 
-  test("5. WindParticlesLayer integra paleta oceânica por uniform e recorte costeiro Natural Earth sem recriar contexto", () => {
+  test("5. Modo Ambos exibe controles/legendas simultâneos, camadas em raios distintos e orçamento dividido T39", () => {
+    const winds = buildClimatologyWindField("2026-11-22T06:00:00Z");
+    const currents = buildClimatologyCurrentsGrid("2026-11-22T06:00:00Z");
+    useObservatoryStore.setState({
+      flowMode: "both",
+      winds,
+      currents,
+      windAltitude: "surface",
+      windUnit: "kmh",
+      currentUnit: "ms",
+    });
+
+    const htmlBoth = renderToStaticMarkup(<WindLayerControls />);
+    assert.match(htmlBoth, /data-testid="flow-mode-both"[^>]*aria-pressed="true"/);
+    assert.match(htmlBoth, /data-testid="winds-altitude-surface"/);
+    assert.match(htmlBoth, /data-testid="winds-unit-kmh"/);
+    assert.match(htmlBoth, /data-testid="currents-unit-ms"/);
+    assert.match(htmlBoth, /Ventos atmosféricos:/);
+    assert.match(htmlBoth, /Superfície oceânica:/);
+
+    // Correntes rentes ao mar abaixo dos ventos atmosféricos + orçamento particionado por preset T39
+    assert.ok(OCEAN_LAYER_RADIUS < WIND_LAYER_RADIUS);
+    assert.ok(splitParticleCountForBoth("high") < windParticleCountForPreset("high"));
+    assert.ok(splitParticleCountForBoth("low") < splitParticleCountForBoth("high"));
+
     const src = fs.readFileSync(
       path.resolve(__dirname, "../src/components/globe/WindParticlesLayer.tsx"),
       "utf-8"
@@ -170,5 +200,8 @@ describe("D27b · Correntes Oceânicas Superficiais (Open-Meteo Marine + motor G
     assert.match(src, /uPaletteMode/, "alternância Ventos ↔ Correntes deve usar uniform de paleta");
     assert.match(src, /getContemporarySpatialIndex/, "deve mascarar continentes via índice espacial Natural Earth");
     assert.match(src, /sampleOceanCurrentGrid/, "deve amostrar grade oceânica mascarada");
+
+    // Restaura modo padrão
+    useObservatoryStore.setState({ flowMode: "winds" });
   });
 });

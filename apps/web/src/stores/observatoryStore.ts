@@ -238,7 +238,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   currentsError: false,
   setFlowMode: (flowMode) => {
     set({ flowMode });
-    if (flowMode === "currents" && !get().currentsHasLoaded && !get().currentsLoading) {
+    if (
+      (flowMode === "currents" || flowMode === "both") &&
+      !get().currentsHasLoaded &&
+      !get().currentsLoading
+    ) {
       void get().loadCurrentsData();
     }
   },

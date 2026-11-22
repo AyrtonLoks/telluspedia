@@ -6,7 +6,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useGraphicsQualityStore } from "@/stores/graphicsQualityStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
-import { getContemporarySpatialIndex } from "@/lib/historical-topology";
+import { getContemporarySpatialIndex, type CountrySpatialIndex } from "@/lib/historical-topology";
 import type { GraphicsQualityPreset } from "@/lib/webgl-quality";
 import {
   WIND_SCALE_MAX_MS,
@@ -18,9 +18,11 @@ import {
   sampleOceanCurrentGrid,
   type OceanCurrentSample,
 } from "@/lib/currents-data";
+import type { OceanCurrentGrid, WindGrid } from "@/lib/winds-types";
 
-/** Raio da camada de fluxos (acima das nuvens em 1.006, abaixo da atmosfera em 1.025). */
-export const WIND_LAYER_RADIUS = 1.012;
+/** Raios distintos: correntes oceânicas rentes ao mar (1.008) e ventos acima na atmosfera (1.014). */
+export const OCEAN_LAYER_RADIUS = 1.008;
+export const WIND_LAYER_RADIUS = 1.014;
 
 /** Segmentos por trilha de partícula (14 segmentos em um único draw call para curvas longas e legíveis). */
 const TRAIL_SEGMENTS = 14;
@@ -37,11 +39,15 @@ export function windParticleCountForPreset(preset: GraphicsQualityPreset): numbe
   return 1800;
 }
 
+/** Orçamento dividido (50% cada) quando Ventos e Correntes estão ativos simultaneamente (`Ambos`), preservando FPS. */
+export function splitParticleCountForBoth(preset: GraphicsQualityPreset): number {
+  return Math.round(windParticleCountForPreset(preset) * 0.5);
+}
+
 /**
  * Shader GPU unificado para Ventos Globais (uPaletteMode = 0) e Correntes Oceânicas (uPaletteMode = 1):
  * - Ventos: ciano → esmeralda → amarelo → laranja → rosa-vermelho (WIND_COLOR_STOPS).
  * - Correntes oceânicas: índigo profundo → azul marinho → ciano → turquesa → espuma clara (CURRENT_COLOR_STOPS).
- * - Troca instantânea por uniform sem recompilar shader nem recriar contexto WebGL.
  */
 const VERTEX_SHADER = /* glsl */ `
   attribute float aSpeed;
@@ -153,8 +159,8 @@ function collapseTrail(
   }
 }
 
-function createParticleBuffers(count: number): ParticleBuffers {
-  const rand = mulberry32(27012026);
+function createParticleBuffers(count: number, radius: number, seed: number): ParticleBuffers {
+  const rand = mulberry32(seed);
   const lats = new Float32Array(count);
   const lngs = new Float32Array(count);
   const ages = new Float32Array(count);
@@ -175,38 +181,44 @@ function createParticleBuffers(count: number): ParticleBuffers {
     maxAges[i] = maxAge;
     ages[i] = rand() * maxAge;
 
-    sphericalPoint(lat, lng, WIND_LAYER_RADIUS, pt);
+    sphericalPoint(lat, lng, radius, pt);
     collapseTrail(positions, speeds, alphas, i * VERTS_PER_PARTICLE, pt[0], pt[1], pt[2], 0);
   }
 
   return { count, lats, lngs, ages, maxAges, positions, speeds, alphas };
 }
 
-/**
- * Camada 3D unificada de Ventos Globais (D27a) e Correntes Oceânicas Superficiais (D27b):
- * - Um único `LineSegments` com shader customizado (sem recriar contexto WebGL ao alternar modos).
- * - Apenas 1 projeção esférica por partícula/quadro (deslocamento direto dos vértices 3D da cauda).
- * - No modo Correntes Oceânicas, combina a máscara oceânica da grade com o índice espacial Natural Earth
- *   para manter 100% das streamlines estritamente sobre os oceanos (zero sobreposição em continentes).
- * - Zero alocações no `useFrame`, descarte estrito de buffers (RN21) e pausa no modo de leitura (RN22).
- */
-export const WindParticlesLayer: React.FC = () => {
+interface FlowStreamlinesProps {
+  kind: "winds" | "currents";
+  windGrid?: WindGrid | null;
+  currentGrid?: OceanCurrentGrid | null;
+  radius: number;
+  count: number;
+  opacity: number;
+  isThrottled: boolean;
+  landSpatialIndex: CountrySpatialIndex | null;
+  renderOrder: number;
+  resetKey: string;
+}
+
+const FlowStreamlines: React.FC<FlowStreamlinesProps> = ({
+  kind,
+  windGrid = null,
+  currentGrid = null,
+  radius,
+  count,
+  opacity,
+  isThrottled,
+  landSpatialIndex,
+  renderOrder,
+  resetKey,
+}) => {
   const { invalidate } = useThree();
-  const flowMode = useObservatoryStore((s) => s.flowMode);
-  const winds = useObservatoryStore((s) => s.winds);
-  const windAltitude = useObservatoryStore((s) => s.windAltitude);
-  const currents = useObservatoryStore((s) => s.currents);
-  const opacity = useObservatoryStore((s) => s.layerOpacity.GLOBAL_WINDS ?? 0.85);
-  const isThrottled = useGlobeStore((s) => s.isThrottled);
-  const qualityPreset = useGraphicsQualityStore((s) => s.preset);
+  const isCurrents = kind === "currents";
+  const activeReady = isCurrents ? currentGrid !== null : windGrid !== null;
+  const seed = isCurrents ? 27022026 : 27012026;
 
-  const windGrid = winds ? winds[windAltitude] : null;
-  const activeReady = flowMode === "currents" ? currents !== null : windGrid !== null;
-  const particleCount = windParticleCountForPreset(qualityPreset);
-
-  // Índice espacial Natural Earth 110m (já em memória pelo EarthSphere) para recorte costeiro exato
-  const landSpatialIndex = useMemo(() => getContemporarySpatialIndex(), []);
-  const buffers = useMemo(() => createParticleBuffers(particleCount), [particleCount]);
+  const buffers = useMemo(() => createParticleBuffers(count, radius, seed), [count, radius, seed]);
 
   const geometry = useMemo(() => {
     const geom = new THREE.BufferGeometry();
@@ -220,9 +232,9 @@ export const WindParticlesLayer: React.FC = () => {
     geom.setAttribute("position", posAttr);
     geom.setAttribute("aSpeed", spdAttr);
     geom.setAttribute("aAlpha", alphaAttr);
-    geom.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), WIND_LAYER_RADIUS + 0.05);
+    geom.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), radius + 0.05);
     return geom;
-  }, [buffers]);
+  }, [buffers, radius]);
 
   const material = useMemo(
     () =>
@@ -230,17 +242,18 @@ export const WindParticlesLayer: React.FC = () => {
         vertexShader: VERTEX_SHADER,
         fragmentShader: FRAGMENT_SHADER,
         uniforms: {
-          uOpacity: { value: 0.85 },
-          uPaletteMode: { value: 0.0 },
+          uOpacity: { value: opacity },
+          uPaletteMode: { value: isCurrents ? 1.0 : 0.0 },
         },
         transparent: true,
         depthWrite: false,
         blending: THREE.NormalBlending,
       }),
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isCurrents]
   );
 
-  // Descarte rigoroso de buffers e material WebGL ao trocar preset ou desmontar (RN21)
+  // Descarte rigoroso de buffers e material WebGL ao trocar contagem ou desmontar (RN21)
   useEffect(() => () => geometry.dispose(), [geometry]);
   useEffect(() => () => material.dispose(), [material]);
 
@@ -249,21 +262,15 @@ export const WindParticlesLayer: React.FC = () => {
     invalidate();
   }, [material, opacity, invalidate]);
 
-  useEffect(() => {
-    material.uniforms.uPaletteMode.value = flowMode === "currents" ? 1.0 : 0.0;
-    invalidate();
-  }, [material, flowMode, invalidate]);
-
   const windSampleRef = useRef<WindSample>({ u: 0, v: 0, speed: 0 });
   const currentSampleRef = useRef<OceanCurrentSample>({ u: 0, v: 0, speed: 0, inOcean: false });
   const headPtRef = useRef<[number, number, number]>([0, 0, 0]);
-  const rngStateRef = useRef<number>(987654321);
+  const rngStateRef = useRef<number>(isCurrents ? 135792468 : 987654321);
 
-  // Ao trocar de modo (Ventos ↔ Correntes) ou altitude (10 m ↔ 250 hPa), colapsa trilhas para transição limpa
   useEffect(() => {
     const pt = headPtRef.current;
     for (let i = 0; i < buffers.count; i++) {
-      sphericalPoint(buffers.lats[i], buffers.lngs[i], WIND_LAYER_RADIUS, pt);
+      sphericalPoint(buffers.lats[i], buffers.lngs[i], radius, pt);
       collapseTrail(
         buffers.positions,
         buffers.speeds,
@@ -276,7 +283,7 @@ export const WindParticlesLayer: React.FC = () => {
       );
     }
     invalidate();
-  }, [flowMode, windAltitude, buffers, invalidate]);
+  }, [resetKey, buffers, radius, invalidate]);
 
   useFrame((_, rawDelta) => {
     if (!activeReady || isThrottled) return;
@@ -284,11 +291,9 @@ export const WindParticlesLayer: React.FC = () => {
     const dt = Math.min(rawDelta, MAX_DELTA_SECONDS);
     if (dt <= 0) return;
 
-    const isCurrents = flowMode === "currents";
     const scaleMax = isCurrents
       ? CURRENT_SCALE_MAX_MS
       : WIND_SCALE_MAX_MS[windGrid!.altitude];
-    // Escala de advecção visual calibrada por regime (correntes ~0,2–1,2 m/s; ventos ~5–65 m/s)
     const advectionGain = isCurrents
       ? 10.5
       : windGrid!.altitude === "jet250"
@@ -313,11 +318,10 @@ export const WindParticlesLayer: React.FC = () => {
       let lat = Math.asin((nextRand() * 2 - 1) * 0.96) * RAD2DEG;
       let lng = nextRand() * 360 - 180;
 
-      if (isCurrents && currents) {
-        // Amostragem por rejeição (até 8 tentativas) para nascer estritamente sobre oceanos
+      if (isCurrents && currentGrid) {
         for (let attempt = 0; attempt < 8; attempt++) {
           if (!isLandPoint(lat, lng)) {
-            sampleOceanCurrentGrid(currents, lat, lng, currentSample);
+            sampleOceanCurrentGrid(currentGrid, lat, lng, currentSample);
             if (currentSample.inOcean && currentSample.speed >= 0.02) break;
           }
           lat = Math.asin((nextRand() * 2 - 1) * 0.94) * RAD2DEG;
@@ -328,7 +332,7 @@ export const WindParticlesLayer: React.FC = () => {
       lats[i] = lat;
       lngs[i] = lng;
       ages[i] = 0;
-      sphericalPoint(lat, lng, WIND_LAYER_RADIUS, pt);
+      sphericalPoint(lat, lng, radius, pt);
       collapseTrail(positions, speeds, alphas, vertBase, pt[0], pt[1], pt[2], 0);
     };
 
@@ -344,11 +348,11 @@ export const WindParticlesLayer: React.FC = () => {
       let speed = 0;
       let blockedOnLand = false;
 
-      if (isCurrents && currents) {
+      if (isCurrents && currentGrid) {
         if (isLandPoint(lat, lng)) {
           blockedOnLand = true;
         } else {
-          sampleOceanCurrentGrid(currents, lat, lng, currentSample);
+          sampleOceanCurrentGrid(currentGrid, lat, lng, currentSample);
           u = currentSample.u;
           v = currentSample.v;
           speed = currentSample.speed;
@@ -364,7 +368,6 @@ export const WindParticlesLayer: React.FC = () => {
       const normSpeed = Math.min(1, speed / scaleMax);
       const minSpeed = isCurrents ? 0.015 : 0.05;
 
-      // Passo esférico com correção cos(lat) para velocidade angular realista em altas latitudes
       const cosLat = Math.max(0.2, Math.cos(lat * DEG2RAD));
       const dLng = (u * advectionGain * dt) / cosLat;
       const dLat = v * advectionGain * dt;
@@ -388,15 +391,13 @@ export const WindParticlesLayer: React.FC = () => {
       lats[i] = lat;
       lngs[i] = lng;
       ages[i] = age;
-      sphericalPoint(lat, lng, WIND_LAYER_RADIUS, pt);
+      sphericalPoint(lat, lng, radius, pt);
 
       if (crossedSeam) {
-        // Evita segmento atravessando o globo ao cruzar ±180°
         collapseTrail(positions, speeds, alphas, vertBase, pt[0], pt[1], pt[2], normSpeed);
         continue;
       }
 
-      // Desloca os segmentos da cauda (s = TRAIL_SEGMENTS-1 .. 1) sem recomputar seno/cosseno
       for (let s = TRAIL_SEGMENTS - 1; s > 0; s--) {
         const dstV = vertBase + s * 2;
         const srcV = dstV - 2;
@@ -412,7 +413,6 @@ export const WindParticlesLayer: React.FC = () => {
         speeds[dstV + 1] = speeds[srcV + 1];
       }
 
-      // Novo segmento da cabeça: v0 = nova posição, v1 = antiga cabeça (antigo v0)
       const headP = vertBase * 3;
       const prevHeadX = positions[headP];
       const prevHeadY = positions[headP + 1];
@@ -428,7 +428,6 @@ export const WindParticlesLayer: React.FC = () => {
       speeds[vertBase] = normSpeed;
       speeds[vertBase + 1] = prevHeadSpeed;
 
-      // Fade suave nas pontas do ciclo de vida (sin(π * t))
       const lifeRatio = Math.min(1, Math.max(0, age / maxAge));
       const lifeFade = Math.sin(lifeRatio * Math.PI);
       const speedBoost = 0.72 + 0.28 * normSpeed;
@@ -456,7 +455,64 @@ export const WindParticlesLayer: React.FC = () => {
       material={material}
       frustumCulled={false}
       raycast={() => null}
-      renderOrder={2}
+      renderOrder={renderOrder}
     />
+  );
+};
+
+/**
+ * Camada 3D unificada de Ventos Globais (D27a) e Correntes Oceânicas Superficiais (D27b):
+ * - Suporta modos `winds`, `currents` e `both` (correntes em raio 1.008 abaixo dos ventos em raio 1.014).
+ * - Zero alocações no `useFrame`, recorte costeiro Natural Earth 110m nos oceanos, descarte estrito
+ *   de buffers (RN21) e pausa automática no modo de leitura (RN22).
+ */
+export const WindParticlesLayer: React.FC = () => {
+  const flowMode = useObservatoryStore((s) => s.flowMode);
+  const winds = useObservatoryStore((s) => s.winds);
+  const windAltitude = useObservatoryStore((s) => s.windAltitude);
+  const currents = useObservatoryStore((s) => s.currents);
+  const opacity = useObservatoryStore((s) => s.layerOpacity.GLOBAL_WINDS ?? 0.85);
+  const isThrottled = useGlobeStore((s) => s.isThrottled);
+  const qualityPreset = useGraphicsQualityStore((s) => s.preset);
+
+  const windGrid = winds ? winds[windAltitude] : null;
+  const landSpatialIndex = useMemo(() => getContemporarySpatialIndex(), []);
+
+  const showWinds = flowMode === "winds" || flowMode === "both";
+  const showCurrents = flowMode === "currents" || flowMode === "both";
+  const count =
+    flowMode === "both"
+      ? splitParticleCountForBoth(qualityPreset)
+      : windParticleCountForPreset(qualityPreset);
+
+  return (
+    <>
+      {showCurrents && (
+        <FlowStreamlines
+          kind="currents"
+          currentGrid={currents}
+          radius={OCEAN_LAYER_RADIUS}
+          count={count}
+          opacity={opacity}
+          isThrottled={isThrottled}
+          landSpatialIndex={landSpatialIndex}
+          renderOrder={2}
+          resetKey={`currents:${flowMode}`}
+        />
+      )}
+      {showWinds && (
+        <FlowStreamlines
+          kind="winds"
+          windGrid={windGrid}
+          radius={WIND_LAYER_RADIUS}
+          count={count}
+          opacity={flowMode === "both" ? Math.max(0.1, opacity * 0.92) : opacity}
+          isThrottled={isThrottled}
+          landSpatialIndex={null}
+          renderOrder={3}
+          resetKey={`winds:${windAltitude}:${flowMode}`}
+        />
+      )}
+    </>
   );
 };

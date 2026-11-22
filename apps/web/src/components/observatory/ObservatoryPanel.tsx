@@ -130,6 +130,10 @@ const LAYER_OPTIONS: LayerOption[] = [
     icon: Wind,
     tone: "layer-satellites",
     badgeText: (s: ReturnType<typeof useObservatoryStore.getState>) => {
+      if (s.flowMode === "both") {
+        const level = s.windAltitude === "jet250" ? "250 hPa" : "10 m";
+        return `${level} + Oceanos`;
+      }
       if (s.flowMode === "currents") {
         if (!s.currents) return "Correntes";
         const val = s.currentUnit === "knots" ? s.currents.maxSpeedMs * 1.9438444924 : s.currents.maxSpeedMs;
@@ -277,18 +281,27 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                         meta={
                           layer.id === "GLOBAL_WINDS" && storeState.flowMode === "currents"
                             ? storeState.currentsMeta
-                            : storeState.layerMeta[layer.id]
+                            : layer.id === "GLOBAL_WINDS" &&
+                                storeState.flowMode === "both" &&
+                                storeState.currentsMeta.source === "fallback" &&
+                                storeState.layerMeta.GLOBAL_WINDS.source === "live"
+                              ? storeState.currentsMeta
+                              : storeState.layerMeta[layer.id]
                         }
                         isLoading={
                           layer.id === "GLOBAL_WINDS" && storeState.flowMode === "currents"
                             ? storeState.currentsLoading
-                            : storeState.isLoading[layer.id] &&
-                              (layer.id !== "MARITIME_ROUTES" || !storeState.hasLoaded[layer.id])
+                            : layer.id === "GLOBAL_WINDS" && storeState.flowMode === "both"
+                              ? storeState.isLoading.GLOBAL_WINDS || storeState.currentsLoading
+                              : storeState.isLoading[layer.id] &&
+                                (layer.id !== "MARITIME_ROUTES" || !storeState.hasLoaded[layer.id])
                         }
                         isOffline={
                           layer.id === "GLOBAL_WINDS" && storeState.flowMode === "currents"
                             ? storeState.currentsError
-                            : storeState.layerError[layer.id] && layer.id !== "MARITIME_ROUTES"
+                            : layer.id === "GLOBAL_WINDS" && storeState.flowMode === "both"
+                              ? storeState.layerError.GLOBAL_WINDS || storeState.currentsError
+                              : storeState.layerError[layer.id] && layer.id !== "MARITIME_ROUTES"
                         }
                       />
                     </span>
