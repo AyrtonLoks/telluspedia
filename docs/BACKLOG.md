@@ -211,7 +211,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | DONE | antigravity | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | DONE | antigravity | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
 | T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | DONE | claude | — | G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE, G-INFRA, G-CONTEUDO |
-| T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | REVIEW | claude | — | G-PAIS, G-COSMOS, G-INFRA, G-EPOCA, G-OBS |
+| T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | DONE | claude | — | G-PAIS, G-COSMOS, G-INFRA, G-EPOCA, G-OBS |
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | IN_PROGRESS | antigravity | T31 | G-GLOBO, G-SHELL |
@@ -1245,7 +1245,7 @@ Mesmo após a T25 (485 → 223 kB), `country-data.ts` + JSONs de indicadores + `
 
 ### T36 · Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any`
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/t36-modularizar · **Worktree:** —
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/t36-modularizar · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Qualidade · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PAIS, G-COSMOS, G-INFRA, G-EPOCA, G-OBS
 
 **Contexto / problema**
@@ -1264,6 +1264,7 @@ Cinco arquivos ultrapassam 850 linhas (`country-data.ts` 1.138, `CometHalleyTraj
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada: primeira TODO elegível da fase 11 após a T35 (só há tarefas em REVIEW, que não bloqueiam). Grupos adicionados de saída: G-EPOCA (`paleo-data.ts`, `historical-entities.ts`) e G-OBS (`any` em `ObservatoryPanel`). Levantamento: 5 arquivos acima de 800 linhas (`country-data` 1.098, `CometHalleyTrajectory` 1.060, `astronomy-planets` 966, `paleo-data` 852, `historical-entities` 817), 9 `any` e os 5 `@radix-ui/*` sem nenhum import.
 - 2026-11-21 · claude · REVIEW · `809ff6b` (5 `@radix-ui/*` removidos; lockfile editado só nessas entradas e no `@radix-ui/number` — o `pnpm install` do Ayrton, pnpm 12, aceitou sem alterar), `24b5ed5` (9 `any` → `DossierCitations`, tipo do `OrbitControls` do drei, estado do store, `Partial<CanvasRenderingContext2D>`), `bfba1af` (country-data 1.098 → 258, CometHalleyTrajectory 1.060 → 427, astronomy-planets 966 → 24, paleo-data 853 → 80, historical-entities 817 → 139, em módulos coesos com re-exports; maior arquivo de `src/` agora 571 linhas). Teste `code-hygiene.test.ts` (≤ 600 linhas, zero `any`, zero `@radix-ui` ocioso). 685 testes aqui (6 de ambiente/Prisma); First Load de `/` inalterado (158,8 kB). Navegador (1440×900): Japão com painel e dossiê (fonte primária na nota de rodapé), Áustria-Hungria em 1914, Cosmos com o Halley em 1986 (núcleo e cauda dupla), Pangeia com paleomapa e limites de placas; sem erros no console.
+- 2026-11-21 · ayrton · DONE · Aprovado (registrado por claude).
 
 ---
 
