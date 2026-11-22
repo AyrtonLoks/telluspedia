@@ -214,7 +214,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | DONE | claude | — | G-PAIS, G-COSMOS, G-INFRA, G-EPOCA, G-OBS |
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | REVIEW | claude | — | G-INFRA |
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
-| T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | IN_PROGRESS | antigravity | T31 | G-GLOBO, G-SHELL |
+| T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | REVIEW | antigravity | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | T41 | Corrigir aviso de hidratação do botão Observatório em `/study/<id>` com camadas ativas | Frontend | P2 | P | TODO | — | — | G-SHELL, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
@@ -1315,7 +1315,7 @@ Apenas os 6 `PILOT_COUNTRIES` possuem dossiês completos no Modo Leitura; os dem
 
 ### T39 · Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t39-adaptive-webgl-quality · **Worktree:** ../telluspedia-wt/antigravity-t39
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t39-adaptive-webgl-quality · **Worktree:** —
 - **Prioridade:** P2 · **Área:** 3D/Perf · **Tamanho:** M · **Depende de:** T31 · **Grupos:** G-GLOBO, G-SHELL
 
 **Contexto / problema**
@@ -1326,11 +1326,12 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 2. Em modo `Auto`, ajustar DPR dinamicamente quando o FPS ficar abaixo de 30 fps por janela sustentada.
 
 **Critérios de aceite**
-- [ ] Preset de qualidade acessível na UI (tokens D14), persistido e aplicado sem recriar o contexto WebGL.
+- [x] Preset de qualidade acessível na UI (tokens D14), persistido e aplicado sem recriar o contexto WebGL.
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (`9615396`). Grupos `G-GLOBO` e `G-SHELL` livres e disjuntos da `T36` do claude (`G-PAIS, G-COSMOS, G-INFRA, G-EPOCA, G-OBS`). Nota: `SkyStars` e `AsteroidBeltLayer` (`G-COSMOS`) permanecem intactos enquanto T36 ocupa `G-COSMOS`, com multiplicadores de densidade já expostos no store para consumo imediato assim que `G-COSMOS` liberar.
+- 2026-11-21 · antigravity · REVIEW · Implementação em `9227fa3` (rebased sobre `e864aed`) + fix de tipagem em `a023698` (`DossierCitations` → `JsonValue` para destravar `prisma/seed.ts` após `pnpm db:generate`). **Motor & Store:** criados `src/lib/webgl-quality.ts` (perfis `auto`/`high`/`medium`/`low`, `computeEffectiveDpr`, persistência `localStorage` `telluspedia.graphics-quality.v1` e máquina de histerese `stepAdaptiveFps`: reduz escala de DPR em `−0,15` até `0,55` após 2 janelas consecutivas `< 30 fps` e recupera `+0,15` após 4 janelas `≥ 50 fps`) e `src/stores/graphicsQualityStore.ts` (hidratação via `useEffect` sem mismatch SSR; expõe multiplicadores `starDensity` e `asteroidDensity` prontos para `SkyStars`/`AsteroidBeltLayer`). **Integração WebGL (sem recriar contexto):** `src/components/globe/WebGLQualityController.tsx` (montado em `EarthSphere.tsx`) ajusta `setDpr` do R3F em tempo real e mede FPS em janelas de `1,5 s` ignorando pausas `isThrottled` (RN22); `EarthSphere.tsx` aplica `textureTier` (`2k` vs `4k`) com troca segura de texturas (descarta a anterior somente após a substituta ligar ao shader, carregando `uSurfaceTexture` 2K uma única vez) e `earthSegments`; `CloudLayer.tsx` respeita `cloudsEnabled` (fade suave para `0` em `Baixo`) e `earthSegments`. **UI D14 & Bundle:** criado `src/components/globe/GraphicsQualityPanel.tsx` (tokens D14 puros, incluído em `MIGRATED` no `design-system.test.tsx`, carregado sob demanda via `next/dynamic` + pré-carga em `panel-preload.ts`), acionado por botão discreto no canto superior direito do `GlobeExperienceShell.tsx` (alinhado aos controles de mapa em mobile/tablet e à navbar em desktop, deslocando-se quando o dock direito abre). **Captura antes/depois (§1.5):** antes, o canto superior direito ficava vazio e não havia controle de DPR/qualidade; depois, exibe um pill discreto `Auto` (somente ícone em `375 px`, ícone + rótulo em `≥ 640 px`) que abre o painel translúcido D14 com telemetria `DPR x.xx× · NN fps`, badge `"DPR adaptado"` em queda automática e 4 cartões de seleção (`Auto`, `Alto`, `Médio`, `Baixo`), sem sobrepor navbar, controles ou dock nos 6 breakpoints (`375`, `768`, `1366`, `1680`, `1920`, `2560 px`). **Validação:** `pnpm db:generate`, `pnpm typecheck` ok, `pnpm lint` ok, `pnpm test` 737/738 ok (0 falhas, 1 skip; 6 novos testes em `test/webgl-quality.test.tsx`), `pnpm build` ok (`/` = **159 kB**, `bundle-budget.test.ts` 6/6 `< 160 kB`), Playwright E2E 18/18 ok (snapshots atualizados e contraste WCAG AA verde) e verificação WebGL ao vivo em Chromium HiDPI (`2×`): canvas redimensionado dinamicamente `960×600` (`1.00×`) → `1440×900` (`1.50×`) → `1920×1200` (`2.00×`) no mesmo elemento `<canvas>`, `webglcontextlost = 0`, persistência de `"Baixo"` validada após reload e 0 erros de console. Fora de escopo nesta entrega (para respeitar `G-COSMOS` travado durante a implementação): conexão dos multiplicadores `starDensity`/`asteroidDensity` em `SkyStars` e `AsteroidBeltLayer`. Aguarda aceite do Ayrton.
 
 ---
 
