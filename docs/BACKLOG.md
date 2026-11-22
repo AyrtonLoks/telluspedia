@@ -186,11 +186,11 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T27 | Corrigir falha intermitente do loader next/font com Merriweather v33 | Infra | P1 | P | DONE | antigravity | — | G-SHELL, G-INFRA |
 | D02 | Oceanos, relevo, nuvens e atmosfera | 3D | P1 | G | DONE | claude | D01 | G-GLOBO, G-EPOCA |
 | D03 | Fronteiras com espessura real e highlight | 3D | P2 | M | DONE | codex | — | G-FRONTEIRAS |
-| D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | REVIEW | claude | — | G-OBS |
+| D04 | ISS: SGP4 real, órbita correta, outros satélites | 3D/Dados | P1 | G | DONE | claude | — | G-OBS |
 | D05 | Queimadas: sprites, heatmap, dados reais | 3D/Dados | P1 | M | DONE | claude | T04, T05 | G-OBS, G-GLOBO |
 | D06 | Eventos severos: símbolos, clusters, trilhas | 3D/Dados | P1 | M | DONE | codex | T05 | G-OBS, G-INFRA |
 | D07 | Aviões: modelos glTF, interpolação, cobertura global | 3D/Dados | P1 | G | DONE | codex | T05 | G-OBS |
-| D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | REVIEW | codex | T05 | G-OBS |
+| D08 | Embarcações reais via AIS | 3D/Dados | P1 | G | DONE | codex | T05 | G-OBS |
 | D09 | Catálogo estelar real e 88 constelações | 3D/Dados | P1 | G | DONE | codex | — | G-COSMOS |
 | D10 | Cometa Halley: visual e distância corretos | 3D | P1 | M | DONE | antigravity | — | G-COSMOS |
 | D11 | Política de escala e labels do sistema solar | 3D | P2 | M | DONE | claude | D10 | G-COSMOS |
@@ -203,7 +203,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D18 | Busca universal, ⌘K e estado na URL | Frontend | P2 | G | DONE | codex | D14 | G-SHELL, G-EPOCA, G-COSMOS |
 | D19 | Responsividade e contraste | Design | P2 | M | DONE | codex | D14, T19 | G-SHELL, G-EPOCA, G-TIMELINE, G-OBS, G-INFRA, G-ESTUDOS |
 | D20 | Migrar demais componentes para o design system | Design | P1 | G | DONE | antigravity | D14 | G-SHELL, G-PAIS, G-COSMOS |
-| T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | REVIEW | codex | — | G-INFRA |
+| T28 | Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`) | Segurança | P0 | M | DONE | codex | — | G-INFRA |
 | T29 | Eliminar séries fabricadas no `ComparisonCharts` e abrir Comparador para os 177 países | Dados | P0 | M | DONE | antigravity | — | G-PAIS |
 | T30 | Cabeçalhos HTTP de segurança (CSP, HSTS, Referrer, Permissions) e `Cache-Control` nas APIs | Segurança | P1 | P | DONE | claude | — | G-INFRA, G-ESTUDOS |
 | T31 | Resiliência de runtime: Error Boundaries (`error.tsx`/`global-error.tsx`), `webglcontextlost` e fallback sem GPU | Frontend/3D | P1 | M | DONE | antigravity | — | G-SHELL, G-GLOBO |
@@ -1041,7 +1041,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 
 ### T28 · Atualizar Next.js + sanear vulnerabilidades críticas (`pnpm audit`)
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/t28-next-security · **Worktree:** ../telluspedia-wt/codex-t28
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/t28-next-security · **Worktree:** ../telluspedia-wt/codex-t28
 - **Prioridade:** P0 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -1060,6 +1060,7 @@ Durante `pnpm build` em Next.js 15.1.0, o Google Fonts CDN passou a responder in
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · codex · IN_PROGRESS · Primeira tarefa elegível. G-SHELL reservado pela D17; G-INFRA livre.
 - 2026-11-21 · codex · REVIEW · Next.js, eslint-config-next e bundle analyzer em 15.5.29. Sharp 0.35.5 resolvido pela dependência opcional do Next e PostCSS 8.5.30 por override no consumidor que fixa a versão vulnerável. Typecheck gera os tipos de rotas em checkout limpo. A raiz do tracing aponta para o monorepo. `pnpm audit --prod --audit-level=high` passou com zero alertas em produção, ante 46 (5 críticos, 15 altos). SHA-256 de `pnpm-lock.yaml` antes `982b070f31f66497de120c5aa1c89347103eebf35a573ab389980d35f98e4fae` e depois `eab8c9b5a1706744010b6f56e0abb3b93b8e5a77a2c3892351345656b1afcdff`. Instalação congelada, typecheck, lint, 568 testes, build e 4 E2E passaram. Smoke HTTP com PostgreSQL descartável validou home, país, comparador, estudo, dossiê e os PNGs Open Graph de país e estudo (1200 × 630). First Load JS de / em 222 kB. Implementação em `de7b4d8`.
+- 2026-11-22 · ayrton · DONE · Aprovada pelo Ayrton (registrado pelo antigravity a pedido). Conferido `pnpm audit --prod --audit-level=high` com 0 vulnerabilidades em `next@15.5.29` e `/` em 159 kB.
 
 ---
 
@@ -1491,7 +1492,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D04 · ISS: SGP4 real, órbita correta, outros satélites
 
-- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/d04-satellite-ux · **Worktree:** ../telluspedia-wt/claude-d04c
+- **Status:** DONE · **Responsável:** claude · **Branch:** task/d04-satellite-ux · **Worktree:** ../telluspedia-wt/claude-d04c
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -1515,7 +1516,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 - [x] Posição da ISS dentro de ~50 km da `wheretheiss.at` no mesmo instante (teste manual registrado no Log).
 - [x] Órbita fechada, sem reta atravessando o globo, em qualquer ângulo de câmera.
 - [x] HUD e modelo exibem a mesma posição/altitude.
-- [ ] Sem alocações por frame (verificar no profiler).
+- [x] Sem alocações por frame (verificar no profiler).
 
 **Log**
 - 2026-11-20 · claude · TODO · Tarefa criada na auditoria.
@@ -1525,6 +1526,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 - 2026-11-20 · claude · TODO · Reabertura desfeita antes de qualquer código: a D06 (codex) está IN_PROGRESS em G-OBS, o mesmo grupo — pelo protocolo, a D04 não pode ficar em andamento ao mesmo tempo. Correções pendentes (retomar quando G-OBS estiver livre): ground track desligado por padrão com opção “Rastro na superfície”; satélites mais fáceis de identificar e selecionar (pontos maiores com contorno, raio de clique maior, cursor, anel de hover/seleção e etiqueta com o nome).
 - 2026-11-20 · claude · IN_PROGRESS · Retomada: G-OBS livre (D07 do codex em REVIEW). Worktree a partir de origin/master.
 - 2026-11-20 · claude · REVIEW · Commit `24dd5a3`. (1) Ground track desligado por padrão (`observatoryStore.showIssGroundTrack = false`) com chip “Rastro na superfície” no painel — era lido como trajetória duplicada; a órbita (anel) continua sempre visível. (2) Satélites: pontos maiores com contorno escuro (estações 9 px, visíveis 7 px, tamanho por vértice), raio de clique 12 px (ISS 20 px), cursor de mão, anel ciano de hover e anel branco no satélite selecionado (acompanham o movimento a cada 1 s), etiqueta `<Html>` com o nome (“ISS (ZARYA) · Estação Espacial Internacional” / “<nome> · estação|satélite”) sem capturar eventos. Legenda do painel atualizada. Testes: +2 (toggle do rastro; invariantes da camada). Validação: typecheck ok, lint ok, 435/435 testes, build ok. Não verificado visualmente pelo agente — conferir hover/etiqueta e clique nos pontos.
+- 2026-11-22 · ayrton · DONE · Aprovada pelo Ayrton (registrado pelo antigravity a pedido). Auditado `IssOrbitLayer.tsx`: zero alocações por frame em `useFrame` (vetores pré-alocados em `useMemo`) e descarte rigoroso de geometrias/materiais.
 
 ---
 
@@ -1623,7 +1625,7 @@ Só existe uma textura diurna `earth_day.jpg` 2048×1024 (de 2010) e uma noturna
 
 ### D08 · Embarcações reais via AIS
 
-- **Status:** REVIEW · **Responsável:** codex · **Branch:** task/d08-embarcacoes-ais · **Worktree:** ../telluspedia-wt/codex-d08
+- **Status:** DONE · **Responsável:** codex · **Branch:** task/d08-embarcacoes-ais · **Worktree:** ../telluspedia-wt/codex-d08
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** T05 · **Grupos:** G-OBS
 
 **Contexto / problema**
@@ -1638,7 +1640,7 @@ A camada "Rotas Marítimas Globais" é só um conjunto de 5 polylines estáticas
 6. Documentar provedor, limites e termos de uso em `docs/DATA_SOURCES.md`.
 
 **Critérios de aceite**
-- [ ] Navios reais visíveis nos principais corredores (Malaca, Suez, Canal da Mancha) com posições atualizadas.
+- [x] Navios reais visíveis nos principais corredores (Malaca, Suez, Canal da Mancha) com posições atualizadas.
 - [x] Chave do provedor nunca exposta ao navegador.
 - [x] Fallback rotulado "Simulado".
 
@@ -1654,6 +1656,7 @@ A camada "Rotas Marítimas Globais" é só um conjunto de 5 polylines estáticas
 - 2026-11-20 · codex · IN_PROGRESS · Reaberta após revisão do Ayrton. Substituir as silhuetas individuais por miniaturas de navios com leitura visual semelhante à camada aérea.
 - 2026-11-20 · codex · REVIEW · Miniaturas 3D originais com seis variantes, orientação AIS e malhas instanciadas por classe. As capturas de Malaca mostram antes a seta individual e depois casco, cabine e convés visíveis junto ao agrupamento numerado. Chromium validou as seis variantes no globo, a seleção direta, a posição estimada e o agrupamento de 130 embarcações. Typecheck, lint, 483 testes e build passaram. Implementação em `bd54fc8`.
 - 2026-11-20 · codex · REVIEW · Ayrton aprovou as miniaturas 3D. A nova verificação com AIS Stream recebeu posições ao vivo em Malaca e no Canal da Mancha. Suez ficou sem leituras nas três amostras ao vivo. O critério de cobertura dos três corredores permanece pendente.
+- 2026-11-22 · ayrton · DONE · Aprovada pelo Ayrton (registrado pelo antigravity a pedido), aceitando a limitação esporádica dos receptores gratuitos do AIS Stream em Suez (bounding box conferida em `ais-data.ts`, demais corredores ao vivo, miniaturas 3D e documentação em `DATA_SOURCES.md` aprovados).
 
 ---
 
