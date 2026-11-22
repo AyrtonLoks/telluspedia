@@ -212,7 +212,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | DONE | antigravity | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
 | T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | DONE | claude | — | G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE, G-INFRA, G-CONTEUDO |
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | DONE | claude | — | G-PAIS, G-COSMOS, G-INFRA, G-EPOCA, G-OBS |
-| T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | IN_PROGRESS | claude | — | G-INFRA |
+| T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | REVIEW | claude | — | G-INFRA |
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
 | T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | IN_PROGRESS | antigravity | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
@@ -1270,7 +1270,7 @@ Cinco arquivos ultrapassam 850 linhas (`country-data.ts` 1.138, `CometHalleyTraj
 
 ### T37 · Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache`
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t37-docs · **Worktree:** —
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/t37-docs · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Docs · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -1286,6 +1286,7 @@ Cinco arquivos ultrapassam 850 linhas (`country-data.ts` 1.138, `CometHalleyTraj
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada: única TODO elegível (T41, D27 e D28 esperam G-SHELL/G-GLOBO, com a T39 em andamento). Só docs e `.gitignore`.
+- 2026-11-21 · claude · REVIEW · ROADMAP reescrito (existe hoje × planejado; GIBS = 4 produtos, ventos D27, lixo marítimo e INPE sem tarefa, sem "gaveta glassmorphism"); ARCHITECTURE com árvore real, Observatório (T05, GIBS, SGP4, AIS), TTLs reais e campos novos do Study; DATA_SOURCES com seção 3.1 de estado por fonte; README e AGENTS.md (cn) atualizados; `.pytest_cache/` e `.ruff_cache/` no `.gitignore` (não estavam rastreados). Testes que leem docs passam.
 
 ---
 
