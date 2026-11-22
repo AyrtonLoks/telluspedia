@@ -1,3 +1,4 @@
+import type { DossierCitations } from "./citation-types";
 import {
   HISTORICAL_ERAS,
   resolveHistoricalEra,
@@ -52,7 +53,7 @@ export interface HistoricalEntity {
     title: string;
     contentMarkdown: string;
     estimatedReadMin: number;
-    citationsJson: any;
+    citationsJson: DossierCitations;
   }[];
 }
 

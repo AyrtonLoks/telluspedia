@@ -1,3 +1,4 @@
+import type { DossierCitations } from "./citation-types";
 import {
   HISTORICAL_ENTITIES,
   resolveHistoricalEntity,
@@ -137,7 +138,7 @@ export interface CountryData {
     title: string;
     contentMarkdown: string;
     estimatedReadMin: number;
-    citationsJson: any;
+    citationsJson: DossierCitations;
   }[];
   milestones: {
     id: string;

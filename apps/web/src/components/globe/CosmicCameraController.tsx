@@ -3,6 +3,7 @@
 import React, { useRef, useLayoutEffect } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
+import type { OrbitControls } from "@react-three/drei";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useCosmicExitStore } from "@/stores/cosmicExitStore";
@@ -30,7 +31,18 @@ import {
 /** Teto do passo de tempo por quadro: um travamento (montagem, shaders) não consome o voo. */
 const MAX_FRAME_STEP = 1 / 30;
 
-function resetControlsDeltas(ctrl: any) {
+/** O OrbitControls do drei (three-stdlib). */
+type OrbitControlsImpl = React.ComponentRef<typeof OrbitControls>;
+/** Campos internos do OrbitControls zerados ao assumir a câmera (não fazem parte da API pública). */
+interface OrbitControlsInternals {
+  state?: number;
+  _sphericalDelta?: { set(x: number, y: number, z: number): unknown };
+  _panOffset?: { set(x: number, y: number, z: number): unknown };
+  _scale?: number;
+}
+
+function resetControlsDeltas(controls: OrbitControlsImpl | null) {
+  const ctrl = controls as unknown as OrbitControlsInternals | null;
   if (!ctrl) return;
   if (ctrl.state !== undefined) ctrl.state = -1;
   if (ctrl._sphericalDelta?.set) ctrl._sphericalDelta.set(0, 0, 0);
@@ -60,7 +72,7 @@ function getBodyPosition(
   }
   const planets = computeAllPlanetaryPositions(year);
   if (id in planets) {
-    return (planets as any)[id].scenePosition;
+    return planets[id as keyof typeof planets].scenePosition;
   }
   return new THREE.Vector3(0, 0, 0);
 }
@@ -120,7 +132,7 @@ export function cosmicMinDistance(id: CelestialBodyId | null, mode: CosmicScaleM
 
 export const CosmicCameraController: React.FC = () => {
   const { camera } = useThree();
-  const controlsHook = useThree((state) => (state as any).controls);
+  const controlsHook = useThree((state) => state.controls as unknown as OrbitControlsImpl | null);
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);

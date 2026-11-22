@@ -49,7 +49,7 @@ interface LayerOption {
   description: string;
   icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
   tone: Tone;
-  badgeText: (state: any) => string;
+  badgeText: (state: ReturnType<typeof useObservatoryStore.getState>) => string;
 }
 
 const LAYER_OPTIONS: LayerOption[] = [

@@ -1,3 +1,5 @@
+import type { DossierCitations } from "./citation-types";
+
 export interface CountrySummary {
   isoCode: string;
   iso2: string;
@@ -32,7 +34,7 @@ export interface CountryDossier extends CountrySummary {
     title: string;
     contentMarkdown: string;
     estimatedReadMin: number;
-    citationsJson: any;
+    citationsJson: DossierCitations;
   }[];
   milestones: {
     id: string;

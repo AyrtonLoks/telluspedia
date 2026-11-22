@@ -738,8 +738,9 @@ export function generatePaleoPangeaCanvas(
   // 6. Central Pangean Mountain Belt (Variscan-Appalachian Orogeny)
   ctx.beginPath();
   ctx.moveTo(width * 0.35, height * 0.46);
-  if (typeof (ctx as any).quadraticCurveTo === "function") {
-    (ctx as any).quadraticCurveTo(width * 0.45, height * 0.41, width * 0.56, height * 0.38);
+  // Alguns canvases de teste não implementam curvas: cai para uma reta.
+  if (typeof (ctx as Partial<CanvasRenderingContext2D>).quadraticCurveTo === "function") {
+    ctx.quadraticCurveTo(width * 0.45, height * 0.41, width * 0.56, height * 0.38);
   } else {
     ctx.lineTo(width * 0.56, height * 0.38);
   }
