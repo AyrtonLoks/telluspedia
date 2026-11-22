@@ -291,10 +291,10 @@ describe("D10 · Cometa 1P/Halley: distância real, núcleo esculpido, coma, cau
   });
 
   test("9. Guardrails visuais, de seleção, GLSL world-space e memória WebGL em CometHalleyTrajectory.tsx", () => {
-    const src = fs.readFileSync(
-      path.resolve(__dirname, "../src/components/globe/CometHalleyTrajectory.tsx"),
-      "utf-8"
-    );
+    // T36: os shaders e a geometria foram para módulos vizinhos; as regras valem para o conjunto.
+    const src = ["CometHalleyTrajectory.tsx", "comet-halley-shaders.ts", "comet-halley-geometry.ts"]
+      .map((f) => fs.readFileSync(path.resolve(__dirname, "../src/components/globe", f), "utf-8"))
+      .join("\n");
     assert.doesNotMatch(src, /\bdistanceFactor\s*=/, "Label do Halley não pode usar distanceFactor");
     assert.doesNotMatch(src, /<ringGeometry\b/, "Indicador de seleção não pode usar ringGeometry 3D gigante");
     assert.doesNotMatch(src, /normalMatrix\s*\*\s*normal/, "Shaders devem usar modelMatrix (world-space), nunca normalMatrix");
