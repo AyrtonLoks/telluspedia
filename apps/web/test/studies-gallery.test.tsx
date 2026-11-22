@@ -221,8 +221,8 @@ describe("D23 · Filtros, paginação e GET /api/studies", () => {
     );
     assert.match(
       shellSrc,
-      /typeof window === "undefined" && hydratedKeyRef\.current !== stateKey/,
-      "hidratação síncrona durante o render deve ocorrer apenas em SSR (evita setState-in-render no React 19)"
+      /\(typeof window === "undefined" \|\| !clientHydrated\) && hydratedKeyRef\.current !== stateKey/,
+      "hidratação síncrona durante o render deve ocorrer apenas em SSR ou antes da montagem inicial no cliente (T41; evita setState-in-render em navegações React 19)"
     );
     assert.match(shellSrc, /useIsomorphicLayoutEffect/);
     assert.match(shellSrc, /leftHistoricalStudyEra/);
