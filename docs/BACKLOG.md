@@ -224,7 +224,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | DONE | claude | — | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | DONE | antigravity | D24 | G-CONTEUDO, G-TIMELINE |
 | D27a | Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05) | 3D/Dados | P2 | G | DONE | antigravity | D25 | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
-| D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | TODO | — | D27a | G-OBS, G-GLOBO |
+| D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | IN_PROGRESS | antigravity | D27a | G-OBS, G-GLOBO |
 | D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
 
 ---
@@ -2235,7 +2235,7 @@ Prevista no Horizonte 3 do `docs/ROADMAP.md` (originalmente `D27`, tamanho `GG`,
 
 ### D27b · Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d27b-ocean-currents · **Worktree:** ../telluspedia-wt/antigravity-d27b
 - **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** D27a · **Grupos:** G-OBS, G-GLOBO
 
 **Contexto / problema**
@@ -2250,6 +2250,7 @@ Segunda metade da `D27` (`GG`): estender o motor de partículas vetoriais sobre 
 
 **Log**
 - 2026-11-22 · antigravity · TODO · Criada a partir da quebra de `D27` (`GG`) conforme §1.7.
+- 2026-11-22 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`8cba2ce`). Dependência `D27a` concluída (`DONE`); grupos `G-OBS` e `G-GLOBO` livres.
 
 ---
 
