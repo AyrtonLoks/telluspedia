@@ -210,7 +210,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | DONE | antigravity | T29 | G-PAIS, G-PIPELINE |
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | DONE | antigravity | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | DONE | antigravity | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
-| T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | IN_PROGRESS | claude | — | G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE, G-INFRA |
+| T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | REVIEW | claude | — | G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE, G-INFRA |
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | TODO | — | — | G-PAIS, G-COSMOS, G-INFRA |
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
@@ -1217,7 +1217,7 @@ Não há `apps/web/Dockerfile` nem endpoint `/api/health`; `study-rate-limit.ts`
 
 ### T35 · Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js`
 
-- **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t35-bundle · **Worktree:** —
+- **Status:** REVIEW · **Responsável:** claude · **Branch:** task/t35-bundle · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Performance · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE, G-INFRA
 
 **Contexto / problema**
@@ -1236,6 +1236,7 @@ Mesmo após a T25 (485 → 223 kB), `country-data.ts` + JSONs de indicadores + `
 - 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada: primeira TODO elegível da fase 11 (G-PAIS, G-OBS e G-SHELL livres; D04, D08, T28 e D26 em REVIEW não bloqueiam). Ponto de partida medido: First Load de `/` 237,1 kB gz (inclui D22 e D25).
 - 2026-11-21 · claude · IN_PROGRESS · Grupos adicionados (todos livres): G-EPOCA (`GlobeCanvas`, `resolveEpoch`, `useEpochState`, `scenes/schema`), G-FRONTEIRAS (`CountryBorders`), G-COSMOS (`SkyStars`) e G-TIMELINE (`TimelineAxis`, `MilestonePin`, `MilestoneCluster`): só trocam o import de `country-data`/`historical-entities` pelos módulos leves. Os grupos deveriam ter entrado antes das edições; nada foi enviado antes deste registro.
 - 2026-11-21 · claude · IN_PROGRESS · G-INFRA adicionado (livre): `pnpm test` falha no Windows (o PowerShell não expande `test/*.test.ts`), o que impede o Ayrton de rodar os testes que dependem do Prisma. O script de testes passa a listar os arquivos em Node, igual em todos os sistemas.
+- 2026-11-21 · claude · REVIEW · `11f1c4e`, `ff75f0b`, `7b5dac5`. First Load de `/` (page + layout, gzip) 237,1 → 178,0 kB; só `/page` 235,3 → 176,2 kB. Fora do chunk inicial: dossiês/indicadores (`milestones.ts`, `country-catalog.ts`, `country-isos.ts`), entidades históricas (`historical-eras.ts`), `buildChoroplethDataset` (`choropleth-dataset.ts`), `satellite.js` (import() no store + `IssOrbitLayer` lazy) e `d3-geo` (centroide esférico próprio, igual ao `geoCentroid`). **Meta < 150 kB não atingida:** React + Next ≈ 104 kB e a interface inicial ≈ 45 kB; restantes candidatos são a cena de Magalhães completa (~7 kB, exige refazer a carga da rota histórica — G-EPOCA/G-CONTEUDO), os dados locais do Observatório no estado inicial do store (~5 kB) e `tailwind-merge` (~6,6 kB). Teto do `bundle-budget` em 185 kB (a tarefa pedia 160) e checagem de que satellite.js, entidades históricas e indicadores não voltam ao chunk inicial. Testes: 719/719 no Windows do Ayrton (inclui os que dependem do Prisma); `pnpm test` agora funciona no Windows; correção da telemetria da ISS no fallback offline (corrida do import) e testes estáveis com CRLF. Verificado no navegador (1440×900): país pela URL (`pais=BRA`) com painel completo; marcos do Brasil na linha do tempo; citação de marco com país ("ALEMANHA") carregando `country-data` sob demanda; entidade histórica pela URL (`pais=SUN&ano=1969`); camada ISS baixa `satellites.ts` e `IssOrbitLayer` só ao ligar, ao vivo 438 km; mapa temático (expectativa de vida, 170/177); Comparador pela URL descarta ISO inválido; SSR de `/pais/BRA` e `/compare?c=BRA,ARG` com os dados no HTML; sem erros no console.
 
 ---
 
