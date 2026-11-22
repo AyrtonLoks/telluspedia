@@ -33,7 +33,7 @@ const body = z.enum([...VALID_CELESTIAL_BODIES]);
 const cosmicLayer = z.enum(ALL_COSMIC_LAYERS);
 const choroplethIndicator = z.enum(CHOROPLETH_INDICATOR_IDS);
 const observatoryLayer = z.enum([
-  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES", "NASA_GIBS",
+  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES", "NASA_GIBS", "GLOBAL_WINDS",
 ] satisfies ObservatoryLayer[]);
 const gibsProduct = z.enum(GIBS_PRODUCT_IDS);
 const gibsMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);

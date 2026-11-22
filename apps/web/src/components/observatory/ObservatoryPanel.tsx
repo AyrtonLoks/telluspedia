@@ -16,6 +16,7 @@ import {
   Layers,
   ChevronDown,
   Satellite,
+  Wind,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
@@ -40,6 +41,11 @@ import { cn } from "@/components/ui/cn";
 const GibsLayerControls = dynamic(() => import("./GibsLayerControls").then((m) => m.GibsLayerControls), {
   ssr: false,
   loading: () => <div className="h-24" aria-hidden="true" />,
+});
+// Controles dos Ventos Globais (D27a) só baixam quando a camada é aberta.
+const WindLayerControls = dynamic(() => import("./WindLayerControls").then((m) => m.WindLayerControls), {
+  ssr: false,
+  loading: () => <div className="h-20" aria-hidden="true" />,
 });
 
 interface LayerOption {
@@ -115,6 +121,22 @@ const LAYER_OPTIONS: LayerOption[] = [
     tone: "layer-satellites",
     badgeText: (s: ReturnType<typeof useObservatoryStore.getState>) =>
       s.gibs ? `${GIBS_PRODUCTS[s.gibs.product].shortName} · ${formatGibsMonth(s.gibs.imageMonth)}` : GIBS_PRODUCTS[s.gibsProduct].shortName,
+  },
+  {
+    id: "GLOBAL_WINDS",
+    name: "Ventos Globais (GFS)",
+    source: "NOAA GFS (Open-Meteo)",
+    description: "Circulação atmosférica global em superfície (10 m) e corrente de jato (250 hPa) com partículas GPU.",
+    icon: Wind,
+    tone: "layer-satellites",
+    badgeText: (s: ReturnType<typeof useObservatoryStore.getState>) => {
+      const grid = s.winds ? s.winds[s.windAltitude] : null;
+      const level = s.windAltitude === "jet250" ? "250 hPa" : "10 m";
+      if (!grid) return level;
+      const factor = s.windUnit === "knots" ? 1.9438444924 : 3.6;
+      const unit = s.windUnit === "knots" ? "nós" : "km/h";
+      return `${level} · ${Math.round(grid.maxSpeedMs * factor).toLocaleString("pt-BR")} ${unit}`;
+    },
   },
 ];
 
@@ -282,6 +304,7 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                   {layer.id === "NASA_EONET" && <EonetLayerControls />}
                   {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
                   {layer.id === "NASA_GIBS" && <GibsLayerControls />}
+                  {layer.id === "GLOBAL_WINDS" && <WindLayerControls />}
                   {layer.id === "MARITIME_ROUTES" && isContemporary && <MaritimeLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>

@@ -53,6 +53,10 @@ import { useSunDirection } from "@/lib/epoch/useSunDirection";
 
 // SGP4 (satellite.js) só baixa quando a camada da ISS é ligada (T35).
 const IssOrbitLayer = lazy(() => import("./IssOrbitLayer").then((m) => ({ default: m.IssOrbitLayer })));
+// Partículas GPU de ventos globais (D27a) só baixam quando a camada é ligada.
+const WindParticlesLayer = lazy(() =>
+  import("./WindParticlesLayer").then((m) => ({ default: m.WindParticlesLayer }))
+);
 
 /**
  * Primary directional sunlight synchronized with EarthSphere and OrbitingMoon via
@@ -268,6 +272,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             )}
             {isContemporary && activeObservatoryLayers.includes("FLIGHTS_OPENSKY") && <AirTrafficLayer />}
             {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
+            {isContemporary && activeObservatoryLayers.includes("GLOBAL_WINDS") && (
+              <Suspense fallback={null}>
+                <WindParticlesLayer />
+              </Suspense>
+            )}
           </EarthOrientationGroup>
         </group>
       </Canvas>

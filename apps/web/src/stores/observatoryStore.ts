@@ -27,6 +27,13 @@ import { ISS_NORAD_ID, type SatelliteCategory, type SatelliteTle } from "@/lib/s
 import type { SatRec } from "satellite.js";
 import { GIBS_DEFAULT_PRODUCT, type GibsProductId } from "@/lib/gibs-view";
 import type { GibsLayerData } from "@/lib/gibs";
+import {
+  DEFAULT_WIND_ALTITUDE,
+  DEFAULT_WIND_UNIT,
+  type WindAltitude,
+  type WindFieldPayload,
+  type WindUnit,
+} from "@/lib/winds-types";
 
 /** Referência local do produto, quando nem o servidor do TellusPedia respondeu (catálogo sob demanda, T35). */
 async function gibsLocalReference(product: GibsProductId, month: string | null): Promise<GibsLayerData> {
@@ -90,6 +97,7 @@ const ALL_LAYERS: ObservatoryLayer[] = [
   "FLIGHTS_OPENSKY",
   "MARITIME_ROUTES",
   "NASA_GIBS",
+  "GLOBAL_WINDS",
 ];
 
 function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
@@ -138,6 +146,12 @@ interface ObservatoryState {
   gibs: GibsLayerData | null;
   /** Troca produto e/ou mês e recarrega a camada. */
   setGibsRequest: (request: { product?: GibsProductId; month?: string | null }) => void;
+  /** Camada de Ventos Globais (D27a): grade UV (10 m e 250 hPa), altitude e unidade ativas. */
+  winds: WindFieldPayload | null;
+  windAltitude: WindAltitude;
+  windUnit: WindUnit;
+  setWindAltitude: (altitude: WindAltitude) => void;
+  setWindUnit: (unit: WindUnit) => void;
 
   isLoading: Record<ObservatoryLayer, boolean>;
   hasLoaded: Record<ObservatoryLayer, boolean>;
@@ -174,6 +188,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     MARITIME_ROUTES: 1.0,
     // Imagem cobre o globo inteiro: começa translúcida para o relevo e as fronteiras aparecerem.
     NASA_GIBS: 0.75,
+    GLOBAL_WINDS: 0.85,
   },
   isPanelOpen: false,
   selectedEntity: null,
@@ -196,6 +211,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     if (cur.activeLayers.includes("NASA_GIBS")) void get().loadLayerData("NASA_GIBS");
     else set((s) => ({ hasLoaded: { ...s.hasLoaded, NASA_GIBS: false } }));
   },
+  winds: null,
+  windAltitude: DEFAULT_WIND_ALTITUDE,
+  windUnit: DEFAULT_WIND_UNIT,
+  setWindAltitude: (windAltitude) => set({ windAltitude }),
+  setWindUnit: (windUnit) => set({ windUnit }),
   issTelemetry: null,
   satellites: [],
   satelliteCategories: ["station", "visual"],
@@ -217,6 +237,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     FLIGHTS_OPENSKY: false,
     MARITIME_ROUTES: false,
     NASA_GIBS: false,
+    GLOBAL_WINDS: false,
   },
   hasLoaded: {
     NASA_FIRMS: false,
@@ -225,6 +246,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     FLIGHTS_OPENSKY: false,
     MARITIME_ROUTES: false,
     NASA_GIBS: false,
+    GLOBAL_WINDS: false,
   },
   layerMeta: perLayer(initialLocalMeta),
   layerError: perLayer(() => false),
@@ -368,6 +390,15 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         if (data.product !== now.gibsProduct || (now.gibsMonth !== null && data.month !== now.gibsMonth)) return;
         set({ gibs: data });
         applyMeta("NASA_GIBS", body.meta);
+      } else if (layerId === "GLOBAL_WINDS") {
+        const [{ isValidWindFieldPayload }, body] = await Promise.all([
+          import("@/lib/winds-data"),
+          fetchEnvelope("/api/observatory/winds"),
+        ]);
+        if (isObservatoryEnvelope(body) && isValidWindFieldPayload(body.data)) {
+          set({ winds: body.data });
+          applyMeta("GLOBAL_WINDS", body.meta);
+        } else throw new Error("Resposta de ventos inválida");
       } else if (layerId === "MARITIME_ROUTES") {
         // A malha de corredores é fixa (referência local), com ou sem a amostra AIS ao vivo.
         void loadObservatoryFallback().then((fb) => set({ maritimeRoutes: fb.FALLBACK_MARITIME_ROUTES })).catch(() => {});
@@ -416,6 +447,10 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         get().refreshIssTelemetry();
       }
       if (layerId === "NASA_GIBS") set({ gibs: await gibsLocalReference(get().gibsProduct, get().gibsMonth) });
+      if (layerId === "GLOBAL_WINDS") {
+        const { buildClimatologyWindField } = await import("@/lib/winds-data");
+        set({ winds: buildClimatologyWindField() });
+      }
     } finally {
       set((s) => ({
         isLoading: { ...s.isLoading, [layerId]: false },

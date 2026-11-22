@@ -15,7 +15,7 @@ import { ALL_CATEGORIES, useTimelineStore } from "@/stores/timelineStore";
 import { parseCameraOffset, DEFAULT_CAMERA_OFFSET, type ViewCamera } from "./view-camera";
 
 const layerIds: readonly ObservatoryLayer[] = [
-  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES", "NASA_GIBS",
+  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES", "NASA_GIBS", "GLOBAL_WINDS",
 ];
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",

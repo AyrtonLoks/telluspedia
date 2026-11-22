@@ -24,6 +24,7 @@ const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywo
   FLIGHTS_OPENSKY: { title: "Tráfego aéreo", keywords: "aviões aeronaves voos OpenSky" },
   MARITIME_ROUTES: { title: "Tráfego marítimo", keywords: "navios barcos embarcações AIS" },
   NASA_GIBS: { title: "Imagens de satélite (GIBS)", keywords: "NASA GIBS MODIS satélite mapa mensal" },
+  GLOBAL_WINDS: { title: "Ventos globais (GFS)", keywords: "ventos atmosfera jato 250 hPa alísios NOAA GFS circulação" },
 };
 
 const presets: Record<TimelinePreset, string> = {
