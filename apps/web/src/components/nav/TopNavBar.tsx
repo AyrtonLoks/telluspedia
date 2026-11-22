@@ -23,6 +23,7 @@ import {
 import { IconButton } from "@/components/ui/IconButton";
 import { buttonClasses } from "@/components/ui/Button";
 import { cn } from "@/components/ui/cn";
+import { useStoreSnapshot } from "@/lib/use-hydrated";
 
 /** Botão de navegação da barra: neutro; selecionado = tinta do acento. */
 function navItemClasses(isActive: boolean) {
@@ -36,11 +37,8 @@ export const TopNavBar: React.FC = () => {
   const openSearch = useOpenExploreSearch();
   const openComparator = useComparatorStore((s) => s.openComparator);
   const setShareModalOpen = useStudyStore((s) => s.setShareModalOpen);
-  const storeIsPanelOpen = useObservatoryStore((s) => s.isPanelOpen);
-  const isObservatoryPanelOpen =
-    typeof window === "undefined"
-      ? useObservatoryStore.getState().isPanelOpen
-      : storeIsPanelOpen;
+  // Mesmo valor no HTML do servidor e na hidratação (T41): a rota /study/<id> já chega com camadas.
+  const isObservatoryPanelOpen = useStoreSnapshot(useObservatoryStore, (s) => s.isPanelOpen);
   const togglePanel = useObservatoryStore((s) => s.togglePanel);
   const dock = useRightDock();
   const setActiveRightPanel = useLayoutStore((s) => s.setActiveRightPanel);
@@ -53,17 +51,12 @@ export const TopNavBar: React.FC = () => {
       useLayoutStore.getState().requestRightPanelFocus("observatory");
     }
   };
-  const storeActiveLayers = useObservatoryStore((s) => s.activeLayers);
-  const activeObservatoryLayers =
-    typeof window === "undefined"
-      ? useObservatoryStore.getState().activeLayers
-      : storeActiveLayers;
-  const hasActiveLayers = activeObservatoryLayers.length > 0;
+  const hasActiveLayers = useStoreSnapshot(useObservatoryStore, (s) => s.activeLayers.length > 0);
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const toggleCosmicMode = useCosmicStore((s) => s.toggleCosmicMode);
-  const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
-  const isChoroplethSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
+  const activeChoropleth = useStoreSnapshot(useChoroplethStore, (s) => s.activeIndicator);
+  const isChoroplethSelectorOpen = useStoreSnapshot(useChoroplethStore, (s) => s.isSelectorOpen);
   const toggleChoroplethSelector = useChoroplethStore((s) => s.toggleSelector);
 
   const handleResetGlobe = () => {

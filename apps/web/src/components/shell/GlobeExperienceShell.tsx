@@ -158,6 +158,9 @@ export function applyInitialGlobeState(initialState: InitialGlobeState): void {
   }
 }
 
+/** Vira `true` depois da primeira montagem do shell no cliente (fim da hidratação inicial). */
+let clientHydrated = false;
+
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
@@ -177,12 +180,17 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const [dismissedStudyKey, setDismissedStudyKey] = useState<string | null>(null);
 
   // SSR: hidrata stores sincronamente antes dos filhos renderizarem (sem assinantes client montados).
-  // No cliente, evita mutar stores Zustand durante o render (React 19: "Cannot update a component
-  // while rendering a different component", ex. ao navegar de /study/[a] para /study/[fork]).
-  if (typeof window === "undefined" && hydratedKeyRef.current !== stateKey) {
+  // Na hidratação inicial do cliente também (T41): ainda não há nenhum assinante montado, e os
+  // filhos que leem o store com `useStoreSnapshot` precisam ver o mesmo estado que o servidor viu.
+  // Depois disso (navegação entre rotas), evita mutar stores durante o render (React 19: "Cannot
+  // update a component while rendering a different component", ex. de /study/[a] para /study/[fork]).
+  if ((typeof window === "undefined" || !clientHydrated) && hydratedKeyRef.current !== stateKey) {
     hydratedKeyRef.current = stateKey;
     applyInitialGlobeState(initialState);
   }
+  useEffect(() => {
+    clientHydrated = true;
+  }, []);
 
   // No cliente, aplica antes da pintura (useLayoutEffect) na montagem inicial e nas transições de rota.
   useIsomorphicLayoutEffect(() => {
