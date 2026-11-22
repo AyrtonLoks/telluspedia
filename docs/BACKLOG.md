@@ -214,7 +214,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | IN_PROGRESS | claude | — | G-PAIS, G-COSMOS, G-INFRA, G-EPOCA, G-OBS |
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
-| T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | TODO | — | T31 | G-GLOBO, G-SHELL |
+| T39 | Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto) | 3D/Perf | P2 | M | IN_PROGRESS | antigravity | T31 | G-GLOBO, G-SHELL |
 | T40 | Corrigir desmontagem dos rótulos HTML no WebGL | 3D/Infra | P1 | P | DONE | codex | — | G-INFRA, G-COSMOS, G-OBS |
 | T41 | Corrigir aviso de hidratação do botão Observatório em `/study/<id>` com camadas ativas | Frontend | P2 | P | TODO | — | — | G-SHELL, G-OBS |
 | D21 | Texturas planetárias reais (KTX2 + JPG), inclinação axial, rotação sideral e sombras nos anéis de Saturno | 3D | P1 | G | DONE | claude | — | G-COSMOS, G-GLOBO |
@@ -1311,7 +1311,7 @@ Apenas os 6 `PILOT_COUNTRIES` possuem dossiês completos no Modo Leitura; os dem
 
 ### T39 · Qualidade gráfica adaptativa no WebGL (DPR dinâmico, FPS monitor, preset Baixo/Médio/Alto)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t39-adaptive-webgl-quality · **Worktree:** ../telluspedia-wt/antigravity-t39
 - **Prioridade:** P2 · **Área:** 3D/Perf · **Tamanho:** M · **Depende de:** T31 · **Grupos:** G-GLOBO, G-SHELL
 
 **Contexto / problema**
@@ -1326,6 +1326,7 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 
 **Log**
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · antigravity · IN_PROGRESS · Tarefa reivindicada; worktree criado a partir de origin/master (`9615396`). Grupos `G-GLOBO` e `G-SHELL` livres e disjuntos da `T36` do claude (`G-PAIS, G-COSMOS, G-INFRA, G-EPOCA, G-OBS`). Nota: `SkyStars` e `AsteroidBeltLayer` (`G-COSMOS`) permanecem intactos enquanto T36 ocupa `G-COSMOS`, com multiplicadores de densidade já expostos no store para consumo imediato assim que `G-COSMOS` liberar.
 
 ---
 
