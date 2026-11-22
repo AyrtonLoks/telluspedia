@@ -43,7 +43,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26, T35 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
-| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19 |
+| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19, T35 |
 | `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26 |
 
 Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está listado nela: **pare**, adicione o grupo à tarefa no Quadro (commit + push, como na reivindicação) e reavalie se ela ainda pode seguir.
@@ -210,7 +210,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T32 | Ingestão de séries históricas reais do Banco Mundial (1990–2024) + novos indicadores | Dados | P1 | G | DONE | antigravity | T29 | G-PAIS, G-PIPELINE |
 | T33 | SEO técnico & PWA: `sitemap.ts` dinâmico (177 países + dossiês), `robots.ts`, `manifest.ts` e JSON-LD | Frontend | P1 | P | DONE | antigravity | — | G-SHELL, G-PAIS |
 | T34 | Empacotamento de produção: `apps/web/Dockerfile` (standalone), `/api/health`, Redis no rate-limit e CI reforçado | Infra | P1 | M | DONE | antigravity | T28 | G-INFRA, G-ESTUDOS, G-PIPELINE |
-| T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | IN_PROGRESS | claude | — | G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE |
+| T35 | Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js` | Performance | P2 | M | IN_PROGRESS | claude | — | G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE, G-INFRA |
 | T36 | Modularizar arquivos monolíticos, remover 5 `@radix-ui/*` ociosos e eliminar os 9 `any` | Qualidade | P2 | M | TODO | — | — | G-PAIS, G-COSMOS, G-INFRA |
 | T37 | Sincronizar documentação (`ROADMAP.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`) e limpar `.pytest_cache` | Docs | P2 | P | TODO | — | — | G-INFRA |
 | T38 | Modo de leitura analítico para todos os 177 países (ranking global, comparação regional, resumo auditado) | Dados/UX | P2 | G | DONE | antigravity | T32 | G-PAIS |
@@ -1218,7 +1218,7 @@ Não há `apps/web/Dockerfile` nem endpoint `/api/health`; `study-rate-limit.ts`
 ### T35 · Segunda onda de bundle (`/` < 150 kB): datasets sob demanda e lazy-load de `satellite.js`
 
 - **Status:** IN_PROGRESS · **Responsável:** claude · **Branch:** task/t35-bundle · **Worktree:** —
-- **Prioridade:** P2 · **Área:** Performance · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE
+- **Prioridade:** P2 · **Área:** Performance · **Tamanho:** M · **Depende de:** — · **Grupos:** G-PAIS, G-OBS, G-SHELL, G-EPOCA, G-FRONTEIRAS, G-COSMOS, G-TIMELINE, G-INFRA
 
 **Contexto / problema**
 Mesmo após a T25 (485 → 223 kB), `country-data.ts` + JSONs de indicadores + `historical-entities.ts` + `satellite.js` ainda somam ~65 kB gzip no chunk inicial de `/`.
@@ -1235,6 +1235,7 @@ Mesmo após a T25 (485 → 223 kB), `country-data.ts` + JSONs de indicadores + `
 - 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-21 · claude · IN_PROGRESS · Tarefa reivindicada: primeira TODO elegível da fase 11 (G-PAIS, G-OBS e G-SHELL livres; D04, D08, T28 e D26 em REVIEW não bloqueiam). Ponto de partida medido: First Load de `/` 237,1 kB gz (inclui D22 e D25).
 - 2026-11-21 · claude · IN_PROGRESS · Grupos adicionados (todos livres): G-EPOCA (`GlobeCanvas`, `resolveEpoch`, `useEpochState`, `scenes/schema`), G-FRONTEIRAS (`CountryBorders`), G-COSMOS (`SkyStars`) e G-TIMELINE (`TimelineAxis`, `MilestonePin`, `MilestoneCluster`): só trocam o import de `country-data`/`historical-entities` pelos módulos leves. Os grupos deveriam ter entrado antes das edições; nada foi enviado antes deste registro.
+- 2026-11-21 · claude · IN_PROGRESS · G-INFRA adicionado (livre): `pnpm test` falha no Windows (o PowerShell não expande `test/*.test.ts`), o que impede o Ayrton de rodar os testes que dependem do Prisma. O script de testes passa a listar os arquivos em Node, igual em todos os sistemas.
 
 ---
 
