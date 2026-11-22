@@ -140,6 +140,7 @@ const MIGRATED = [
   "src/components/tellus-bridge/StudyHub.tsx",
   "src/components/globe/HistoricalEraBadge.tsx",
   "src/components/globe/PaleoEraBadge.tsx",
+  "src/components/globe/GraphicsQualityPanel.tsx",
   "src/components/scenes/ScenePlayerOverlay.tsx",
   "src/components/globe/CelestialLabel.tsx",
   "src/components/globe/WebGLErrorBoundary.tsx",

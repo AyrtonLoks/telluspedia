@@ -6,6 +6,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { worldSunDirection } from "@/lib/earth-orientation";
 import { loadGlobeTexture } from "@/lib/textures/globeTextures";
+import { getQualityProfile } from "@/lib/webgl-quality";
+import { useGraphicsQualityStore } from "@/stores/graphicsQualityStore";
 import { pickEarthTextureSet } from "./EarthSphere";
 
 /** Raio da camada de nuvens (globo de raio 1; abaixo da atmosfera em 1.025). */
@@ -64,6 +66,9 @@ export const CloudLayer: React.FC<{ enabled: boolean; geological: boolean; study
 }) => {
   const sun = useSunDirection();
   const { gl, invalidate } = useThree();
+  const qualityPreset = useGraphicsQualityStore((s) => s.preset);
+  const qualityProfile = getQualityProfile(qualityPreset);
+  const effectiveEnabled = enabled && qualityProfile.cloudsEnabled;
 
   const material = useMemo(
     () =>
@@ -109,7 +114,7 @@ export const CloudLayer: React.FC<{ enabled: boolean; geological: boolean; study
 
   useEffect(() => () => material.dispose(), [material]);
 
-  const target = cloudOpacityTarget(enabled, geological, studyLighting);
+  const target = cloudOpacityTarget(effectiveEnabled, geological, studyLighting);
   useEffect(() => invalidate(), [target, invalidate]);
 
   // Transição suave (só renderiza enquanto anima; o frameloop é sob demanda).
@@ -125,8 +130,15 @@ export const CloudLayer: React.FC<{ enabled: boolean; geological: boolean; study
   });
 
   return (
-    <mesh material={material} raycast={() => null} renderOrder={1} visible={material.uniforms.uClouds.value !== null || enabled}>
-      <sphereGeometry args={[CLOUD_RADIUS, 96, 64]} />
+    <mesh
+      material={material}
+      raycast={() => null}
+      renderOrder={1}
+      visible={material.uniforms.uClouds.value !== null || effectiveEnabled}
+    >
+      <sphereGeometry
+        args={[CLOUD_RADIUS, qualityProfile.earthSegments[0], qualityProfile.earthSegments[1]]}
+      />
     </mesh>
   );
 };

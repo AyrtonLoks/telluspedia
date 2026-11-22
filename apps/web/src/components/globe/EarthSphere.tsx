@@ -34,7 +34,10 @@ import {
 } from "@/lib/historical-topology";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { useGraphicsQualityStore } from "@/stores/graphicsQualityStore";
+import { getQualityProfile, type EarthTextureTier } from "@/lib/webgl-quality";
 import { loadGlobeTexture, textureSource } from "@/lib/textures/globeTextures";
+import { WebGLQualityController } from "./WebGLQualityController";
 
 /**
  * Generates an authentic equirectangular DataTexture of Pangea (~250 Ma)
@@ -131,11 +134,15 @@ function createProceduralPangeaTexture(width = 512, height = 256): THREE.DataTex
 }
 
 /**
- * Conjunto de texturas por capacidade da GPU (D02). Cada item tem o KTX2 (preferido) e o
- * JPG/PNG de fallback — ver lib/textures/globeTextures.ts.
+ * Conjunto de texturas por capacidade da GPU (D02) e preset de qualidade (T39).
+ * Cada item tem o KTX2 (preferido) e o JPG/PNG de fallback — ver lib/textures/globeTextures.ts.
  */
-export function pickEarthTextureSet(maxTextureSize: number) {
-  const quality = maxTextureSize >= 8192 ? "4k" : "2k";
+export function pickEarthTextureSet(
+  maxTextureSize: number,
+  preferredTier: EarthTextureTier = "4k"
+) {
+  const quality: EarthTextureTier =
+    preferredTier === "2k" ? "2k" : maxTextureSize >= 8192 ? "4k" : "2k";
   return {
     quality,
     day: textureSource(`/textures/earth_day_${quality}.jpg`),
@@ -167,9 +174,15 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
   const effectiveYear = epoch.effectiveYear;
   const era = HISTORICAL_ERAS[epoch.historicalEraId];
 
-  // Texturas NASA (domínio público — docs/DATA_SOURCES.md): 4096 px quando a GPU aguenta,
-  // 2048 px como fallback; superfície (elevação + água + profundidade) é dado linear, não cor.
-  const textureSet = useMemo(() => pickEarthTextureSet(gl.capabilities.maxTextureSize), [gl]);
+  const qualityPreset = useGraphicsQualityStore((s) => s.preset);
+  const qualityProfile = getQualityProfile(qualityPreset);
+
+  // Texturas NASA (domínio público — docs/DATA_SOURCES.md): 4096 px quando a GPU e o preset
+  // permitem, 2048 px no preset Baixo/Médio ou como fallback; superfície é dado linear, não cor.
+  const textureSet = useMemo(
+    () => pickEarthTextureSet(gl.capabilities.maxTextureSize, qualityProfile.textureTier),
+    [gl, qualityProfile.textureTier]
+  );
 
   // Procedural Pangea texture initialized immediately as base fallback
   const proceduralPaleoTexture = useMemo(() => {
@@ -182,13 +195,40 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
     return createEarthMaterial(null, null, proceduralPaleoTexture, null);
   }, [proceduralPaleoTexture]);
 
+  const activeTexturesRef = useRef<Partial<Record<"uDayTexture" | "uNightTexture" | "uSurfaceTexture", THREE.Texture>>>({});
+
+  // Textura de superfície (normal/especular) é sempre 2K e carrega uma única vez por contexto.
   useEffect(() => {
     let alive = true;
-    const loaded: THREE.Texture[] = [];
+    const surfaceSource = textureSource("/textures/earth_surface_2k.png");
+    loadGlobeTexture(gl, surfaceSource, "data")
+      .then((texture) => {
+        if (!alive) {
+          texture.dispose();
+          return;
+        }
+        const previous = activeTexturesRef.current.uSurfaceTexture;
+        activeTexturesRef.current.uSurfaceTexture = texture;
+        earthMaterial.uniforms.uSurfaceTexture.value = texture;
+        const { width, height } = texture.image as { width: number; height: number };
+        earthMaterial.uniforms.uSurfaceTexel.value.set(1 / width, 1 / height);
+        if (previous && previous !== texture) {
+          previous.dispose();
+        }
+        invalidate();
+      })
+      .catch((error) => console.error(`[globo] falha ao carregar ${surfaceSource.fallback}`, error));
+    return () => {
+      alive = false;
+    };
+  }, [gl, earthMaterial, invalidate]);
+
+  // Texturas dia/noite (2K ou 4K conforme GPU e preset de qualidade T39).
+  useEffect(() => {
+    let alive = true;
     const jobs = [
       ["uDayTexture", textureSet.day, "color"],
       ["uNightTexture", textureSet.night, "color"],
-      ["uSurfaceTexture", textureSet.surface, "data"],
     ] as const;
     for (const [uniform, source, kind] of jobs) {
       loadGlobeTexture(gl, source, kind)
@@ -197,22 +237,34 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
             texture.dispose();
             return;
           }
-          loaded.push(texture);
+          const previous = activeTexturesRef.current[uniform];
+          activeTexturesRef.current[uniform] = texture;
           earthMaterial.uniforms[uniform].value = texture;
-          if (uniform === "uSurfaceTexture") {
-            const { width, height } = texture.image as { width: number; height: number };
-            earthMaterial.uniforms.uSurfaceTexel.value.set(1 / width, 1 / height);
+          // Só descarta a textura anterior depois que a substituta já está ligada ao shader (sem flash preto)
+          if (previous && previous !== texture) {
+            previous.dispose();
           }
           invalidate();
         })
         .catch((error) => console.error(`[globo] falha ao carregar ${source.fallback}`, error));
     }
-    // Descarte das texturas da Terra ao desmontar (RN21)
     return () => {
       alive = false;
-      loaded.forEach((texture) => texture.dispose());
     };
   }, [gl, earthMaterial, textureSet, invalidate]);
+
+  // Descarte garantido de todas as texturas ativas da Terra ao desmontar (RN21)
+  useEffect(() => {
+    const activeRef = activeTexturesRef;
+    return () => {
+      for (const key of Object.keys(activeRef.current) as Array<
+        "uDayTexture" | "uNightTexture" | "uSurfaceTexture"
+      >) {
+        activeRef.current[key]?.dispose();
+        delete activeRef.current[key];
+      }
+    };
+  }, [earthMaterial]);
 
   useEffect(() => {
     earthMaterial.uniforms.uAtmosphereShell.value = atmosphere ? 1 : 0;
@@ -474,14 +526,19 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
   };
 
   return (
-    <mesh
-      ref={meshRef}
-      material={earthMaterial}
-      onPointerMove={handlePointerMove}
-      onPointerOut={handlePointerOut}
-      onClick={handleClick}
-    >
-      <sphereGeometry args={[1.0, 64, 64]} />
-    </mesh>
+    <>
+      <WebGLQualityController />
+      <mesh
+        ref={meshRef}
+        material={earthMaterial}
+        onPointerMove={handlePointerMove}
+        onPointerOut={handlePointerOut}
+        onClick={handleClick}
+      >
+        <sphereGeometry
+          args={[1.0, qualityProfile.earthSegments[0], qualityProfile.earthSegments[1]]}
+        />
+      </mesh>
+    </>
   );
 };

@@ -3,6 +3,7 @@
 import React, { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
+import { Gauge } from "lucide-react";
 import { TopNavBar } from "@/components/nav/TopNavBar";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
 import { useShellObstruction } from "@/components/layout/useShellObstruction";
@@ -21,9 +22,13 @@ import { useComparatorStore } from "@/stores/comparatorStore";
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
+import { useGraphicsQualityStore } from "@/stores/graphicsQualityStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { useStudyStore } from "@/stores/studyStore";
+import { preloadGraphicsQualityPanel } from "@/lib/panel-preload";
+import { getQualityProfile } from "@/lib/webgl-quality";
+import { cn } from "@/components/ui/cn";
 
 // Load 3D WebGL Canvas client-side only (disables SSR for R3F / Three.js)
 const GlobeCanvas = dynamic(
@@ -88,6 +93,10 @@ const ForkStudyBanner = dynamic(
 );
 const ChoroplethHud = dynamic(
   () => import("@/components/choropleth/ChoroplethHud").then((m) => m.ChoroplethHud),
+  { ssr: false }
+);
+const GraphicsQualityPanel = dynamic(
+  () => import("@/components/globe/GraphicsQualityPanel").then((m) => m.GraphicsQualityPanel),
   { ssr: false }
 );
 
@@ -195,6 +204,14 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const isCitationModalOpen = useReaderStore((s) => s.isCitationModalOpen);
   const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
   const isChoroplethSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
+  const qualityPreset = useGraphicsQualityStore((s) => s.preset);
+  const adaptiveDprScale = useGraphicsQualityStore((s) => s.adaptiveDprScale);
+  const isQualityPanelOpen = useGraphicsQualityStore((s) => s.isPanelOpen);
+  const toggleQualityPanel = useGraphicsQualityStore((s) => s.togglePanel);
+
+  useEffect(() => {
+    useGraphicsQualityStore.getState().hydrateFromStorage();
+  }, []);
 
   const isStudyActive = initialState.kind === "study" && dismissedStudyKey !== stateKey;
 
@@ -279,6 +296,32 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
           <TopNavBar />
           <EntityLaunchGate />
         </Suspense>
+
+        {/* T39: Controle discreto de qualidade gráfica WebGL (D14, sem recriar contexto) */}
+        <button
+          type="button"
+          data-testid="graphics-quality-trigger"
+          aria-label={`Qualidade gráfica: ${getQualityProfile(qualityPreset).label}`}
+          aria-pressed={isQualityPanelOpen}
+          aria-haspopup="dialog"
+          onClick={toggleQualityPanel}
+          onMouseEnter={preloadGraphicsQualityPanel}
+          onFocus={preloadGraphicsQualityPanel}
+          title="Qualidade gráfica WebGL (Auto / Alto / Médio / Baixo)"
+          className={cn(
+            "fixed right-3 top-[var(--map-tools-top)] z-20 inline-flex h-9 items-center gap-1.5 rounded-panel border border-line bg-surface/86 px-2.5 text-caption font-medium text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover hover:text-fg lg:top-3 xl:right-6 xl:top-4",
+            isQualityPanelOpen && "border-accent/50 bg-accent/15 text-fg",
+            dockPresence.mounted && "lg:right-[27.5rem]"
+          )}
+        >
+          <Gauge aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
+          <span className="hidden sm:inline">{getQualityProfile(qualityPreset).label}</span>
+          {qualityPreset === "auto" && adaptiveDprScale < 0.99 && (
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-warning" />
+          )}
+        </button>
+
+        {isQualityPanelOpen && <GraphicsQualityPanel dockMounted={dockPresence.mounted} />}
         <WebGLErrorBoundary>
           <GlobeCanvas viewCamera={viewCamera} />
         </WebGLErrorBoundary>
