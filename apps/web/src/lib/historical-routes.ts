@@ -12,7 +12,10 @@
  */
 
 import { latLngToVector3, vector3ToLatLng, slerpVectors } from "./geo-spatial";
-import { getScene, fact } from "./scenes/catalog";
+import { fact, normalizeScene } from "./scenes/catalog";
+// A rota usa a cena completa; o catálogo só tem o índice leve até a cena abrir (T35), então o
+// arquivo vem direto. Só painéis, o modal de estudo e o servidor importam este módulo.
+import magellanJson from "../data/scenes/magellan-1519.json";
 import type { Scene } from "./scenes/schema";
 
 export type HistoricalRouteId = "magellan-1519" | (string & {});
@@ -91,11 +94,7 @@ export type HistoricalRouteWaypoint = RouteWaypoint;
 // Dados da expedição: vêm da cena `src/data/scenes/magellan-1519.json` (D12b). Os formatos abaixo
 // são mantidos para os componentes atuais até o player genérico (D12c).
 
-const MAGELLAN_SCENE = (() => {
-  const scene = getScene("magellan-1519");
-  if (!scene) throw new Error("cena magellan-1519 ausente");
-  return scene;
-})();
+const MAGELLAN_SCENE: Scene = normalizeScene(magellanJson);
 
 const isoToDmy = (iso: string) => {
   const [y, m, d] = iso.slice(0, 10).split("-");

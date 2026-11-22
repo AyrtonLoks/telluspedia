@@ -1,8 +1,7 @@
 import { sceneHasTrajectoryKind, sceneOpenedBy } from "@/lib/scenes/catalog";
 import { HISTORICAL_ERAS } from "@/lib/historical-eras";
-import { MAGELLAN_ROUTE } from "@/lib/historical-routes";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
-import { readGibsView } from "@/lib/gibs";
+import { readGibsView } from "@/lib/gibs-view";
 import type { CelestialBodyId } from "@/lib/astronomy-planets";
 import type { StudyRecord } from "@/lib/studies-store";
 import { normalizeStudyEpoch } from "@/lib/study-epoch";
@@ -10,6 +9,8 @@ import {
   APOLLO11_GLOBAL_MILESTONE_ID,
   DEFAULT_GEOLOGICAL_MA,
   MAGELLAN_ROUTE_ID,
+  MAGELLAN_START_YEAR,
+  MAGELLAN_END_YEAR,
 } from "@/lib/epoch/constants";
 import { useComparatorStore } from "./comparatorStore";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "./cosmicStore";
@@ -72,8 +73,8 @@ export function applyTimelinePreset(preset: TimelinePreset | string) {
       // Abre a cena antes de mudar o período: o estado guardado para restaurar é o de antes do clique.
       selectHistoricalRoute(MAGELLAN_ROUTE_ID);
       useTimelineStore.setState({
-        startYear: MAGELLAN_ROUTE.startYear,
-        endYear: MAGELLAN_ROUTE.endYear,
+        startYear: MAGELLAN_START_YEAR,
+        endYear: MAGELLAN_END_YEAR,
         selectedMilestoneId: null,
       });
       return;
@@ -117,12 +118,12 @@ export function restoreStudySnapshot(study: StudySnapshot) {
   const restoredRange = study.timelineStartYear != null && study.timelineEndYear != null
     ? { startYear: study.timelineStartYear, endYear: study.timelineEndYear }
     : epoch.activeRouteId === MAGELLAN_ROUTE_ID
-      ? { startYear: MAGELLAN_ROUTE.startYear, endYear: MAGELLAN_ROUTE.endYear }
+      ? { startYear: MAGELLAN_START_YEAR, endYear: MAGELLAN_END_YEAR }
       : {};
   const historicalEra = Object.values(HISTORICAL_ERAS).find((era) => era.id === epoch.historicalEra);
   let selectedYear = historicalEra?.id === "COLD_WAR_1969" ? 1968 : historicalEra?.representativeYear ?? null;
   if (epoch.geologicalMa !== null) selectedYear = null;
-  else if (epoch.activeRouteId === MAGELLAN_ROUTE_ID) selectedYear = MAGELLAN_ROUTE.startYear;
+  else if (epoch.activeRouteId === MAGELLAN_ROUTE_ID) selectedYear = MAGELLAN_START_YEAR;
   else if (epoch.isApollo11Active) selectedYear = 1969;
 
   const activeCategories = study.activeCategories?.filter(

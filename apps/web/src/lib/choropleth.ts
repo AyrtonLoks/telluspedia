@@ -1,15 +1,8 @@
-import { getSourceUrl } from "@/lib/citations";
+import { getSourceUrl } from "@/lib/source-urls";
+import { CHOROPLETH_INDICATOR_IDS, isChoroplethIndicatorId, type ChoroplethIndicatorId } from "@/lib/choropleth-ids";
 
-export const CHOROPLETH_INDICATOR_IDS = [
-  "NY.GDP.MKTP.CD",
-  "NY.GDP.PCAP.CD",
-  "SP.POP.TOTL",
-  "SP.DYN.LE00.IN",
-  "MS.MIL.XPND.GD.ZS",
-  "NASA_FIRMS",
-] as const;
-
-export type ChoroplethIndicatorId = (typeof CHOROPLETH_INDICATOR_IDS)[number];
+export { CHOROPLETH_INDICATOR_IDS, isChoroplethIndicatorId };
+export type { ChoroplethIndicatorId };
 
 export type ChoroplethScaleType = "log" | "linear" | "sqrt" | "log1p";
 
@@ -222,9 +215,6 @@ export const CHOROPLETH_INDICATORS: Record<ChoroplethIndicatorId, ChoroplethIndi
 export const CHOROPLETH_INDICATOR_LIST: readonly ChoroplethIndicatorMeta[] =
   CHOROPLETH_INDICATOR_IDS.map((id) => CHOROPLETH_INDICATORS[id]);
 
-export function isChoroplethIndicatorId(value: unknown): value is ChoroplethIndicatorId {
-  return typeof value === "string" && Object.hasOwn(CHOROPLETH_INDICATORS, value);
-}
 
 function parseHexRgb(hex: string): [number, number, number] {
   const clean = hex.replace("#", "");

@@ -33,7 +33,8 @@ const NEW_SCENES = ["polo-1271", "gama-1497", "glo-1914", "glo-1939", "glo-1989"
 describe("D24 — cenas sob demanda: dados", () => {
   test("cada cena sob demanda passa no schema completo (Zod)", () => {
     const parsed = parseSceneCollection(LAZY_SCENE_FILES.map(read), "lazy");
-    assert.deepEqual(parsed.map((s) => s.id).sort(), [...NEW_SCENES].sort());
+    // Magalhães também é sob demanda desde a T35.
+    assert.deepEqual(parsed.map((s) => s.id).sort(), [...NEW_SCENES, "magellan-1519"].sort());
   });
 
   test("os detalhes à parte completam a cena do bundle e passam no schema", () => {

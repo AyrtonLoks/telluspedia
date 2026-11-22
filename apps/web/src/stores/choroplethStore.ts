@@ -2,7 +2,7 @@ import { create } from "zustand";
 import {
   isChoroplethIndicatorId,
   type ChoroplethIndicatorId,
-} from "@/lib/choropleth";
+} from "@/lib/choropleth-ids";
 
 export const DEFAULT_CHOROPLETH_OPACITY = 0.78;
 

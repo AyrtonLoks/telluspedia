@@ -1,5 +1,41 @@
 [
   {
+    "id": "magellan-1519",
+    "title": "Primeira Circum-navegação da Terra (Magalhães–Elcano)",
+    "summary": "A armada de cinco naus parte de Sanlúcar de Barrameda sob o comando de Fernão de Magalhães, realizando a primeira travessia global da história.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1519-09-20",
+      "end": "1522-09-06",
+      "precision": "day"
+    },
+    "country": "ESP",
+    "countries": [
+      "ESP",
+      "PRT"
+    ],
+    "location": {
+      "lat": 36.7786,
+      "lng": -6.3533
+    },
+    "sources": [
+      {
+        "label": "Arquivo Geral das Índias / Antonio Pigafetta"
+      }
+    ],
+    "camera": {
+      "lat": -15,
+      "lng": -40,
+      "altitude": 3.2
+    },
+    "openedBy": [
+      "esp-1519"
+    ],
+    "trajectoryKinds": [
+      "surface"
+    ]
+  },
+  {
     "id": "polo-1271",
     "title": "Marco Polo na Rota da Seda",
     "summary": "A viagem dos Polo de Veneza à corte de Cublai Cã e a volta por mar pelo Índico, que deu à Europa sua imagem da Ásia mongol.",

@@ -4,7 +4,7 @@ import { COUNTRY_ISO_CODES } from "@/lib/country-isos";
 import { findMilestoneById } from "@/lib/milestones";
 import { HISTORICAL_ENTITY_IDS } from "@/lib/historical-eras";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
-import { encodeGibsView, readGibsView } from "@/lib/gibs";
+import { encodeGibsView, readGibsView } from "@/lib/gibs-view";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "@/stores/cosmicStore";
 import { selectCountry } from "@/stores/actions";
 import { useComparatorStore } from "@/stores/comparatorStore";

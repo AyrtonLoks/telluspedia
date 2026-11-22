@@ -113,7 +113,7 @@ describe("T25 · Orçamento de bundle inicial e carregamento sob demanda", () =>
     assert.equal(pkg.scripts?.analyze, "ANALYZE=true next build");
   });
 
-  test("6. Quando build (.next) existe, First Load JS de / fica abaixo de 185 kB e sem three/recharts/radix-dialog", () => {
+  test("6. Quando build (.next) existe, First Load JS de / fica abaixo de 160 kB e sem three/recharts/radix-dialog", () => {
     const manifestPath = path.join(webRoot, ".next", "app-build-manifest.json");
     if (!fs.existsSync(manifestPath)) return;
 
@@ -136,13 +136,16 @@ describe("T25 · Orçamento de bundle inicial e carregamento sob demanda", () =>
       assert.doesNotMatch(text, /twoline2satrec/, `Chunk inicial ${relChunk} não deve conter satellite.js`);
       assert.doesNotMatch(text, /Reino da Prússia/, `Chunk inicial ${relChunk} não deve conter as entidades históricas`);
       assert.doesNotMatch(text, /EN\.GHG\.CO2\.PC\.CE\.AR5/, `Chunk inicial ${relChunk} não deve conter os indicadores do Banco Mundial`);
+      assert.doesNotMatch(text, /leaguesNavigated/, `Chunk inicial ${relChunk} não deve conter a cena completa de Magalhães`);
+      assert.doesNotMatch(text, /Fagradalsfjall/, `Chunk inicial ${relChunk} não deve conter os dados locais do Observatório`);
+      assert.doesNotMatch(text, /touch-pinch-zoom/, `Chunk inicial ${relChunk} não deve conter a configuração do tailwind-merge`);
     }
 
     const totalGzipKb = totalGzipBytes / 1024;
-    // T35: 235 → 176 kB. O piso é o framework (React + Next ≈ 104 kB); ver o log da T35.
+    // T35: 235 → 157 kB. O piso é o framework (React + Next ≈ 104 kB); ver o log da T35.
     assert.ok(
-      totalGzipKb < 185,
-      `First Load JS gzip de / deve ficar < 185 kB (atual: ${totalGzipKb.toFixed(1)} kB)`
+      totalGzipKb < 160,
+      `First Load JS gzip de / deve ficar < 160 kB (atual: ${totalGzipKb.toFixed(1)} kB)`
     );
   });
 });

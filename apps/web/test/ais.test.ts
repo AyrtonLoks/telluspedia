@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createAisAccumulator } from "../src/lib/ais-accumulator";
-import { AIS_MAX_VESSELS, AIS_POSITION_TTL_MS, AIS_REGIONS, simulatedAisSnapshot, vesselIsMoving } from "../src/lib/ais-data";
+import { simulatedAisSnapshot } from "../src/lib/ais-demo";
+import { AIS_MAX_VESSELS, AIS_POSITION_TTL_MS, AIS_REGIONS, vesselIsMoving } from "../src/lib/ais-data";
 import { createAisFeed } from "../src/lib/ais-source";
 import { groupProjectedVessels } from "../src/lib/maritime-markers";
 

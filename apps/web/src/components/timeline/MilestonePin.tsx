@@ -12,7 +12,7 @@ import { useSceneStore } from "@/stores/sceneStore";
 import { sceneOpenedBy } from "@/lib/scenes/catalog";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useReaderStore } from "@/stores/readerStore";
-import { getSourceUrl } from "@/lib/citations";
+import { getSourceUrl } from "@/lib/source-urls";
 import {
   preloadCitationModal,
   preloadReaderMode,

@@ -11,7 +11,8 @@ import {
   isObservatoryEnvelope,
 } from "../src/lib/observatory-source";
 import { resetObservatorySources } from "../src/lib/observatory-sources";
-import { FALLBACK_EONET_EVENTS, FALLBACK_FIRMS_HOTSPOTS, type EonetEvent } from "../src/lib/observatory-data";
+import { type EonetEvent } from "../src/lib/observatory-data";
+import { FALLBACK_EONET_EVENTS, FALLBACK_FIRMS_HOTSPOTS } from "../src/lib/observatory-fallback";
 import { GET as eonetGET } from "../src/app/api/observatory/eonet/route";
 import { GET as firmsGET } from "../src/app/api/observatory/firms/route";
 import { encodeFirmsColumns } from "../src/lib/firms-aggregate";

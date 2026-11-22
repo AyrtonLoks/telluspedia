@@ -12,14 +12,13 @@ import { StudyShareModal } from "../src/components/study/StudyShareModal";
 import { useSceneStore } from "../src/stores/sceneStore";
 import { useObservatoryStore } from "../src/stores/observatoryStore";
 import { calculateIssPosition } from "../src/lib/satellites";
+import { isContemporaryEpoch, ObservatoryLayerId } from "../src/lib/observatory-data";
 import {
-  isContemporaryEpoch,
   FALLBACK_FIRMS_HOTSPOTS,
   FALLBACK_EONET_EVENTS,
   FALLBACK_AIRCRAFT_FLEET,
   FALLBACK_MARITIME_ROUTES,
-  ObservatoryLayerId,
-} from "../src/lib/observatory-data";
+} from "../src/lib/observatory-fallback";
 import { ObservatoryPanel } from "../src/components/observatory/ObservatoryPanel";
 import { ObservatoryTelemetryHUD } from "../src/components/observatory/ObservatoryTelemetryHUD";
 import { TopNavBar } from "../src/components/nav/TopNavBar";

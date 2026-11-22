@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import milestonesJson from "../../data/scenes/milestones.json";
-import magellanJson from "../../data/scenes/magellan-1519.json";
 import apolloJson from "../../data/scenes/glo-1969.json";
 import sceneIndexJson from "../../data/scenes/scene-index.json";
 import type { Scene } from "./schema";
@@ -13,7 +12,6 @@ import { sceneStartYear, type TrajectoryKind } from "./catalog-utils";
  */
 const SCENE_FILES: Array<[string, unknown[]]> = [
   ["milestones.json", milestonesJson as unknown[]],
-  ["magellan-1519.json", [magellanJson]],
   ["glo-1969.json", [apolloJson]],
 ];
 
@@ -55,6 +53,7 @@ export const SCENE_SOURCES: ReadonlyArray<readonly [string, unknown[]]> = SCENE_
  */
 type Loader = () => Promise<unknown>;
 const LAZY_LOADERS: Record<string, Loader> = {
+  "magellan-1519": () => import("../../data/scenes/magellan-1519.json").then((m) => m.default),
   "polo-1271": () => import("../../data/scenes/polo-1271.json").then((m) => m.default),
   "gama-1497": () => import("../../data/scenes/gama-1497.json").then((m) => m.default),
   "glo-1914": () => import("../../data/scenes/glo-1914.json").then((m) => m.default),

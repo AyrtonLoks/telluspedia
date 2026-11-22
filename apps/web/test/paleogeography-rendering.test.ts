@@ -1,5 +1,5 @@
 import { applyTimelinePreset } from "../src/stores/actions";
-import { test, describe } from "node:test";
+import { test, describe, before } from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
 import { latLngToVector3, slerpVectors } from "../src/lib/geo-spatial";
@@ -17,7 +17,7 @@ import { MAGELLAN_ROUTE, HISTORICAL_ROUTES } from "../src/lib/historical-routes"
 import { EarthShader, createEarthMaterial } from "../src/components/globe/EarthShaderMaterial";
 import { SurfaceTrajectoryLayer as HistoricalRouteTrajectory, ROUTE_ALTITUDE } from "../src/components/scenes/SurfaceTrajectoryLayer";
 import { createSurfaceTrajectoryCurve } from "../src/lib/scenes/surface";
-import { getScene } from "../src/lib/scenes/catalog";
+import { getScene, loadScene } from "../src/lib/scenes/catalog";
 import { PaleoPlatesLayer, PALEO_PLATES_ALTITUDE, PANGEA_TECTONIC_ZONES } from "../src/components/globe/PaleoPlatesLayer";
 
 const HistoricalRouteOverlay: React.FC<{ forceActive?: boolean }> = ({ forceActive }) =>
@@ -31,6 +31,9 @@ const createMagellanTrajectoryCurve = () => {
 };
 
 describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Naval (RN10, RN11 & RN12)", () => {
+  // A cena de Magalhães é carregada sob demanda desde a T35 (no app, ao abrir a cena).
+  before(() => loadScene("magellan-1519"));
+
   test("1. useSceneStore gerencia ciclo de vida, navegação passo-a-passo e progresso", () => {
     const store = useSceneStore.getState();
     store.closeScene();

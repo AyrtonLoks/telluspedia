@@ -4,6 +4,7 @@
  * Sem dependências: lido pelo script, pelo catálogo e pelos testes.
  */
 export const LAZY_SCENE_FILES = [
+  "magellan-1519.json",
   "polo-1271.json",
   "gama-1497.json",
   "glo-1914.json",

@@ -31,7 +31,12 @@ const EAGER = [
   "src/lib/epoch/resolveEpoch.ts",
   "src/lib/timeline/era-study.ts",
   "src/lib/scenes/schema.ts",
-  "src/lib/choropleth.ts",
+  "src/lib/choropleth-ids.ts",
+  "src/lib/gibs-view.ts",
+  "src/lib/source-urls.ts",
+  "src/lib/ais-data.ts",
+  "src/components/ui/cn.ts",
+  "src/lib/scenes/catalog.ts",
   "src/lib/observatory-data.ts",
   "src/stores/observatoryStore.ts",
   "src/stores/choroplethStore.ts",
@@ -47,6 +52,14 @@ const HEAVY = [
   /from\s+["']satellite\.js["'](?!;?\s*$)/,
   /from\s+["']d3-geo["']/,
   /from\s+["'][^"']*countries-worldbank-indicators\.json["']/,
+  /from\s+["'][^"']*historical-routes["']/,
+  /from\s+["'][^"']*observatory-fallback["']/,
+  /from\s+["'][^"']*magellan-1519\.json["']/,
+  /from\s+["']tailwind-merge["']/,
+  /from\s+["'][^"']*lib\/gibs["']/,
+  /from\s+["'][^"']*lib\/choropleth["']/,
+  /from\s+["'][^"']*lib\/citations["']/,
+  /from\s+["'][^"']*ais-demo["']/,
 ];
 
 describe("T35 · carregamento inicial sem dados pesados", () => {
@@ -61,7 +74,16 @@ describe("T35 · carregamento inicial sem dados pesados", () => {
     assert.match(read("src/components/timeline/MilestonePin.tsx"), /await import\("@\/lib\/country-data"\)/);
   });
 
-  test("listas leves batem com as fontes completas", () => {
+  test("listas leves batem com as fontes completas", async () => {
+    const { GIBS_PRODUCTS } = await import("../src/lib/gibs");
+    const { GIBS_FIRST_MONTH, GIBS_PRODUCT_IDS } = await import("../src/lib/gibs-view");
+    assert.deepEqual(GIBS_PRODUCT_IDS, Object.keys(GIBS_PRODUCTS));
+    for (const id of GIBS_PRODUCT_IDS) assert.equal(GIBS_FIRST_MONTH[id], GIBS_PRODUCTS[id].firstMonth, id);
+    const { MAGELLAN_START_YEAR, MAGELLAN_END_YEAR } = await import("../src/lib/epoch/constants");
+    const { MAGELLAN_ROUTE } = await import("../src/lib/historical-routes");
+    assert.deepEqual([MAGELLAN_START_YEAR, MAGELLAN_END_YEAR], [MAGELLAN_ROUTE.startYear, MAGELLAN_ROUTE.endYear]);
+    const choropleth = await import("../src/lib/choropleth");
+    for (const id of choropleth.CHOROPLETH_INDICATOR_IDS) assert.ok(choropleth.CHOROPLETH_INDICATORS[id], id);
     assert.deepEqual([...PILOT_COUNTRY_ISOS].sort(), Object.keys(countryData.PILOT_COUNTRIES).sort());
     assert.deepEqual([...HISTORICAL_ENTITY_IDS].sort(), Object.keys(historicalEntities.HISTORICAL_ENTITIES).sort());
     assert.deepEqual([...COUNTRY_ISO_CODES].sort(), Object.keys(WORLD_COUNTRIES_CATALOG).sort());
@@ -97,6 +119,25 @@ describe("T35 · carregamento inicial sem dados pesados", () => {
       const [lng, lat] = geoCentroid({ type: "MultiPoint", coordinates: ring.slice(0, -1) });
       const got = observationLocation({ type: "Polygon", coordinates: [ring as [number, number][]], date: "" } as never);
       assert.ok(Math.abs(got.lng - lng) < 1e-9 && Math.abs(got.lat - lat) < 1e-9, JSON.stringify(ring));
+    }
+  });
+
+  test("dados locais do Observatório: estado inicial vazio, preenchido ao falhar o servidor", async () => {
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async () => new Response("x", { status: 503 })) as typeof fetch;
+    try {
+      useObservatoryStore.setState({ eonetEvents: [], aircraftFleet: [], maritimeRoutes: [], firmsHotspots: [] });
+      const st = useObservatoryStore.getState();
+      await st.loadLayerData("NASA_EONET");
+      await st.loadLayerData("FLIGHTS_OPENSKY");
+      await st.loadLayerData("NASA_FIRMS");
+      await st.loadLayerData("MARITIME_ROUTES");
+      const s = useObservatoryStore.getState();
+      assert.ok(s.eonetEvents.length > 0 && s.aircraftFleet.length > 0 && s.firmsHotspots.length > 0);
+      assert.ok(s.maritimeRoutes.length > 0 && s.ais.vessels.length > 0, "corredores fixos e amostra AIS de demonstração");
+      assert.equal(s.layerError.NASA_EONET, true);
+    } finally {
+      globalThis.fetch = realFetch;
     }
   });
 

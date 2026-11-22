@@ -94,7 +94,7 @@ describe("D12a: schema de cena", () => {
 
 import fs from "node:fs";
 import path from "node:path";
-import { ALL_SCENES, SCENE_SOURCES, getScene, globalMilestones } from "../src/lib/scenes/catalog";
+import { ALL_SCENES, SCENE_SOURCES, getScene, globalMilestones, loadScene } from "../src/lib/scenes/catalog";
 import { GLOBAL_MILESTONES, PILOT_COUNTRIES } from "../src/lib/country-data";
 import { HISTORICAL_ROUTES } from "../src/lib/historical-routes";
 import { APOLLO11_PHASES, CAPE_CANAVERAL_COORDS, TRANQUILITY_BASE_COORDS } from "../src/lib/apollo11";
@@ -116,9 +116,10 @@ describe("D12b: migração sem perda para cenas", () => {
     assert.equal(Object.values(PILOT_COUNTRIES).reduce((n, c) => n + c.milestones.length, 0), 17);
   });
 
-  test("Magalhães: rota completa (frota, 17 pontos, diário, citações, dossiê) idêntica", () => {
+  test("Magalhães: rota completa (frota, 17 pontos, diário, citações, dossiê) idêntica", async () => {
     assert.deepStrictEqual(JSON.parse(JSON.stringify(HISTORICAL_ROUTES["magellan-1519"])), before.magellan);
-    const scene = getScene("magellan-1519")!;
+    // Sob demanda desde a T35: a cena completa chega por loadScene.
+    const scene = (await loadScene("magellan-1519"))!;
     assert.equal(scene.trajectories[0].kind, "surface");
     assert.equal(scene.participants.length, 5);
   });
@@ -251,7 +252,8 @@ describe("D12c: painel genérico do player", () => {
     }
   });
 
-  test("um só painel serve Magalhães e Apollo 11, com textos e estatísticas vindos dos dados", () => {
+  test("um só painel serve Magalhães e Apollo 11, com textos e estatísticas vindos dos dados", async () => {
+    await loadScene("magellan-1519"); // sob demanda desde a T35
     useSceneStore.getState().openScene("magellan-1519");
     useSceneStore.getState().jumpToStep(6);
     const mag = renderToStaticMarkup(React.createElement(ScenePlayerOverlay, { sceneId: "magellan-1519" }));

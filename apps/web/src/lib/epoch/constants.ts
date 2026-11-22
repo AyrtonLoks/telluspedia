@@ -27,6 +27,10 @@ export const DEFAULT_GEOLOGICAL_MA = 250;
 
 /** Rota da circum-navegação de Magalhães (1519–1522). */
 export const MAGELLAN_ROUTE_ID = "magellan-1519";
+/** Anos da expedição (os fatos `startYear`/`endYear` da cena; um teste garante). A cena completa é
+ * carregada sob demanda (T35), então quem só precisa do recorte usa estas constantes. */
+export const MAGELLAN_START_YEAR = 1519;
+export const MAGELLAN_END_YEAR = 1522;
 /** Marco da partida da expedição (Sanlúcar de Barrameda, 1519). */
 export const MAGELLAN_DEPARTURE_MILESTONE_ID = "esp-1519";
 /** Marco global da Apollo 11 (usado ao restaurar estudos com a cena ativa). */

@@ -8,6 +8,8 @@ import {
   FALLBACK_EONET_EVENTS,
   FALLBACK_FIRMS_HOTSPOTS,
   FALLBACK_MARITIME_ROUTES,
+} from "./observatory-fallback";
+import {
   type AircraftState,
   type EonetEvent,
   type IssTelemetryData,

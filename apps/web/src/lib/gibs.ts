@@ -7,7 +7,21 @@
  * dia 1 (o GIBS também encaixa qualquer dia do mês na composição); o gelo marinho, diário, usa o dia 15.
  * Projeção EPSG:4326 (equiretangular, 2:1), que casa com o UV da `SphereGeometry` do globo.
  */
-export type GibsProductId = "ndvi" | "snow" | "seaice" | "lst";
+import {
+  GIBS_DEFAULT_PRODUCT,
+  GIBS_FIRST_MONTH,
+  GIBS_PRODUCT_IDS,
+  MONTH,
+  encodeGibsView,
+  isGibsMonthFor,
+  isGibsProductId,
+  latestGibsMonth,
+  readGibsView,
+  type GibsProductId,
+} from "./gibs-view";
+
+export { GIBS_DEFAULT_PRODUCT, GIBS_FIRST_MONTH, GIBS_PRODUCT_IDS, encodeGibsView, isGibsMonthFor, isGibsProductId, latestGibsMonth, readGibsView };
+export type { GibsProductId };
 
 export interface GibsScaleLabel {
   /** Posição na barra, de 0 a 1. */
@@ -123,8 +137,6 @@ export const GIBS_PRODUCTS: Record<GibsProductId, GibsProduct> = {
   },
 };
 
-export const GIBS_PRODUCT_IDS = Object.keys(GIBS_PRODUCTS) as GibsProductId[];
-export const GIBS_DEFAULT_PRODUCT: GibsProductId = "ndvi";
 export const GIBS_PROVIDER = "NASA GIBS (WMS, EPSG:4326)";
 export const GIBS_WMS = "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi";
 /** Largura pedida ao WMS (2:1). 2048 dá ~20 km por pixel no equador e cabe em ~0,1–0,7 MB de PNG. */
@@ -140,23 +152,8 @@ export function isBlankGibsImage(byteLength: number): boolean {
   return byteLength <= GIBS_BLANK_MAX_BYTES;
 }
 
-const MONTH = /^(\d{4})-(0[1-9]|1[0-2])$/;
 
-/** Mês anterior a `month` ("2026-01" → "2025-12"). */
-function previousMonth(month: string): string {
-  const [y, m] = month.split("-").map(Number);
-  return m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, "0")}`;
-}
 
-/**
- * Último mês que costuma estar processado: as composições mensais saem algumas semanas depois do fim
- * do mês. Até o dia 15, o mês retrasado; depois, o mês passado (em UTC).
- */
-export function latestGibsMonth(now: Date = new Date()): string {
-  const current = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
-  const last = previousMonth(current);
-  return now.getUTCDate() <= 15 ? previousMonth(last) : last;
-}
 
 export type GibsRequest = { product: GibsProduct; month: string; time: string };
 
@@ -179,34 +176,9 @@ export function parseGibsRequest(
   return { ok: true, value: { product, month, time: `${month}-${String(product.day).padStart(2, "0")}` } };
 }
 
-export function isGibsProductId(value: unknown): value is GibsProductId {
-  return typeof value === "string" && (GIBS_PRODUCT_IDS as string[]).includes(value);
-}
 
-/** Mês bem formado e não anterior ao início do produto (o limite superior depende da data atual). */
-export function isGibsMonthFor(productId: GibsProductId, month: unknown): month is string {
-  return typeof month === "string" && MONTH.test(month) && month >= GIBS_PRODUCTS[productId].firstMonth;
-}
 
-/**
- * Lê o estado salvo da camada (URL compartilhável `gibs=produto[,AAAA-MM]` e estudos): produto
- * desconhecido descarta tudo; mês inválido, anterior ao produto ou ainda não processado vira null
- * (último mês disponível), em vez de quebrar a restauração.
- */
-export function readGibsView(
-  product: unknown,
-  month: unknown,
-  now: Date = new Date()
-): { product: GibsProductId; month: string | null } | null {
-  if (!isGibsProductId(product)) return null;
-  const ok = isGibsMonthFor(product, month) && month <= latestGibsMonth(now);
-  return { product, month: ok ? (month as string) : null };
-}
 
-/** Valor do parâmetro `gibs` da URL. */
-export function encodeGibsView(product: GibsProductId, month: string | null): string {
-  return month ? `${product},${month}` : product;
-}
 
 /** URL do GetMap do WMS 1.3.0 (em EPSG:4326 a ordem do BBOX é latitude, longitude). */
 export function gibsGetMapUrl(product: GibsProduct, time: string, width: number = GIBS_IMAGE_WIDTH): string {

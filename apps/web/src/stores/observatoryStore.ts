@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { simulatedAisSnapshot, type AisSnapshot } from "@/lib/ais-data";
+import { emptyAisCounts, type AisSnapshot } from "@/lib/ais-data";
 import {
   ObservatoryLayer,
   FirmsHotspot,
@@ -9,10 +9,6 @@ import {
   AircraftState,
   MaritimeRoute,
   ObservatoryEntity,
-  FALLBACK_FIRMS_HOTSPOTS,
-  FALLBACK_EONET_EVENTS,
-  FALLBACK_AIRCRAFT_FLEET,
-  FALLBACK_MARITIME_ROUTES,
 } from "@/lib/observatory-data";
 import {
   type ObservatoryMeta,
@@ -29,10 +25,12 @@ import {
 } from "@/lib/firms-aggregate";
 import { ISS_NORAD_ID, type SatelliteCategory, type SatelliteTle } from "@/lib/satellite-catalog";
 import type { SatRec } from "satellite.js";
-import { GIBS_DEFAULT_PRODUCT, GIBS_PRODUCTS, type GibsLayerData, type GibsProductId } from "@/lib/gibs";
+import { GIBS_DEFAULT_PRODUCT, type GibsProductId } from "@/lib/gibs-view";
+import type { GibsLayerData } from "@/lib/gibs";
 
-/** Referência local do produto, quando nem o servidor do TellusPedia respondeu. */
-function gibsLocalReference(product: GibsProductId, month: string | null): GibsLayerData {
+/** Referência local do produto, quando nem o servidor do TellusPedia respondeu (catálogo sob demanda, T35). */
+async function gibsLocalReference(product: GibsProductId, month: string | null): Promise<GibsLayerData> {
+  const { GIBS_PRODUCTS } = await import("@/lib/gibs");
   const p = GIBS_PRODUCTS[product];
   return {
     product,
@@ -74,7 +72,16 @@ function isEonetSelection(entity: ObservatoryEntity | null) {
 }
 
 const DEFAULT_FIRMS_WINDOW: FirmsWindow = { days: 1, confidence: "nominal" };
-const fallbackFirms = (w: FirmsWindow) => filterByConfidence(FALLBACK_FIRMS_HOTSPOTS, w.confidence);
+/**
+ * Dados locais de referência (servidor fora do ar) e a malha de rotas marítimas: sob demanda (T35),
+ * fora do carregamento inicial. O estado começa vazio e cada camada preenche o seu ao carregar.
+ */
+type FallbackData = typeof import("@/lib/observatory-fallback");
+let fallbackPromise: Promise<FallbackData> | null = null;
+export function loadObservatoryFallback(): Promise<FallbackData> {
+  fallbackPromise ??= import("@/lib/observatory-fallback");
+  return fallbackPromise;
+}
 
 const ALL_LAYERS: ObservatoryLayer[] = [
   "NASA_FIRMS",
@@ -171,11 +178,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   isPanelOpen: false,
   selectedEntity: null,
 
-  firmsHotspots: fallbackFirms(DEFAULT_FIRMS_WINDOW),
-  firmsTotal: fallbackFirms(DEFAULT_FIRMS_WINDOW).length,
+  firmsHotspots: [],
+  firmsTotal: 0,
   firmsWindow: DEFAULT_FIRMS_WINDOW,
   firmsByCountry: null,
-  eonetEvents: FALLBACK_EONET_EVENTS,
+  eonetEvents: [],
   eonetCategory: "all",
   gibsProduct: GIBS_DEFAULT_PRODUCT,
   gibsMonth: null,
@@ -193,9 +200,9 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   satellites: [],
   satelliteCategories: ["station", "visual"],
   showIssGroundTrack: false,
-  aircraftFleet: FALLBACK_AIRCRAFT_FLEET,
-  maritimeRoutes: FALLBACK_MARITIME_ROUTES,
-  ais: simulatedAisSnapshot(),
+  aircraftFleet: [],
+  maritimeRoutes: [],
+  ais: { vessels: [], corridorCounts: emptyAisCounts() },
   vesselsMovingOnly: false,
   setVesselsMovingOnly: (enabled) => set((state) => ({
     vesselsMovingOnly: enabled,
@@ -335,13 +342,13 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
                 : null,
           });
           applyMeta("NASA_FIRMS", body.meta);
-        }
+        } else throw new Error("Resposta FIRMS inválida"); // cai nos dados locais (o estado começa vazio)
       } else if (layerId === "NASA_EONET") {
         const body = await fetchEnvelope("/api/observatory/eonet");
         if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
           set({ eonetEvents: body.data as EonetEvent[] });
           applyMeta("NASA_EONET", body.meta);
-        }
+        } else throw new Error("Resposta EONET inválida");
       } else if (layerId === "ISS_SATELLITES") {
         // Baixa o SGP4 junto com os TLEs; a telemetria sai já calculada quando os dois chegam.
         const [body] = await Promise.all([fetchEnvelope("/api/observatory/satellites"), loadSatelliteLib()]);
@@ -349,7 +356,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           set({ satellites: body.data as SatelliteTle[] });
           get().refreshIssTelemetry();
           applyMeta("ISS_SATELLITES", body.meta);
-        }
+        } else throw new Error("Resposta de satélites inválida");
       } else if (layerId === "NASA_GIBS") {
         const { gibsProduct, gibsMonth } = get();
         const query = `product=${gibsProduct}${gibsMonth ? `&month=${gibsMonth}` : ""}`;
@@ -362,6 +369,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         set({ gibs: data });
         applyMeta("NASA_GIBS", body.meta);
       } else if (layerId === "MARITIME_ROUTES") {
+        // A malha de corredores é fixa (referência local), com ou sem a amostra AIS ao vivo.
+        void loadObservatoryFallback().then((fb) => set({ maritimeRoutes: fb.FALLBACK_MARITIME_ROUTES })).catch(() => {});
         const body = await fetchEnvelope("/api/observatory/ais");
         if (!isObservatoryEnvelope(body)) throw new Error("Resposta AIS inválida");
         const data = body.data as AisSnapshot;
@@ -376,11 +385,20 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         if (isObservatoryEnvelope(body?.aircraft) && Array.isArray(body.aircraft.data)) {
           set({ aircraftFleet: body.aircraft.data as AircraftState[] });
           applyMeta("FLIGHTS_OPENSKY", body.aircraft.meta);
-        }
+        } else throw new Error("Resposta de tráfego inválida");
       }
     } catch {
+      const fb = await loadObservatoryFallback().catch(() => null);
+      if (fb) {
+        if (layerId === "NASA_FIRMS") {
+          const hotspots = filterByConfidence(fb.FALLBACK_FIRMS_HOTSPOTS, get().firmsWindow.confidence);
+          set({ firmsHotspots: hotspots, firmsTotal: hotspots.length, firmsByCountry: null });
+        } else if (layerId === "NASA_EONET") set({ eonetEvents: fb.FALLBACK_EONET_EVENTS });
+        else if (layerId === "FLIGHTS_OPENSKY") set({ aircraftFleet: fb.FALLBACK_AIRCRAFT_FLEET });
+        else if (layerId === "MARITIME_ROUTES") set({ maritimeRoutes: fb.FALLBACK_MARITIME_ROUTES });
+      }
       set((s) => ({
-        ais: layerId === "MARITIME_ROUTES" ? simulatedAisSnapshot() : s.ais,
+        ais: layerId === "MARITIME_ROUTES" && fb ? fb.simulatedAisSnapshot() : s.ais,
         layerError: { ...s.layerError, [layerId]: true },
         layerMeta: {
           ...s.layerMeta,
@@ -397,7 +415,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         await loadSatelliteLib().catch(() => {});
         get().refreshIssTelemetry();
       }
-      if (layerId === "NASA_GIBS") set({ gibs: gibsLocalReference(get().gibsProduct, get().gibsMonth) });
+      if (layerId === "NASA_GIBS") set({ gibs: await gibsLocalReference(get().gibsProduct, get().gibsMonth) });
     } finally {
       set((s) => ({
         isLoading: { ...s.isLoading, [layerId]: false },

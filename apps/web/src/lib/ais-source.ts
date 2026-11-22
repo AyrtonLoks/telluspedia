@@ -1,5 +1,6 @@
 import { AIS_MESSAGE_TYPES, createAisAccumulator } from "./ais-accumulator";
-import { AIS_REGIONS, simulatedAisSnapshot, type AisSnapshot } from "./ais-data";
+import { AIS_REGIONS, type AisSnapshot } from "./ais-data";
+import { simulatedAisSnapshot } from "./ais-demo";
 import { createObservatorySource, SourceUnavailableError } from "./observatory-source";
 
 const STREAM_URL = "wss://stream.aisstream.io/v0/stream";
