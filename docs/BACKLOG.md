@@ -223,7 +223,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D24 | Expandir catálogo de Cenas Históricas (completar `glo-1969` + 5 novas cenas curadas) | Conteúdo | P1 | G | DONE | claude | — | G-CONTEUDO, G-EPOCA, G-TIMELINE, G-GLOBO, G-COSMOS, G-OBS |
 | D25 | Camada NASA GIBS (imagens de satélite diárias/históricas: NDVI, gelo/neve, temperatura superficial) | 3D/Dados | P2 | G | DONE | claude | — | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | DONE | antigravity | D24 | G-CONTEUDO, G-TIMELINE |
-| D27 | Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA) | 3D/Dados | P2 | GG | TODO | — | D25 | G-OBS, G-GLOBO |
+| D27a | Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05) | 3D/Dados | P2 | G | IN_PROGRESS | antigravity | D25 | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
+| D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | TODO | — | D27a | G-OBS, G-GLOBO |
 | D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
 
 ---
@@ -2207,23 +2208,46 @@ O manifesto atual do TellusBridge possui 31 vínculos cobrindo 181/299 nós (60,
 
 ---
 
-### D27 · Camada de Ventos Globais & Correntes Oceânicas (partículas GPU animadas com dados reais GFS/NOAA)
+### D27a · Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** GG · **Depende de:** D25 · **Grupos:** G-OBS, G-GLOBO
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d27a-global-winds · **Worktree:** ../telluspedia-wt/antigravity-d27a
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** D25 · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS
 
 **Contexto / problema**
-Prevista no Horizonte 3 do `docs/ROADMAP.md`, a visualização de fluxos atmosféricos (ventos em altitude/superfície) e correntes oceânicas ainda não foi implementada.
+Prevista no Horizonte 3 do `docs/ROADMAP.md` (originalmente `D27`, tamanho `GG`, quebrada em `D27a` + `D27b` conforme §1.7), a visualização de fluxos atmosféricos (ventos em superfície 10 m e corrente de jato 250 hPa) ainda não foi implementada no Observatório Planetário.
 
 **O que fazer**
-1. Criar endpoint cacheado `/api/observatory/winds` com grade compacta (UV vetorial) a partir de NOAA GFS/OSCAR e fallback climatológico explícito (T05).
-2. Implementar sistema de partículas/streamlines em shader GPU sobre a esfera (`InstancedBufferGeometry` ou textura de campo vetorial) mantendo ≥ 50 FPS e descarte rigoroso de buffers.
+1. Criar endpoint cacheado `/api/observatory/winds` com grade UV compacta (`9×16` = 144 pontos globais) a partir de NOAA GFS via Open-Meteo (`wind_speed_10m`/`wind_direction_10m` e `wind_speed_250hPa`/`wind_direction_250hPa`, sem chave privada) + fallback climatológico explícito (Alísios, Ventos de Oeste, Polares, Corrente de Jato) com envelope T05.
+2. Implementar sistema de partículas/streamlines animadas em shader GPU sobre a esfera (`BufferGeometry` com trilhas e gradiente por velocidade, interpolação bilinear esférica sem alocação por quadro, descarte rigoroso RN21, pausa RN22 e escalonamento pelo preset de qualidade T39).
+3. Integrar camada `GLOBAL_WINDS` no `ObservatoryPanel` (controles D14: altitude `Superfície 10 m` / `Jato 250 hPa`, unidade `km/h` / `nós`, legenda de escala, estatísticas e procedência T05), busca `⌘K`, URL compartilhável (`?camadas=GLOBAL_WINDS`), schema de estudos e `docs/DATA_SOURCES.md` — mantendo `/` < 160 kB (lazy-load).
 
 **Critérios de aceite**
-- [ ] Camada ativável no Observatório com legenda de velocidade (km/h ou nós), procedência T05 e zero queda severa de FPS.
+- [ ] Endpoint `/api/observatory/winds` retorna grade UV real (NOAA GFS) com cache e fallback climatológico rotulado (T05).
+- [ ] Camada ativável no Observatório com partículas GPU animadas sobre o globo, seletor de altitude (`10 m` / `250 hPa`), legenda de velocidade (`km/h` e `nós`), procedência T05, descarte rigoroso de buffers e zero regressão de bundle (`/` < 160 kB).
 
 **Log**
-- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · antigravity · TODO · Tarefa `D27` criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-22 · antigravity · IN_PROGRESS · Quebrada de `D27` (`GG`) em `D27a` (Ventos Globais + motor GPU) e `D27b` (Correntes Oceânicas) conforme §1.7. Reivindicada a partir de `origin/master` (`6d4bf67`) com todos os grupos livres (`G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS`).
+
+---
+
+### D27b · Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** D27a · **Grupos:** G-OBS, G-GLOBO
+
+**Contexto / problema**
+Segunda metade da `D27` (`GG`): estender o motor de partículas vetoriais sobre a esfera (`D27a`) para exibir correntes oceânicas superficiais reais (Corrente do Golfo, Kuroshio, Humboldt, Benguela, Circumpolar Antártica).
+
+**O que fazer**
+1. Estender `/api/observatory/winds` (ou rota `/api/observatory/currents`) com grade UV oceânica real (Open-Meteo Marine / NOAA OSCAR, mascarando terra) e fallback climatológico explícito de giros oceânicos (T05).
+2. Adicionar seletor de modo `Ventos` ↔ `Correntes oceânicas` na camada GPU com paleta oceânica e escala dedicada (`m/s` / `nós`) e documentar em `docs/DATA_SOURCES.md`.
+
+**Critérios de aceite**
+- [ ] Modo Correntes Oceânicas ativável no Observatório com máscara oceânica, legenda dedicada (`m/s` / `nós`) e procedência T05.
+
+**Log**
+- 2026-11-22 · antigravity · TODO · Criada a partir da quebra de `D27` (`GG`) conforme §1.7.
 
 ---
 
