@@ -45,7 +45,7 @@ A seção 4 é o **mapeamento de discovery**: lista as fontes avaliadas para cad
 | Texturas planetárias (Solar System Scope, CC BY 4.0) | **Em uso, estático** | `public/textures` (D21) |
 | Space-Track.org, JPL Horizons, Minor Planet Center, SPICE | Planejado | Sem integração |
 | NOAA GFS (ventos globais, via Open-Meteo) | **Em uso** | `/api/observatory/winds`, superfície 10 m e jato 250 hPa (D27a) |
-| NOAA OSCAR / Open-Meteo Marine (correntes oceânicas) | Planejado | Tarefa D27b |
+| Open-Meteo Marine / Copernicus–NOAA (correntes oceânicas) | **Em uso** | `/api/observatory/currents`, superfície oceânica com máscara costeira (D27b) |
 | NOAA Marine Debris, Global Drifter Program, CYGNSS | Planejado | Sem tarefa |
 | Global Fishing Watch, MarineCadastre, OpenSeaMap | Planejado | O tráfego marítimo usa AIS Stream e uma malha fixa de rotas |
 | Wikipedia REST API, GDELT, Crossref/OpenAlex/Citoid | Planejado | Os dossiês e citações são curados no código |
@@ -141,6 +141,12 @@ A seção 4 é o **mapeamento de discovery**: lista as fontes avaliadas para cad
 - **Grade e níveis**. Uma única consulta ao servidor amostra uma grade global compacta de `9 × 16 = 144` pontos (`−72°` a `+72°` de latitude a cada `18°`; `−180°` a `+157,5°` de longitude a cada `22,5°`) em dois níveis simultâneos: **Superfície (10 m)** (`wind_speed_10m`, `wind_direction_10m`) e **Corrente de Jato (250 hPa, ~10,5 km)** (`wind_speed_250hPa`, `wind_direction_250hPa`). A direção meteorológica ("de onde sopra") é convertida no servidor em componentes vetoriais `(u Leste, v Norte)` em `m/s`.
 - **Cache e procedência (T05)**. O endpoint `/api/observatory/winds` aplica cache em memória de 30 minutos (`Cache-Control: public, s-maxage=1800, stale-while-revalidate=3600`) e retém a última leitura válida por até 6 horas em caso de falha transitória (marcada como `stale`). Sem resposta válida do provedor, o sistema serve uma climatologia física de referência (células de Hadley, Ferrel, Polares e ondas de Rossby) explicitamente rotulada como **Simulado** / fallback climatológico.
 - **Renderização GPU**. As partículas/streamlines são advectadas no cliente sobre a esfera (`raio = 1,012`) por interpolação bilinear esférica contínua em `±180°` em um único `THREE.LineSegments` com shader customizado (rampa ciano → esmeralda → amarelo → laranja → rosa-vermelho), sem alocações por quadro, com contagem adaptada ao preset gráfico da T39 (`700` / `1.200` / `1.800` trilhas), pausa automática no modo de leitura (RN22) e descarte rigoroso de buffers (RN21).
+
+#### Correntes oceânicas superficiais (D27b)
+
+- **Modelo oceânico**. Dados de correntes superficiais (`ocean_current_velocity`, `ocean_current_direction`) servidos pela API aberta [Open-Meteo Marine](https://open-meteo.com/en/docs/marine-weather-api) (baseada nos modelos globais Copernicus Marine / Mercator Ocean e NOAA, sem necessidade de chave de API).
+- **Convenção e máscara oceânica**. Diferente do vento meteorológico, a direção das correntes segue a convenção oceanográfica ("para onde o fluxo se move": `0°` Norte, `90°` Leste, `270°` Oeste) e é convertida no servidor para `(u, v)` em `m/s`. Células de terra retornadas como `null` formam a máscara da grade (`mask = 0`), combinada no cliente com o índice espacial Natural Earth 110m (`which-polygon`) para manter 100% das streamlines estritamente sobre os oceanos sem invadir continentes.
+- **Cache, paleta e procedência (T05)**. O endpoint `/api/observatory/currents` aplica cache em memória de 60 minutos (`Cache-Control: public, s-maxage=3600, stale-while-revalidate=7200`) com tolerância `stale` de 6 horas. Sem resposta válida do provedor, serve uma climatologia de referência dos grandes giros oceânicos (Corrente do Golfo, Kuroshio, Humboldt, Benguela, Brasil, Agulhas e Circumpolar Antártica) explicitamente rotulada como fallback. A visualização compartilha o mesmo `LineSegments` GPU da `D27a` alternando para paleta oceânica dedicada (índigo → azul marinho → ciano → turquesa → espuma clara) e escala em `m/s` ou `nós` sem recriar o contexto WebGL.
 
 #### Catálogo estelar e Via Láctea (D09)
 

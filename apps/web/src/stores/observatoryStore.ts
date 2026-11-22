@@ -28,8 +28,13 @@ import type { SatRec } from "satellite.js";
 import { GIBS_DEFAULT_PRODUCT, type GibsProductId } from "@/lib/gibs-view";
 import type { GibsLayerData } from "@/lib/gibs";
 import {
+  DEFAULT_CURRENT_UNIT,
+  DEFAULT_FLOW_MODE,
   DEFAULT_WIND_ALTITUDE,
   DEFAULT_WIND_UNIT,
+  type CurrentUnit,
+  type FlowMode,
+  type OceanCurrentGrid,
   type WindAltitude,
   type WindFieldPayload,
   type WindUnit,
@@ -146,12 +151,22 @@ interface ObservatoryState {
   gibs: GibsLayerData | null;
   /** Troca produto e/ou mês e recarrega a camada. */
   setGibsRequest: (request: { product?: GibsProductId; month?: string | null }) => void;
-  /** Camada de Ventos Globais (D27a): grade UV (10 m e 250 hPa), altitude e unidade ativas. */
+  /** Camada de Ventos Globais & Correntes Oceânicas (D27a / D27b). */
+  flowMode: FlowMode;
   winds: WindFieldPayload | null;
   windAltitude: WindAltitude;
   windUnit: WindUnit;
+  currents: OceanCurrentGrid | null;
+  currentUnit: CurrentUnit;
+  currentsMeta: ObservatoryMeta;
+  currentsLoading: boolean;
+  currentsHasLoaded: boolean;
+  currentsError: boolean;
+  setFlowMode: (mode: FlowMode) => void;
   setWindAltitude: (altitude: WindAltitude) => void;
   setWindUnit: (unit: WindUnit) => void;
+  setCurrentUnit: (unit: CurrentUnit) => void;
+  loadCurrentsData: () => Promise<void>;
 
   isLoading: Record<ObservatoryLayer, boolean>;
   hasLoaded: Record<ObservatoryLayer, boolean>;
@@ -211,11 +226,57 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     if (cur.activeLayers.includes("NASA_GIBS")) void get().loadLayerData("NASA_GIBS");
     else set((s) => ({ hasLoaded: { ...s.hasLoaded, NASA_GIBS: false } }));
   },
+  flowMode: DEFAULT_FLOW_MODE,
   winds: null,
   windAltitude: DEFAULT_WIND_ALTITUDE,
   windUnit: DEFAULT_WIND_UNIT,
+  currents: null,
+  currentUnit: DEFAULT_CURRENT_UNIT,
+  currentsMeta: initialLocalMeta(),
+  currentsLoading: false,
+  currentsHasLoaded: false,
+  currentsError: false,
+  setFlowMode: (flowMode) => {
+    set({ flowMode });
+    if (flowMode === "currents" && !get().currentsHasLoaded && !get().currentsLoading) {
+      void get().loadCurrentsData();
+    }
+  },
   setWindAltitude: (windAltitude) => set({ windAltitude }),
   setWindUnit: (windUnit) => set({ windUnit }),
+  setCurrentUnit: (currentUnit) => set({ currentUnit }),
+  loadCurrentsData: async () => {
+    if (get().currentsLoading) return;
+    set({ currentsLoading: true });
+    try {
+      const [{ isValidOceanCurrentGrid }, body] = await Promise.all([
+        import("@/lib/currents-data"),
+        fetchEnvelope("/api/observatory/currents"),
+      ]);
+      if (isObservatoryEnvelope(body) && isValidOceanCurrentGrid(body.data)) {
+        set({
+          currents: body.data,
+          currentsMeta: body.meta,
+          currentsError: false,
+        });
+      } else {
+        throw new Error("Resposta de correntes oceânicas inválida");
+      }
+    } catch {
+      const { buildClimatologyCurrentsGrid } = await import("@/lib/currents-data");
+      set({
+        currents: buildClimatologyCurrentsGrid(),
+        currentsError: true,
+        currentsMeta: {
+          ...initialLocalMeta(),
+          fetchedAt: new Date().toISOString(),
+          reason: "Servidor do TellusPedia indisponível; exibindo giros oceânicos de referência",
+        },
+      });
+    } finally {
+      set({ currentsLoading: false, currentsHasLoaded: true });
+    }
+  },
   issTelemetry: null,
   satellites: [],
   satelliteCategories: ["station", "visual"],
