@@ -10,9 +10,10 @@ import { SEARCH_GROUPS, exploreSuggestions, searchExplore, type SearchResult } f
 import { useLayoutStore, type RightPanelId } from "@/stores/layoutStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
 
 export function SearchPalette({ onClose, previousFocus }: { onClose: () => void; previousFocus: HTMLElement | null }) {
-  const { t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const focusAfterClose = useRef<RightPanelId | null>(null);
@@ -123,6 +124,35 @@ export function SearchPalette({ onClose, previousFocus }: { onClose: () => void;
                   <ul role="presentation" className="space-y-0.5">
                     {entries.map((result) => {
                       const index = results.indexOf(result);
+                      let displayTitle = result.title;
+                      if (locale === "en") {
+                        if (result.group === "country") {
+                          const iso2 = result.keywords?.split(" ")[0];
+                          displayTitle = formatCountryName(iso2, result.title, "en");
+                        } else if (result.group === "body" && result.keywords) {
+                          displayTitle = result.keywords;
+                        } else if (result.group === "event" && result.id.startsWith("event:")) {
+                          displayTitle = tRaw(`event.${result.id.slice("event:".length)}`, result.title);
+                        } else if (result.group === "layer") {
+                          if (result.id.startsWith("layer:NASA_GIBS:")) {
+                            const pid = result.id.slice("layer:NASA_GIBS:".length);
+                            displayTitle = `${t("search.prefix.satellite", "Satélite:")} ${tRaw(`obs.gibs.${pid}.name`, result.title)}`;
+                          } else if (result.id.startsWith("layer:")) {
+                            displayTitle = tRaw(`suggestions.layer.${result.id.slice("layer:".length)}`, result.title);
+                          }
+                        } else if (result.group === "choropleth" && result.id.startsWith("choropleth:")) {
+                          const indId = result.id.slice("choropleth:".length);
+                          displayTitle = `${t("search.prefix.thematic", "Mapa temático:")} ${tRaw(`choropleth.ind.${indId}.label`, result.title)}`;
+                        } else if (result.group === "cosmicLayer" && result.id.startsWith("cosmicLayer:")) {
+                          displayTitle = tRaw(`cosmic.layer.${result.id.slice("cosmicLayer:".length)}`, result.title);
+                        } else if (result.group === "preset" && result.id.startsWith("preset:")) {
+                          displayTitle = tRaw(`timeline.preset.${result.id.slice("preset:".length)}`, result.title);
+                        } else if (result.group === "command") {
+                          if (result.id === "compare:") displayTitle = t("search.cmd.compare", result.title);
+                          else if (result.id === "route:/studies") displayTitle = t("search.cmd.studies", result.title);
+                          else if (result.id === "year:2024") displayTitle = t("search.cmd.year2024", result.title);
+                        }
+                      }
                       return (
                         <li
                           id={`${listId}-${index}`}
@@ -137,7 +167,7 @@ export function SearchPalette({ onClose, previousFocus }: { onClose: () => void;
                             result === active && "border-accent/30 bg-accent/10",
                           )}
                         >
-                          <span className="font-medium">{result.title}</span>
+                          <span className="font-medium">{displayTitle}</span>
                           {result.detail && <span className="text-caption text-fg-secondary">{result.detail}</span>}
                         </li>
                       );

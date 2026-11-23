@@ -15,6 +15,8 @@ import { cn } from "@/components/ui/cn";
 import { AIS_MOVING_MIN_KNOTS, VESSEL_LABEL, vesselIsMoving, vesselSpeedLabel, type VesselGroup } from "@/lib/ais-data";
 import { DataSourceBadge } from "./DataSourceBadge";
 import type { ObservatoryMeta } from "@/lib/observatory-source";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatNumber } from "@/lib/i18n/format";
 
 const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone; icon: React.ReactNode }> = {
   FIRMS: { title: "Foco de Calor (FIRMS)", tone: "layer-fires", icon: <Flame /> },
@@ -41,6 +43,7 @@ function Field({ label, children, mono = true }: { label: string; children: Reac
 const FIELD_GRID = "grid grid-cols-2 gap-3 rounded-card border border-line bg-surface-raised p-3";
 
 export const ObservatoryTelemetryHUD: React.FC = () => {
+  const { locale, t } = useI18n();
   const storeSelectedEntity = useObservatoryStore((s) => s.selectedEntity);
   const selectedEntity =
     typeof window === "undefined"
@@ -91,10 +94,10 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
     >
       <PanelHeader
         headingLevel={3}
-        title={meta.title}
+        title={t(`telemetry.type.${selectedEntity.type}`, meta.title)}
         icon={<span className={TONES[meta.tone].text}>{meta.icon}</span>}
         className="px-4 py-3"
-        actions={<IconButton label="Fechar telemetria" icon={<X />} size="sm" onClick={() => setSelectedEntity(null)} />}
+        actions={<IconButton label={t("telemetry.closeAria", "Fechar telemetria")} icon={<X />} size="sm" onClick={() => setSelectedEntity(null)} />}
       />
 
       <div className="space-y-3 p-4">
@@ -107,15 +110,17 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
               </div>
               <span className="text-caption text-fg-muted">
                 {selectedEntity.data.satellite}
-                {selectedEntity.data.daynight ? ` · passagem ${selectedEntity.data.daynight === "D" ? "diurna" : "noturna"}` : ""}
+                {selectedEntity.data.daynight
+                  ? ` · ${selectedEntity.data.daynight === "D" ? t("telemetry.dayPass", "passagem diurna") : t("telemetry.nightPass", "passagem noturna")}`
+                  : ""}
               </span>
             </div>
 
             <div className={FIELD_GRID}>
-              <Field label="Potência radiativa (FRP)">{selectedEntity.data.frp.toLocaleString("pt-BR")} MW</Field>
-              <Field label="Confiança" mono={false}>{FIRMS_CONFIDENCE_LABEL[selectedEntity.data.confidence]}</Field>
-              <Field label="Brilho">{selectedEntity.data.brightness.toLocaleString("pt-BR")} K</Field>
-              <Field label="Posição">
+              <Field label={t("telemetry.frp", "Potência radiativa (FRP)")}>{formatNumber(selectedEntity.data.frp, locale)} MW</Field>
+              <Field label={t("telemetry.confidence", "Confiança")} mono={false}>{FIRMS_CONFIDENCE_LABEL[selectedEntity.data.confidence]}</Field>
+              <Field label={t("telemetry.brightness", "Brilho")}>{formatNumber(selectedEntity.data.brightness, locale)} K</Field>
+              <Field label={t("telemetry.position", "Posição")}>
                 {selectedEntity.data.lat.toFixed(3)}°, {selectedEntity.data.lng.toFixed(3)}°
               </Field>
             </div>
@@ -123,20 +128,20 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
             <div className="flex items-center gap-2">
               <Button variant="primary" size="sm" className="flex-1" onClick={() => handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.6)}>
                 <Crosshair aria-hidden="true" className="h-4 w-4" />
-                Focar Foco
+                {t("telemetry.focusHotspot", "Focar Foco")}
               </Button>
               <a
                 href={firmsMapUrl(selectedEntity.data.lat, selectedEntity.data.lng, selectedEntity.data.acqDate)}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Abrir no mapa oficial NASA FIRMS"
-                title="Abrir no mapa oficial NASA FIRMS (fonte primária)"
+                aria-label={t("telemetry.openFirmsMap", "Abrir no mapa oficial NASA FIRMS")}
+                title={t("telemetry.openFirmsMap", "Abrir no mapa oficial NASA FIRMS (fonte primária)")}
                 className={buttonClasses("secondary", "sm", "w-8 px-0")}
               >
                 <ExternalLink aria-hidden="true" className="h-4 w-4" />
               </a>
             </div>
-            <p className="text-caption text-fg-muted">Fonte: NASA FIRMS (Fire Information for Resource Management System).</p>
+            <p className="text-caption text-fg-muted">{t("telemetry.firmsSource", "Fonte: NASA FIRMS (Fire Information for Resource Management System).")}</p>
           </>
         )}
 
@@ -145,50 +150,50 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
             <div className="space-y-0.5">
               <div className="text-label font-medium text-fg">{selectedEntity.data.name}</div>
               <span className="font-mono text-caption tabular-nums text-fg-muted">
-                NORAD ID: {selectedEntity.data.noradId} · {selectedEntity.data.category === "station" ? "Estação espacial" : "Satélite visível a olho nu"}
+                NORAD ID: {selectedEntity.data.noradId} · {selectedEntity.data.category === "station" ? t("telemetry.spaceStation", "Estação espacial") : t("telemetry.visibleSat", "Satélite visível a olho nu")}
               </span>
             </div>
             <div className={FIELD_GRID}>
-              <Field label="Altitude">{selectedEntity.data.altKm.toFixed(0)} km</Field>
-              <Field label="Velocidade">{Math.round(selectedEntity.data.velocityKmh).toLocaleString("pt-BR")} km/h</Field>
-              <Field label="Coordenadas">
+              <Field label={t("telemetry.altitude", "Altitude")}>{selectedEntity.data.altKm.toFixed(0)} km</Field>
+              <Field label={t("telemetry.speed", "Velocidade")}>{formatNumber(Math.round(selectedEntity.data.velocityKmh), locale)} km/h</Field>
+              <Field label={t("telemetry.coordinates", "Coordenadas")}>
                 {selectedEntity.data.lat.toFixed(2)}°, {selectedEntity.data.lng.toFixed(2)}°
               </Field>
-              <Field label="Época do TLE">
-                {new Date(selectedEntity.data.tleEpoch).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
+              <Field label={t("telemetry.tleEpoch", "Época do TLE")}>
+                {new Date(selectedEntity.data.tleEpoch).toLocaleDateString(locale, { timeZone: "UTC" })}
               </Field>
             </div>
-            <p className="text-caption text-fg-muted">Posição no instante do clique, calculada por SGP4 (TLE do CelesTrak).</p>
+            <p className="text-caption text-fg-muted">{t("telemetry.satSgp4Note", "Posição no instante do clique, calculada por SGP4 (TLE do CelesTrak).")}</p>
           </>
         )}
 
         {selectedEntity.type === "ISS" && activeIss && (
           <>
             <div className="space-y-0.5">
-              <div className="text-label font-medium text-fg">Estação Espacial Internacional (Zvezda / Destiny)</div>
+              <div className="text-label font-medium text-fg">{t("telemetry.issName", "Estação Espacial Internacional (Zvezda / Destiny)")}</div>
               <span className="font-mono text-caption tabular-nums text-fg-muted">
-                NORAD ID: 25544 · Inclinação: {activeIss.orbitInclinationDeg}°
+                NORAD ID: 25544 · {t("telemetry.inclination", "Inclinação")}: {activeIss.orbitInclinationDeg}°
               </span>
               <span className="block text-caption text-fg-muted">
-                Posição calculada por SGP4 a partir do TLE do CelesTrak
-                {activeIss.tleEpoch ? ` (época ${new Date(activeIss.tleEpoch).toLocaleString("pt-BR", { timeZone: "UTC" })} UTC)` : ""}
+                {t("telemetry.issSgp4Note", "Posição calculada por SGP4 a partir do TLE do CelesTrak")}
+                {activeIss.tleEpoch ? ` (${new Date(activeIss.tleEpoch).toLocaleString(locale, { timeZone: "UTC" })} UTC)` : ""}
               </span>
             </div>
 
             <div className={FIELD_GRID}>
-              <Field label="Altitude">{activeIss.altitudeKm} km</Field>
-              <Field label="Velocidade">{activeIss.velocityKmh.toLocaleString("pt-BR")} km/h</Field>
-              <Field label="Coordenadas">
+              <Field label={t("telemetry.altitude", "Altitude")}>{activeIss.altitudeKm} km</Field>
+              <Field label={t("telemetry.speed", "Velocidade")}>{formatNumber(activeIss.velocityKmh, locale)} km/h</Field>
+              <Field label={t("telemetry.coordinates", "Coordenadas")}>
                 {activeIss.latitude.toFixed(2)}°, {activeIss.longitude.toFixed(2)}°
               </Field>
-              <Field label="Iluminação" mono={false}>
-                {activeIss.visibility === "daylight" ? "Dia Orbital" : "Noite Orbital"}
+              <Field label={t("telemetry.lighting", "Iluminação")} mono={false}>
+                {activeIss.visibility === "daylight" ? t("telemetry.orbitalDay", "Dia Orbital") : t("telemetry.orbitalNight", "Noite Orbital")}
               </Field>
             </div>
 
             <Button variant="primary" size="sm" className="w-full" onClick={() => handleFocus(activeIss.latitude, activeIss.longitude, 1.8)}>
               <Crosshair aria-hidden="true" className="h-4 w-4" />
-              Focar Câmera na ISS
+              {t("telemetry.focusIss", "Focar Câmera na ISS")}
             </Button>
           </>
         )}
@@ -199,7 +204,7 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
 
         {selectedEntity.type === "EONET_CLUSTER" && (
           <>
-            <p className="text-caption text-fg-muted">{selectedEntity.data.events.length} eventos EONET</p>
+            <p className="text-caption text-fg-muted">{selectedEntity.data.events.length} {t("telemetry.eonetEvents", "eventos EONET")}</p>
             <ul className="max-h-48 space-y-1 overflow-auto">
               {selectedEntity.data.events.map((event) => (
                 <li key={event.id}>
@@ -209,7 +214,7 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
                     onClick={() => setSelectedEntity({ type: "EONET", data: event })}
                   >
                     {event.title}
-                    <span className="block text-caption text-fg-muted">{EONET_CATEGORIES[event.category]}</span>
+                    <span className="block text-caption text-fg-muted">{t(`obs.eonet.${event.category}`, EONET_CATEGORIES[event.category])}</span>
                   </button>
                 </li>
               ))}
@@ -221,7 +226,7 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
               onClick={() => handleFocus(selectedEntity.data.lat, selectedEntity.data.lng, 1.5)}
             >
               <Crosshair aria-hidden="true" className="h-4 w-4" />
-              Aproximar grupo
+              {t("telemetry.zoomCluster", "Aproximar grupo")}
             </Button>
           </>
         )}
@@ -230,30 +235,30 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
           <>
             <div className="space-y-0.5">
               <div className="font-mono text-label font-medium text-fg">
-                {selectedEntity.data.callsign || "Sem indicativo"} ({selectedEntity.data.icao24})
+                {selectedEntity.data.callsign || t("telemetry.noCallsign", "Sem indicativo")} ({selectedEntity.data.icao24})
               </div>
-              <span className="text-caption text-fg-muted">País do transponder: {selectedEntity.data.originCountry}</span>
+              <span className="text-caption text-fg-muted">{t("telemetry.transponderCountry", "País do transponder")}: {selectedEntity.data.originCountry}</span>
               <div><DataSourceBadge meta={selectedEntity.meta ?? aircraftMeta} /></div>
             </div>
 
             <div className={FIELD_GRID}>
-              <Field label="Altitude de voo">{selectedEntity.data.altitudeMeters} m</Field>
-              <Field label="Velocidade">{Math.round(selectedEntity.data.velocityMs * 3.6)} km/h</Field>
-              <Field label="Rumo">{selectedEntity.data.headingDeg}°</Field>
-              <Field label={selectedEntity.estimatedPosition ? "Posição estimada" : "Posição"}>
+              <Field label={t("telemetry.flightAltitude", "Altitude de voo")}>{selectedEntity.data.altitudeMeters} m</Field>
+              <Field label={t("telemetry.speed", "Velocidade")}>{Math.round(selectedEntity.data.velocityMs * 3.6)} km/h</Field>
+              <Field label={t("telemetry.heading", "Rumo")}>{selectedEntity.data.headingDeg}°</Field>
+              <Field label={selectedEntity.estimatedPosition ? t("telemetry.estimatedPosition", "Posição estimada") : t("telemetry.position", "Posição")}>
                 {aircraftPosition.lat.toFixed(2)}°, {aircraftPosition.lng.toFixed(2)}°
               </Field>
             </div>
             {selectedEntity.data.positionTimestamp != null && (
               <p className="text-caption text-fg-muted">
-                Última posição recebida · {new Date(selectedEntity.data.positionTimestamp).toLocaleString("pt-BR", { timeZone: "UTC" })} UTC
+                {t("telemetry.lastPosition", "Última posição recebida")} · {new Date(selectedEntity.data.positionTimestamp).toLocaleString(locale, { timeZone: "UTC" })} UTC
               </p>
             )}
 
             <div className="flex flex-wrap gap-2">
               <Button variant="primary" size="sm" className="flex-1" onClick={() => handleFocus(aircraftPosition.lat, aircraftPosition.lng, 1.8)}>
                 <Crosshair aria-hidden="true" className="h-4 w-4" />
-                Focar Câmera na Aeronave
+                {t("telemetry.focusAircraft", "Focar Câmera na Aeronave")}
               </Button>
               <a href="https://openskynetwork.github.io/opensky-api/rest.html" target="_blank" rel="noreferrer" className={buttonClasses("secondary", "sm")}>
                 OpenSky <ExternalLink aria-hidden="true" className="h-3 w-3" />
@@ -278,11 +283,11 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
             <>
               {group && (
                 <Button variant="ghost" size="sm" onClick={() => setSelectedEntity({ type: "VESSEL_GROUP", data: group, meta })}>
-                  Voltar à lista da área
+                  {t("telemetry.backToAreaList", "Voltar à lista da área")}
                 </Button>
               )}
               <div data-testid="vessel-telemetry" className="space-y-1">
-                <div className="text-label font-medium text-fg">{data.name ?? "Nome não informado"}</div>
+                <div className="text-label font-medium text-fg">{data.name ?? t("telemetry.unnamedVessel", "Nome não informado")}</div>
                 <DataSourceBadge meta={meta} />
                 <p className="text-caption text-fg-muted">
                   {meta.source === "live" ? (
@@ -294,24 +299,24 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
                 </p>
               </div>
               <div className={FIELD_GRID}>
-                <Field label="Tipo" mono={false}>{VESSEL_LABEL[data.kind]}</Field>
-                <Field label="Bandeira (MID)" mono={false}>{data.flag ?? "Indisponível"}</Field>
-                <Field label="Destino informado" mono={false}>{data.destination ?? "Indisponível"}</Field>
-                <Field label="Velocidade medida">{vesselSpeedLabel(data.speedKnots)}</Field>
+                <Field label={t("telemetry.vesselType", "Tipo")} mono={false}>{VESSEL_LABEL[data.kind]}</Field>
+                <Field label={t("telemetry.flagMid", "Bandeira (MID)")} mono={false}>{data.flag ?? t("common.unavailable", "Indisponível")}</Field>
+                <Field label={t("telemetry.destination", "Destino informado")} mono={false}>{data.destination ?? t("common.unavailable", "Indisponível")}</Field>
+                <Field label={t("telemetry.measuredSpeed", "Velocidade medida")}>{vesselSpeedLabel(data.speedKnots)}</Field>
               </div>
               {data.speedKnots != null && (
                 <p className="text-caption text-fg-muted">
-                  {vesselIsMoving(data) ? "Em movimento" : `Abaixo de ${AIS_MOVING_MIN_KNOTS} nó`}
+                  {vesselIsMoving(data) ? t("telemetry.underway", "Em movimento") : t("telemetry.belowKnot", `Abaixo de ${AIS_MOVING_MIN_KNOTS} nó`)}
                 </p>
               )}
               {data.observedAt > 0 && (
                 <p className="text-caption text-fg-muted">
-                  Posição recebida · {new Date(data.observedAt).toLocaleString("pt-BR", { timeZone: "UTC" })} UTC
+                  {t("telemetry.positionReceived", "Posição recebida")} · {new Date(data.observedAt).toLocaleString(locale, { timeZone: "UTC" })} UTC
                 </p>
               )}
               <Button variant="primary" size="sm" className="w-full" onClick={() => handleFocus(data.lat, data.lng, 1.5)}>
                 <Crosshair aria-hidden="true" className="h-4 w-4" />
-                Focar última posição
+                {t("telemetry.focusLastPos", "Focar última posição")}
               </Button>
             </>
           );
@@ -322,17 +327,17 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
             <div className="space-y-0.5">
               <div className="text-label font-medium text-fg">{selectedEntity.data.name}</div>
               <span className="text-caption text-fg-muted">
-                {{ CANAL: "Canal", STRAIT: "Estreito", OCEAN_CORRIDOR: "Corredor oceânico" }[selectedEntity.data.category]}
+                {{ CANAL: "Canal", STRAIT: locale === "en" ? "Strait" : "Estreito", OCEAN_CORRIDOR: locale === "en" ? "Ocean corridor" : "Corredor oceânico" }[selectedEntity.data.category]}
               </span>
             </div>
 
             <div className={cn(FIELD_GRID, "grid-cols-1")}>
-              <Field label="Ponto crítico" mono={false}>
-                {selectedEntity.data.chokePoint || "Corredor Mercante Principal"}
+              <Field label={t("telemetry.chokePoint", "Ponto crítico")} mono={false}>
+                {selectedEntity.data.chokePoint || t("telemetry.mainCorridor", "Corredor Mercante Principal")}
               </Field>
               {selectedEntity.data.dailyTonnageTeuApprox != null && (
-                <Field label="Volume diário de referência">
-                  ~{selectedEntity.data.dailyTonnageTeuApprox.toLocaleString("pt-BR")} TEU/dia
+                <Field label={t("telemetry.dailyVolume", "Volume diário de referência")}>
+                  ~{formatNumber(selectedEntity.data.dailyTonnageTeuApprox, locale)} {t("telemetry.teuDay", "TEU/dia")}
                 </Field>
               )}
             </div>
@@ -347,7 +352,7 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
               }}
             >
               <Crosshair aria-hidden="true" className="h-4 w-4" />
-              Focar Corredor Marítimo
+              {t("telemetry.focusCorridor", "Focar Corredor Marítimo")}
             </Button>
           </>
         )}
@@ -362,27 +367,28 @@ function VesselGroupDetails({ group, meta, onSelect, onFocus }: {
   onSelect: (entity: ObservatoryEntity) => void;
   onFocus: (lat: number, lng: number, altitude: number) => void;
 }) {
+  const { locale, t } = useI18n();
   const [query, setQuery] = useState("");
-  const term = query.trim().toLocaleLowerCase("pt-BR");
+  const term = query.trim().toLocaleLowerCase(locale);
   const ordered = [...group.vessels].sort((a, b) =>
-    Number(vesselIsMoving(b)) - Number(vesselIsMoving(a)) || (a.name ?? a.id).localeCompare(b.name ?? b.id, "pt-BR")
+    Number(vesselIsMoving(b)) - Number(vesselIsMoving(a)) || (a.name ?? a.id).localeCompare(b.name ?? b.id, locale)
   );
   const vessels = ordered.filter(({ name, mmsi }) =>
-    !term || name?.toLocaleLowerCase("pt-BR").includes(term) || mmsi?.includes(term)
+    !term || name?.toLocaleLowerCase(locale).includes(term) || mmsi?.includes(term)
   );
   return (
     <div data-testid="vessel-group-telemetry" className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         <div className="text-label font-medium text-fg">
           {group.title && <span className="block">{group.title}</span>}
-          <span className="text-caption text-fg-secondary">{group.vessels.length} na amostra</span>
+          <span className="text-caption text-fg-secondary">{group.vessels.length} {t("obs.maritime.inSample", "na amostra")}</span>
         </div>
         <DataSourceBadge meta={meta} />
       </div>
       {group.vessels.length > 5 && (
         <input
-          aria-label="Buscar embarcação por nome ou MMSI"
-          placeholder="Nome ou MMSI"
+          aria-label={t("telemetry.searchVessel", "Buscar embarcação por nome ou MMSI")}
+          placeholder={t("telemetry.nameOrMmsi", "Nome ou MMSI")}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           className="w-full rounded-control border border-line bg-surface-raised px-2 py-1.5 text-label text-fg"
@@ -396,7 +402,7 @@ function VesselGroupDetails({ group, meta, onSelect, onFocus }: {
               className="w-full rounded-control border border-line px-2 py-1.5 text-left text-label text-fg hover:bg-surface-raised"
               onClick={() => onSelect({ type: "VESSEL", data: vessel, group, meta })}
             >
-              <span className="block truncate">{vessel.name ?? (vessel.mmsi ? `MMSI ${vessel.mmsi}` : "Nome não informado")}</span>
+              <span className="block truncate">{vessel.name ?? (vessel.mmsi ? `MMSI ${vessel.mmsi}` : t("telemetry.unnamedVessel", "Nome não informado"))}</span>
               <span className="block truncate text-caption text-fg-muted">
                 {VESSEL_LABEL[vessel.kind]} · {vesselSpeedLabel(vessel.speedKnots)}
               </span>
@@ -404,10 +410,10 @@ function VesselGroupDetails({ group, meta, onSelect, onFocus }: {
           </li>
         ))}
       </ul>
-      {vessels.length === 0 && <p className="text-caption text-fg-muted">Nenhuma embarcação encontrada.</p>}
+      {vessels.length === 0 && <p className="text-caption text-fg-muted">{t("telemetry.noVesselsFound", "Nenhuma embarcação encontrada.")}</p>}
       <Button variant="secondary" size="sm" className="w-full" onClick={() => onFocus(group.lat, group.lng, 1.5)}>
         <Crosshair aria-hidden="true" className="h-4 w-4" />
-        Aproximar área
+        {t("telemetry.zoomArea", "Aproximar área")}
       </Button>
     </div>
   );
@@ -418,6 +424,7 @@ function EonetDetails({ entity, onFocus, onSelect }: {
   onFocus: (lat: number, lng: number, altitude?: number) => void;
   onSelect: (entity: ObservatoryEntity) => void;
 }) {
+  const { locale, t } = useI18n();
   const { data, observationIndex } = entity;
   const geometry = data.geometry ?? [];
   const observation = geometry[observationIndex ?? geometry.length - 1];
@@ -428,18 +435,18 @@ function EonetDetails({ entity, onFocus, onSelect }: {
     <>
       <div className="space-y-0.5">
         <div className="text-label font-medium text-fg">{data.title}</div>
-        <p className="text-caption text-fg-muted">{EONET_CATEGORIES[data.category]} · {formatEonetDate(date)}</p>
+        <p className="text-caption text-fg-muted">{t(`obs.eonet.${data.category}`, EONET_CATEGORIES[data.category])} · {formatEonetDate(date)}</p>
       </div>
       <div className={cn(FIELD_GRID, "grid-cols-1")}>
-        <Field label="Magnitude observada">
-          {magnitudeValue == null ? "Indisponível" : `${magnitudeValue.toLocaleString("pt-BR")} ${magnitudeUnit ?? ""}`}
+        <Field label={t("telemetry.observedMagnitude", "Magnitude observada")}>
+          {magnitudeValue == null ? t("common.unavailable", "Indisponível") : `${formatNumber(magnitudeValue, locale)} ${magnitudeUnit ?? ""}`}
         </Field>
         {magnitudeDescription && <span className="text-caption text-fg-muted">{magnitudeDescription}</span>}
       </div>
       {showTrack && (
         <div className="space-y-1">
-          <p className="text-caption font-medium text-fg">Observações da trajetória</p>
-          <ul className="flex max-h-24 flex-wrap gap-1 overflow-auto" aria-label="Observações da trajetória">
+          <p className="text-caption font-medium text-fg">{t("telemetry.trackObservations", "Observações da trajetória")}</p>
+          <ul className="flex max-h-24 flex-wrap gap-1 overflow-auto" aria-label={t("telemetry.trackObservations", "Observações da trajetória")}>
             {geometry.map((point, index) => (
               <li key={`${point.date}-${index}`}>
                 <button
@@ -457,10 +464,10 @@ function EonetDetails({ entity, onFocus, onSelect }: {
       )}
       <Button variant="primary" size="sm" className="w-full" onClick={() => onFocus(lat, lng, 1.8)}>
         <Crosshair aria-hidden="true" className="h-4 w-4" />
-        Focar Evento
+        {t("telemetry.focusEvent", "Focar Evento")}
       </Button>
       {data.sources.length > 0 && (
-        <ul aria-label="Fontes do evento" className="flex flex-wrap gap-1">
+        <ul aria-label={t("telemetry.eventSources", "Fontes do evento")} className="flex flex-wrap gap-1">
           {data.sources.map(({ id, url }, index) => (
             <li key={`${url}-${index}`}>
               <a href={url} target="_blank" rel="noopener noreferrer" className={buttonClasses("secondary", "sm")}>

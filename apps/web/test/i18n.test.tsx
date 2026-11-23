@@ -274,12 +274,22 @@ describe("D28a · Fundação i18n (pt-BR / en), Intl e Shell Principal", () => {
         />
       );
 
-      // InspectorHUD
+      // InspectorHUD (incluindo ficha curada, região, regime, moeda, badges de fonte e marcos)
       assert.match(inspectorHtml, /Brazil/);
+      assert.match(inspectorHtml, /Federative Republic of Brazil/);
+      assert.match(inspectorHtml, /South America/);
+      assert.match(inspectorHtml, /Largest country in South America/);
+      assert.match(inspectorHtml, /IBGE \/ WB/);
+      assert.match(inspectorHtml, /World Bank/);
+      assert.match(inspectorHtml, /UNDP/);
+      assert.match(inspectorHtml, /Federal Presidential Republic/);
+      assert.match(inspectorHtml, /Brazilian Real/);
+      assert.match(inspectorHtml, /Independence of Brazil/);
       assert.match(inspectorHtml, /Population/);
       assert.match(inspectorHtml, /Nominal GDP/);
       assert.match(inspectorHtml, /Deep Read/);
       assert.match(inspectorHtml, /Audited Primary Sources/);
+      assert.match(inspectorHtml, /Deepen in TellusLab/);
 
       // ObservatoryPanel + 7 camadas
       assert.match(observatoryHtml, /Planetary Observatory/);

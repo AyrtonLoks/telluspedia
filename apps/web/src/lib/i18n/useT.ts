@@ -6,13 +6,14 @@ import type { EnMessageKey } from "./en";
 import type { Locale } from "./types";
 
 export type TranslateFn = (key: EnMessageKey, ptFallback: string) => string;
+export type TranslateRawFn = (key: string, ptFallback: string) => string;
 
 /**
  * Hook leve de tradução reativa (`pt-BR` / `en`):
  * - Em `pt-BR` (padrão e SSR), devolve `ptFallback` diretamente com custo zero de dicionário.
  * - Em `en`, consulta o dicionário carregado sob demanda via `useLocaleStore`.
  */
-export function useI18n(): { locale: Locale; t: TranslateFn } {
+export function useI18n(): { locale: Locale; t: TranslateFn; tRaw: TranslateRawFn } {
   const storeLocale = useLocaleStore((s) => s.locale);
   const storeEnMessages = useLocaleStore((s) => s.enMessages);
   const isServer = typeof window === "undefined";
@@ -29,5 +30,15 @@ export function useI18n(): { locale: Locale; t: TranslateFn } {
     [locale, enMessages]
   );
 
-  return { locale, t };
+  const tRaw = useCallback<TranslateRawFn>(
+    (key, ptFallback) => {
+      if (locale === "en" && enMessages) {
+        return enMessages[key] ?? ptFallback;
+      }
+      return ptFallback;
+    },
+    [locale, enMessages]
+  );
+
+  return { locale, t, tRaw };
 }

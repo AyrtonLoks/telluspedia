@@ -10,8 +10,10 @@ import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "@/lib/historical-entities"
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { useI18n } from "@/lib/i18n/useT";
 
 export const HistoricalEraBadge: React.FC = () => {
+  const { t } = useI18n();
   // Época ativa: fonte única (T12)
   const epoch = useEpochState();
 
@@ -53,7 +55,7 @@ export const HistoricalEraBadge: React.FC = () => {
         </span>
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1.5">
           <span className="text-caption font-semibold text-warning">
-            Cartografia Histórica:
+            {t("era.historicalPrefix", "Cartografia Histórica:")}
           </span>
           <span className="text-caption font-medium text-fg">
             {era.representativeYear} — {cleanTitle}
@@ -67,11 +69,11 @@ export const HistoricalEraBadge: React.FC = () => {
         variant="secondary"
         size="sm"
         onClick={handleRestoreCurrent}
-        title="Restaurar Cartografia Atual"
+        title={t("era.restoreCurrent", "Restaurar Cartografia Atual")}
       >
         <RotateCcw aria-hidden="true" className="h-3 w-3 text-accent" />
-        <span className="hidden md:inline">Restaurar Cartografia Atual</span>
-        <span className="md:hidden">Restaurar</span>
+        <span className="hidden md:inline">{t("era.restoreCurrent", "Restaurar Cartografia Atual")}</span>
+        <span className="md:hidden">{t("era.restoreShort", "Restaurar")}</span>
       </Button>
     </Panel>
   );

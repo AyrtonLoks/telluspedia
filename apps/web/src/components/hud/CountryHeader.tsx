@@ -32,15 +32,17 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
   iso2,
   completeness,
 }) => {
-  const { locale, t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
   const displayName = formatCountryName(iso2, nameCommon, locale);
+  const displayOfficial = nameOfficial ? tRaw(`country.${isoCode}.official`, nameOfficial) : null;
   const [flagError, setFlagError] = React.useState(false);
 
   React.useEffect(() => {
     setFlagError(false);
   }, [isoCode, flagSvgUrl]);
 
-  const locationLabel = region || continent;
+  const rawLocation = region || continent;
+  const locationLabel = rawLocation ? tRaw(`region.${rawLocation}`, rawLocation) : null;
 
   return (
     <div className="relative border-b border-line pb-4">
@@ -68,8 +70,8 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
                 {isoCode}
               </span>
             </div>
-            {nameOfficial ? (
-              <p className="line-clamp-1 text-caption text-fg-secondary">{nameOfficial}</p>
+            {displayOfficial ? (
+              <p className="line-clamp-1 text-caption text-fg-secondary">{displayOfficial}</p>
             ) : (
               completeness === "none" && (
                 <p className="text-caption text-warning">

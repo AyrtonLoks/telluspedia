@@ -18,7 +18,7 @@ interface CountryMiniTimelineProps {
 }
 
 export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milestones, countryName }) => {
-  const { locale, t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
   const storeSelectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
   // Renderização no servidor (e testes) lê o estado atual; o Zustand devolveria o inicial.
   const selectedMilestoneId =
@@ -74,7 +74,7 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                 className="block w-full rounded-card p-2.5 text-left"
               >
                 <span className="flex items-center justify-between gap-1 text-label">
-                  <span className="font-medium text-fg">{m.title}</span>
+                  <span className="font-medium text-fg">{tRaw(`event.${m.id}`, m.title)}</span>
                   <span className="flex shrink-0 items-center gap-1 font-mono text-caption tabular-nums text-fg-secondary">
                     <Calendar aria-hidden="true" className="h-3 w-3" />
                     {m.year}

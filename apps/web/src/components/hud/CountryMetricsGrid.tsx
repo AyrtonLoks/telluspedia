@@ -34,19 +34,20 @@ interface CountryMetricsGridProps {
   }[];
 }
 
-export function formatSourceBadge(source: string): string {
-  if (!source) return "Oficial";
-  if (source.includes("Banco Mundial") && source.includes("IBGE")) return "IBGE / BM";
-  if (source.includes("Banco Mundial") && source.includes("BEA")) return "B. Mundial / BEA";
-  if (source.includes("Banco Mundial")) return "B. Mundial";
+export function formatSourceBadge(source: string, locale: "pt-BR" | "en" = "pt-BR"): string {
+  const isEn = locale === "en";
+  if (!source) return isEn ? "Official" : "Oficial";
+  if (source.includes("Banco Mundial") && source.includes("IBGE")) return isEn ? "IBGE / WB" : "IBGE / BM";
+  if (source.includes("Banco Mundial") && source.includes("BEA")) return isEn ? "World Bank / BEA" : "B. Mundial / BEA";
+  if (source.includes("Banco Mundial")) return isEn ? "World Bank" : "B. Mundial";
   if (source.includes("US Census")) return "US Census";
   if (source.includes("E-Stat")) return "E-Stat";
   if (source.includes("Stats SA")) return "Stats SA";
   if (source.includes("Destatis")) return "Destatis";
   if (source.includes("CAPMAS")) return "CAPMAS";
   if (source.includes("IBGE")) return "IBGE";
-  if (source.includes("PNUD")) return "PNUD";
-  if (source.includes("OMS") || source.includes("WHO")) return "OMS";
+  if (source.includes("PNUD")) return isEn ? "UNDP" : "PNUD";
+  if (source.includes("OMS") || source.includes("WHO")) return isEn ? "WHO" : "OMS";
   if (source.includes("SIPRI")) return "SIPRI";
   if (source.includes("Natural Earth")) return "Natural Earth";
   if (source.length <= 12) return source;
@@ -68,8 +69,9 @@ const SourceFooter: React.FC<{
   title: string;
   detail?: string;
   citeLabel: string;
+  locale: "pt-BR" | "en";
   onCite?: () => void;
-}> = ({ source, sourceLabel, sourceUrl, title, detail, citeLabel, onCite }) => (
+}> = ({ source, sourceLabel, sourceUrl, title, detail, citeLabel, locale, onCite }) => (
   <div className="mt-auto flex min-w-0 items-center gap-1 pt-1 text-caption text-fg-muted">
     <a
       href={sourceUrl}
@@ -79,7 +81,7 @@ const SourceFooter: React.FC<{
       className="inline-flex shrink-0 items-center gap-0.5 text-accent hover:text-accent-hover hover:underline"
       title={title}
     >
-      <span>{sourceLabel ?? formatSourceBadge(source)}</span>
+      <span>{sourceLabel ?? formatSourceBadge(source, locale)}</span>
       <ExternalLink aria-hidden="true" className="h-3 w-3" />
     </a>
     {detail && <span className="min-w-0 truncate font-mono tabular-nums" title={detail}>· {detail}</span>}
@@ -114,6 +116,7 @@ const MetricCard: React.FC<{
   citeLabel: string;
   openRepoText: string;
   sourcePrefix: string;
+  locale: "pt-BR" | "en";
   onCite?: () => void;
 }> = ({
   icon: Icon,
@@ -128,6 +131,7 @@ const MetricCard: React.FC<{
   citeLabel,
   openRepoText,
   sourcePrefix,
+  locale,
   onCite,
 }) => {
   const detail = [code, year].filter(Boolean).join(" · ") || sourceNote;
@@ -147,6 +151,7 @@ const MetricCard: React.FC<{
           detail={detail}
           title={`${sourcePrefix} ${source}${code && year ? ` (${code}, ${year})` : sourceNote ? ` (${sourceNote})` : ""} (${openRepoText})`}
           citeLabel={citeLabel}
+          locale={locale}
           onCite={onCite}
         />
       )}
@@ -170,7 +175,7 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   indicators,
 }) => {
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
-  const { locale, t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
 
   const popIndicator = indicators?.find((i) => i.indicatorCode === "SP.POP.TOTL");
   const areaIndicator = indicators?.find((i) => i.indicatorCode === "AG.SRF.TOTL.K2");
@@ -289,7 +294,13 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   const cite = (title: string, url: string, year?: number) =>
     setCitationModalOpen(true, { title, countryName, url, accessDate: new Date(), publicationYear: year ?? 2026 });
 
-  const sharedCard = { unavailableText, citeLabel, openRepoText, sourcePrefix };
+  const sharedCard = { unavailableText, citeLabel, openRepoText, sourcePrefix, locale };
+  const localizedGov = governmentType ? tRaw(`gov.${governmentType}`, governmentType) : null;
+  const localizedCurrency = currencyName
+    ? isoCode
+      ? tRaw(`country.${isoCode}.currency`, currencyName)
+      : currencyName
+    : null;
   const lifeUnit =
     locale === "en" && lifeExpectancy?.unit === "anos"
       ? t("common.years", "anos")
@@ -415,9 +426,9 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             <Landmark aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span>{t("metrics.regimeHeading", "Regime político e chefia")}</span>
           </div>
-          {governmentType || headOfState ? (
+          {localizedGov || headOfState ? (
             <div className="font-medium text-fg">
-              {governmentType || unavailableText}
+              {localizedGov || unavailableText}
               {headOfState && (
                 <>
                   {" "}· <span className="text-fg-secondary">{headOfState}</span>
@@ -433,10 +444,10 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
               <strong className="font-medium text-fg">{historicalLeader}</strong>
             </div>
           )}
-          {(currencyName || currencyCode) && (
+          {(localizedCurrency || currencyCode) && (
             <div className="text-caption text-fg-muted">
-              {t("metrics.currency", "Moeda")}: {currencyName || currencyCode}
-              {currencyName && currencyCode ? ` (${currencyCode})` : ""}
+              {t("metrics.currency", "Moeda")}: {localizedCurrency || currencyCode}
+              {localizedCurrency && currencyCode ? ` (${currencyCode})` : ""}
             </div>
           )}
           {(governmentType || headOfState) && (
@@ -446,7 +457,8 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
               sourceUrl={getSourceUrl("ONU")}
               title={`${sourcePrefix} ${t("metrics.constitutionsUn", "Constituições / ONU")} (${openRepoText})`}
               citeLabel={t("metrics.citeInstitutional", "Gerar citação institucional")}
-              onCite={() => cite(`Regime Político: ${governmentType || "Indisponível"}${headOfState ? ` (${headOfState})` : ""}`, getSourceUrl("ONU"))}
+              locale={locale}
+              onCite={() => cite(`Regime Político: ${localizedGov || "Indisponível"}${headOfState ? ` (${headOfState})` : ""}`, getSourceUrl("ONU"))}
             />
           )}
         </div>

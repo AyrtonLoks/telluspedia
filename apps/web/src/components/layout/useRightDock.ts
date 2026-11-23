@@ -4,6 +4,7 @@ import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { RIGHT_PANEL_ORDER, useLayoutStore, type RightPanelId } from "@/stores/layoutStore";
+import { useStoreSnapshot } from "@/lib/use-hydrated";
 
 export interface RightDockState {
   /** Painéis laterais abertos, na ordem das abas. */
@@ -40,31 +41,22 @@ export function panelButtonAction(panel: RightPanelId, isOpen: boolean, dock: Ri
 }
 
 /**
- * Estado do dock direito derivado das stores dos painéis. No render de servidor (testes com
- * renderToStaticMarkup) lê o estado atual, como os demais componentes do app.
+ * Estado do dock direito derivado das stores dos painéis. Usa `useStoreSnapshot` (T41) para
+ * garantir que o HTML SSR e a hidratação inicial no cliente vejam exatamente o mesmo estado.
  */
 export function useRightDock(): RightDockState {
-  const isServer = typeof window === "undefined";
-  const sSelectedIso = useGlobeStore((s) => s.selectedIso);
-  const sReaderOpen = useGlobeStore((s) => s.isReaderOpen);
-  const sObservatoryOpen = useObservatoryStore((s) => s.isPanelOpen);
-  const sCosmicMode = useCosmicStore((s) => s.isCosmicMode);
-  const sFocused = useCosmicStore((s) => s.focusedBodyId);
-  const sCosmicInspector = useCosmicStore((s) => s.isInspectorOpen);
-  const sPreferred = useLayoutStore((s) => s.activeRightPanel);
-
-  const globe = isServer ? useGlobeStore.getState() : { selectedIso: sSelectedIso, isReaderOpen: sReaderOpen };
-  const observatoryOpen = isServer ? useObservatoryStore.getState().isPanelOpen : sObservatoryOpen;
-  const cosmic = isServer
-    ? useCosmicStore.getState()
-    : { isCosmicMode: sCosmicMode, focusedBodyId: sFocused, isInspectorOpen: sCosmicInspector };
-  const preferred = isServer ? useLayoutStore.getState().activeRightPanel : sPreferred;
+  const selectedIso = useStoreSnapshot(useGlobeStore, (s) => s.selectedIso);
+  const isReaderOpen = useStoreSnapshot(useGlobeStore, (s) => s.isReaderOpen);
+  const observatoryOpen = useStoreSnapshot(useObservatoryStore, (s) => s.isPanelOpen);
+  const isCosmicMode = useStoreSnapshot(useCosmicStore, (s) => s.isCosmicMode);
+  const focusedBodyId = useStoreSnapshot(useCosmicStore, (s) => s.focusedBodyId);
+  const isInspectorOpen = useStoreSnapshot(useCosmicStore, (s) => s.isInspectorOpen);
+  const preferred = useStoreSnapshot(useLayoutStore, (s) => s.activeRightPanel);
 
   return resolveRightDock({
-    countryOpen: Boolean(globe.selectedIso) && !globe.isReaderOpen,
+    countryOpen: Boolean(selectedIso) && !isReaderOpen,
     observatoryOpen,
-    cosmosOpen:
-      (cosmic.isCosmicMode || cosmic.focusedBodyId === "MOON") && cosmic.isInspectorOpen && Boolean(cosmic.focusedBodyId),
+    cosmosOpen: (isCosmicMode || focusedBodyId === "MOON") && isInspectorOpen && Boolean(focusedBodyId),
     preferred,
   });
 }

@@ -45,6 +45,9 @@ export function readStoredLocale(): Locale {
   return DEFAULT_LOCALE;
 }
 
+const ROOT_TITLE_PT = "TellusPedia — Enciclopédia Geopolítica e Observatório Planetário";
+const ROOT_TITLE_EN = "TellusPedia — Geopolitical Encyclopedia & Planetary Observatory";
+
 export function writeStoredLocale(locale: Locale): void {
   if (typeof window === "undefined") return;
   try {
@@ -55,6 +58,9 @@ export function writeStoredLocale(locale: Locale): void {
   try {
     document.cookie = `${LOCALE_COOKIE_NAME}=${encodeURIComponent(locale)}; Path=/; Max-Age=31536000; SameSite=Lax`;
     document.documentElement.lang = locale;
+    if (document.title === ROOT_TITLE_PT || document.title === ROOT_TITLE_EN) {
+      document.title = locale === "en" ? ROOT_TITLE_EN : ROOT_TITLE_PT;
+    }
   } catch {
     // Ignora ambiente sem DOM completo
   }

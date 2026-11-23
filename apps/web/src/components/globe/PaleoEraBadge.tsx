@@ -8,12 +8,14 @@ import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { useI18n } from "@/lib/i18n/useT";
 
 export interface PaleoEraBadgeProps {
   geologicalMa?: number | null;
 }
 
 export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
+  const { t } = useI18n();
   // Época ativa: fonte única (T12); o prop permite renderizar uma idade específica.
   const epochMa = useEpochState().geologicalMa;
   const geologicalMa = props.geologicalMa !== undefined ? props.geologicalMa : epochMa;
@@ -43,7 +45,7 @@ export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
           <span aria-hidden="true">{eraEmoji}</span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1.5">
-          <span className="text-caption font-semibold text-warning">Paleogeografia:</span>
+          <span className="text-caption font-semibold text-warning">{t("era.paleoPrefix", "Paleogeografia:")}</span>
           <span className="text-caption font-medium text-fg">
             {era.name} (~{era.ageMa} Ma)
           </span>
@@ -56,11 +58,11 @@ export const PaleoEraBadge: React.FC<PaleoEraBadgeProps> = (props) => {
         variant="secondary"
         size="sm"
         onClick={restoreContemporaryTimeline}
-        title="Restaurar Geografia Contemporânea"
+        title={t("era.restoreContemporary", "Restaurar Geografia Contemporânea")}
       >
         <RotateCcw aria-hidden="true" className="h-3 w-3 text-warning" />
-        <span className="hidden md:inline">Restaurar Geografia Contemporânea</span>
-        <span className="md:hidden">Restaurar</span>
+        <span className="hidden md:inline">{t("era.restoreContemporary", "Restaurar Geografia Contemporânea")}</span>
+        <span className="md:hidden">{t("era.restoreShort", "Restaurar")}</span>
       </Button>
     </Panel>
   );

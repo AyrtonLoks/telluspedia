@@ -42,7 +42,7 @@ export interface InspectorHUDProps {
 }
 
 export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
-  const { locale, t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
   const storeIsReaderOpen = useGlobeStore((s) => s.isReaderOpen);
 
@@ -220,7 +220,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
       <div className="mb-3">
         {currentCountry.summary ? (
           <p className="text-label text-fg-secondary">
-            {currentCountry.summary}{" "}
+            {tRaw(`country.${currentCountry.isoCode}.summary`, currentCountry.summary)}{" "}
             <a
               href={getSourceUrl(primarySourceName)}
               target="_blank"

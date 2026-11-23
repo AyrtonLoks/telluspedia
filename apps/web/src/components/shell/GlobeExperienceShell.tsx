@@ -304,9 +304,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
         data-map-stacked={scenePresence.mounted && epoch.isContemporary && hasTelemetry}
         className="relative h-dvh w-full overflow-hidden bg-bg select-none"
       >
-        {/* Top Floating Navigation Bar */}
+        {/* Top Floating Navigation Bar — fora de Suspense para hidratar antes de ExplorerUrlSync (T41) */}
+        <TopNavBar />
         <Suspense fallback={null}>
-          <TopNavBar />
           <EntityLaunchGate />
         </Suspense>
 

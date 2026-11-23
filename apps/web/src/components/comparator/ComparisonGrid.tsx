@@ -17,8 +17,9 @@ interface ComparisonCardProps {
 }
 
 const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRemove }) => {
-  const { locale, t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
   const displayName = formatCountryName(c.iso2, c.nameCommon, locale);
+  const localizedGov = c.governmentType ? tRaw(`gov.${c.governmentType}`, c.governmentType) : null;
   const unavailable = t("common.dataUnavailable", "Dado indisponível");
   const [flagError, setFlagError] = React.useState(false);
   const popInd = c.indicators.find((i) => i.indicatorCode === "SP.POP.TOTL");
@@ -212,8 +213,8 @@ const ComparisonCountryCard: React.FC<ComparisonCardProps> = ({ country: c, onRe
 
         <div>
           <span className="block text-caption text-fg-muted">{t("comp.governmentSystem", "Sistema de Governo")}</span>
-          <span className={c.governmentType ? "line-clamp-2 text-caption text-fg-secondary" : "text-fg-muted"}>
-            {c.governmentType ?? unavailable}
+          <span className={localizedGov ? "line-clamp-2 text-caption text-fg-secondary" : "text-fg-muted"}>
+            {localizedGov ?? unavailable}
           </span>
         </div>
       </div>

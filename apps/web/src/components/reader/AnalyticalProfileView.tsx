@@ -45,7 +45,7 @@ export interface AnalyticalProfileViewProps {
 }
 
 export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ country }) => {
-  const { locale, t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
   const setSelectedIsos = useComparatorStore((s) => s.setSelectedIsos);
   const openComparator = useComparatorStore((s) => s.openComparator);
@@ -56,6 +56,33 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
   if (!profile) return null;
 
   const displayName = formatCountryName(country.iso2, profile.nameCommon, locale);
+  const displayOfficial = profile.nameOfficial ? tRaw(`country.${country.isoCode}.official`, profile.nameOfficial) : null;
+  const rawLocation = profile.region || profile.continent;
+  const displayLocation = rawLocation ? tRaw(`region.${rawLocation}`, rawLocation) : null;
+  const displayCurrency = profile.currencyLabel
+    ? country.currencyName
+      ? tRaw(`country.${country.isoCode}.currency`, country.currencyName) +
+        (country.currencyCode ? ` (${country.currencyCode})` : "")
+      : profile.currencyLabel
+    : null;
+  const formatAnalyticalVal = (raw: string) =>
+    locale === "en"
+      ? raw
+          .replace(/trilhões/g, "trillion")
+          .replace(/bilhões/g, "billion")
+          .replace(/milhões/g, "million")
+          .replace(/anos/g, "years")
+          .replace(/do PIB/g, "of GDP")
+          .replace(/hab\./g, "people")
+          .replace(/(\d+),(\d+)/g, "$1.$2")
+      : raw;
+  const summarySentences =
+    locale === "en"
+      ? [
+          `${displayName}${displayLocation ? ` is located in ${displayLocation}` : ""}${profile.capital ? ` with capital ${profile.capital}` : ""}.`,
+          ...(country.summary ? [tRaw(`country.${country.isoCode}.summary`, country.summary)] : []),
+        ]
+      : profile.summarySentences;
   const unavailable = t("common.dataUnavailable", "Dado indisponível");
   const wikiHost = locale === "en" ? "en.wikipedia.org" : "pt.wikipedia.org";
   const worldBankCountryUrl = `https://data.worldbank.org/country/${encodeURIComponent(country.isoCode)}`;
@@ -122,8 +149,8 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
         <h1 className="mt-4 font-serif text-display font-bold leading-snug text-fg">
           {displayName} — {t("analytical.headingSuffix", "Perfil Analítico & Posição Global")}
         </h1>
-        {profile.nameOfficial && profile.nameOfficial !== profile.nameCommon && (
-          <p className="mt-1 text-caption text-fg-secondary">{profile.nameOfficial}</p>
+        {displayOfficial && displayOfficial !== displayName && (
+          <p className="mt-1 text-caption text-fg-secondary">{displayOfficial}</p>
         )}
       </header>
 
@@ -134,9 +161,9 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
           <span>{t("analytical.summaryTitle", "Resumo Factual Auditado")}</span>
         </h2>
 
-        {profile.summarySentences.length > 0 && (
+        {summarySentences.length > 0 && (
           <div className="space-y-2.5 font-serif text-body leading-relaxed text-fg-secondary">
-            {profile.summarySentences.map((sentence, idx) => (
+            {summarySentences.map((sentence, idx) => (
               <p key={idx}>{sentence}</p>
             ))}
           </div>
@@ -153,13 +180,13 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
           <div className="rounded-card border border-line bg-surface-raised p-3">
             <dt className="text-caption text-fg-muted">{t("analytical.regionContinent", "Região / Continente")}</dt>
             <dd className="mt-0.5 text-label font-medium text-fg">
-              {profile.region || profile.continent || unavailable}
+              {displayLocation || unavailable}
             </dd>
           </div>
           <div className="rounded-card border border-line bg-surface-raised p-3">
             <dt className="text-caption text-fg-muted">{t("metrics.currency", "Moeda")}</dt>
             <dd className="mt-0.5 text-label font-medium text-fg">
-              {profile.currencyLabel ?? unavailable}
+              {displayCurrency ?? unavailable}
             </dd>
           </div>
           <div className="rounded-card border border-line bg-surface-raised p-3">
@@ -228,7 +255,7 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
                         {localizeIndicatorLabel(entry.code, entry.label, t)}
                       </span>
                       <span className="mt-0.5 block font-mono text-title font-semibold tabular-nums text-fg">
-                        {entry.formattedValue}
+                        {formatAnalyticalVal(entry.formattedValue)}
                       </span>
                     </div>
                     <div className="shrink-0 text-right">
@@ -259,11 +286,11 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
                       <div className="flex flex-wrap items-center justify-between gap-1 text-caption text-fg-secondary">
                         <span>
                           {locale === "en"
-                            ? `#${entry.regionalRank}/${entry.regionalTotal} ${t("analytical.inRegion", "em")} ${entry.regionalGroupName}`
+                            ? `#${entry.regionalRank}/${entry.regionalTotal} ${t("analytical.inRegion", "em")} ${tRaw(`region.${entry.regionalGroupName}`, entry.regionalGroupName)}`
                             : `${entry.regionalRank}º/${entry.regionalTotal} em ${entry.regionalGroupName}`}
                         </span>
                         <span className="font-mono tabular-nums text-fg-muted">
-                          {t("analytical.avg", "Média:")} {entry.formattedRegionalAverage}
+                          {t("analytical.avg", "Média:")} {formatAnalyticalVal(entry.formattedRegionalAverage)}
                           {entry.deltaVsRegionalAvgPct !== null && (
                             <span
                               className={cn(
@@ -360,7 +387,11 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
                       <span className="font-mono text-caption text-fg-muted">{peer.isoCode}</span>
                     </div>
                     <span className="block truncate text-caption text-fg-secondary">
-                      {peer.region || peer.continent || t("analytical.globalCatalog", "Catálogo global")}
+                      {peer.region
+                        ? tRaw(`region.${peer.region}`, peer.region)
+                        : peer.continent
+                        ? tRaw(`region.${peer.continent}`, peer.continent)
+                        : t("analytical.globalCatalog", "Catálogo global")}
                       {peer.gdpPerCapita !== null
                         ? ` · ${t("choropleth.ind.NY.GDP.PCAP.CD.short", "PIB/hab.")} $ ${formatNumber(Math.round(peer.gdpPerCapita), locale)}`
                         : ""}
