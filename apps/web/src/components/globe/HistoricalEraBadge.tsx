@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/lib/i18n/useT";
 
 export const HistoricalEraBadge: React.FC = () => {
-  const { t } = useI18n();
+  const { t, tRaw } = useI18n();
   // Época ativa: fonte única (T12)
   const epoch = useEpochState();
 
@@ -41,7 +41,8 @@ export const HistoricalEraBadge: React.FC = () => {
   };
 
   // Clean title without trailing year parenthesis (e.g. "Unificação Alemã & Reino da Prússia")
-  const cleanTitle = era.label.replace(/\s*\(\d{4}\)/, "");
+  const localizedLabel = tRaw(`era.${era.id}.label`, era.label);
+  const cleanTitle = localizedLabel.replace(/\s*\(\d{4}\)/, "");
 
 
   return (

@@ -29,6 +29,9 @@ import { ComparisonCharts } from "../src/components/comparator/ComparisonCharts"
 import { AnalyticalProfileView } from "../src/components/reader/AnalyticalProfileView";
 import { ReaderTableOfContents } from "../src/components/reader/ReaderTableOfContents";
 import { ForkStudyBannerView } from "../src/components/study/ForkStudyBanner";
+import { StudyHub } from "../src/components/tellus-bridge/StudyHub";
+import RouteError from "../src/app/error";
+import { GlobalErrorView } from "../src/components/shell/GlobalErrorView";
 import { useObservatoryStore } from "../src/stores/observatoryStore";
 import { useCosmicStore } from "../src/stores/cosmicStore";
 import { useComparatorStore } from "../src/stores/comparatorStore";
@@ -364,5 +367,46 @@ describe("D28a · Fundação i18n (pt-BR / en), Intl e Shell Principal", () => {
 
     const missingStudyEn = buildStudyMetadata(null, "nope", "en");
     assert.match(String(missingStudyEn.title), /Study not found/);
+  });
+
+  test("7. D28b · TellusLab Hub (/telluslab) e Error Boundaries traduzem integralmente para en", () => {
+    try {
+      useLocaleStore.setState({ locale: "en", enMessages: EN_MESSAGES });
+
+      const hubHtml = renderToStaticMarkup(<StudyHub />);
+      assert.match(hubHtml, /TellusPedia Globe/);
+      assert.match(hubHtml, /8 domains · 197 works · 299 macro-topics/);
+      assert.match(hubHtml, /Progress by complexity/);
+      assert.match(hubHtml, /Import JSON snapshot/);
+      assert.match(hubHtml, /Choose JSON file/);
+      assert.match(hubHtml, /No file selected/);
+      assert.match(hubHtml, /Mathematics/);
+      assert.match(hubHtml, /Programming &amp; Computer Science/);
+      assert.match(hubHtml, /Economics &amp; Finance/);
+      assert.match(hubHtml, /Physics &amp; Optics/);
+      assert.match(hubHtml, /Engineering/);
+      assert.match(hubHtml, /Transversal Foundations/);
+      assert.match(hubHtml, /Overdue reviews \(S6\)/);
+      assert.match(hubHtml, /Dossiers &amp; historical figures/);
+      assert.match(hubHtml, /Astronomy, optics &amp; telescopes/);
+
+      const routeErrHtml = renderToStaticMarkup(
+        <RouteError error={Object.assign(new Error("boom"), { digest: "D42" })} reset={() => {}} />
+      );
+      assert.match(routeErrHtml, /Runtime error/);
+      assert.match(routeErrHtml, /Could not load this view/);
+      assert.match(routeErrHtml, /Try again/);
+      assert.match(routeErrHtml, /Back to globe/);
+      assert.match(routeErrHtml, /Country comparator/);
+
+      const globalErrHtml = renderToStaticMarkup(
+        <GlobalErrorView error={Object.assign(new Error("fatal"), { digest: "G99" })} reset={() => {}} />
+      );
+      assert.match(globalErrHtml, /lang="en"/);
+      assert.match(globalErrHtml, /Critical application error/);
+      assert.match(globalErrHtml, /Reload home/);
+    } finally {
+      useLocaleStore.setState({ locale: "pt-BR", enMessages: null });
+    }
   });
 });

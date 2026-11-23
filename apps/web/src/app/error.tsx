@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { AlertTriangle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useI18n } from "@/lib/i18n/useT";
 
 export interface RouteErrorProps {
   error: Error & { digest?: string };
@@ -11,6 +12,8 @@ export interface RouteErrorProps {
 }
 
 export default function RouteError({ error, reset }: RouteErrorProps) {
+  const { t } = useI18n();
+
   useEffect(() => {
     console.error("[telluspedia] Route error boundary caught failure", {
       digest: error.digest ?? null,
@@ -30,40 +33,43 @@ export default function RouteError({ error, reset }: RouteErrorProps) {
           <AlertTriangle aria-hidden="true" className="size-5" />
         </div>
         <p className="mt-4 font-mono text-caption text-danger tabular-nums">
-          Erro de execução
+          {t("error.runtimeTag", "Erro de execução")}
         </p>
         <h1 className="mt-2 text-display font-semibold text-fg">
-          Não foi possível carregar esta visualização
+          {t("error.runtimeTitle", "Não foi possível carregar esta visualização")}
         </h1>
         <p className="mt-3 text-body text-fg-secondary">
-          Ocorreu uma falha inesperada durante a renderização. Você pode tentar novamente ou continuar navegando pelos demais módulos do TellusPedia.
+          {t(
+            "error.runtimeBody",
+            "Ocorreu uma falha inesperada durante a renderização. Você pode tentar novamente ou continuar navegando pelos demais módulos do TellusPedia."
+          )}
         </p>
         {error.digest && (
           <p className="mt-3 font-mono text-caption text-fg-muted tabular-nums">
-            Referência: {error.digest}
+            {t("error.reference", "Referência")}: {error.digest}
           </p>
         )}
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button variant="primary" onClick={() => reset()}>
             <RotateCcw aria-hidden="true" className="size-4" />
-            Tentar novamente
+            {t("error.retry", "Tentar novamente")}
           </Button>
           <Link
             href="/"
             className="inline-flex h-9 items-center justify-center rounded-control border border-line bg-surface-raised px-4 text-label font-medium text-fg transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover"
           >
-            Voltar ao globo
+            {t("error.backToGlobe", "Voltar ao globo")}
           </Link>
         </div>
         <nav
-          aria-label="Atalhos de recuperação"
+          aria-label={t("error.recoveryAria", "Atalhos de recuperação")}
           className="mt-6 flex flex-wrap items-center justify-center gap-4 border-t border-line pt-5 text-label text-accent"
         >
           <Link href="/compare" className="hover:text-accent-hover hover:underline">
-            Comparador de países
+            {t("error.comparator", "Comparador de países")}
           </Link>
           <Link href="/telluslab" className="hover:text-accent-hover hover:underline">
-            Dossiês e TellusLab
+            {t("error.telluslab", "Dossiês e TellusLab")}
           </Link>
         </nav>
       </div>

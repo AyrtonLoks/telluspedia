@@ -14,10 +14,12 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { StudyExportActions } from "@/components/study/StudyExportActions";
+import { ServerLocaleToggleButton } from "@/components/nav/LocaleToggleButton";
 import { getCountryData, WORLD_COUNTRIES_CATALOG } from "@/lib/country-data";
 import { HISTORICAL_ERAS, type HistoricalEraId } from "@/lib/historical-entities";
 import { buildStudiesMetadata, formatStudyPeriod } from "@/lib/server-loaders";
 import { formatCountryName } from "@/lib/i18n/format";
+import { EN_TELLUSLAB_MESSAGES } from "@/lib/i18n/en-telluslab";
 import { getServerLocale, pickLocaleText } from "@/lib/i18n/server";
 import type { Locale } from "@/lib/i18n/types";
 import {
@@ -63,6 +65,10 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
     .sort((a, b) => a.name.localeCompare(b.name, locale));
 
   const eraOptions = Object.values(HISTORICAL_ERAS);
+  const localizeEraLabel = (eraId: HistoricalEraId, fallback: string) =>
+    locale === "en"
+      ? EN_TELLUSLAB_MESSAGES[`era.${eraId}.label` as keyof typeof EN_TELLUSLAB_MESSAGES] ?? fallback
+      : fallback;
 
   return (
     <main className="min-h-screen bg-bg text-fg">
@@ -94,6 +100,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <ServerLocaleToggleButton />
             <Badge tone="neutral">
               <span className="font-mono tabular-nums">{result.pagination.total}</span>{" "}
               {result.pagination.total === 1 ? tx("estudo", "study") : tx("estudos", "studies")}
@@ -154,7 +161,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 <option value="">{tx("Todas as eras", "All eras")}</option>
                 {eraOptions.map((era) => (
                   <option key={era.id} value={era.id}>
-                    {era.label}
+                    {localizeEraLabel(era.id, era.label)}
                   </option>
                 ))}
               </select>
@@ -327,7 +334,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                         ) : eraDef && eraDef.id !== "CONTEMPORARY" ? (
                           <Badge tone="cat-politics">
                             <Sparkles aria-hidden="true" className="size-3" />
-                            <span>{eraDef.label}</span>
+                            <span>{localizeEraLabel(eraDef.id, eraDef.label)}</span>
                           </Badge>
                         ) : (
                           <Badge tone="neutral">

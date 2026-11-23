@@ -13,12 +13,14 @@ import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useTimelineStore, ALL_CATEGORIES } from "@/stores/timelineStore";
+import { useI18n } from "@/lib/i18n/useT";
 
 const observatoryLayers = new Set<ObservatoryLayerId>([
   "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES",
 ]);
 
 export function EntityLaunch() {
+  const { t } = useI18n();
   const pathname = usePathname();
   const query = useSearchParams().toString();
   const launch = pathname === "/" || pathname.startsWith("/pais/")
@@ -101,11 +103,11 @@ export function EntityLaunch() {
   if (!launch?.origin || !entity || isReaderOpen) return null;
   return (
     <nav
-      aria-label="Origem do estudo"
+      aria-label={t("telluslab.originAria", "Origem do estudo")}
       className="fixed left-3 top-[var(--map-overlay-top)] z-30 max-w-[calc(100%-1.5rem)] xl:left-6 rounded-card border border-line bg-surface/86 px-3 py-2 text-label text-accent shadow-e1 backdrop-blur-md"
     >
       <a href={studyUrl(launch.origin.slug, launch.origin.nodeId, entity.entityId)} className="hover:text-accent-hover hover:underline">
-        ← Retornar ao nó {launch.origin.nodeId}
+        {t("telluslab.returnToNode", "← Retornar ao nó")} {launch.origin.nodeId}
       </a>
     </nav>
   );

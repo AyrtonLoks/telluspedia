@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { useLocaleStore } from "@/stores/localeStore";
 
 const SearchPalette = dynamic(() => import("./SearchPalette").then((module) => module.SearchPalette), {
   ssr: false,
@@ -19,6 +20,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     previousFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setOpen(true);
   }).current;
+
+  useEffect(() => {
+    useLocaleStore.getState().hydrateFromStorage();
+  }, []);
 
   useEffect(() => {
     const onShortcut = (event: KeyboardEvent) => {

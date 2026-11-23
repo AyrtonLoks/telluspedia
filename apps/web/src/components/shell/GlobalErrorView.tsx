@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useI18n } from "@/lib/i18n/useT";
 
 export interface GlobalErrorViewProps {
   error: Error & { digest?: string };
@@ -8,6 +9,8 @@ export interface GlobalErrorViewProps {
 }
 
 export function GlobalErrorView({ error, reset }: GlobalErrorViewProps) {
+  const { locale, t } = useI18n();
+
   useEffect(() => {
     console.error("[telluspedia] Global error boundary caught failure", {
       digest: error.digest ?? null,
@@ -15,7 +18,7 @@ export function GlobalErrorView({ error, reset }: GlobalErrorViewProps) {
   }, [error]);
 
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang={locale} className="dark">
       <body className="min-h-screen bg-bg font-sans text-fg antialiased">
         <main
           data-testid="global-error-boundary"
@@ -26,17 +29,20 @@ export function GlobalErrorView({ error, reset }: GlobalErrorViewProps) {
             className="w-full max-w-lg rounded-panel border border-line bg-surface p-8 text-center shadow-e2"
           >
             <p className="font-mono text-caption text-danger tabular-nums">
-              Erro crítico da aplicação
+              {t("error.criticalTag", "Erro crítico da aplicação")}
             </p>
             <h1 className="mt-2 text-display font-semibold text-fg">
-              A interface precisou ser interrompida
+              {t("error.criticalTitle", "A interface precisou ser interrompida")}
             </h1>
             <p className="mt-3 text-body text-fg-secondary">
-              Detectamos uma falha no carregamento principal do TellusPedia. Tente restaurar a sessão ou recarregue a página inicial.
+              {t(
+                "error.criticalBody",
+                "Detectamos uma falha no carregamento principal do TellusPedia. Tente restaurar a sessão ou recarregue a página inicial."
+              )}
             </p>
             {error.digest && (
               <p className="mt-3 font-mono text-caption text-fg-muted tabular-nums">
-                Referência: {error.digest}
+                {t("error.reference", "Referência")}: {error.digest}
               </p>
             )}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -45,14 +51,14 @@ export function GlobalErrorView({ error, reset }: GlobalErrorViewProps) {
                 onClick={() => reset()}
                 className="inline-flex h-9 items-center justify-center rounded-control bg-accent px-4 text-label font-medium text-accent-on transition-colors duration-fast ease-out hover:bg-accent-hover"
               >
-                Tentar novamente
+                {t("error.retry", "Tentar novamente")}
               </button>
               <button
                 type="button"
                 onClick={() => window.location.assign("/")}
                 className="inline-flex h-9 items-center justify-center rounded-control border border-line bg-surface-raised px-4 text-label font-medium text-fg transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover"
               >
-                Recarregar início
+                {t("error.reloadHome", "Recarregar início")}
               </button>
             </div>
           </div>
