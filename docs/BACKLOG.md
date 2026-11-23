@@ -226,7 +226,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D27a | Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05) | 3D/Dados | P2 | G | DONE | antigravity | D25 | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | DONE | antigravity | D27a | G-OBS, G-GLOBO |
 | D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | DONE | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
-| D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | IN_PROGRESS | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
+| D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | REVIEW | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
 
 ---
 
@@ -2286,7 +2286,7 @@ Originalmente `D28` (tamanho `GG`, quebrada em `D28a` + `D28b` conforme §1.7): 
 
 ### D28b · Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d28b-i18n-panels-ssr · **Worktree:** ../telluspedia-wt/antigravity-d28b
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d28b-i18n-panels-ssr · **Worktree:** ../telluspedia-wt/antigravity-d28b
 - **Prioridade:** P2 · **Área:** Produto · **Tamanho:** G · **Depende de:** D28a · **Grupos:** G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS
 
 **Contexto / problema**
@@ -2297,11 +2297,12 @@ Segunda metade da `D28` (`GG`): estender a fundação i18n da `D28a` para todos 
 2. Adaptar metadados SSR (`layout.tsx`, `/pais/[iso]`, `/study/[slug]`, `/studies`) lendo o cookie `telluspedia_locale` quando disponível.
 
 **Critérios de aceite**
-- [ ] Todos os painéis analíticos, rótulos de indicadores, nomes dos 177 países e formatação numérica respeitam `pt-BR` ↔ `en` sem recarregar o globo 3D.
+- [x] Todos os painéis analíticos, rótulos de indicadores, nomes dos 177 países e formatação numérica respeitam `pt-BR` ↔ `en` sem recarregar o globo 3D.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Criada a partir da quebra de `D28` (`GG`) conforme §1.7.
 - 2026-11-23 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`4e7c87a`) com `D28a` em `DONE` e todos os grupos livres (`G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS`).
+- 2026-11-23 · antigravity · REVIEW · Implementação entregue no commit `ec93062`: dicionário inglês sob demanda particionado (`src/lib/i18n/{en-shell,en-panels,en}.ts`, todos `< 600` linhas conforme T36) + helper SSR `src/lib/i18n/server.ts` (`getServerLocale`, `pickLocaleText`). Tradução em tempo real com `formatCountryName` (`Intl.DisplayNames` nos 177 países) e `formatNumber`/`Intl` em `RightDock`, `InspectorHUD` (`CountryHeader`, `CountryMetricsGrid`, `CountryMiniTimeline`, `LocalClockWidget`, `LiveWeatherWidget`), `ObservatoryPanel` + 7 camadas (`DataSourceBadge`, `FirmsLayerControls`, `FirmsCountrySummary`, `EonetLayerControls`, `SatelliteLayerControls`, `MaritimeLayerControls`, `GibsLayerControls`, `WindLayerControls`), `CosmicInspectorHUD`, `CountryComparator` / `ComparisonGrid` / `ComparisonCharts`, `ReaderMode` / `ReaderTableOfContents` / `ReaderContent` / `AnalyticalProfileView` / `CitationModal`, `StudyShareModal` / `ForkStudyBanner` / `StudyExportActions` e galeria SSR `/studies`. Metadados SSR (`layout.tsx`, `/pais/[iso]`, `/study/[slug]`, `/compare`, `/studies` via `server-loaders.ts`) lendo o cookie `telluspedia_locale` e ajustando `<html lang>` + `openGraph.locale`. Visual inspecionado em `1366×850` no Chromium WebGL (`Brazil`, `Population: 214.3 million`, `Land area: 8,515,767 km²`, `Nominal GDP: $ 2.17 trillion`, `Planetary Observatory`, `Multidimensional Country Comparator`, `sameCanvas=true`, `contextLost=0`, SSR `/studies` e `/pais/DEU` com `<html lang="en">` e títulos em inglês). Validado com `pnpm typecheck` (0 erros), `pnpm lint` (0 avisos), `pnpm test` (757/758 pass, 0 fail, 1 skip; +2 testes D28b em `test/i18n.test.tsx`), `pnpm build` + `bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB) e suíte Playwright E2E completa (18/18 pass).
 
 ---
 
