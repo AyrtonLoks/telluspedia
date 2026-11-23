@@ -226,7 +226,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D27a | Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05) | 3D/Dados | P2 | G | DONE | antigravity | D25 | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | DONE | antigravity | D27a | G-OBS, G-GLOBO |
 | D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | DONE | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
-| D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | REVIEW | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
+| D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | DONE | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
 
 ---
 
@@ -2286,7 +2286,7 @@ Originalmente `D28` (tamanho `GG`, quebrada em `D28a` + `D28b` conforme §1.7): 
 
 ### D28b · Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d28b-i18n-telluslab · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/d28b-i18n-telluslab · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Produto · **Tamanho:** G · **Depende de:** D28a · **Grupos:** G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS
 
 **Contexto / problema**
@@ -2307,6 +2307,7 @@ Segunda metade da `D28` (`GG`): estender a fundação i18n da `D28a` para todos 
 - 2026-11-23 · antigravity · REVIEW · Correções entregues no commit `f7c79dc`: (1) erro de hidratação no reload de `/?visao=1&...&observatorio=1&camadas=...` resolvido movendo `<TopNavBar />` para fora do `<Suspense>` de `EntityLaunchGate` em `GlobeExperienceShell.tsx` + `useRightDock.ts` via `useStoreSnapshot` (T41); (2) tradução `en` completa via módulo sob demanda `src/lib/i18n/en-country-meta.ts` cobrindo 12 regiões/continentes, 17 regimes políticos, nomes oficiais/moedas/resumos dos 29 países curados, 17 marcos históricos dos países-piloto, badges de fonte (`IBGE / WB`, `World Bank`, `UNDP`, `WHO`), `CountrySearchSuggestions`, `SearchPalette`, `StudyContext` (TellusBridge), `HistoricalEraBadge`, `PaleoEraBadge`, `ObservatoryTelemetryHUD`, `AnalyticalProfileView` e sincronização imediata de `document.title` na troca `PT ↔ EN`. Validado com `pnpm typecheck` (0 erros), `pnpm lint` (0 avisos), `pnpm test` (757/758 pass), `pnpm build` + `bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB), reload real em `/?visao=1&pais=BRA&observatorio=1&camadas=NASA_FIRMS` no Chromium WebGL (0 erros de hidratação/console e inspeção visual limpa em `EN`) e Playwright E2E (18/18 pass).
 - 2026-11-23 · antigravity · IN_PROGRESS · Reaberta após revisão do Ayrton: traduzir integralmente `/telluslab` (`StudyHub`), páginas standalone (`/dossies/[slug]`, `/not-found`, `/error`, `GlobalErrorView`), eras históricas em `/studies`/`HistoricalEraBadge` e hidratar `useLocaleStore` globalmente no `SearchProvider`.
 - 2026-11-23 · antigravity · REVIEW · Correções entregues no commit `1129cf4`: (1) hidratação global de idioma em `SearchProvider.tsx` garantindo que todas as rotas standalone apliquem `telluspedia_locale`/`localStorage`; (2) novo módulo sob demanda `src/lib/i18n/en-telluslab.ts` cobrindo toda a UI do `StudyHub` (`/telluslab`, incluindo seletor customizado de arquivo JSON, formatação `Intl` de datas/percentuais, todos os 8 domínios, 39 trilhas e 14 vínculos de dossiês/figuras), metadados SSR de `/telluslab`, tradução SSR completa dos 14 dossiês em `/dossies/[slug]`, eras históricas em `/studies` e `HistoricalEraBadge`, `EntityLaunch`, `/not-found`, `/error` e `GlobalErrorView`; (3) novo componente D14 `LocaleToggleButton` / `ServerLocaleToggleButton` presente em `/telluslab`, `/studies` e `/dossies/[slug]`. Validado com `pnpm typecheck` (0 erros), `pnpm lint` (0 avisos), `pnpm test` (759/760 pass, 0 fail, 1 skip), `pnpm build` + `bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB), verificação real no Chromium + screenshot de `/telluslab` em `EN` (0 erros) e Playwright E2E completa (18/18 pass).
+- 2026-11-23 · ayrton · DONE · Aprovada pelo Ayrton.
 
 ---
 
