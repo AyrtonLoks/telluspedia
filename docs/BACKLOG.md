@@ -225,7 +225,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | DONE | antigravity | D24 | G-CONTEUDO, G-TIMELINE |
 | D27a | Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05) | 3D/Dados | P2 | G | DONE | antigravity | D25 | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | DONE | antigravity | D27a | G-OBS, G-GLOBO |
-| D28 | Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores | Produto | P2 | GG | TODO | — | — | G-SHELL, G-PAIS |
+| D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | IN_PROGRESS | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
+| D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | TODO | — | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
 
 ---
 
@@ -2258,23 +2259,46 @@ Segunda metade da `D27` (`GG`): estender o motor de partículas vetoriais sobre 
 
 ---
 
-### D28 · Internacionalização estrutural (`pt-BR` / `en`) nos textos da UI, metadados e rótulos de indicadores
+### D28a · Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P2 · **Área:** Produto · **Tamanho:** GG · **Depende de:** — · **Grupos:** G-SHELL, G-PAIS
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d28a-i18n-core-shell · **Worktree:** ../telluspedia-wt/antigravity-d28a
+- **Prioridade:** P2 · **Área:** Produto · **Tamanho:** G · **Depende de:** — · **Grupos:** G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS
 
 **Contexto / problema**
-Toda a interface, metadados SSR e nomes de países/indicadores estão fixos em português (`pt-BR`), limitando o alcance educacional e acadêmico internacional.
+Originalmente `D28` (tamanho `GG`, quebrada em `D28a` + `D28b` conforme §1.7): toda a interface, formatação numérica e nomes de países/indicadores estão fixos em português (`pt-BR`), limitando o alcance educacional e acadêmico internacional.
 
 **O que fazer**
-1. Introduzir camada leve de dicionários (`pt-BR` e `en`) com seletor de idioma na barra superior (persistido em cookie/localStorage) e formatação de números/datas via `Intl` respeitando o locale ativo.
-2. Traduzir textos da UI principal (navbar, timeline, Inspector, Observatório, Cosmos, Comparador, Citações) e adaptar nomes comuns de países via `Intl.DisplayNames`.
+1. Criar motor leve de i18n (`src/lib/i18n/` + `src/stores/localeStore.ts`) com `Locale = "pt-BR" | "en"`, dicionário `en` carregado sob demanda (zero regressão no orçamento `< 160 kB` de `/`), persistência em `localStorage` + cookie (`telluspedia_locale`), atualização dinâmica de `document.documentElement.lang` e utilitários `Intl` (`formatNumber`, `formatDate`, `formatCountryName` via `Intl.DisplayNames` para todos os 177 países).
+2. Adicionar seletor de idioma D14 (`PT` / `EN`) no shell principal sem recarregar o globo WebGL.
+3. Traduzir 100% do Shell principal em tempo real: `TopNavBar`, controles de mapa no `GlobeCanvas`, `GraphicsQualityPanel` + botão T39, `TimelineBar` / `PresetSelector` / `CategoryFilterPills`, `ExplorePalette` (`⌘K`) e `ChoroplethHud` (Mapa Temático).
 
 **Critérios de aceite**
-- [ ] Alternância `pt-BR` ↔ `en` sem recarregar a cena 3D, cobrindo 100% da UI principal e formatação numérica localizada.
+- [ ] Alternância `pt-BR` ↔ `en` instantânea sem recarregar a cena 3D (`webglcontextlost = 0`), persistida em `localStorage`/cookie e cobrindo Navbar, Controles de Mapa, Qualidade Gráfica, Timeline, Busca `⌘K` e Mapa Temático.
+- [ ] Utilitários `Intl` (números, datas e `Intl.DisplayNames` para os 177 países) validados em testes automatizados, mantendo First Load JS de `/` < 160 kB.
 
 **Log**
-- 2026-11-21 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-21 · antigravity · TODO · Tarefa `D28` criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
+- 2026-11-23 · antigravity · IN_PROGRESS · Quebrada de `D28` (`GG`) em `D28a` (fundação i18n + seletor + Shell principal) e `D28b` (painéis analíticos + metadados SSR) conforme §1.7. Reivindicada a partir de `origin/master` (`2ab6e48`) com todos os grupos livres (`G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS`).
+
+---
+
+### D28b · Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Produto · **Tamanho:** G · **Depende de:** D28a · **Grupos:** G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS
+
+**Contexto / problema**
+Segunda metade da `D28` (`GG`): estender a fundação i18n da `D28a` para todos os painéis profundos, rotas de estudos e metadados SSR.
+
+**O que fazer**
+1. Traduzir `InspectorHUD` (usando `formatCountryName` via `Intl.DisplayNames` nos 177 países, métricas e widgets de clima/relógio), `ObservatoryPanel` + controles das 7 camadas, `CosmicInspectorHUD`, `CountryComparator` / `ComparisonGrid` / `ComparisonCharts`, `ReaderMode` / `AnalyticalProfileView` / `CitationModal`, e `/studies` / `StudyShareModal` / `ForkStudyBanner`.
+2. Adaptar metadados SSR (`layout.tsx`, `/pais/[iso]`, `/study/[slug]`, `/studies`) lendo o cookie `telluspedia_locale` quando disponível.
+
+**Critérios de aceite**
+- [ ] Todos os painéis analíticos, rótulos de indicadores, nomes dos 177 países e formatação numérica respeitam `pt-BR` ↔ `en` sem recarregar o globo 3D.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Criada a partir da quebra de `D28` (`GG`) conforme §1.7.
 
 ---
 
