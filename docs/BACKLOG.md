@@ -225,7 +225,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D26 | Expandir cobertura curricular do TellusBridge (de 60,5% para ≥ 85% dos 299 nós; todas as eras e 20+ países) | Conteúdo | P2 | M | DONE | antigravity | D24 | G-CONTEUDO, G-TIMELINE |
 | D27a | Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05) | 3D/Dados | P2 | G | DONE | antigravity | D25 | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | DONE | antigravity | D27a | G-OBS, G-GLOBO |
-| D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | REVIEW | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
+| D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | DONE | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
 | D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | TODO | — | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
 
 ---
@@ -2261,7 +2261,7 @@ Segunda metade da `D27` (`GG`): estender o motor de partículas vetoriais sobre 
 
 ### D28a · Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d28a-i18n-core-shell · **Worktree:** ../telluspedia-wt/antigravity-d28a
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/d28a-i18n-core-shell · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Produto · **Tamanho:** G · **Depende de:** — · **Grupos:** G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS
 
 **Contexto / problema**
@@ -2280,6 +2280,7 @@ Originalmente `D28` (tamanho `GG`, quebrada em `D28a` + `D28b` conforme §1.7): 
 - 2026-11-21 · antigravity · TODO · Tarefa `D28` criada na auditoria do Ciclo 2 (aprovada pelo Ayrton).
 - 2026-11-23 · antigravity · IN_PROGRESS · Quebrada de `D28` (`GG`) em `D28a` (fundação i18n + seletor + Shell principal) e `D28b` (painéis analíticos + metadados SSR) conforme §1.7. Reivindicada a partir de `origin/master` (`2ab6e48`) com todos os grupos livres (`G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS`).
 - 2026-11-23 · antigravity · REVIEW · Implementação entregue no commit `27be24a`: fundação i18n (`src/lib/i18n/{types,format,en,useT}.ts` + `src/stores/localeStore.ts`) com dicionário `en` carregado sob demanda (`import("@/lib/i18n/en")`), persistência em `localStorage` + cookie (`telluspedia_locale`) + `<html lang>`, utilitários `Intl` (`formatNumber`, `formatDate`, `formatCountryName` via `Intl.DisplayNames` para os 177 países), seletor D14 `PT`/`EN` ao lado do controle de qualidade gráfica (após o globo na ordem de foco para preservar acesso imediato por Tab) e tradução em tempo real de `TopNavBar`, controles de mapa (`GlobeCanvas`), `GraphicsQualityPanel`, `TimelineBar`/`PresetSelector`/`CategoryFilterPills`, `SearchPalette` (`⌘K`) e `ChoroplethHud`. Visual antes/depois inspecionado em `mobile-375` e `desktop-1366` (pílula `PT`/`EN` alinhada com `Auto`, zero colisão na barra superior, tradução limpa em `EN`). Validado com `pnpm typecheck` (0 erros), `pnpm lint` (0 avisos), `pnpm test` (755/756 pass, 0 fail, 1 skip; +4 testes em `test/i18n.test.tsx`), `pnpm build` + `bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB), checagem real no Chromium WebGL (`sameCanvasElement=true`, `contextLostCount=0`, `persistedAfterReload=true`, 0 erros de console) e suíte Playwright E2E completa (18/18 pass, incluindo os 6 snapshots responsivos atualizados e WCAG AA).
+- 2026-11-23 · ayrton · DONE · Aprovada pelo Ayrton.
 
 ---
 
