@@ -226,7 +226,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D27a | Camada de Ventos Globais (NOAA GFS 10 m / Jato 250 hPa, partículas GPU animadas, legenda km/h e nós, T05) | 3D/Dados | P2 | G | DONE | antigravity | D25 | G-OBS, G-GLOBO, G-EPOCA, G-SHELL, G-ESTUDOS |
 | D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | DONE | antigravity | D27a | G-OBS, G-GLOBO |
 | D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | DONE | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
-| D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | REVIEW | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
+| D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | IN_PROGRESS | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
 
 ---
 
@@ -2286,7 +2286,7 @@ Originalmente `D28` (tamanho `GG`, quebrada em `D28a` + `D28b` conforme §1.7): 
 
 ### D28b · Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d28b-i18n-polish · **Worktree:** ../telluspedia-wt/antigravity-d28b-fix
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d28b-i18n-telluslab · **Worktree:** ../telluspedia-wt/antigravity-d28b-pages
 - **Prioridade:** P2 · **Área:** Produto · **Tamanho:** G · **Depende de:** D28a · **Grupos:** G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS
 
 **Contexto / problema**
