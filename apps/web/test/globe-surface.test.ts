@@ -166,7 +166,7 @@ describe("D02: assets do globo", () => {
     const canvas = read("src/components/globe/GlobeCanvas.tsx");
     assert.match(canvas, /<CloudLayer enabled=\{showClouds\} geological=\{isGeological\} studyLighting=\{studyLighting\} \/>/);
     assert.match(canvas, /aria-pressed=\{showClouds\}/);
-    assert.match(canvas, />\s*Nuvens\s*</);
+    assert.match(canvas, /"Nuvens"|>\s*Nuvens\s*</);
   });
 
   test("elevação (R): Himalaia e Andes acima da Amazônia e do oceano", () => {
@@ -249,6 +249,6 @@ describe("D02: shaders", () => {
     const canvas = read("src/components/globe/GlobeCanvas.tsx");
     assert.match(canvas, /\{showAtmosphere && <Atmosphere \/>\}/);
     assert.match(canvas, /aria-pressed=\{showAtmosphere\}/);
-    assert.match(canvas, />\s*Atmosfera\s*</);
+    assert.match(canvas, /"Atmosfera"|>\s*Atmosfera\s*</);
   });
 });

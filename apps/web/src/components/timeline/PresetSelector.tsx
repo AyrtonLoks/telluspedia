@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTimelineStore, TimelinePreset } from "@/stores/timelineStore";
 import { cn } from "@/components/ui/cn";
 import { MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
+import { useI18n } from "@/lib/i18n/useT";
 
 /** Todos os recortes usam o mesmo estilo; selecionado = superfície elevada (segmento ativo). */
 function presetClasses(isSelected: boolean) {
@@ -18,6 +19,7 @@ function presetClasses(isSelected: boolean) {
 }
 
 export const PresetSelector: React.FC = () => {
+  const { t } = useI18n();
   const startYear = useTimelineStore((s) => s.startYear);
   const endYear = useTimelineStore((s) => s.endYear);
   const geologicalMa = useTimelineStore((s) => s.geologicalMa);
@@ -68,29 +70,29 @@ export const PresetSelector: React.FC = () => {
   const humanPresets = [
     {
       id: "LAST_50_YEARS" as TimelinePreset,
-      label: "50 Anos Padrão",
-      shortLabel: "50 Anos",
+      label: t("timeline.preset.LAST_50_YEARS", "50 Anos Padrão"),
+      shortLabel: t("timeline.preset.LAST_50_YEARS.short", "50 Anos"),
       start: 1974,
       end: 2024,
     },
     {
       id: "21ST_CENTURY" as TimelinePreset,
-      label: "Século XXI",
-      shortLabel: "Séc. XXI",
+      label: t("timeline.preset.21ST_CENTURY", "Século XXI"),
+      shortLabel: t("timeline.preset.21ST_CENTURY.short", "Séc. XXI"),
       start: 2000,
       end: 2026,
     },
     {
       id: "COLD_WAR" as TimelinePreset,
-      label: "Guerra Fria",
-      shortLabel: "Guerra Fria",
+      label: t("timeline.preset.COLD_WAR", "Guerra Fria"),
+      shortLabel: t("timeline.preset.COLD_WAR.short", "Guerra Fria"),
       start: 1947,
       end: 1991,
     },
     {
       id: "WORLD_WARS" as TimelinePreset,
-      label: "Guerras Mundiais",
-      shortLabel: "Guerras Mund.",
+      label: t("timeline.preset.WORLD_WARS", "Guerras Mundiais"),
+      shortLabel: t("timeline.preset.WORLD_WARS.short", "Guerras Mund."),
       start: 1914,
       end: 1945,
     },
@@ -99,20 +101,20 @@ export const PresetSelector: React.FC = () => {
   const geologicalPresets = [
     {
       id: "PANGEA_250MA" as TimelinePreset,
-      label: "🌋 Pangeia (250 Ma)",
-      shortLabel: "🌋 Pangeia",
+      label: t("timeline.preset.PANGEA_250MA", "🌋 Pangeia (250 Ma)"),
+      shortLabel: t("timeline.preset.PANGEA_250MA.short", "🌋 Pangeia"),
       ma: 250,
     },
     {
       id: "GONDWANA_150MA" as TimelinePreset,
-      label: "🦖 Gondwana & Laurásia (150 Ma)",
-      shortLabel: "🦖 Gondwana",
+      label: t("timeline.preset.GONDWANA_150MA", "🦖 Gondwana & Laurásia (150 Ma)"),
+      shortLabel: t("timeline.preset.GONDWANA_150MA.short", "🦖 Gondwana"),
       ma: 150,
     },
     {
       id: "KPG_66MA" as TimelinePreset,
-      label: "☄️ Cretáceo K-Pg (66 Ma)",
-      shortLabel: "☄️ Cretáceo",
+      label: t("timeline.preset.KPG_66MA", "☄️ Cretáceo K-Pg (66 Ma)"),
+      shortLabel: t("timeline.preset.KPG_66MA.short", "☄️ Cretáceo"),
       ma: 66,
     },
   ];
@@ -120,8 +122,8 @@ export const PresetSelector: React.FC = () => {
   const routePresets = [
     {
       id: "MAGELLAN_1519" as TimelinePreset,
-      label: "⛵ Circum-navegação de Magalhães (1519–1522)",
-      shortLabel: "⛵ Magalhães",
+      label: t("timeline.preset.MAGELLAN_1519", "⛵ Circum-navegação de Magalhães (1519–1522)"),
+      shortLabel: t("timeline.preset.MAGELLAN_1519.short", "⛵ Magalhães"),
       routeId: MAGELLAN_ROUTE_ID,
     },
   ];
@@ -132,7 +134,7 @@ export const PresetSelector: React.FC = () => {
         <button
           type="button"
           onClick={() => scrollByAmount(-180)}
-          aria-label="Rolar períodos para a esquerda"
+          aria-label={t("timeline.scrollLeft", "Rolar períodos para a esquerda")}
           className="absolute left-0 z-10 flex h-full items-center rounded-l-control bg-gradient-to-r from-surface via-surface/80 to-transparent px-1 text-fg-secondary transition-colors duration-fast ease-out hover:text-fg"
         >
           <ChevronLeft aria-hidden="true" className="h-4 w-4" />
@@ -213,7 +215,7 @@ export const PresetSelector: React.FC = () => {
         <button
           type="button"
           onClick={() => scrollByAmount(180)}
-          aria-label="Rolar períodos para a direita"
+          aria-label={t("timeline.scrollRight", "Rolar períodos para a direita")}
           className="absolute right-0 z-10 flex h-full items-center rounded-r-control bg-gradient-to-l from-surface via-surface/80 to-transparent px-1 text-fg-secondary transition-colors duration-fast ease-out hover:text-fg"
         >
           <ChevronRight aria-hidden="true" className="h-4 w-4" />

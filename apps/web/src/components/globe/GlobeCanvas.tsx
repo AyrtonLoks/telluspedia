@@ -47,6 +47,7 @@ import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
 
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useI18n } from "@/lib/i18n/useT";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
@@ -140,6 +141,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
     };
   }, []);
   const isThrottled = useGlobeStore((s) => s.isThrottled);
+  const { t } = useI18n();
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   // Época ativa: fonte única (T12). Cenas só por seleção explícita, nunca pelo ano.
   const epoch = useEpochState();
@@ -181,7 +183,9 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
       tabIndex={0}
       className="absolute inset-0 h-full w-full overflow-hidden bg-bg focus-visible:outline-none focus-visible:after:pointer-events-none focus-visible:after:absolute focus-visible:after:inset-1 focus-visible:after:z-10 focus-visible:after:rounded-control focus-visible:after:border-2 focus-visible:after:border-accent"
     >
-      <p id={instructions} className="sr-only">Use as setas para girar, mais e menos para ajustar o zoom e barra para abrir a busca.</p>
+      <p id={instructions} className="sr-only">
+        {t("map.instructions", "Use as setas para girar, mais e menos para ajustar o zoom e barra para abrir a busca.")}
+      </p>
       <Canvas
         key={canvasKey}
         camera={{ position: [0, 0, 2.5], fov: 45 }}
@@ -289,17 +293,17 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
           className={GLOBE_TOGGLE}
         >
           <Sun aria-hidden="true" className="size-4" />
-          <span className="sr-only sm:not-sr-only">Iluminação de estudo</span>
+          <span className="sr-only sm:not-sr-only">{t("map.studyLighting", "Iluminação de estudo")}</span>
         </button>
         <button
           type="button"
           aria-pressed={showAtmosphere}
           onClick={() => setShowAtmosphere((enabled) => !enabled)}
           className={GLOBE_TOGGLE}
-          title="Atmosfera com espalhamento (azul no limbo diurno, laranja no terminador)"
+          title={t("map.atmosphereTitle", "Atmosfera com espalhamento (azul no limbo diurno, laranja no terminador)")}
         >
           <CloudSun aria-hidden="true" className="size-4" />
-          <span className="sr-only sm:not-sr-only">Atmosfera</span>
+          <span className="sr-only sm:not-sr-only">{t("map.atmosphere", "Atmosfera")}</span>
         </button>
         <button
           type="button"
@@ -307,10 +311,14 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
           onClick={() => setShowClouds((enabled) => !enabled)}
           className={GLOBE_TOGGLE}
           disabled={isGeological}
-          title={isGeological ? "Nuvens indisponíveis no modo geológico" : "Nuvens reais (composição MODIS/Terra da NASA; imagem estática, não a previsão do tempo)"}
+          title={
+            isGeological
+              ? t("map.cloudsGeoDisabled", "Nuvens indisponíveis no modo geológico")
+              : t("map.cloudsTitle", "Nuvens reais (composição MODIS/Terra da NASA; imagem estática, não a previsão do tempo)")
+          }
         >
           <Cloud aria-hidden="true" className="size-4" />
-          <span className="sr-only sm:not-sr-only">Nuvens</span>
+          <span className="sr-only sm:not-sr-only">{t("map.clouds", "Nuvens")}</span>
         </button>
       </div>
 
@@ -324,7 +332,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
         >
           <TriangleAlert aria-hidden="true" className="size-4 shrink-0 text-warning" />
           <span className="text-fg-secondary">
-            Contexto gráfico WebGL pausado — tentando restaurar…
+            {t("map.webglLost", "Contexto gráfico WebGL pausado — tentando restaurar…")}
           </span>
           <button
             type="button"
@@ -332,7 +340,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             className="inline-flex h-8 items-center gap-1.5 rounded-control bg-accent px-3 text-caption font-medium text-accent-on transition-colors duration-fast ease-out hover:bg-accent-hover"
           >
             <RotateCcw aria-hidden="true" className="size-3.5" />
-            Recarregar 3D
+            {t("map.webglReload", "Recarregar 3D")}
           </button>
         </div>
       )}
@@ -345,7 +353,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
           className="absolute bottom-24 left-1/2 z-20 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center gap-2 rounded-panel border border-success/40 bg-surface/90 px-4 py-2 text-label text-fg shadow-e1 backdrop-blur-md"
         >
           <CheckCircle2 aria-hidden="true" className="size-4 shrink-0 text-success" />
-          <span>Contexto gráfico 3D restaurado.</span>
+          <span>{t("map.webglRestored", "Contexto gráfico 3D restaurado.")}</span>
         </div>
       )}
 

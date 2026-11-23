@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/Badge";
 import { IconButton } from "@/components/ui/IconButton";
 import { Panel } from "@/components/ui/Panel";
 import { cn } from "@/components/ui/cn";
+import { useI18n } from "@/lib/i18n/useT";
 
 export interface GraphicsQualityPanelViewProps {
   preset: GraphicsQualityPreset;
@@ -30,12 +31,13 @@ export const GraphicsQualityPanelView: React.FC<GraphicsQualityPanelViewProps> =
   onSelect,
   onClose,
 }) => {
+  const { t } = useI18n();
   const isAutoDegraded = preset === "auto" && adaptiveDprScale < 0.99;
 
   return (
     <Panel
       role="dialog"
-      aria-label="Qualidade gráfica WebGL"
+      aria-label={t("quality.dialogAria", "Qualidade gráfica WebGL")}
       data-testid="graphics-quality-panel"
       className="pointer-events-auto flex w-[min(calc(100vw-1.5rem),21rem)] flex-col overflow-hidden shadow-e2"
     >
@@ -43,7 +45,7 @@ export const GraphicsQualityPanelView: React.FC<GraphicsQualityPanelViewProps> =
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <Gauge aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
-            <h2 className="text-label font-semibold text-fg">Qualidade gráfica</h2>
+            <h2 className="text-label font-semibold text-fg">{t("quality.title", "Qualidade gráfica")}</h2>
           </div>
           <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-caption text-fg-muted">
             <span className="font-mono tabular-nums" data-testid="graphics-quality-telemetry">
@@ -52,20 +54,20 @@ export const GraphicsQualityPanelView: React.FC<GraphicsQualityPanelViewProps> =
             </span>
             {isAutoDegraded && (
               <Badge tone="warning" data-testid="graphics-quality-degraded-badge">
-                DPR adaptado
+                {t("quality.degraded", "DPR adaptado")}
               </Badge>
             )}
           </div>
         </div>
         <IconButton
           size="sm"
-          label="Fechar painel de qualidade gráfica"
+          label={t("quality.closeAria", "Fechar painel de qualidade gráfica")}
           icon={<X />}
           onClick={onClose}
         />
       </div>
 
-      <div className="flex flex-col gap-1.5 p-3" role="radiogroup" aria-label="Preset de qualidade gráfica">
+      <div className="flex flex-col gap-1.5 p-3" role="radiogroup" aria-label={t("quality.groupAria", "Preset de qualidade gráfica")}>
         {GRAPHICS_QUALITY_PRESETS.map((id) => {
           const profile = GRAPHICS_QUALITY_PROFILES[id];
           const isSelected = preset === id;
@@ -86,20 +88,20 @@ export const GraphicsQualityPanelView: React.FC<GraphicsQualityPanelViewProps> =
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="flex items-center gap-1.5 text-label font-medium text-fg">
-                  <span>{profile.label}</span>
+                  <span>{t(`quality.${id}.label`, profile.label)}</span>
                   {isSelected && <Check aria-hidden="true" className="h-3.5 w-3.5 text-accent" />}
                 </span>
                 <span className="font-mono text-caption text-fg-muted tabular-nums">
                   {profile.textureTier.toUpperCase()} · ≤{profile.maxDpr.toFixed(1)}×
                 </span>
               </div>
-              <p className="text-caption text-fg-muted">{profile.description}</p>
+              <p className="text-caption text-fg-muted">{t(`quality.${id}.desc`, profile.description)}</p>
             </button>
           );
         })}
 
         <p className="mt-1 border-t border-line pt-2 text-caption text-fg-muted">
-          Preferência salva neste navegador e aplicada sem recarregar o globo 3D.
+          {t("quality.footer", "Preferência salva neste navegador e aplicada sem recarregar o globo 3D.")}
         </p>
       </div>
     </Panel>

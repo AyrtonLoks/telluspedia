@@ -23,6 +23,29 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Panel } from "@/components/ui/Panel";
 import { cn } from "@/components/ui/cn";
+import { WORLD_COUNTRIES_CATALOG } from "@/lib/country-data";
+import { formatCountryName } from "@/lib/i18n/format";
+import { useI18n, type TranslateFn } from "@/lib/i18n/useT";
+import type { EnMessageKey } from "@/lib/i18n/en";
+
+function indLabel(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
+  return t(`choropleth.ind.${id}.label` as EnMessageKey, fallback);
+}
+function indShort(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
+  return t(`choropleth.ind.${id}.short` as EnMessageKey, fallback);
+}
+function indDesc(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
+  return t(`choropleth.ind.${id}.desc` as EnMessageKey, fallback);
+}
+function indScale(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
+  return t(`choropleth.ind.${id}.scale` as EnMessageKey, fallback);
+}
+function indUnit(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
+  if (id === "SP.DYN.LE00.IN" || id === "SP.POP.TOTL" || id === "NASA_FIRMS") {
+    return t(`choropleth.ind.${id}.unit` as EnMessageKey, fallback);
+  }
+  return fallback;
+}
 
 export interface ChoroplethTooltipViewProps {
   entry: ChoroplethCountryEntry;
@@ -35,6 +58,9 @@ export const ChoroplethTooltipView: React.FC<ChoroplethTooltipViewProps> = ({
   indicatorLabel,
   isHovered,
 }) => {
+  const { locale, t } = useI18n();
+  const iso2 = WORLD_COUNTRIES_CATALOG[entry.isoCode]?.iso2;
+  const localizedCountry = formatCountryName(iso2, entry.nameCommon, locale);
   const swatchStyle: React.CSSProperties = !entry.available
     ? { backgroundImage: CHOROPLETH_MISSING_SWATCH_CSS }
     : { backgroundColor: entry.color };
@@ -54,14 +80,14 @@ export const ChoroplethTooltipView: React.FC<ChoroplethTooltipViewProps> = ({
             style={swatchStyle}
           />
           <span className="truncate text-label font-semibold text-fg">
-            {entry.nameCommon}
+            {localizedCountry}
           </span>
           <span className="shrink-0 font-mono text-caption text-fg-muted">
             {entry.isoCode}
           </span>
         </div>
         <span className="shrink-0 text-caption text-fg-muted">
-          {isHovered ? "Sob o cursor" : "Selecionado"}
+          {isHovered ? t("choropleth.hovered", "Sob o cursor") : t("choropleth.selected", "Selecionado")}
         </span>
       </div>
 
@@ -74,7 +100,7 @@ export const ChoroplethTooltipView: React.FC<ChoroplethTooltipViewProps> = ({
               entry.available ? "text-fg" : "text-fg-muted"
             )}
           >
-            {entry.formattedValue}
+            {entry.available ? entry.formattedValue : t("choropleth.noData", entry.formattedValue)}
           </span>
           {entry.year !== null && (
             <span className="font-mono text-caption text-fg-muted tabular-nums">
@@ -86,12 +112,12 @@ export const ChoroplethTooltipView: React.FC<ChoroplethTooltipViewProps> = ({
         {entry.rank !== null && entry.rankTotal > 0 ? (
           <Badge tone="accent" data-testid="choropleth-tooltip-rank">
             <span className="font-mono tabular-nums">
-              #{entry.rank} de {entry.rankTotal}
+              #{entry.rank} {t("choropleth.rankOf", "de")} {entry.rankTotal}
             </span>
           </Badge>
         ) : !entry.available ? (
           <Badge tone="neutral" data-testid="choropleth-tooltip-missing">
-            Sem dado
+            {t("choropleth.noData", "Sem dado")}
           </Badge>
         ) : null}
       </div>
@@ -119,15 +145,18 @@ export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
   onOpenSelector,
   onClose,
 }) => {
+  const { t } = useI18n();
   const { indicator, ticks, availableCount, activeCount, totalCountries, isSourceUnavailable } =
     dataset;
   const isFirms = indicator.id === "NASA_FIRMS";
   const missingCount = Math.max(0, totalCountries - availableCount);
+  const label = indLabel(t, indicator.id, indicator.label);
+  const scaleLabel = indScale(t, indicator.id, indicator.scaleLabel);
 
   return (
     <Panel
       role="region"
-      aria-label={`Legenda do mapa temático: ${indicator.label}`}
+      aria-label={`${t("choropleth.legendAria", "Legenda do mapa temático")}: ${label}`}
       data-testid="choropleth-legend"
       className="pointer-events-auto flex flex-col gap-2 px-3 py-2.5 shadow-e2"
     >
@@ -135,18 +164,18 @@ export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <Layers aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-accent" />
-            <h2 className="truncate text-label font-semibold text-fg">{indicator.label}</h2>
+            <h2 className="truncate text-label font-semibold text-fg">{label}</h2>
           </div>
           <p className="text-caption text-fg-muted">
-            {indicator.scaleLabel} ·{" "}
+            {scaleLabel} ·{" "}
             <span className="font-mono tabular-nums">
               {isFirms
                 ? isSourceUnavailable
                   ? isLoadingFirms
-                    ? "Carregando focos…"
-                    : "Contagem indisponível"
-                  : `${activeCount}/${totalCountries} países com focos`
-                : `${availableCount}/${totalCountries} países`}
+                    ? t("choropleth.loadingFirms", "Carregando focos…")
+                    : t("choropleth.countUnavailable", "Contagem indisponível")
+                  : `${activeCount}/${totalCountries} ${t("choropleth.countriesWithFires", "países com focos")}`
+                : `${availableCount}/${totalCountries} ${t("choropleth.countries", "países")}`}
             </span>
           </p>
         </div>
@@ -154,13 +183,13 @@ export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
         <div className="flex shrink-0 items-center gap-1">
           <IconButton
             size="sm"
-            label="Trocar indicador coroplético"
+            label={t("choropleth.changeIndicator", "Trocar indicador coroplético")}
             icon={<SlidersHorizontal />}
             onClick={onOpenSelector}
           />
           <IconButton
             size="sm"
-            label="Desativar mapa temático"
+            label={t("choropleth.disable", "Desativar mapa temático")}
             icon={<X />}
             onClick={onClose}
           />
@@ -184,8 +213,8 @@ export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
         ) : (
           <p className="text-caption text-fg-muted">
             {isLoadingFirms
-              ? "Consultando focos de calor NASA FIRMS…"
-              : "Sem escala ativa — aguardando dados do servidor."}
+              ? t("choropleth.queryingFirms", "Consultando focos de calor NASA FIRMS…")
+              : t("choropleth.noScale", "Sem escala ativa — aguardando dados do servidor.")}
           </p>
         )}
       </div>
@@ -200,7 +229,7 @@ export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
               style={{ backgroundImage: CHOROPLETH_MISSING_SWATCH_CSS }}
             />
             <span>
-              Dado indisponível
+              {t("choropleth.missingData", "Dado indisponível")}
               {!isFirms && missingCount > 0 ? ` (${missingCount})` : ""}
             </span>
           </span>
@@ -212,7 +241,7 @@ export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
                 className="h-3 w-3 shrink-0 rounded-sm border border-line-strong"
                 style={{ backgroundColor: CHOROPLETH_FIRMS_ZERO_COLOR }}
               />
-              <span>0 focos (24h)</span>
+              <span>{t("choropleth.zeroFires", "0 focos (24h)")}</span>
             </span>
           )}
         </div>
@@ -252,10 +281,11 @@ export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
   onReturnToContemporaryEarth,
   onClose,
 }) => {
+  const { t } = useI18n();
   return (
     <Panel
       role="dialog"
-      aria-label="Seletor de mapa temático coroplético"
+      aria-label={t("choropleth.selectorAria", "Seletor de mapa temático coroplético")}
       data-testid="choropleth-selector"
       className="pointer-events-auto flex max-h-[var(--map-overlay-height)] w-[min(calc(100vw-1.5rem),22rem)] flex-col overflow-hidden shadow-e2"
     >
@@ -263,15 +293,17 @@ export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <Layers aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
-            <h2 className="text-label font-semibold text-fg">Mapa temático coroplético</h2>
+            <h2 className="text-label font-semibold text-fg">
+              {t("choropleth.selectorTitle", "Mapa temático coroplético")}
+            </h2>
           </div>
           <p className="text-caption text-fg-muted">
-            Colore os 177 países no globo por indicador real.
+            {t("choropleth.selectorSubtitle", "Colore os 177 países no globo por indicador real.")}
           </p>
         </div>
         <IconButton
           size="sm"
-          label="Fechar seletor de mapa temático"
+          label={t("choropleth.closeSelector", "Fechar seletor de mapa temático")}
           icon={<X />}
           onClick={onClose}
         />
@@ -281,17 +313,20 @@ export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
         {!isGlobeEligible && (
           <div className="flex flex-col gap-2 rounded-card border border-warning/40 bg-warning/10 p-2.5 text-caption text-fg-secondary">
             <span>
-              A camada coroplética é exibida na Terra contemporânea. Volte ao mapa atual para visualizar o preenchimento.
+              {t(
+                "choropleth.geoWarning",
+                "A camada coroplética é exibida na Terra contemporânea. Volte ao mapa atual para visualizar o preenchimento."
+              )}
             </span>
             <div>
               <Button size="sm" variant="secondary" onClick={onReturnToContemporaryEarth}>
-                Voltar à Terra contemporânea
+                {t("choropleth.returnEarth", "Voltar à Terra contemporânea")}
               </Button>
             </div>
           </div>
         )}
 
-        <div className="flex flex-col gap-1.5" role="radiogroup" aria-label="Indicadores coropléticos">
+        <div className="flex flex-col gap-1.5" role="radiogroup" aria-label={t("choropleth.indicatorsAria", "Indicadores coropléticos")}>
           {CHOROPLETH_INDICATOR_LIST.map((item) => {
             const isSelected = activeIndicator === item.id;
             return (
@@ -310,13 +345,15 @@ export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-label font-medium text-fg">{item.label}</span>
+                  <span className="text-label font-medium text-fg">
+                    {indLabel(t, item.id, item.label)}
+                  </span>
                   <span className="flex shrink-0 items-center gap-1 text-caption text-fg-muted">
                     {isSelected && <Check aria-hidden="true" className="h-3.5 w-3.5 text-accent" />}
-                    <span>{item.unit}</span>
+                    <span>{indUnit(t, item.id, item.unit)}</span>
                   </span>
                 </div>
-                <p className="text-caption text-fg-muted">{item.description}</p>
+                <p className="text-caption text-fg-muted">{indDesc(t, item.id, item.description)}</p>
                 <div className="flex items-center justify-between gap-2">
                   <span
                     aria-hidden="true"
@@ -334,7 +371,7 @@ export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
           <div className="mt-1 flex flex-col gap-2 border-t border-line pt-2.5">
             <div className="flex items-center justify-between gap-2 text-caption">
               <label htmlFor="choropleth-opacity-range" className="text-fg-secondary">
-                Opacidade da camada
+                {t("choropleth.opacity", "Opacidade da camada")}
               </label>
               <span className="font-mono text-fg tabular-nums">
                 {Math.round(opacity * 100)}%
@@ -357,7 +394,7 @@ export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
               onClick={onClear}
               className="w-full justify-center text-fg-secondary hover:text-fg"
             >
-              Desativar mapa temático
+              {t("choropleth.disable", "Desativar mapa temático")}
             </Button>
           </div>
         )}
@@ -367,6 +404,7 @@ export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
 };
 
 export const ChoroplethHud: React.FC = () => {
+  const { t } = useI18n();
   const activeIndicator = useChoroplethStore((s) => s.activeIndicator);
   const opacity = useChoroplethStore((s) => s.opacity);
   const isSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
@@ -453,7 +491,7 @@ export const ChoroplethHud: React.FC = () => {
           {focusedEntry && (
             <ChoroplethTooltipView
               entry={focusedEntry}
-              indicatorLabel={dataset.indicator.shortLabel}
+              indicatorLabel={indShort(t, dataset.indicator.id, dataset.indicator.shortLabel)}
               isHovered={Boolean(hoveredIso)}
             />
           )}

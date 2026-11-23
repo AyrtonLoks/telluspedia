@@ -1,0 +1,207 @@
+import { describe, test } from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import {
+  formatCountryName,
+  formatDate,
+  formatNumber,
+  normalizeLocale,
+  readLocaleFromCookieString,
+  readStoredLocale,
+  writeStoredLocale,
+} from "../src/lib/i18n/format";
+import { LOCALE_COOKIE_NAME, LOCALE_STORAGE_KEY } from "../src/lib/i18n/types";
+import { EN_MESSAGES } from "../src/lib/i18n/en";
+import { loadEnMessages, useLocaleStore } from "../src/stores/localeStore";
+import { WORLD_COUNTRIES_CATALOG } from "../src/lib/country-data";
+import { TopNavBar } from "../src/components/nav/TopNavBar";
+import { TimelineBar } from "../src/components/timeline/TimelineBar";
+import { GraphicsQualityPanelView } from "../src/components/globe/GraphicsQualityPanel";
+import { ChoroplethSelectorView, ChoroplethTooltipView } from "../src/components/choropleth/ChoroplethHud";
+
+describe("D28a · Fundação i18n (pt-BR / en), Intl e Shell Principal", () => {
+  test("1. normalizeLocale, cookie e localStorage persistem e hidratam locale com segurança", () => {
+    assert.equal(normalizeLocale("en"), "en");
+    assert.equal(normalizeLocale("en-US"), "en");
+    assert.equal(normalizeLocale("pt-BR"), "pt-BR");
+    assert.equal(normalizeLocale("pt"), "pt-BR");
+    assert.equal(normalizeLocale("fr-FR"), "pt-BR");
+    assert.equal(normalizeLocale(null), "pt-BR");
+
+    assert.equal(readLocaleFromCookieString(`foo=1; ${LOCALE_COOKIE_NAME}=en; bar=2`), "en");
+    assert.equal(readLocaleFromCookieString(`${LOCALE_COOKIE_NAME}=pt-BR`), "pt-BR");
+    assert.equal(readLocaleFromCookieString("other=en"), null);
+
+    // Simula window/document mínimos para testar escrita e leitura de persistência
+    const store = new Map<string, string>();
+    const fakeDoc = { cookie: "", documentElement: { lang: "pt-BR" } };
+    const fakeWin = {
+      localStorage: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => { store.set(k, v); },
+      },
+    };
+    const prevWin = (globalThis as { window?: unknown }).window;
+    const prevDoc = (globalThis as { document?: unknown }).document;
+    try {
+      (globalThis as { window?: unknown }).window = fakeWin;
+      (globalThis as { document?: unknown }).document = fakeDoc;
+
+      writeStoredLocale("en");
+      assert.equal(store.get(LOCALE_STORAGE_KEY), "en");
+      assert.match(fakeDoc.cookie, new RegExp(`${LOCALE_COOKIE_NAME}=en`));
+      assert.equal(fakeDoc.documentElement.lang, "en");
+      assert.equal(readStoredLocale(), "en");
+
+      // Fallback para cookie se localStorage estiver vazio
+      store.clear();
+      assert.equal(readStoredLocale(), "en");
+
+      writeStoredLocale("pt-BR");
+      assert.equal(readStoredLocale(), "pt-BR");
+      assert.equal(fakeDoc.documentElement.lang, "pt-BR");
+    } finally {
+      if (prevWin === undefined) delete (globalThis as { window?: unknown }).window;
+      else (globalThis as { window?: unknown }).window = prevWin;
+      if (prevDoc === undefined) delete (globalThis as { document?: unknown }).document;
+      else (globalThis as { document?: unknown }).document = prevDoc;
+    }
+  });
+
+  test("2. Formatadores Intl (números, datas e Intl.DisplayNames nos 177 países)", () => {
+    assert.equal(formatNumber(1234.56, "pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), "1.234,56");
+    assert.equal(formatNumber(1234.56, "en", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), "1,234.56");
+    assert.equal(formatNumber(Number.NaN, "en"), "—");
+
+    const sampleDate = "2026-11-23T12:00:00Z";
+    assert.match(formatDate(sampleDate, "pt-BR", { timeZone: "UTC", year: "numeric" }), /2026/);
+    assert.match(formatDate(sampleDate, "en", { timeZone: "UTC", month: "short", year: "numeric" }), /Nov 2026/);
+    assert.equal(formatDate("invalid", "en"), "—");
+
+    // Em pt-BR preserva o nome curado; em en usa Intl.DisplayNames
+    assert.equal(formatCountryName("BR", "Brasil", "pt-BR"), "Brasil");
+    assert.equal(formatCountryName("BR", "Brasil", "en"), "Brazil");
+    assert.equal(formatCountryName("DE", "Alemanha", "en"), "Germany");
+    assert.equal(formatCountryName("JP", "Japão", "en"), "Japan");
+    assert.equal(formatCountryName("ZA", "África do Sul", "en"), "South Africa");
+    assert.equal(formatCountryName("EG", "Egito", "en"), "Egypt");
+
+    // Todos os 177 países do catálogo produzem nome não-vazio em ambos os idiomas
+    const entries = Object.values(WORLD_COUNTRIES_CATALOG);
+    assert.ok(entries.length >= 177);
+    let resolvedEn = 0;
+    for (const c of entries) {
+      const enName = formatCountryName(c.iso2, c.nameCommon, "en");
+      assert.ok(enName.length > 0, `nome vazio para ${c.isoCode}`);
+      if (enName !== c.iso2) resolvedEn++;
+    }
+    assert.ok(resolvedEn >= 170, `esperava ≥170 nomes resolvidos via Intl.DisplayNames, obteve ${resolvedEn}`);
+  });
+
+  test("3. Dicionário EN é carregado sob demanda e não entra estaticamente na casca inicial", async () => {
+    const loaded = await loadEnMessages();
+    assert.equal(loaded["nav.observatory"], "Observatory");
+    assert.ok(Object.keys(EN_MESSAGES).length >= 70);
+
+    const shellSrc = fs.readFileSync(
+      path.resolve(__dirname, "../src/components/shell/GlobeExperienceShell.tsx"),
+      "utf-8"
+    );
+    const navSrc = fs.readFileSync(
+      path.resolve(__dirname, "../src/components/nav/TopNavBar.tsx"),
+      "utf-8"
+    );
+    assert.doesNotMatch(shellSrc, /from\s+["']@\/lib\/i18n\/en["']/, "dicionário EN não pode ser importado estaticamente no shell");
+    assert.doesNotMatch(navSrc, /from\s+["']@\/lib\/i18n\/en["']/, "dicionário EN não pode ser importado estaticamente na navbar");
+  });
+
+  test("4. Shell principal (Navbar, Timeline, Qualidade Gráfica e Mapa Temático) alterna pt-BR ↔ en no SSR", () => {
+    // Estado padrão pt-BR
+    useLocaleStore.setState({ locale: "pt-BR", enMessages: null });
+    const navPt = renderToStaticMarkup(<TopNavBar />);
+    const timelinePt = renderToStaticMarkup(<TimelineBar />);
+    const qualityPt = renderToStaticMarkup(
+      <GraphicsQualityPanelView
+        preset="auto"
+        effectiveDpr={1.5}
+        currentFps={60}
+        adaptiveDprScale={0.85}
+        onSelect={() => {}}
+        onClose={() => {}}
+      />
+    );
+    assert.match(navPt, /Observatório/);
+    assert.match(navPt, /Comparador/);
+    assert.match(timelinePt, /Linha do Tempo/);
+    assert.match(timelinePt, /Política/);
+    assert.match(qualityPt, /Qualidade gráfica/);
+    assert.match(qualityPt, /DPR adaptado/);
+
+    // Alterna para inglês (en)
+    useLocaleStore.setState({ locale: "en", enMessages: EN_MESSAGES });
+    const navEn = renderToStaticMarkup(<TopNavBar />);
+    const timelineEn = renderToStaticMarkup(<TimelineBar />);
+    const qualityEn = renderToStaticMarkup(
+      <GraphicsQualityPanelView
+        preset="auto"
+        effectiveDpr={1.5}
+        currentFps={60}
+        adaptiveDprScale={0.85}
+        onSelect={() => {}}
+        onClose={() => {}}
+      />
+    );
+    const choroSelectorEn = renderToStaticMarkup(
+      <ChoroplethSelectorView
+        activeIndicator="NY.GDP.PCAP.CD"
+        opacity={0.85}
+        isGlobeEligible
+        onSelect={() => {}}
+        onClear={() => {}}
+        onOpacityChange={() => {}}
+        onReturnToContemporaryEarth={() => {}}
+        onClose={() => {}}
+      />
+    );
+    const choroTooltipEn = renderToStaticMarkup(
+      <ChoroplethTooltipView
+        entry={{
+          isoCode: "BRA",
+          nameCommon: "Brasil",
+          value: 10294,
+          formattedValue: "US$ 10,3 mil",
+          year: 2024,
+          sourcePrimary: "World Bank",
+          sourceUrl: "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD",
+          available: true,
+          normalized: 0.5,
+          color: "#38bdf8",
+          rank: 78,
+          rankTotal: 170,
+        }}
+        indicatorLabel="GDP/capita"
+        isHovered
+      />
+    );
+
+    assert.match(navEn, /Observatory/);
+    assert.match(navEn, /Compare/);
+    assert.match(navEn, /Gallery/);
+    assert.match(timelineEn, /Timeline/);
+    assert.match(timelineEn, /Politics/);
+    assert.match(timelineEn, /Cold War/);
+    assert.match(qualityEn, /Graphics quality/);
+    assert.match(qualityEn, /Adapted DPR/);
+    assert.match(choroSelectorEn, /Choropleth thematic map/);
+    assert.match(choroSelectorEn, /GDP per capita/);
+    assert.match(choroTooltipEn, /Brazil/);
+    assert.match(choroTooltipEn, /Hovered/);
+    assert.match(choroTooltipEn, /#78 of 170/);
+
+    // Restaura pt-BR para não interferir em outros testes
+    useLocaleStore.setState({ locale: "pt-BR", enMessages: null });
+  });
+});

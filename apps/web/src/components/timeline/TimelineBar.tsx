@@ -21,10 +21,12 @@ import { cn } from "@/components/ui/cn";
 import { useTimelineExpanded } from "./useTimelineExpanded";
 import { useShellObstruction } from "@/components/layout/useShellObstruction";
 import { useRightDock } from "@/components/layout/useRightDock";
+import { useI18n } from "@/lib/i18n/useT";
 
 const YEAR_INPUT = "w-16 rounded-control border border-line bg-surface-sunken px-1.5 py-1 text-center font-mono text-label tabular-nums text-fg";
 
 export const TimelineBar: React.FC = () => {
+  const { t } = useI18n();
   const { expanded: isExpanded, automatic } = useTimelineExpanded();
   const setExpanded = useTimelineStore((s) => s.setExpanded);
   const footer = useRef<HTMLElement>(null);
@@ -137,7 +139,7 @@ export const TimelineBar: React.FC = () => {
         >
           <div className="flex shrink-0 items-center gap-1.5 text-label font-semibold text-fg">
             <Clock aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-            <span className="hidden whitespace-nowrap md:inline">Linha do Tempo</span>
+            <span className="hidden whitespace-nowrap md:inline">{t("timeline.title", "Linha do Tempo")}</span>
           </div>
 
           <PresetSelector />
@@ -154,12 +156,20 @@ export const TimelineBar: React.FC = () => {
               type="button"
               onClick={() => setPlayback(!isPlaying)}
               data-testid="timeline-play-toggle"
-              aria-label={isPlaying ? "Pausar reprodução orbital" : "Reproduzir evolução orbital"}
+              aria-label={
+                isPlaying
+                  ? t("timeline.pauseAria", "Pausar reprodução orbital")
+                  : t("timeline.playAria", "Reproduzir evolução orbital")
+              }
               className={cn(
                 "inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-fast ease-out",
                 isPlaying ? "bg-accent text-accent-on hover:bg-accent-hover" : "bg-surface-raised text-fg hover:bg-surface-hover"
               )}
-              title={isPlaying ? "Pausar reprodução orbital" : "Reproduzir evolução orbital"}
+              title={
+                isPlaying
+                  ? t("timeline.pauseAria", "Pausar reprodução orbital")
+                  : t("timeline.playAria", "Reproduzir evolução orbital")
+              }
             >
               {isPlaying ? <Pause aria-hidden="true" className="h-4 w-4" /> : <Play aria-hidden="true" className="h-4 w-4" />}
             </button>
@@ -172,7 +182,7 @@ export const TimelineBar: React.FC = () => {
               }}
               data-testid="timeline-speed-toggle"
               className="flex h-8 items-center gap-1 whitespace-nowrap rounded-control px-2 font-mono text-caption font-medium tabular-nums text-fg-secondary transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-              title="Velocidade de reprodução (1x, 30x, 365x)"
+              title={t("timeline.speedTitle", "Velocidade de reprodução (1x, 30x, 365x)")}
             >
               <FastForward aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
               <span>{playbackSpeed}x</span>
@@ -186,7 +196,7 @@ export const TimelineBar: React.FC = () => {
                 <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full bg-warning" />
                 <span className="whitespace-nowrap font-mono font-medium tabular-nums">300 Ma — 0 Ma</span>
                 <span className="hidden whitespace-nowrap text-caption text-fg-muted xl:inline">
-                  (Tempo Geológico Profundo)
+                  {t("timeline.deepTime", "(Tempo Geológico Profundo)")}
                 </span>
               </div>
             </div>
@@ -194,7 +204,7 @@ export const TimelineBar: React.FC = () => {
             <div className="flex shrink-0 items-center gap-1.5">
               <input
                 type="number"
-                aria-label="Ano inicial"
+                aria-label={t("timeline.startYear", "Ano inicial")}
                 value={startYear}
                 onChange={handleStartChange}
                 className={YEAR_INPUT}
@@ -204,7 +214,7 @@ export const TimelineBar: React.FC = () => {
               <span aria-hidden="true" className="text-fg-muted">–</span>
               <input
                 type="number"
-                aria-label="Ano final"
+                aria-label={t("timeline.endYear", "Ano final")}
                 value={endYear}
                 onChange={handleEndChange}
                 className={YEAR_INPUT}
@@ -212,7 +222,7 @@ export const TimelineBar: React.FC = () => {
                 max={2030}
               />
               <span className="hidden whitespace-nowrap text-caption text-fg-muted 2xl:inline">
-                ({endYear - startYear} anos)
+                ({endYear - startYear} {t("timeline.yearsSuffix", "anos")})
               </span>
             </div>
           )}
@@ -220,7 +230,11 @@ export const TimelineBar: React.FC = () => {
           {!isGeological && <CategoryFilterPills />}
 
           <IconButton
-            label={isExpanded ? "Recolher linha do tempo" : "Expandir linha do tempo"}
+            label={
+              isExpanded
+                ? t("timeline.collapseAria", "Recolher linha do tempo")
+                : t("timeline.expandAria", "Expandir linha do tempo")
+            }
             icon={isExpanded ? <ChevronDown /> : <ChevronUp />}
             size="sm"
             ref={fullToggle}
@@ -239,8 +253,8 @@ export const TimelineBar: React.FC = () => {
           className="flex min-h-9 w-full items-center gap-2 rounded-control px-1.5 text-label text-fg lg:hidden"
         >
           <Clock aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-secondary" />
-          <span className="sr-only">Expandir</span>
-          <span className="font-semibold">Linha do Tempo</span>
+          <span className="sr-only">{t("timeline.expand", "Expandir")}</span>
+          <span className="font-semibold">{t("timeline.title", "Linha do Tempo")}</span>
           <span className="ml-auto font-mono text-caption tabular-nums text-fg-secondary">
             {isGeological ? "300–0 Ma" : `${startYear}–${endYear}`}
           </span>

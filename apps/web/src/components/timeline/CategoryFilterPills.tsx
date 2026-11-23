@@ -4,8 +4,10 @@ import React from "react";
 import { useTimelineStore, ALL_CATEGORIES } from "@/stores/timelineStore";
 import { CATEGORY_LABEL, CATEGORY_TONE } from "@/components/ui/tones";
 import { Chip } from "@/components/ui/Chip";
+import { useI18n } from "@/lib/i18n/useT";
 
 export const CategoryFilterPills: React.FC = () => {
+  const { t } = useI18n();
   const activeCategories = useTimelineStore((s) => s.activeCategories);
   const toggleCategory = useTimelineStore((s) => s.toggleCategory);
 
@@ -18,7 +20,7 @@ export const CategoryFilterPills: React.FC = () => {
           tone={CATEGORY_TONE[cat]}
           onClick={() => toggleCategory(cat)}
         >
-          {CATEGORY_LABEL[cat]}
+          {t(`cat.${cat}`, CATEGORY_LABEL[cat])}
         </Chip>
       ))}
     </div>

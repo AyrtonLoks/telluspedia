@@ -23,6 +23,8 @@ import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useGraphicsQualityStore } from "@/stores/graphicsQualityStore";
+import { preloadEnMessages, useLocaleStore } from "@/stores/localeStore";
+import { useI18n } from "@/lib/i18n/useT";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { useStudyStore } from "@/stores/studyStore";
@@ -216,9 +218,12 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const adaptiveDprScale = useGraphicsQualityStore((s) => s.adaptiveDprScale);
   const isQualityPanelOpen = useGraphicsQualityStore((s) => s.isPanelOpen);
   const toggleQualityPanel = useGraphicsQualityStore((s) => s.togglePanel);
+  const toggleLocale = useLocaleStore((s) => s.toggleLocale);
+  const { locale, t } = useI18n();
 
   useEffect(() => {
     useGraphicsQualityStore.getState().hydrateFromStorage();
+    useLocaleStore.getState().hydrateFromStorage();
   }, []);
 
   const isStudyActive = initialState.kind === "study" && dismissedStudyKey !== stateKey;
@@ -305,34 +310,60 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
           <EntityLaunchGate />
         </Suspense>
 
-        {/* T39: Controle discreto de qualidade gráfica WebGL (D14, sem recriar contexto) */}
-        <button
-          type="button"
-          data-testid="graphics-quality-trigger"
-          aria-label={`Qualidade gráfica: ${getQualityProfile(qualityPreset).label}`}
-          aria-pressed={isQualityPanelOpen}
-          aria-haspopup="dialog"
-          onClick={toggleQualityPanel}
-          onMouseEnter={preloadGraphicsQualityPanel}
-          onFocus={preloadGraphicsQualityPanel}
-          title="Qualidade gráfica WebGL (Auto / Alto / Médio / Baixo)"
-          className={cn(
-            "fixed right-3 top-[var(--map-tools-top)] z-20 inline-flex h-9 items-center gap-1.5 rounded-panel border border-line bg-surface/86 px-2.5 text-caption font-medium text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover hover:text-fg lg:top-3 xl:right-6 xl:top-4",
-            isQualityPanelOpen && "border-accent/50 bg-accent/15 text-fg",
-            dockPresence.mounted && "lg:right-[27.5rem]"
-          )}
-        >
-          <Gauge aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
-          <span className="hidden sm:inline">{getQualityProfile(qualityPreset).label}</span>
-          {qualityPreset === "auto" && adaptiveDprScale < 0.99 && (
-            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-warning" />
-          )}
-        </button>
-
-        {isQualityPanelOpen && <GraphicsQualityPanel dockMounted={dockPresence.mounted} />}
         <WebGLErrorBoundary>
           <GlobeCanvas viewCamera={viewCamera} />
         </WebGLErrorBoundary>
+
+        {/* Utilitários discretos no canto superior direito: Idioma (D28a) + Qualidade WebGL (T39) */}
+        <div
+          className={cn(
+            "fixed right-3 top-[var(--map-tools-top)] z-20 flex items-center gap-1.5 lg:top-3 xl:right-6 xl:top-4",
+            dockPresence.mounted && "lg:right-[27.5rem]"
+          )}
+        >
+          <button
+            type="button"
+            data-testid="locale-switcher"
+            aria-label={
+              locale === "pt-BR"
+                ? t("locale.switchToEn", "Switch language to English")
+                : t("locale.switchToPt", "Mudar idioma para Português (Brasil)")
+            }
+            onClick={toggleLocale}
+            onMouseEnter={preloadEnMessages}
+            onFocus={preloadEnMessages}
+            title={t("locale.title", "Idioma da interface (Português / English)")}
+            className="inline-flex h-9 items-center justify-center rounded-panel border border-line bg-surface/86 px-2.5 font-mono text-caption font-medium tabular-nums text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover hover:text-fg"
+          >
+            {locale === "en" ? "EN" : "PT"}
+          </button>
+
+          <button
+            type="button"
+            data-testid="graphics-quality-trigger"
+            aria-label={`${t("quality.title", "Qualidade gráfica")}: ${t(`quality.${qualityPreset}.label`, getQualityProfile(qualityPreset).label)}`}
+            aria-pressed={isQualityPanelOpen}
+            aria-haspopup="dialog"
+            onClick={toggleQualityPanel}
+            onMouseEnter={preloadGraphicsQualityPanel}
+            onFocus={preloadGraphicsQualityPanel}
+            title={t("quality.triggerTitle", "Qualidade gráfica WebGL (Auto / Alto / Médio / Baixo)")}
+            className={cn(
+              "inline-flex h-9 items-center gap-1.5 rounded-panel border border-line bg-surface/86 px-2.5 text-caption font-medium text-fg-secondary shadow-e1 backdrop-blur-md transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover hover:text-fg",
+              isQualityPanelOpen && "border-accent/50 bg-accent/15 text-fg"
+            )}
+          >
+            <Gauge aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
+            <span className="hidden sm:inline">
+              {t(`quality.${qualityPreset}.label`, getQualityProfile(qualityPreset).label)}
+            </span>
+            {qualityPreset === "auto" && adaptiveDprScale < 0.99 && (
+              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-warning" />
+            )}
+          </button>
+        </div>
+
+        {isQualityPanelOpen && <GraphicsQualityPanel dockMounted={dockPresence.mounted} />}
         {/* Link de cena (?cena=<id>) e endereço em sincronia com a cena aberta (D12d) */}
         <SceneLinkSync />
         <ExplorerUrlSync view={viewCamera} immutable={isStudyActive} />

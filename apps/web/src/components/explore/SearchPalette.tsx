@@ -9,8 +9,10 @@ import { useEpochState } from "@/lib/epoch/useEpochState";
 import { SEARCH_GROUPS, exploreSuggestions, searchExplore, type SearchResult } from "@/lib/explore/search";
 import { useLayoutStore, type RightPanelId } from "@/stores/layoutStore";
 import { useGlobeStore } from "@/stores/globeStore";
+import { useI18n } from "@/lib/i18n/useT";
 
 export function SearchPalette({ onClose, previousFocus }: { onClose: () => void; previousFocus: HTMLElement | null }) {
+  const { t } = useI18n();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const focusAfterClose = useRef<RightPanelId | null>(null);
@@ -62,8 +64,8 @@ export function SearchPalette({ onClose, previousFocus }: { onClose: () => void;
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent
-        title="Buscar no TellusPedia"
-        description="Encontre países, eventos e comandos para explorar o globo."
+        title={t("search.title", "Buscar no TellusPedia")}
+        description={t("search.description", "Encontre países, eventos e comandos para explorar o globo.")}
         className="w-[min(92vw,36rem)]"
         onOpenAutoFocus={(event) => { event.preventDefault(); input.current?.focus(); }}
         onCloseAutoFocus={(event) => {
@@ -73,15 +75,22 @@ export function SearchPalette({ onClose, previousFocus }: { onClose: () => void;
         }}
         footer={
           <div className="flex flex-wrap items-center gap-3 text-caption text-fg-muted">
-            <span className="inline-flex items-center gap-1"><ArrowUp size={13} aria-hidden="true" /><ArrowDown size={13} aria-hidden="true" /> Navegar</span>
-            <span className="inline-flex items-center gap-1"><CornerDownLeft size={13} aria-hidden="true" /> Selecionar</span>
-            <span><kbd>Esc</kbd> Fechar</span>
+            <span className="inline-flex items-center gap-1">
+              <ArrowUp size={13} aria-hidden="true" />
+              <ArrowDown size={13} aria-hidden="true" /> {t("search.footerNavigate", "Navegar")}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <CornerDownLeft size={13} aria-hidden="true" /> {t("search.footerSelect", "Selecionar")}
+            </span>
+            <span>
+              <kbd>Esc</kbd> {t("search.footerClose", "Fechar")}
+            </span>
           </div>
         }
       >
         <label className="flex h-11 items-center gap-2.5 rounded-control border border-line bg-surface-sunken px-3 focus-within:border-accent">
           <Search className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
-          <span className="sr-only">Buscar país, evento ou comando</span>
+          <span className="sr-only">{t("search.inputLabel", "Buscar país, evento ou comando")}</span>
           <input
             ref={input}
             type="text"
@@ -94,43 +103,55 @@ export function SearchPalette({ onClose, previousFocus }: { onClose: () => void;
             maxLength={100}
             onChange={(event) => { setQuery(event.target.value); setActiveIndex(0); }}
             onKeyDown={onInputKeyDown}
-            placeholder="País, evento ou comando…"
+            placeholder={t("search.placeholder", "País, evento ou comando…")}
             className="w-full bg-transparent text-fg placeholder:text-fg-muted focus-visible:outline-none"
           />
         </label>
         <div className="mt-4">
-          {!query.trim() && <p className="mb-2 text-label font-medium text-fg">Sugestões{hasCountryContext && selectedIso ? ` · ${selectedIso}` : ""}</p>}
-          <ul id={listId} role="listbox" aria-label="Resultados da busca" className="space-y-3">
-            {groups.map(([group, entries]) => (
-              <li key={group} role="group" aria-label={SEARCH_GROUPS[group]}>
-                <p className="mb-0.5 px-2.5 text-caption font-medium text-fg-muted" aria-hidden="true">{SEARCH_GROUPS[group]}</p>
-                <ul role="presentation" className="space-y-0.5">
-                  {entries.map((result) => {
-                    const index = results.indexOf(result);
-                    return (
-                      <li
-                        id={`${listId}-${index}`}
-                        key={result.id}
-                        role="option"
-                        aria-selected={result === active}
-                        onPointerMove={() => setActiveIndex(index)}
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => choose(result)}
-                        className={cn(
-                          "flex min-h-9 cursor-pointer flex-wrap items-center justify-between gap-x-3 rounded-control border border-transparent px-2.5 py-1.5 text-label text-fg",
-                          result === active && "border-accent/30 bg-accent/10",
-                        )}
-                      >
-                        <span className="font-medium">{result.title}</span>
-                        {result.detail && <span className="text-caption text-fg-secondary">{result.detail}</span>}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </li>
-            ))}
+          {!query.trim() && (
+            <p className="mb-2 text-label font-medium text-fg">
+              {t("search.suggestions", "Sugestões")}
+              {hasCountryContext && selectedIso ? ` · ${selectedIso}` : ""}
+            </p>
+          )}
+          <ul id={listId} role="listbox" aria-label={t("search.resultsAria", "Resultados da busca")} className="space-y-3">
+            {groups.map(([group, entries]) => {
+              const groupLabel = t(`search.group.${group}`, SEARCH_GROUPS[group]);
+              return (
+                <li key={group} role="group" aria-label={groupLabel}>
+                  <p className="mb-0.5 px-2.5 text-caption font-medium text-fg-muted" aria-hidden="true">{groupLabel}</p>
+                  <ul role="presentation" className="space-y-0.5">
+                    {entries.map((result) => {
+                      const index = results.indexOf(result);
+                      return (
+                        <li
+                          id={`${listId}-${index}`}
+                          key={result.id}
+                          role="option"
+                          aria-selected={result === active}
+                          onPointerMove={() => setActiveIndex(index)}
+                          onMouseDown={(event) => event.preventDefault()}
+                          onClick={() => choose(result)}
+                          className={cn(
+                            "flex min-h-9 cursor-pointer flex-wrap items-center justify-between gap-x-3 rounded-control border border-transparent px-2.5 py-1.5 text-label text-fg",
+                            result === active && "border-accent/30 bg-accent/10",
+                          )}
+                        >
+                          <span className="font-medium">{result.title}</span>
+                          {result.detail && <span className="text-caption text-fg-secondary">{result.detail}</span>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              );
+            })}
           </ul>
-          {!results.length && <p role="status" className="px-2.5 py-3 text-label text-fg-muted">Nenhum resultado encontrado.</p>}
+          {!results.length && (
+            <p role="status" className="px-2.5 py-3 text-label text-fg-muted">
+              {t("search.empty", "Nenhum resultado encontrado.")}
+            </p>
+          )}
         </div>
       </DialogContent>
     </Dialog>
