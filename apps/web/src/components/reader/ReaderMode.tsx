@@ -10,8 +10,11 @@ import { useReaderStore } from "@/stores/readerStore";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
 
 export const ReaderMode: React.FC = () => {
+  const { locale, t } = useI18n();
   const isReaderOpen = useGlobeStore((s) => s.isReaderOpen);
   const setReaderOpen = useGlobeStore((s) => s.setReaderOpen);
   const selectedIso = useGlobeStore((s) => s.selectedIso);
@@ -49,6 +52,7 @@ export const ReaderMode: React.FC = () => {
 
   const country = getCountryData(selectedIso);
   if (!country) return null;
+  const displayName = formatCountryName(country.iso2, country.nameCommon, locale);
 
   return (
     <Dialog open={isReaderOpen} onOpenChange={(open) => setReaderOpen(open)}>
@@ -59,7 +63,7 @@ export const ReaderMode: React.FC = () => {
             {country.flagSvgUrl && !flagError ? (
               <img
                 src={country.flagSvgUrl}
-                alt={`Bandeira de ${country.nameCommon}`}
+                alt={`${t("inspector.flagOf", "Bandeira de")} ${displayName}`}
                 onError={() => setFlagError(true)}
                 className="h-4 w-6 rounded-sm border border-line object-cover"
               />
@@ -68,16 +72,16 @@ export const ReaderMode: React.FC = () => {
                 {country.isoCode}
               </span>
             )}
-            <span>{country.nameCommon}</span>
-            <Badge tone="neutral">Modo Leitura Profunda</Badge>
+            <span>{displayName}</span>
+            <Badge tone="neutral">{t("reader.badge", "Modo Leitura Profunda")}</Badge>
           </span>
         }
-        description={`Dossiê multidisciplinar de ${country.nameCommon}.`}
+        description={`${t("reader.descPrefix", "Dossiê multidisciplinar de")} ${displayName}.`}
       >
         <div className="mb-4 flex items-center border-b border-line pb-3">
           <Button variant="ghost" size="sm" onClick={() => setReaderOpen(false)}>
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-            <span>Retornar ao globo interativo</span>
+            <span>{t("reader.returnGlobe", "Retornar ao globo interativo")}</span>
           </Button>
         </div>
 

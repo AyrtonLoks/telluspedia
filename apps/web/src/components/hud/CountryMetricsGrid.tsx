@@ -5,6 +5,8 @@ import { Users, Maximize2, DollarSign, Award, Landmark, HeartPulse, Shield, Leaf
 import { getSourceUrl } from "@/lib/citations";
 import { DataCompleteness } from "@/lib/country-data";
 import { useReaderStore } from "@/stores/readerStore";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatNumber } from "@/lib/i18n/format";
 
 interface CountryMetricsGridProps {
   countryName?: string;
@@ -108,8 +110,26 @@ const MetricCard: React.FC<{
   code?: string;
   year?: number;
   sourceNote?: string;
+  unavailableText: string;
+  citeLabel: string;
+  openRepoText: string;
+  sourcePrefix: string;
   onCite?: () => void;
-}> = ({ icon: Icon, label, value, source, sourceUrl, code, year, sourceNote, onCite }) => {
+}> = ({
+  icon: Icon,
+  label,
+  value,
+  source,
+  sourceUrl,
+  code,
+  year,
+  sourceNote,
+  unavailableText,
+  citeLabel,
+  openRepoText,
+  sourcePrefix,
+  onCite,
+}) => {
   const detail = [code, year].filter(Boolean).join(" · ") || sourceNote;
   return (
     <div className="group flex min-w-0 flex-col rounded-card border border-line bg-surface-raised p-2.5">
@@ -118,15 +138,15 @@ const MetricCard: React.FC<{
         <span className="truncate" title={label}>{label}</span>
       </div>
       <div className={value !== null ? "mt-1 font-mono text-body font-medium tabular-nums text-fg" : "mt-1 text-label text-fg-muted"}>
-        {value ?? "Dado indisponível"}
+        {value ?? unavailableText}
       </div>
       {value !== null && (
         <SourceFooter
           source={source}
           sourceUrl={sourceUrl}
           detail={detail}
-          title={`Fonte Primária: ${source}${code && year ? ` (${code}, ${year})` : sourceNote ? ` (${sourceNote})` : ""} (Abrir Repositório)`}
-          citeLabel="Gerar citação deste indicador"
+          title={`${sourcePrefix} ${source}${code && year ? ` (${code}, ${year})` : sourceNote ? ` (${sourceNote})` : ""} (${openRepoText})`}
+          citeLabel={citeLabel}
           onCite={onCite}
         />
       )}
@@ -150,6 +170,7 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   indicators,
 }) => {
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
+  const { locale, t } = useI18n();
 
   const popIndicator = indicators?.find((i) => i.indicatorCode === "SP.POP.TOTL");
   const areaIndicator = indicators?.find((i) => i.indicatorCode === "AG.SRF.TOTL.K2");
@@ -183,17 +204,22 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   const renewUrl = renewableEnergy?.sourceUrl || getSourceUrl(renewSource, "EG.FEC.RNEW.ZS");
   const co2Url = co2PerCapita?.sourceUrl || getSourceUrl(co2Source, "EN.GHG.CO2.PC.CE.AR5");
 
+  const unavailableText = t("common.dataUnavailable", "Dado indisponível");
+  const citeLabel = t("metrics.citeIndicator", "Gerar citação deste indicador");
+  const openRepoText = t("metrics.openRepo", "Abrir Repositório");
+  const sourcePrefix = t("inspector.sourcePrefix", "Fonte Primária:");
+
   const formatPop = (num: number) => {
-    if (num >= 1e9) return `${(num / 1e9).toFixed(2)} bilhões`;
-    if (num >= 1e6) return `${(num / 1e6).toFixed(1)} milhões`;
-    return num.toLocaleString("pt-BR");
+    if (num >= 1e9) return `${(num / 1e9).toFixed(2)} ${t("metrics.billion", "bilhões")}`;
+    if (num >= 1e6) return `${(num / 1e6).toFixed(1)} ${t("metrics.million", "milhões")}`;
+    return formatNumber(num, locale);
   };
 
   const formatGdp = (val?: number) => {
-    if (val === undefined || val === null) return "Dado indisponível";
-    if (val >= 1e12) return `$ ${(val / 1e12).toFixed(2)} trilhões`;
-    if (val >= 1e9) return `$ ${(val / 1e9).toFixed(1)} bilhões`;
-    return `$ ${val.toLocaleString("pt-BR")}`;
+    if (val === undefined || val === null) return unavailableText;
+    if (val >= 1e12) return `$ ${(val / 1e12).toFixed(2)} ${t("metrics.trillion", "trilhões")}`;
+    if (val >= 1e9) return `$ ${(val / 1e9).toFixed(1)} ${t("metrics.billion", "bilhões")}`;
+    return `$ ${formatNumber(val, locale)}`;
   };
 
   const hasAnyMetric =
@@ -210,6 +236,7 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
     Boolean(historicalLeader);
 
   if (completeness === "none" && !hasAnyMetric) {
+    const wikiHost = locale === "en" ? "en.wikipedia.org" : "pt.wikipedia.org";
     return (
       <div
         data-testid="country-data-unavailable"
@@ -217,11 +244,14 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
       >
         <div className="flex items-center gap-2 font-semibold text-fg">
           <Info aria-hidden="true" className="h-4 w-4 shrink-0 text-warning" />
-          <span>Indicadores ainda indisponíveis</span>
+          <span>{t("metrics.indicatorsUnavailableTitle", "Indicadores ainda indisponíveis")}</span>
         </div>
         <p className="text-caption text-fg-secondary">
-          Os dados demográficos, econômicos e institucionais de {countryName} ainda não foram
-          ingeridos na base local do TellusPedia. Consulte diretamente as fontes externas oficiais:
+          {t("metrics.indicatorsUnavailablePrefix", "Os dados demográficos, econômicos e institucionais de")} {countryName}{" "}
+          {t(
+            "metrics.indicatorsUnavailableSuffix",
+            "ainda não foram ingeridos na base local do TellusPedia. Consulte diretamente as fontes externas oficiais:"
+          )}
         </p>
         <div className="flex items-center gap-2 flex-wrap pt-1">
           {isoCode && !isHistoricalEntity && (
@@ -231,17 +261,17 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-control border border-line-strong bg-surface px-2 py-1 text-caption font-medium text-fg transition-colors duration-fast ease-out hover:bg-surface-hover"
             >
-              <span>Banco Mundial ({isoCode})</span>
+              <span>{t("common.worldBank", "Banco Mundial")} ({isoCode})</span>
               <ExternalLink aria-hidden="true" className="h-3 w-3" />
             </a>
           )}
           <a
-            href={`https://pt.wikipedia.org/wiki/${encodeURIComponent(countryName)}`}
+            href={`https://${wikiHost}/wiki/${encodeURIComponent(countryName)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 rounded-control border border-line-strong bg-surface px-2 py-1 text-caption font-medium text-fg transition-colors duration-fast ease-out hover:bg-surface-hover"
           >
-            <span>Wikipédia</span>
+            <span>{t("common.wikipedia", "Wikipédia")}</span>
             <ExternalLink aria-hidden="true" className="h-3 w-3" />
           </a>
         </div>
@@ -259,11 +289,18 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
   const cite = (title: string, url: string, year?: number) =>
     setCitationModalOpen(true, { title, countryName, url, accessDate: new Date(), publicationYear: year ?? 2026 });
 
+  const sharedCard = { unavailableText, citeLabel, openRepoText, sourcePrefix };
+  const lifeUnit =
+    locale === "en" && lifeExpectancy?.unit === "anos"
+      ? t("common.years", "anos")
+      : lifeExpectancy?.unit ?? "";
+
   return (
     <div className="grid grid-cols-2 gap-2 text-label">
       <MetricCard
+        {...sharedCard}
         icon={Users}
-        label="População"
+        label={t("metrics.population", "População")}
         value={population !== null ? formatPop(population) : null}
         source={popSource}
         sourceUrl={popUrl}
@@ -272,19 +309,21 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         onCite={population !== null ? () => cite(`População Total (${formatPop(population)})`, popUrl, popIndicator?.year) : undefined}
       />
       <MetricCard
+        {...sharedCard}
         icon={Maximize2}
-        label="Área territorial"
-        value={areaKm2 !== null ? `${areaKm2.toLocaleString("pt-BR")} km²` : null}
+        label={t("metrics.landArea", "Área territorial")}
+        value={areaKm2 !== null ? `${formatNumber(areaKm2, locale)} km²` : null}
         source={areaSource}
         sourceUrl={areaUrl}
         code={areaIndicator?.year ? areaIndicator.indicatorCode : undefined}
         year={areaIndicator?.year}
         sourceNote={areaIndicator?.year ? undefined : "1:110m"}
-        onCite={areaKm2 !== null ? () => cite(`Área Territorial (${areaKm2.toLocaleString("pt-BR")} km²)`, areaUrl, areaIndicator?.year) : undefined}
+        onCite={areaKm2 !== null ? () => cite(`Área Territorial (${formatNumber(areaKm2, locale)} km²)`, areaUrl, areaIndicator?.year) : undefined}
       />
       <MetricCard
+        {...sharedCard}
         icon={DollarSign}
-        label="PIB nominal"
+        label={t("metrics.nominalGdp", "PIB nominal")}
         value={gdpIndicator !== undefined ? formatGdp(gdpIndicator.value) : null}
         source={gdpSource}
         sourceUrl={gdpUrl}
@@ -293,8 +332,9 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         onCite={gdpIndicator ? () => cite(`PIB Nominal (${formatGdp(gdpIndicator.value)})`, gdpUrl, gdpIndicator.year) : undefined}
       />
       <MetricCard
+        {...sharedCard}
         icon={Award}
-        label="IDH"
+        label={t("metrics.hdi", "IDH")}
         value={hdiIndicator?.value !== undefined ? hdiIndicator.value.toFixed(3) : null}
         source={hdiSource}
         sourceUrl={hdiUrl}
@@ -304,21 +344,23 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
       />
       {lifeExpectancy && (
         <MetricCard
+          {...sharedCard}
           icon={HeartPulse}
-          label="Expectativa de vida"
-          value={`${lifeExpectancy.value} ${lifeExpectancy.unit}`}
+          label={t("metrics.lifeExpectancy", "Expectativa de vida")}
+          value={`${lifeExpectancy.value} ${lifeUnit}`}
           source={lifeSource}
           sourceUrl={lifeUrl}
           code={lifeExpectancy.indicatorCode}
           year={lifeExpectancy.year}
-          onCite={() => cite(`Expectativa de Vida ao Nascer (${lifeExpectancy.value} ${lifeExpectancy.unit})`, lifeUrl, lifeExpectancy.year)}
+          onCite={() => cite(`Expectativa de Vida ao Nascer (${lifeExpectancy.value} ${lifeUnit})`, lifeUrl, lifeExpectancy.year)}
         />
       )}
       {militaryExp && (
         <MetricCard
+          {...sharedCard}
           icon={Shield}
-          label="Gastos militares"
-          value={`${militaryExp.value}% do PIB`}
+          label={t("metrics.militaryExp", "Gastos militares")}
+          value={`${militaryExp.value}% ${t("metrics.ofGdp", "do PIB")}`}
           source={milSource}
           sourceUrl={milUrl}
           code={militaryExp.indicatorCode}
@@ -328,21 +370,23 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
       )}
       {gdpPcapIndicator && (
         <MetricCard
+          {...sharedCard}
           icon={DollarSign}
-          label="PIB per capita"
-          value={`$ ${Math.round(gdpPcapIndicator.value).toLocaleString("pt-BR")}`}
+          label={t("metrics.gdpPerCapita", "PIB per capita")}
+          value={`$ ${formatNumber(Math.round(gdpPcapIndicator.value), locale)}`}
           source={gdpPcapSource}
           sourceUrl={gdpPcapUrl}
           code={gdpPcapIndicator.indicatorCode}
           year={gdpPcapIndicator.year}
-          onCite={() => cite(`PIB per capita ($ ${Math.round(gdpPcapIndicator.value).toLocaleString("pt-BR")})`, gdpPcapUrl, gdpPcapIndicator.year)}
+          onCite={() => cite(`PIB per capita ($ ${formatNumber(Math.round(gdpPcapIndicator.value), locale)})`, gdpPcapUrl, gdpPcapIndicator.year)}
         />
       )}
       {renewableEnergy && (
         <MetricCard
+          {...sharedCard}
           icon={Leaf}
-          label="Energia renovável"
-          value={`${renewableEnergy.value.toLocaleString("pt-BR")}%`}
+          label={t("metrics.renewableEnergy", "Energia renovável")}
+          value={`${formatNumber(renewableEnergy.value, locale)}%`}
           source={renewSource}
           sourceUrl={renewUrl}
           code={renewableEnergy.indicatorCode}
@@ -352,9 +396,10 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
       )}
       {co2PerCapita && (
         <MetricCard
+          {...sharedCard}
           icon={Factory}
-          label="CO₂ per capita"
-          value={`${co2PerCapita.value.toLocaleString("pt-BR")} t`}
+          label={t("metrics.co2PerCapita", "CO₂ per capita")}
+          value={`${formatNumber(co2PerCapita.value, locale)} t`}
           source={co2Source}
           sourceUrl={co2Url}
           code={co2PerCapita.indicatorCode}
@@ -368,11 +413,11 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
         <div className="group col-span-2 flex flex-col gap-1 rounded-card border border-line bg-surface-raised p-2.5">
           <div className="flex items-center gap-1.5 text-caption text-fg-secondary">
             <Landmark aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-            <span>Regime político e chefia</span>
+            <span>{t("metrics.regimeHeading", "Regime político e chefia")}</span>
           </div>
           {governmentType || headOfState ? (
             <div className="font-medium text-fg">
-              {governmentType || "Dado indisponível"}
+              {governmentType || unavailableText}
               {headOfState && (
                 <>
                   {" "}· <span className="text-fg-secondary">{headOfState}</span>
@@ -380,27 +425,27 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
               )}
             </div>
           ) : (
-            <div className="text-label text-fg-muted">Dado indisponível</div>
+            <div className="text-label text-fg-muted">{unavailableText}</div>
           )}
           {historicalLeader && (
             <div className="flex items-center gap-1 text-caption">
-              <span className="text-fg-muted">{leaderTitle || "Líder da Época"}:</span>
+              <span className="text-fg-muted">{leaderTitle || t("metrics.eraLeader", "Líder da Época")}:</span>
               <strong className="font-medium text-fg">{historicalLeader}</strong>
             </div>
           )}
           {(currencyName || currencyCode) && (
             <div className="text-caption text-fg-muted">
-              Moeda: {currencyName || currencyCode}
+              {t("metrics.currency", "Moeda")}: {currencyName || currencyCode}
               {currencyName && currencyCode ? ` (${currencyCode})` : ""}
             </div>
           )}
           {(governmentType || headOfState) && (
             <SourceFooter
-              source="Constituições / ONU"
-              sourceLabel="Constituições / ONU"
+              source={t("metrics.constitutionsUn", "Constituições / ONU")}
+              sourceLabel={t("metrics.constitutionsUn", "Constituições / ONU")}
               sourceUrl={getSourceUrl("ONU")}
-              title="Fonte Primária: Constituições Nacionais e Divisão de Assuntos Políticos da ONU (Abrir Repositório)"
-              citeLabel="Gerar citação institucional"
+              title={`${sourcePrefix} ${t("metrics.constitutionsUn", "Constituições / ONU")} (${openRepoText})`}
+              citeLabel={t("metrics.citeInstitutional", "Gerar citação institucional")}
               onCite={() => cite(`Regime Político: ${governmentType || "Indisponível"}${headOfState ? ` (${headOfState})` : ""}`, getSourceUrl("ONU"))}
             />
           )}

@@ -17,6 +17,7 @@ import {
 } from "@/lib/currents-data";
 import type { CurrentUnit, FlowMode, WindAltitude, WindUnit } from "@/lib/winds-types";
 import { cn } from "@/components/ui/cn";
+import { useI18n } from "@/lib/i18n/useT";
 
 const FLOW_MODES: readonly { id: FlowMode; label: string }[] = [
   { id: "winds", label: "Ventos" },
@@ -37,6 +38,7 @@ const CURRENT_GRADIENT = `linear-gradient(90deg, ${CURRENT_COLOR_STOPS.map(
 
 /** Controles D14 de Ventos Globais (10 m / 250 hPa), Correntes Oceânicas e modo simultâneo Ambos (D27a / D27b). */
 export const WindLayerControls: React.FC = () => {
+  const { locale, t } = useI18n();
   const storeFlowMode = useObservatoryStore((s) => s.flowMode);
   const storeAltitude = useObservatoryStore((s) => s.windAltitude);
   const storeWindUnit = useObservatoryStore((s) => s.windUnit);
@@ -70,12 +72,19 @@ export const WindLayerControls: React.FC = () => {
   const windLabels = windScaleLabels(altitude, windUnit);
   const currentLabels = currentScaleLabels(currentUnit);
 
+  const windUnitText = (u: WindUnit) => (u === "knots" ? t("obs.badge.knots", "nós") : unitLabel(u));
+  const currentUnitText = (u: CurrentUnit) => (u === "knots" ? t("obs.badge.knots", "nós") : currentUnitLabel(u));
+  const windDesc =
+    altitude === "jet250"
+      ? t("obs.wind.alt.jet250Desc", windInfo.description)
+      : t("obs.wind.alt.surfaceDesc", windInfo.description);
+
   return (
     <div data-testid="winds-controls" className="space-y-2.5">
       {/* Seletor principal: Ventos | Correntes | Ambos (D27b) */}
       <div
         role="group"
-        aria-label="Modo de fluxo planetário"
+        aria-label={t("obs.wind.flowModeAria", "Modo de fluxo planetário")}
         className="grid grid-cols-3 gap-1 rounded-control border border-line bg-surface p-0.5"
       >
         {FLOW_MODES.map((mode) => (
@@ -92,7 +101,7 @@ export const WindLayerControls: React.FC = () => {
                 : "text-fg-secondary hover:bg-surface-hover/60 hover:text-fg"
             )}
           >
-            {mode.label}
+            {t(`obs.wind.mode.${mode.id}`, mode.label)}
           </button>
         ))}
       </div>
@@ -100,7 +109,7 @@ export const WindLayerControls: React.FC = () => {
       {showWinds && (
         <div className="space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div role="group" aria-label="Nível atmosférico" className="flex items-center gap-1">
+            <div role="group" aria-label={t("obs.wind.altitudeAria", "Nível atmosférico")} className="flex items-center gap-1">
               {ALTITUDES.map((level) => (
                 <button
                   key={level}
@@ -116,12 +125,12 @@ export const WindLayerControls: React.FC = () => {
                       : "text-fg-secondary hover:bg-surface-hover/60 hover:text-fg"
                   )}
                 >
-                  {WIND_ALTITUDE_META[level].label}
+                  {t(`obs.wind.alt.${level}`, WIND_ALTITUDE_META[level].label)}
                 </button>
               ))}
             </div>
 
-            <div role="group" aria-label="Unidade de velocidade do vento" className="flex items-center gap-1">
+            <div role="group" aria-label={t("obs.wind.unitAria", "Unidade de velocidade do vento")} className="flex items-center gap-1">
               {WIND_UNITS.map((u) => (
                 <button
                   key={u}
@@ -136,13 +145,13 @@ export const WindLayerControls: React.FC = () => {
                       : "text-fg-secondary hover:bg-surface-hover/60 hover:text-fg"
                   )}
                 >
-                  {unitLabel(u)}
+                  {windUnitText(u)}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="space-y-1" aria-label={`Legenda de velocidade do vento em ${unitLabel(windUnit)}`}>
+          <div className="space-y-1" aria-label={`${t("obs.wind.legendAria", "Legenda de velocidade do vento em")} ${windUnitText(windUnit)}`}>
             <div
               aria-hidden="true"
               className="h-1.5 w-full rounded-full"
@@ -159,21 +168,28 @@ export const WindLayerControls: React.FC = () => {
                       l.at === 0 ? "none" : l.at === 1 ? "translateX(-100%)" : "translateX(-50%)",
                   }}
                 >
-                  {l.text}
+                  {locale === "en" ? l.text.replace("nós", "kt") : l.text}
                 </span>
               ))}
             </div>
             <p className="text-caption text-fg-muted">
-              {flowMode === "both" ? "Ventos atmosféricos: " : `${windInfo.description} `}
+              {flowMode === "both" ? `${t("obs.wind.atmosphericPrefix", "Ventos atmosféricos:")} ` : `${windDesc} `}
               {activeWindGrid && (
                 <span className="font-mono tabular-nums text-fg-secondary">
-                  Pico {formatWindSpeed(activeWindGrid.maxSpeedMs, windUnit)} · Média{" "}
-                  {formatWindSpeed(activeWindGrid.meanSpeedMs, windUnit)}.
+                  {t("obs.wind.peak", "Pico")}{" "}
+                  {locale === "en"
+                    ? formatWindSpeed(activeWindGrid.maxSpeedMs, windUnit).replace("nós", "kt")
+                    : formatWindSpeed(activeWindGrid.maxSpeedMs, windUnit)}{" "}
+                  · {t("obs.wind.mean", "Média")}{" "}
+                  {locale === "en"
+                    ? formatWindSpeed(activeWindGrid.meanSpeedMs, windUnit).replace("nós", "kt")
+                    : formatWindSpeed(activeWindGrid.meanSpeedMs, windUnit)}
+                  .
                 </span>
               )}{" "}
               {windMeta.source === "fallback" && (
                 <span data-testid="winds-fallback-note" className="text-warning">
-                  Climatologia global de referência (Hadley/Ferrel/Jato).
+                  {t("obs.wind.fallbackNote", "Climatologia global de referência (Hadley/Ferrel/Jato).")}
                 </span>
               )}
             </p>
@@ -185,9 +201,11 @@ export const WindLayerControls: React.FC = () => {
         <div className={cn("space-y-2", flowMode === "both" && "border-t border-line pt-2.5")}>
           <div className="flex items-center justify-between gap-2">
             <span className="text-caption text-fg-secondary">
-              {flowMode === "both" ? "Correntes oceânicas" : "Superfície oceânica (máscara costeira)"}
+              {flowMode === "both"
+                ? t("obs.wind.currentsTitle", "Correntes oceânicas")
+                : t("obs.wind.currentsSurfaceTitle", "Superfície oceânica (máscara costeira)")}
             </span>
-            <div role="group" aria-label="Unidade de velocidade da corrente" className="flex items-center gap-1">
+            <div role="group" aria-label={t("obs.wind.currentsUnitAria", "Unidade de velocidade da corrente")} className="flex items-center gap-1">
               {CURRENT_UNITS.map((u) => (
                 <button
                   key={u}
@@ -203,7 +221,7 @@ export const WindLayerControls: React.FC = () => {
                       : "text-fg-secondary hover:bg-surface-hover/60 hover:text-fg"
                   )}
                 >
-                  {currentUnitLabel(u)}
+                  {currentUnitText(u)}
                 </button>
               ))}
             </div>
@@ -211,7 +229,7 @@ export const WindLayerControls: React.FC = () => {
 
           <div
             className="space-y-1"
-            aria-label={`Legenda de correntes oceânicas em ${currentUnitLabel(currentUnit)}`}
+            aria-label={`${t("obs.wind.currentsLegendAria", "Legenda de correntes oceânicas em")} ${currentUnitText(currentUnit)}`}
           >
             <div
               aria-hidden="true"
@@ -229,23 +247,30 @@ export const WindLayerControls: React.FC = () => {
                       l.at === 0 ? "none" : l.at === 1 ? "translateX(-100%)" : "translateX(-50%)",
                   }}
                 >
-                  {l.text}
+                  {locale === "en" ? l.text.replace("nós", "kt") : l.text}
                 </span>
               ))}
             </div>
             <p className="text-caption text-fg-muted">
               {flowMode === "both"
-                ? "Superfície oceânica: "
-                : "Correntes superficiais (Golfo, Kuroshio, Humboldt, Benguela, Circumpolar Antártica). "}
+                ? `${t("obs.wind.currentsBothPrefix", "Superfície oceânica:")} `
+                : `${t("obs.wind.currentsDesc", "Correntes superficiais (Golfo, Kuroshio, Humboldt, Benguela, Circumpolar Antártica).")} `}
               {currents && (
                 <span className="font-mono tabular-nums text-fg-secondary">
-                  Pico {formatCurrentSpeed(currents.maxSpeedMs, currentUnit)} · Média{" "}
-                  {formatCurrentSpeed(currents.meanSpeedMs, currentUnit)}.
+                  {t("obs.wind.peak", "Pico")}{" "}
+                  {locale === "en"
+                    ? formatCurrentSpeed(currents.maxSpeedMs, currentUnit).replace("nós", "kt")
+                    : formatCurrentSpeed(currents.maxSpeedMs, currentUnit)}{" "}
+                  · {t("obs.wind.mean", "Média")}{" "}
+                  {locale === "en"
+                    ? formatCurrentSpeed(currents.meanSpeedMs, currentUnit).replace("nós", "kt")
+                    : formatCurrentSpeed(currents.meanSpeedMs, currentUnit)}
+                  .
                 </span>
               )}{" "}
               {currentsMeta.source === "fallback" && (
                 <span data-testid="currents-fallback-note" className="text-warning">
-                  Climatologia de giros oceânicos de referência.
+                  {t("obs.wind.currentsFallbackNote", "Climatologia de giros oceânicos de referência.")}
                 </span>
               )}
             </p>

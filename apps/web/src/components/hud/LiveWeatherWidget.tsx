@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Cloud, CloudRain, Sun, Wind, Droplets } from "lucide-react";
 import { fetchWeather, WeatherData } from "@/lib/api-client";
+import { useI18n } from "@/lib/i18n/useT";
 
 interface LiveWeatherWidgetProps {
   lat: number | null;
@@ -15,15 +16,19 @@ function formatMeasurement(value: number | null | undefined, unit: string) {
   return value == null ? "—" : `${Math.round(value)}${unit}`;
 }
 
-const referenceTimeFormat = new Intl.DateTimeFormat("pt-BR", {
-  dateStyle: "short",
-  timeStyle: "short",
-  timeZone: "UTC",
-});
-
 export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, referenceName }) => {
+  const { locale, t } = useI18n();
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const referenceTimeFormat = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        dateStyle: "short",
+        timeStyle: "short",
+        timeZone: "UTC",
+      }),
+    [locale]
+  );
 
   const hasCoords =
     lat !== null &&
@@ -78,8 +83,8 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
         <div className="flex items-center gap-2">
           <Cloud aria-hidden="true" className="h-4 w-4 text-fg-muted" />
           <div>
-            <div className="text-label font-medium text-fg-secondary">Dado indisponível</div>
-            <div className="text-caption text-fg-muted">Clima local</div>
+            <div className="text-label font-medium text-fg-secondary">{t("common.dataUnavailable", "Dado indisponível")}</div>
+            <div className="text-caption text-fg-muted">{t("weather.localWeather", "Clima local")}</div>
           </div>
         </div>
       </div>
@@ -89,8 +94,10 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
   return (
     <div aria-busy={loading} className="flex min-w-0 flex-col gap-1.5 rounded-card border border-line bg-surface-raised px-3 py-2">
       <div>
-        <div className="text-caption font-medium text-fg-secondary">Clima local · {referenceName ?? "Ponto de referência"}</div>
-        <div className="font-mono text-caption tabular-nums text-fg-muted" title="Latitude e longitude do ponto consultado">
+        <div className="text-caption font-medium text-fg-secondary">
+          {t("weather.localWeather", "Clima local")} · {referenceName ?? t("weather.referencePoint", "Ponto de referência")}
+        </div>
+        <div className="font-mono text-caption tabular-nums text-fg-muted" title={t("weather.coordsTitle", "Latitude e longitude do ponto consultado")}>
           {lat?.toFixed(4)}, {lng?.toFixed(4)}
         </div>
       </div>
@@ -101,23 +108,25 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
             {loading ? <Skeleton className="my-1 h-4 w-12" /> : formatMeasurement(current?.temperature, "°C")}
           </div>
           <div className="text-caption text-fg-muted">
-            {current ? `Sensação ${formatMeasurement(current.apparent_temperature, "°C")}` : "Clima local"}
+            {current
+              ? `${t("weather.feelsLike", "Sensação")} ${formatMeasurement(current.apparent_temperature, "°C")}`
+              : t("weather.localWeather", "Clima local")}
           </div>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-caption tabular-nums text-fg-secondary">
-        <div className="flex items-center gap-1" title="Umidade Relativa">
+        <div className="flex items-center gap-1" title={t("weather.humidityTitle", "Umidade Relativa")}>
           <Droplets aria-hidden="true" className="h-3 w-3 text-fg-muted" />
           {loading ? <Skeleton className="h-3 w-8" /> : <span>{formatMeasurement(current?.relative_humidity, "%")}</span>}
         </div>
-        <div className="flex items-center gap-1" title="Velocidade do Vento">
+        <div className="flex items-center gap-1" title={t("weather.windTitle", "Velocidade do Vento")}>
           <Wind aria-hidden="true" className="h-3 w-3 text-fg-muted" />
           {loading ? <Skeleton className="h-3 w-12" /> : <span>{formatMeasurement(current?.wind_speed, " km/h")}</span>}
         </div>
       </div>
       <p className="text-caption text-fg-muted">
-        Estimativa{" "}
+        {t("weather.estimate", "Estimativa")}{" "}
         <a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer" className="text-accent underline hover:text-accent-hover">
           Open-Meteo
         </a>

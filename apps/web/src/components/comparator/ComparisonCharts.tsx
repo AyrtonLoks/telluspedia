@@ -28,6 +28,9 @@ import {
   type WorldBankTimeseriesDataset,
 } from "@/lib/worldbank-timeseries";
 import { cn } from "@/components/ui/cn";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
+import { WORLD_COUNTRIES_CATALOG } from "@/lib/country-data";
 
 const COUNTRY_COLORS = [
   "rgb(var(--color-accent))",
@@ -54,6 +57,9 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
   initialViewMode = "latest",
   initialTimeseries = null,
 }) => {
+  const { locale, t } = useI18n();
+  const localizeCountry = (isoCode: string, fallback: string) =>
+    formatCountryName(WORLD_COUNTRIES_CATALOG[isoCode]?.iso2, fallback, locale);
   const storeSelectedIsos = useComparatorStore((s) => s.selectedIsos);
   const storeActiveMetric = useComparatorStore((s) => s.activeMetric);
   const setStoreActiveMetric = useComparatorStore((s) => s.setActiveMetric);
@@ -128,11 +134,27 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
   );
 
   const metric = COMPARISON_METRICS[activeMetric];
-  const headingTitle = viewMode === "historical" ? metric.historicalTitle : metric.title;
+  const metricShort = t(`comp.metric.${activeMetric}.short`, metric.shortLabel);
+  const metricUnit = t(`comp.metric.${activeMetric}.unit`, metric.unit);
+  const headingTitle =
+    viewMode === "historical"
+      ? t(`comp.metric.${activeMetric}.hist`, metric.historicalTitle)
+      : t(`comp.metric.${activeMetric}.title`, metric.title);
+
+  const chartEntries = useMemo(
+    () =>
+      latestDataset.entries.map((entry) => ({
+        ...entry,
+        label: localizeCountry(entry.isoCode, entry.label),
+        nameCommon: localizeCountry(entry.isoCode, entry.nameCommon),
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [latestDataset.entries, locale]
+  );
 
   return (
     <section
-      aria-label="Comparação gráfica de indicadores reais"
+      aria-label={t("comp.chartsAria", "Comparação gráfica de indicadores reais")}
       data-testid="comparison-charts"
       data-chart-mode={viewMode}
       className="rounded-card border border-line bg-surface-raised p-4"
@@ -141,14 +163,14 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
         <div>
           <h4 className="text-body font-semibold text-fg">{headingTitle}</h4>
           <span className="font-mono text-caption text-fg-muted">
-            Código {metric.indicatorCode} · Unidade: {metric.unit}
+            {t("comp.codeLabel", "Código")} {metric.indicatorCode} · {t("comp.unitLabel", "Unidade")}: {metricUnit}
           </span>
         </div>
 
         {/* Alternador de modo: Leitura mais recente vs Série histórica real (1990–2024) */}
         <div
           role="group"
-          aria-label="Tipo de visualização"
+          aria-label={t("comp.viewTypeAria", "Tipo de visualização")}
           className="inline-flex items-center rounded-control border border-line bg-surface p-0.5"
         >
           <button
@@ -164,7 +186,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
             )}
           >
             <BarChart3 aria-hidden="true" className="h-3.5 w-3.5" />
-            <span>Mais recente</span>
+            <span>{t("comp.viewLatest", "Mais recente")}</span>
           </button>
           <button
             type="button"
@@ -179,7 +201,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
             )}
           >
             <TrendingUp aria-hidden="true" className="h-3.5 w-3.5" />
-            <span>Série 1990–2024</span>
+            <span>{t("comp.viewHistorical", "Série 1990–2024")}</span>
           </button>
         </div>
       </div>
@@ -187,7 +209,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
       {/* Seletor de métrica */}
       <div
         role="group"
-        aria-label="Métrica do gráfico"
+        aria-label={t("comp.metricGroupAria", "Métrica do gráfico")}
         className="mb-4 flex flex-wrap items-center gap-1.5"
       >
         {COMPARISON_METRIC_ORDER.map((m) => (
@@ -203,7 +225,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
                 : "border-line bg-surface text-fg-secondary hover:bg-surface-hover hover:text-fg"
             )}
           >
-            {COMPARISON_METRICS[m].shortLabel}
+            {t(`comp.metric.${m}.short`, COMPARISON_METRICS[m].shortLabel)}
           </button>
         ))}
       </div>
@@ -211,7 +233,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
       {/* MODO 1: Leitura mais recente (BarChart) */}
       {viewMode === "latest" && (
         <>
-          {latestDataset.entries.length === 0 ? (
+          {chartEntries.length === 0 ? (
             <div
               data-testid="comparison-chart-empty"
               className="flex min-h-48 flex-col items-center justify-center gap-2 rounded-control border border-dashed border-line bg-surface-sunken px-4 py-8 text-center"
@@ -219,12 +241,12 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
               <Info aria-hidden="true" className="h-5 w-5 text-fg-muted" />
               <p className="text-label font-medium text-fg-secondary">
                 {selectedIsos.length === 0
-                  ? "Selecione até 4 países acima para visualizar a comparação gráfica."
-                  : `Dado indisponível para os países selecionados em ${metric.shortLabel} (${metric.indicatorCode}).`}
+                  ? t("comp.selectUpTo4", "Selecione até 4 países acima para visualizar a comparação gráfica.")
+                  : `${t("comp.noDataMetricPrefix", "Dado indisponível para os países selecionados em")} ${metricShort} (${metric.indicatorCode}).`}
               </p>
               {selectedIsos.length > 0 && (
                 <p className="text-caption text-fg-muted">
-                  O gráfico exibe exclusivamente leituras oficiais sem interpolação ou estimativas sintéticas.
+                  {t("comp.noSyntheticNote", "O gráfico exibe exclusivamente leituras oficiais sem interpolação ou estimativas sintéticas.")}
                 </p>
               )}
             </div>
@@ -233,7 +255,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={latestDataset.entries}
+                    data={chartEntries}
                     margin={{ top: 10, right: 20, left: 0, bottom: 8 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--color-line) / 0.14)" />
@@ -259,12 +281,12 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
                         const num = typeof value === "number" ? value : Number(value);
                         return [
                           Number.isFinite(num) ? metric.formatValue(num) : String(value),
-                          metric.shortLabel,
+                          metricShort,
                         ];
                       }}
                     />
-                    <Bar dataKey="value" name={metric.shortLabel} radius={[6, 6, 0, 0]} maxBarSize={64}>
-                      {latestDataset.entries.map((entry) => (
+                    <Bar dataKey="value" name={metricShort} radius={[6, 6, 0, 0]} maxBarSize={64}>
+                      {chartEntries.map((entry) => (
                         <Cell
                           key={entry.isoCode}
                           fill={COUNTRY_COLORS[entry.colorIndex % COUNTRY_COLORS.length]}
@@ -276,7 +298,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
               </div>
 
               <ul className="mt-3 grid gap-2 border-t border-line pt-3 sm:grid-cols-2">
-                {latestDataset.entries.map((entry) => (
+                {chartEntries.map((entry) => (
                   <li
                     key={entry.isoCode}
                     className="flex items-center justify-between gap-2 rounded-control border border-line bg-surface px-3 py-2 text-caption"
@@ -302,11 +324,11 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
                         href={entry.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        title={`Fonte primária: ${entry.sourcePrimary} (${metric.indicatorCode})`}
+                        title={`${t("common.source", "Fonte primária")}: ${entry.sourcePrimary} (${metric.indicatorCode})`}
                         className="inline-flex items-center gap-0.5 text-accent hover:text-accent-hover hover:underline"
                       >
                         <span className="sr-only">
-                          Fonte de {entry.nameCommon}: {entry.sourcePrimary}
+                          {t("common.source", "Fonte")} {entry.nameCommon}: {entry.sourcePrimary}
                         </span>
                         <ExternalLink aria-hidden="true" className="h-3 w-3" />
                       </a>
@@ -317,18 +339,19 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
             </>
           )}
 
-          {latestDataset.missing.length > 0 && latestDataset.entries.length > 0 && (
+          {latestDataset.missing.length > 0 && chartEntries.length > 0 && (
             <p
               data-testid="comparison-chart-missing"
               className="mt-3 flex items-start gap-1.5 text-caption text-fg-muted"
             >
               <Info aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <span>
-                Dado indisponível nesta métrica ({metric.indicatorCode}) para:{" "}
+                {t("comp.missingMetricPrefix", "Dado indisponível nesta métrica")} ({metric.indicatorCode}){" "}
+                {t("comp.missingMetricFor", "para:")}{" "}
                 <strong className="font-medium text-fg-secondary">
-                  {latestDataset.missing.map((m) => m.nameCommon).join(", ")}
+                  {latestDataset.missing.map((m) => localizeCountry(m.isoCode, m.nameCommon)).join(", ")}
                 </strong>
-                . Nenhum valor estimado foi inserido.
+                . {t("comp.missingMetricSuffix", "Nenhum valor estimado foi inserido.")}
               </span>
             </p>
           )}
@@ -345,7 +368,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
             >
               <Info aria-hidden="true" className="h-5 w-5 text-fg-muted" />
               <p className="text-label font-medium text-fg-secondary">
-                Selecione até 4 países acima para visualizar a série histórica oficial (1990–2024).
+                {t("comp.selectUpTo4Hist", "Selecione até 4 países acima para visualizar a série histórica oficial (1990–2024).")}
               </p>
             </div>
           ) : !metric.hasWorldBankTimeseries ? (
@@ -355,10 +378,14 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
             >
               <Info aria-hidden="true" className="h-5 w-5 text-fg-muted" />
               <p className="text-label font-medium text-fg-secondary">
-                Série histórica anual indisponível na base do Banco Mundial para {metric.shortLabel} ({metric.indicatorCode}).
+                {t("comp.histUnsupportedPrefix", "Série histórica anual indisponível na base do Banco Mundial para")}{" "}
+                {metricShort} ({metric.indicatorCode}).
               </p>
               <p className="text-caption text-fg-muted">
-                Alterne para “Mais recente” ou escolha um dos 7 indicadores com série oficial 1990–2024.
+                {t(
+                  "comp.histUnsupportedHint",
+                  "Alterne para “Mais recente” ou escolha um dos 7 indicadores com série oficial 1990–2024."
+                )}
               </p>
             </div>
           ) : isLoadingSeries ? (
@@ -367,7 +394,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
               className="flex min-h-64 flex-col items-center justify-center gap-2 rounded-control border border-line bg-surface-sunken px-4 py-8 text-caption text-fg-muted"
             >
               <span className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent" />
-              <span>Carregando séries históricas oficiais do Banco Mundial (1990–2024)…</span>
+              <span>{t("comp.histLoading", "Carregando séries históricas oficiais do Banco Mundial (1990–2024)…")}</span>
             </div>
           ) : seriesError ? (
             <div
@@ -383,7 +410,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
             >
               <Info aria-hidden="true" className="h-5 w-5 text-fg-muted" />
               <p className="text-label font-medium text-fg-secondary">
-                Sem observações oficiais entre 1990 e 2024 para os países selecionados em {metric.shortLabel}.
+                {t("comp.histNoObs", "Sem observações oficiais entre 1990 e 2024 para os países selecionados em")} {metricShort}.
               </p>
             </div>
           ) : (
@@ -415,7 +442,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
                       formatter={(value: unknown, name: string) => {
                         const num = typeof value === "number" ? value : Number(value);
                         return [
-                          Number.isFinite(num) ? metric.formatValue(num) : "Dado indisponível",
+                          Number.isFinite(num) ? metric.formatValue(num) : t("common.dataUnavailable", "Dado indisponível"),
                           name,
                         ];
                       }}
@@ -426,7 +453,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
                         key={series.isoCode}
                         type="monotone"
                         dataKey={series.isoCode}
-                        name={series.nameCommon}
+                        name={localizeCountry(series.isoCode, series.nameCommon)}
                         stroke={COUNTRY_COLORS[series.colorIndex % COUNTRY_COLORS.length]}
                         strokeWidth={2}
                         dot={{ r: 2 }}
@@ -440,47 +467,53 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
 
               {/* Resumo auditável da série real por país (período observado, contagem e link RN02) */}
               <ul className="mt-3 grid gap-2 border-t border-line pt-3 sm:grid-cols-2">
-                {historicalDataset.activeSeries.map((series) => (
-                  <li
-                    key={series.isoCode}
-                    className="flex items-center justify-between gap-2 rounded-control border border-line bg-surface px-3 py-2 text-caption"
-                  >
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span
-                        aria-hidden="true"
-                        className="h-2.5 w-2.5 shrink-0 rounded-full"
-                        style={{
-                          backgroundColor: COUNTRY_COLORS[series.colorIndex % COUNTRY_COLORS.length],
-                        }}
-                      />
-                      <span className="truncate font-medium text-fg">{series.nameCommon}</span>
-                      <span className="font-mono tabular-nums text-fg-muted">
-                        {series.firstYear}–{series.lastYear} ({series.pointCount} anos)
-                      </span>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <span className="font-mono font-medium tabular-nums text-fg">
-                        {metric.formatValue(series.latestValue)}
-                      </span>
-                      <a
-                        href={series.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={`Série oficial: ${series.sourcePrimary} (${metric.indicatorCode})`}
-                        className="inline-flex items-center gap-0.5 text-accent hover:text-accent-hover hover:underline"
-                      >
-                        <span className="sr-only">
-                          Série histórica de {series.nameCommon}: {series.sourcePrimary}
+                {historicalDataset.activeSeries.map((series) => {
+                  const seriesName = localizeCountry(series.isoCode, series.nameCommon);
+                  return (
+                    <li
+                      key={series.isoCode}
+                      className="flex items-center justify-between gap-2 rounded-control border border-line bg-surface px-3 py-2 text-caption"
+                    >
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span
+                          aria-hidden="true"
+                          className="h-2.5 w-2.5 shrink-0 rounded-full"
+                          style={{
+                            backgroundColor: COUNTRY_COLORS[series.colorIndex % COUNTRY_COLORS.length],
+                          }}
+                        />
+                        <span className="truncate font-medium text-fg">{seriesName}</span>
+                        <span className="font-mono tabular-nums text-fg-muted">
+                          {series.firstYear}–{series.lastYear} ({series.pointCount} {t("common.years", "anos")})
                         </span>
-                        <ExternalLink aria-hidden="true" className="h-3 w-3" />
-                      </a>
-                    </div>
-                  </li>
-                ))}
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="font-mono font-medium tabular-nums text-fg">
+                          {metric.formatValue(series.latestValue)}
+                        </span>
+                        <a
+                          href={series.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`${t("common.source", "Série oficial")}: ${series.sourcePrimary} (${metric.indicatorCode})`}
+                          className="inline-flex items-center gap-0.5 text-accent hover:text-accent-hover hover:underline"
+                        >
+                          <span className="sr-only">
+                            {seriesName}: {series.sourcePrimary}
+                          </span>
+                          <ExternalLink aria-hidden="true" className="h-3 w-3" />
+                        </a>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
 
               <p className="mt-2 text-caption text-fg-muted">
-                Fonte: Banco Mundial (WDI, CC BY 4.0) · Lacunas oficiais são exibidas como interrupções na linha (sem interpolação).
+                {t(
+                  "comp.histFooter",
+                  "Fonte: Banco Mundial (WDI, CC BY 4.0) · Lacunas oficiais são exibidas como interrupções na linha (sem interpolação)."
+                )}
               </p>
 
               {historicalDataset.missing.length > 0 && (
@@ -490,9 +523,10 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
                 >
                   <Info aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>
-                    Sem observações em {historicalDataset.range[0]}–{historicalDataset.range[1]} para:{" "}
+                    {t("comp.histMissingPrefix", "Sem observações em")} {historicalDataset.range[0]}–{historicalDataset.range[1]}{" "}
+                    {t("comp.histMissingFor", "para:")}{" "}
                     <strong className="font-medium text-fg-secondary">
-                      {historicalDataset.missing.map((m) => m.nameCommon).join(", ")}
+                      {historicalDataset.missing.map((m) => localizeCountry(m.isoCode, m.nameCommon)).join(", ")}
                     </strong>
                     .
                   </span>

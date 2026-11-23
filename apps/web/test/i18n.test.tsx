@@ -16,11 +16,29 @@ import {
 import { LOCALE_COOKIE_NAME, LOCALE_STORAGE_KEY } from "../src/lib/i18n/types";
 import { EN_MESSAGES } from "../src/lib/i18n/en";
 import { loadEnMessages, useLocaleStore } from "../src/stores/localeStore";
-import { WORLD_COUNTRIES_CATALOG } from "../src/lib/country-data";
+import { WORLD_COUNTRIES_CATALOG, getCountryData } from "../src/lib/country-data";
 import { TopNavBar } from "../src/components/nav/TopNavBar";
 import { TimelineBar } from "../src/components/timeline/TimelineBar";
 import { GraphicsQualityPanelView } from "../src/components/globe/GraphicsQualityPanel";
 import { ChoroplethSelectorView, ChoroplethTooltipView } from "../src/components/choropleth/ChoroplethHud";
+import { InspectorHUD } from "../src/components/hud/InspectorHUD";
+import { ObservatoryPanel } from "../src/components/observatory/ObservatoryPanel";
+import { CosmicInspectorHUD } from "../src/components/hud/CosmicInspectorHUD";
+import { ComparisonGrid } from "../src/components/comparator/ComparisonGrid";
+import { ComparisonCharts } from "../src/components/comparator/ComparisonCharts";
+import { AnalyticalProfileView } from "../src/components/reader/AnalyticalProfileView";
+import { ReaderTableOfContents } from "../src/components/reader/ReaderTableOfContents";
+import { ForkStudyBannerView } from "../src/components/study/ForkStudyBanner";
+import { useObservatoryStore } from "../src/stores/observatoryStore";
+import { useCosmicStore } from "../src/stores/cosmicStore";
+import { useComparatorStore } from "../src/stores/comparatorStore";
+import {
+  buildCompareMetadata,
+  buildCountryMetadata,
+  buildRootMetadata,
+  buildStudiesMetadata,
+  buildStudyMetadata,
+} from "../src/lib/server-loaders";
 
 describe("D28a · Fundação i18n (pt-BR / en), Intl e Shell Principal", () => {
   test("1. normalizeLocale, cookie e localStorage persistem e hidratam locale com segurança", () => {
@@ -203,5 +221,138 @@ describe("D28a · Fundação i18n (pt-BR / en), Intl e Shell Principal", () => {
 
     // Restaura pt-BR para não interferir em outros testes
     useLocaleStore.setState({ locale: "pt-BR", enMessages: null });
+  });
+
+  test("5. D28b · Painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader e Estudos) alternam pt-BR ↔ en", () => {
+    const prevObs = useObservatoryStore.getState();
+    const prevCosmic = useCosmicStore.getState();
+    const prevComp = useComparatorStore.getState();
+
+    try {
+      useLocaleStore.setState({ locale: "en", enMessages: EN_MESSAGES });
+      useObservatoryStore.setState({ isPanelOpen: true, activeLayers: ["NASA_FIRMS", "GLOBAL_WINDS"] });
+      useCosmicStore.setState({ isCosmicMode: true, focusedBodyId: "MARS", isInspectorOpen: true });
+      useComparatorStore.setState({ selectedIsos: ["BRA", "DEU"], activeMetric: "GDP" });
+
+      const bra = getCountryData("BRA")!;
+      const inspectorHtml = renderToStaticMarkup(<InspectorHUD selectedIso="BRA" selectedYear={2026} />);
+      const observatoryHtml = renderToStaticMarkup(<ObservatoryPanel initialExpanded={["NASA_FIRMS"]} />);
+      const cosmicHtml = renderToStaticMarkup(<CosmicInspectorHUD placement="dock" />);
+      const compGridHtml = renderToStaticMarkup(<ComparisonGrid />);
+      const compChartsHtml = renderToStaticMarkup(<ComparisonCharts />);
+      const analyticalHtml = renderToStaticMarkup(<AnalyticalProfileView country={bra} />);
+      const tocHtml = renderToStaticMarkup(<ReaderTableOfContents />);
+      const forkHtml = renderToStaticMarkup(
+        <ForkStudyBannerView
+          studyId="study-demo"
+          title="Cold War Geopolitics"
+          study={{
+            id: "study-demo",
+            parentId: null,
+            title: "Cold War Geopolitics",
+            description: "Sample study",
+            timelineStartYear: 1947,
+            timelineEndYear: 1991,
+            selectedCountryIsos: ["BRA", "DEU"],
+            activeCategories: [],
+            cameraLat: 0,
+            cameraLng: 0,
+            cameraAltitude: 2.5,
+            markdownNotes: "Notes",
+            historicalEra: null,
+            isApollo11Active: false,
+            geologicalMa: null,
+            activeRouteId: null,
+            activeObservatoryLayers: [],
+            isCosmicMode: false,
+            focusedCelestialBody: null,
+            activeCosmicLayers: [],
+            choroplethIndicator: "NY.GDP.MKTP.CD",
+            createdAt: "2026-11-23T00:00:00Z",
+          }}
+          onNavigate={() => {}}
+        />
+      );
+
+      // InspectorHUD
+      assert.match(inspectorHtml, /Brazil/);
+      assert.match(inspectorHtml, /Population/);
+      assert.match(inspectorHtml, /Nominal GDP/);
+      assert.match(inspectorHtml, /Deep Read/);
+      assert.match(inspectorHtml, /Audited Primary Sources/);
+
+      // ObservatoryPanel + 7 camadas
+      assert.match(observatoryHtml, /Planetary Observatory/);
+      assert.match(observatoryHtml, /Active Wildfires \(FIRMS\)/);
+      assert.match(observatoryHtml, /Winds &amp; Ocean Currents/);
+      assert.match(observatoryHtml, /Clear Layers/);
+
+      // CosmicInspectorHUD
+      assert.match(cosmicHtml, /Mars/);
+      assert.match(cosmicHtml, /Distance to Sun/);
+      assert.match(cosmicHtml, /Astrophysical Properties/);
+      assert.match(cosmicHtml, /Equatorial radius/);
+
+      // Comparator
+      assert.match(compGridHtml, /Brazil/);
+      assert.match(compGridHtml, /Germany/);
+      assert.match(compGridHtml, /Cite comparison/);
+      assert.match(compChartsHtml, /1990–2024 Series/);
+      assert.match(compChartsHtml, /Nominal GDP \(current US\$ billions\)/);
+
+      // Reader & Analytical Profile
+      assert.match(analyticalHtml, /Brazil — Analytical Profile/);
+      assert.match(analyticalHtml, /Global Position &amp; Regional Average/);
+      assert.match(analyticalHtml, /Closest Countries by Indicators/);
+      assert.match(tocHtml, /Multidisciplinary Index/);
+      assert.match(tocHtml, /Geography &amp; Biomes/);
+
+      // ForkStudyBanner
+      assert.match(forkHtml, /Original shared study/);
+      assert.match(forkHtml, /Fork study/);
+      assert.match(forkHtml, /Map: GDP/);
+    } finally {
+      useLocaleStore.setState({ locale: "pt-BR", enMessages: null });
+      useObservatoryStore.setState({
+        isPanelOpen: prevObs.isPanelOpen,
+        activeLayers: prevObs.activeLayers,
+      });
+      useCosmicStore.setState({
+        isCosmicMode: prevCosmic.isCosmicMode,
+        focusedBodyId: prevCosmic.focusedBodyId,
+        isInspectorOpen: prevCosmic.isInspectorOpen,
+      });
+      useComparatorStore.setState({
+        selectedIsos: prevComp.selectedIsos,
+        activeMetric: prevComp.activeMetric,
+      });
+    }
+  });
+
+  test("6. D28b · Metadados SSR (root, país, estudo, comparador e galeria) respeitam locale pt-BR e en", () => {
+    const rootPt = buildRootMetadata("pt-BR");
+    const rootEn = buildRootMetadata("en");
+    assert.match(String(rootPt.title), /Enciclopédia Geopolítica/);
+    assert.match(String(rootEn.title), /Geopolitical Encyclopedia/);
+    assert.equal(rootEn.openGraph?.locale, "en_US");
+
+    const bra = getCountryData("BRA");
+    const braEn = buildCountryMetadata(bra, "BRA", "en");
+    assert.match(String(braEn.title), /Brazil \(BRA\)/);
+    assert.equal(braEn.openGraph?.locale, "en_US");
+
+    const missingEn = buildCountryMetadata(null, "ZZZ", "en");
+    assert.match(String(missingEn.title), /Country not found/);
+
+    const cmpEn = buildCompareMetadata(["BRA", "DEU"], "en");
+    assert.match(String(cmpEn.title), /Brazil vs Germany/);
+    assert.equal(cmpEn.openGraph?.locale, "en_US");
+
+    const galleryEn = buildStudiesMetadata("en");
+    assert.match(String(galleryEn.title), /Public Studies Gallery/);
+    assert.equal(galleryEn.openGraph?.locale, "en_US");
+
+    const missingStudyEn = buildStudyMetadata(null, "nope", "en");
+    assert.match(String(missingStudyEn.title), /Study not found/);
   });
 });

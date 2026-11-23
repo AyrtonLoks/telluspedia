@@ -33,6 +33,8 @@ import { CountryMiniTimeline } from "./CountryMiniTimeline";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
 
 export interface InspectorHUDProps {
   selectedIso?: string | null;
@@ -40,6 +42,7 @@ export interface InspectorHUDProps {
 }
 
 export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
+  const { locale, t } = useI18n();
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
   const storeIsReaderOpen = useGlobeStore((s) => s.isReaderOpen);
 
@@ -151,6 +154,8 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
       ? "Natural Earth"
       : "ONU");
 
+  const displayName = formatCountryName(currentCountry.iso2, currentCountry.nameCommon, locale);
+
   return (
     <aside
       data-inspector-hud="true"
@@ -167,6 +172,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         region={currentCountry.region}
         flagSvgUrl={currentCountry.flagSvgUrl}
         isoCode={currentCountry.isoCode}
+        iso2={currentCountry.iso2}
         completeness={currentCountry.completeness}
       />
 
@@ -180,20 +186,20 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
           >
             <div className="flex items-center gap-1.5 text-caption font-medium text-fg-secondary">
               <History aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-              <span className="truncate">Entidade Histórica</span>
+              <span className="truncate">{t("inspector.historicalEntity", "Entidade Histórica")}</span>
             </div>
             <div className="my-0.5 font-mono text-label font-medium tabular-nums text-fg">
-              Vigência: {currentCountry.startYear} – {currentCountry.endYear}
+              {t("inspector.span", "Vigência")}: {currentCountry.startYear} – {currentCountry.endYear}
             </div>
             <div
               className="line-clamp-1 text-caption text-fg-secondary"
-              title={`${currentCountry.leaderTitle || "Líder"}: ${currentCountry.historicalLeader || currentCountry.headOfState || "Indisponível"}`}
+              title={`${currentCountry.leaderTitle || t("inspector.leader", "Líder")}: ${currentCountry.historicalLeader || currentCountry.headOfState || t("common.unavailable", "Indisponível")}`}
             >
               <span className="text-fg-muted">
-                {currentCountry.leaderTitle ? `${currentCountry.leaderTitle}: ` : "Líder: "}
+                {currentCountry.leaderTitle ? `${currentCountry.leaderTitle}: ` : `${t("inspector.leader", "Líder")}: `}
               </span>
               <strong className="font-medium text-fg">
-                {currentCountry.historicalLeader || currentCountry.headOfState || "Indisponível"}
+                {currentCountry.historicalLeader || currentCountry.headOfState || t("common.unavailable", "Indisponível")}
               </strong>
             </div>
           </div>
@@ -221,15 +227,15 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1 rounded-sm text-caption text-accent hover:text-accent-hover hover:underline"
-              title={`Fonte Primária: ${primarySourceName} / Base TellusPedia (${currentCountry.isoCode}) - Acessar Repositório`}
+              title={`${t("inspector.sourcePrefix", "Fonte:")} ${primarySourceName} / TellusPedia (${currentCountry.isoCode})`}
             >
               <span>
-                [Fonte:{" "}
+                [{t("inspector.sourcePrefix", "Fonte:")}{" "}
                 {currentCountry.isHistoricalEntity
                   ? (primarySourceName.length > 18
                       ? primarySourceName.slice(0, 16) + "…"
                       : primarySourceName)
-                  : "ONU"}
+                  : locale === "en" ? "UN" : "ONU"}
                 ]
               </span>
               <ExternalLink aria-hidden="true" className="h-3 w-3" />
@@ -240,10 +246,10 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
             data-testid="inspector-summary-unavailable"
             className="text-label text-fg-secondary"
           >
-            Resumo descritivo indisponível para {currentCountry.nameCommon}.{" "}
+            {t("inspector.summaryUnavailable", "Resumo descritivo indisponível para")} {displayName}.{" "}
             {currentCountry.indicators.length > 0 ? (
               <>
-                Indicadores oficiais obtidos do{" "}
+                {t("inspector.officialIndicatorsFrom", "Indicadores oficiais obtidos do")}{" "}
                 <a
                   href={`https://data.worldbank.org/country/${encodeURIComponent(currentCountry.isoCode)}`}
                   target="_blank"
@@ -251,9 +257,9 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                   onClick={(e) => e.stopPropagation()}
                   className="text-accent hover:text-accent-hover hover:underline"
                 >
-                  Banco Mundial (WDI)
+                  {t("inspector.worldBankWdi", "Banco Mundial (WDI)")}
                 </a>{" "}
-                e geografia de{" "}
+                {t("inspector.andGeographyFrom", "e geografia de")}{" "}
                 <a
                   href={getSourceUrl("Natural Earth")}
                   target="_blank"
@@ -267,7 +273,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
               </>
             ) : (
               <>
-                Identificação geográfica e coordenadas fornecidas por{" "}
+                {t("inspector.geoCoordsFrom", "Identificação geográfica e coordenadas fornecidas por")}{" "}
                 <a
                   href={currentCountry.sourceUrl || getSourceUrl("Natural Earth")}
                   target="_blank"
@@ -286,7 +292,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
 
       {/* Metrics & Indicator Grid */}
       <CountryMetricsGrid
-        countryName={currentCountry.nameCommon}
+        countryName={displayName}
         isoCode={currentCountry.isoCode}
         population={currentCountry.population}
         areaKm2={currentCountry.areaKm2}
@@ -325,7 +331,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
           onClick={handleDeepReading}
         >
           <BookOpen aria-hidden="true" className="h-4 w-4" />
-          <span>Aprofundar Estudo</span>
+          <span>{t("inspector.deepRead", "Aprofundar Estudo")}</span>
         </Button>
 
         <button
@@ -335,14 +341,14 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
           onClick={handleCompare}
           aria-pressed={isCompared}
           className={buttonClasses("secondary", "md", cn("gap-1.5 px-3", isCompared && "border-accent/40 bg-accent/15"))}
-          title="Comparar com outros países"
+          title={t("inspector.compareTitle", "Comparar com outros países")}
         >
           <BarChart2 aria-hidden="true" className="h-4 w-4" />
-          <span>{isCompared ? "Comparando" : "Comparar"}</span>
+          <span>{isCompared ? t("inspector.comparing", "Comparando") : t("inspector.compare", "Comparar")}</span>
         </button>
 
         <IconButton
-          label="Compartilhar estudo deste país"
+          label={t("inspector.shareCountry", "Compartilhar estudo deste país")}
           icon={<Share2 />}
           variant="secondary"
           onMouseEnter={preloadStudyShareModal}
@@ -354,7 +360,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
       {/* Subtle Permanent Institutional Footer with Cited Sources */}
       <footer className="mt-3 border-t border-line pt-2.5 text-caption text-fg-muted">
         <div className="flex items-center justify-between mb-1">
-          <span className="font-medium text-fg-secondary">Fontes Primárias Auditadas:</span>
+          <span className="font-medium text-fg-secondary">{t("inspector.auditedSources", "Fontes Primárias Auditadas:")}</span>
           <button
             type="button"
             onMouseEnter={preloadCitationModal}
@@ -365,18 +371,18 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                   ? `${window.location.origin}/pais/${currentCountry.isoCode}`
                   : `https://telluspedia.org/pais/${currentCountry.isoCode}`;
               setCitationModalOpen(true, {
-                title: `Dossiê Geral e Indicadores: ${currentCountry.nameCommon}`,
-                countryName: currentCountry.nameCommon,
+                title: `Dossiê Geral e Indicadores: ${displayName}`,
+                countryName: displayName,
                 url,
                 accessDate: new Date(),
                 publicationYear: 2026,
               });
             }}
             className="inline-flex items-center gap-1 text-accent hover:text-accent-hover hover:underline"
-            title="Gerar Citação Oficial deste País"
+            title={t("inspector.generateCitationTitle", "Gerar Citação Oficial deste País")}
           >
             <Quote aria-hidden="true" className="h-3 w-3" />
-            <span>Gerar Citação</span>
+            <span>{t("inspector.generateCitation", "Gerar Citação")}</span>
           </button>
         </div>
         <p className="space-x-1">
@@ -406,7 +412,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 rel="noopener noreferrer"
                 className="hover:text-fg hover:underline"
               >
-                Cartografia Natural Earth
+                {t("common.naturalEarth", "Cartografia Natural Earth")}
               </a>
               .
             </>
@@ -418,9 +424,9 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 rel="noopener noreferrer"
                 className="hover:text-fg hover:underline"
               >
-                Cartografia Natural Earth (1:110m)
+                {t("common.naturalEarth", "Cartografia Natural Earth (1:110m)")}
               </a>
-              {" "}e padrão ISO 3166-1 / Unicode CLDR
+              {" "}{t("inspector.isoCldrNote", "e padrão ISO 3166-1 / Unicode CLDR")}
               {currentCountry.referenceDate ? ` (ref. ${currentCountry.referenceDate})` : ""}.
             </>
           ) : (
@@ -431,7 +437,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 rel="noopener noreferrer"
                 className="hover:text-fg hover:underline"
               >
-                Banco Mundial
+                {t("common.worldBank", "Banco Mundial")}
               </a>
               ,
               <a
@@ -440,7 +446,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 rel="noopener noreferrer"
                 className="hover:text-fg hover:underline"
               >
-                Divisão de Estatística da ONU
+                {t("common.unStats", "Divisão de Estatística da ONU")}
               </a>
               ,
               <a
@@ -458,7 +464,7 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
                 rel="noopener noreferrer"
                 className="hover:text-fg hover:underline"
               >
-                Cartografia Natural Earth (1:110m)
+                {t("common.naturalEarth", "Cartografia Natural Earth (1:110m)")}
               </a>
               .
             </>

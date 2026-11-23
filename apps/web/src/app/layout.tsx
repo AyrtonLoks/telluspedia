@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
 import { SearchProvider } from "@/components/explore/SearchProvider";
+import { getServerLocale } from "@/lib/i18n/server";
+import { buildRootMetadata } from "@/lib/server-loaders";
 
 // Fontes auto-hospedadas localmente via next/font/local (T27: elimina dependência
 // do CDN do Google Fonts em build time e a falha intermitente do loader com Merriweather v33).
@@ -44,35 +46,20 @@ export const viewport: Viewport = {
   themeColor: "#05070B",
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(APP_URL),
-  title: "TellusPedia — Enciclopédia Geopolítica e Observatório Planetário",
-  description:
-    "Enciclopédia de alta densidade integrando globo 3D em tempo real com efemérides solares NOAA, linha do tempo semântica, comparador multidisciplinar e citações acadêmicas padronizadas.",
-  openGraph: {
-    title: "TellusPedia — Enciclopédia Geopolítica e Observatório Planetário",
-    description:
-      "Globo 3D em tempo real, linha do tempo histórica, comparador de países e estudos compartilháveis.",
-    type: "website",
-    locale: "pt_BR",
-    siteName: "TellusPedia",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "TellusPedia — Enciclopédia Geopolítica e Observatório Planetário",
-    description:
-      "Globo 3D em tempo real, linha do tempo histórica, comparador de países e estudos compartilháveis.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  return buildRootMetadata(locale, APP_URL);
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getServerLocale();
   return (
     <html
-      lang="pt-BR"
+      lang={locale}
       className={`dark ${geistSans.variable} ${geistMono.variable} ${merriweather.variable}`}
     >
       <body className="bg-bg text-fg antialiased min-h-screen font-sans">

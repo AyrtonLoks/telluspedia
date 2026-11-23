@@ -10,6 +10,8 @@ import {
 } from "./studies-store";
 import { readDevelopmentStudy } from "./study-persistence";
 import { getCountryData, type CountryData } from "./country-data";
+import { formatCountryName } from "./i18n/format";
+import type { Locale } from "./i18n/types";
 
 const MAX_COMPARE_COUNTRIES = 4;
 const SAFE_FLAG_FILENAME = /^[a-z0-9_-]+\.svg$/i;
@@ -175,9 +177,14 @@ export function readFlagDataUri(flagSvgUrl?: string | null): string | null {
   return null;
 }
 
-export function formatStudyPeriod(study: Pick<StudyRecord, "timelineStartYear" | "timelineEndYear" | "geologicalMa">): string {
+export function formatStudyPeriod(
+  study: Pick<StudyRecord, "timelineStartYear" | "timelineEndYear" | "geologicalMa">,
+  locale: Locale = "pt-BR"
+): string {
   if (typeof study.geologicalMa === "number" && study.geologicalMa > 0) {
-    return `${study.geologicalMa} Ma (Era Geológica)`;
+    return locale === "en"
+      ? `${study.geologicalMa} Ma (Geological Era)`
+      : `${study.geologicalMa} Ma (Era Geológica)`;
   }
   if (study.timelineStartYear === study.timelineEndYear) {
     return String(study.timelineStartYear);
@@ -185,22 +192,92 @@ export function formatStudyPeriod(study: Pick<StudyRecord, "timelineStartYear" |
   return `${study.timelineStartYear}–${study.timelineEndYear}`;
 }
 
-export function buildStudyMetadata(study: StudyRecord | null, slug: string): Metadata {
+export function buildRootMetadata(locale: Locale = "pt-BR", appUrl = "http://localhost:3000"): Metadata {
+  const isEn = locale === "en";
+  const title = isEn
+    ? "TellusPedia — Geopolitical Encyclopedia & Planetary Observatory"
+    : "TellusPedia — Enciclopédia Geopolítica e Observatório Planetário";
+  const description = isEn
+    ? "High-density encyclopedia combining a real-time 3D globe with NOAA solar ephemerides, semantic timeline, multidimensional country comparator, and standardized academic citations."
+    : "Enciclopédia de alta densidade integrando globo 3D em tempo real com efemérides solares NOAA, linha do tempo semântica, comparador multidisciplinar e citações acadêmicas padronizadas.";
+  const shortDesc = isEn
+    ? "Real-time 3D globe, historical timeline, country comparator, and shareable studies."
+    : "Globo 3D em tempo real, linha do tempo histórica, comparador de países e estudos compartilháveis.";
+
+  return {
+    metadataBase: new URL(appUrl),
+    title,
+    description,
+    openGraph: {
+      title,
+      description: shortDesc,
+      type: "website",
+      locale: isEn ? "en_US" : "pt_BR",
+      siteName: "TellusPedia",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: shortDesc,
+    },
+  };
+}
+
+export function buildStudiesMetadata(locale: Locale = "pt-BR"): Metadata {
+  const isEn = locale === "en";
+  const title = isEn
+    ? "Public Studies Gallery — TellusPedia"
+    : "Galeria de Estudos Públicos — TellusPedia";
+  const description = isEn
+    ? "Explore geopolitical, historical, and cosmic studies shared on TellusPedia, filter by era, country, or view mode, browse the fork tree, and export as academic Markdown or JSON."
+    : "Explore estudos geopolíticos, históricos e cósmicos compartilhados na TellusPedia, filtre por era, país ou modo de visualização, navegue pela árvore de forks e exporte em Markdown acadêmico ou JSON.";
+  const ogDesc = isEn
+    ? "Discover immutable studies, fork lineage, and academic export (ABNT/APA) on TellusPedia."
+    : "Descoberta de estudos imutáveis, linhagem de forks e exportação acadêmica (ABNT/APA) na TellusPedia.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description: ogDesc,
+      type: "website",
+      locale: isEn ? "en_US" : "pt_BR",
+      siteName: "TellusPedia",
+      url: "/studies",
+    },
+  };
+}
+
+export function buildStudyMetadata(
+  study: StudyRecord | null,
+  slug: string,
+  locale: Locale = "pt-BR"
+): Metadata {
+  const isEn = locale === "en";
   if (!study) {
     return {
-      title: "Estudo não encontrado — TellusPedia",
-      description: `O estudo "${slug}" não foi encontrado na TellusPedia.`,
+      title: isEn ? "Study not found — TellusPedia" : "Estudo não encontrado — TellusPedia",
+      description: isEn
+        ? `The study "${slug}" was not found on TellusPedia.`
+        : `O estudo "${slug}" não foi encontrado na TellusPedia.`,
       robots: { index: false, follow: false },
     };
   }
 
-  const period = formatStudyPeriod(study);
+  const period = formatStudyPeriod(study, locale);
   const countryNames = study.selectedCountryIsos
-    .map((iso) => loadCountryByIso(iso)?.nameCommon ?? iso)
+    .map((iso) => {
+      const c = loadCountryByIso(iso);
+      return c ? formatCountryName(c.iso2, c.nameCommon, locale) : iso;
+    })
     .slice(0, 4);
 
-  const fallbackDescription =
-    countryNames.length > 0
+  const fallbackDescription = isEn
+    ? countryNames.length > 0
+      ? `Immutable geopolitical study (${period}) analyzing ${countryNames.join(", ")} on TellusPedia.`
+      : `Immutable geopolitical and historical study (${period}) on TellusPedia.`
+    : countryNames.length > 0
       ? `Estudo geopolítico imutável (${period}) analisando ${countryNames.join(", ")} na TellusPedia.`
       : `Estudo geopolítico e histórico imutável (${period}) na TellusPedia.`;
 
@@ -214,7 +291,7 @@ export function buildStudyMetadata(study: StudyRecord | null, slug: string): Met
       title: study.title,
       description,
       type: "article",
-      locale: "pt_BR",
+      locale: isEn ? "en_US" : "pt_BR",
       siteName: "TellusPedia",
       url: `/study/${encodeURIComponent(study.id)}`,
     },
@@ -226,28 +303,41 @@ export function buildStudyMetadata(study: StudyRecord | null, slug: string): Met
   };
 }
 
-export function buildCountryMetadata(country: CountryData | null, iso: string): Metadata {
+export function buildCountryMetadata(
+  country: CountryData | null,
+  iso: string,
+  locale: Locale = "pt-BR"
+): Metadata {
+  const isEn = locale === "en";
   if (!country) {
     return {
-      title: "País não encontrado — TellusPedia",
-      description: `Nenhum país ou entidade histórica encontrado para o código "${iso}".`,
+      title: isEn ? "Country not found — TellusPedia" : "País não encontrado — TellusPedia",
+      description: isEn
+        ? `No country or historical entity found for code "${iso}".`
+        : `Nenhum país ou entidade histórica encontrado para o código "${iso}".`,
       robots: { index: false, follow: false },
     };
   }
 
+  const displayName = formatCountryName(country.iso2, country.nameCommon, locale);
   const details = [
-    country.nameOfficial && country.nameOfficial !== country.nameCommon ? country.nameOfficial : null,
+    !isEn && country.nameOfficial && country.nameOfficial !== country.nameCommon
+      ? country.nameOfficial
+      : null,
     country.capital ? `Capital: ${country.capital}` : null,
     country.continent,
   ].filter(Boolean);
 
-  const fallbackDescription =
-    details.length > 0
+  const fallbackDescription = isEn
+    ? details.length > 0
+      ? `${details.join(" · ")}. Geopolitical data, historical timeline, and official indicators on TellusPedia.`
+      : `Geopolitical and historical profile of ${displayName} (${country.isoCode}) on TellusPedia.`
+    : details.length > 0
       ? `${details.join(" · ")}. Dados geopolíticos, linha do tempo histórica e indicadores na TellusPedia.`
-      : `Perfil geopolítico e histórico de ${country.nameCommon} (${country.isoCode}) na TellusPedia.`;
+      : `Perfil geopolítico e histórico de ${displayName} (${country.isoCode}) na TellusPedia.`;
 
-  const description = (country.summary?.trim() || fallbackDescription).slice(0, 200);
-  const ogTitle = `${country.nameCommon} (${country.isoCode}) — TellusPedia`;
+  const description = (isEn ? fallbackDescription : country.summary?.trim() || fallbackDescription).slice(0, 200);
+  const ogTitle = `${displayName} (${country.isoCode}) — TellusPedia`;
 
   return {
     title: ogTitle,
@@ -256,7 +346,7 @@ export function buildCountryMetadata(country: CountryData | null, iso: string): 
       title: ogTitle,
       description,
       type: "website",
-      locale: "pt_BR",
+      locale: isEn ? "en_US" : "pt_BR",
       siteName: "TellusPedia",
       url: `/pais/${encodeURIComponent(country.isoCode)}`,
     },
@@ -268,18 +358,28 @@ export function buildCountryMetadata(country: CountryData | null, iso: string): 
   };
 }
 
-export function buildCompareMetadata(isos: string[]): Metadata {
+export function buildCompareMetadata(isos: string[], locale: Locale = "pt-BR"): Metadata {
+  const isEn = locale === "en";
   const names = isos
-    .map((iso) => loadCountryByIso(iso)?.nameCommon ?? iso)
+    .map((iso) => {
+      const c = loadCountryByIso(iso);
+      return c ? formatCountryName(c.iso2, c.nameCommon, locale) : iso;
+    })
     .slice(0, MAX_COMPARE_COUNTRIES);
 
-  const title =
-    names.length > 0
+  const title = isEn
+    ? names.length > 0
+      ? `Comparator: ${names.join(" vs ")} — TellusPedia`
+      : "Multidimensional Country Comparator — TellusPedia"
+    : names.length > 0
       ? `Comparador: ${names.join(" vs ")} — TellusPedia`
       : "Comparador Multidisciplinar de Países — TellusPedia";
 
-  const description =
-    names.length > 0
+  const description = isEn
+    ? names.length > 0
+      ? `Multidimensional comparison of indicators, demographics, and historical timeline between ${names.join(", ")} on TellusPedia.`
+      : "Compare up to 4 nations side by side with socioeconomic, demographic indicators, and historical context on TellusPedia."
+    : names.length > 0
       ? `Comparação multidimensional de indicadores, demografia e linha do tempo entre ${names.join(", ")} na TellusPedia.`
       : "Compare até 4 nações lado a lado com indicadores socioeconômicos, demográficos e contexto histórico na TellusPedia.";
 
@@ -292,7 +392,7 @@ export function buildCompareMetadata(isos: string[]): Metadata {
       title,
       description,
       type: "website",
-      locale: "pt_BR",
+      locale: isEn ? "en_US" : "pt_BR",
       siteName: "TellusPedia",
       url: `/compare${canonicalQuery}`,
     },

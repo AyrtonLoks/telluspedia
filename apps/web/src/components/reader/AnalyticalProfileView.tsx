@@ -21,12 +21,31 @@ import { selectCountry } from "@/stores/actions";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/components/ui/cn";
+import { useI18n, type TranslateFn } from "@/lib/i18n/useT";
+import { formatCountryName, formatNumber } from "@/lib/i18n/format";
+import { WORLD_COUNTRIES_CATALOG } from "@/lib/country-data";
+
+function localizeIndicatorLabel(code: string, fallback: string, t: TranslateFn): string {
+  switch (code) {
+    case "NY.GDP.MKTP.CD": return t("metrics.nominalGdp", fallback);
+    case "NY.GDP.PCAP.CD": return t("metrics.gdpPerCapita", fallback);
+    case "SP.POP.TOTL": return t("metrics.population", fallback);
+    case "SP.DYN.LE00.IN": return t("metrics.lifeExpectancy", fallback);
+    case "EG.FEC.RNEW.ZS": return t("metrics.renewableEnergy", fallback);
+    case "EN.GHG.CO2.PC.CE.AR5": return t("metrics.co2PerCapita", fallback);
+    case "MS.MIL.XPND.GD.ZS": return t("metrics.militaryExp", fallback);
+    case "AG.SRF.TOTL.K2": return t("metrics.landArea", fallback);
+    case "UNDP.HDI": return t("metrics.hdi", fallback);
+    default: return fallback;
+  }
+}
 
 export interface AnalyticalProfileViewProps {
   country: CountryData;
 }
 
 export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ country }) => {
+  const { locale, t } = useI18n();
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
   const setSelectedIsos = useComparatorStore((s) => s.setSelectedIsos);
   const openComparator = useComparatorStore((s) => s.openComparator);
@@ -36,8 +55,11 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
 
   if (!profile) return null;
 
+  const displayName = formatCountryName(country.iso2, profile.nameCommon, locale);
+  const unavailable = t("common.dataUnavailable", "Dado indisponível");
+  const wikiHost = locale === "en" ? "en.wikipedia.org" : "pt.wikipedia.org";
   const worldBankCountryUrl = `https://data.worldbank.org/country/${encodeURIComponent(country.isoCode)}`;
-  const wikipediaUrl = `https://pt.wikipedia.org/wiki/${encodeURIComponent(country.nameCommon)}`;
+  const wikipediaUrl = `https://${wikiHost}/wiki/${encodeURIComponent(displayName)}`;
   const wikidataUrl = country.wikidataQid
     ? `https://www.wikidata.org/wiki/${encodeURIComponent(country.wikidataQid)}`
     : null;
@@ -49,8 +71,8 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
         : `https://telluspedia.org/pais/${country.isoCode}`;
 
     setCitationModalOpen(true, {
-      title: `Perfil Analítico e Posição Global: ${country.nameCommon} (${country.isoCode})`,
-      countryName: country.nameCommon,
+      title: `${t("analytical.headingSuffix", "Perfil Analítico e Posição Global")}: ${displayName} (${country.isoCode})`,
+      countryName: displayName,
       url,
       accessDate: new Date(),
       publicationYear: 2026,
@@ -77,7 +99,7 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
       <header className="mb-6 border-b border-line pb-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="accent">Perfil Analítico &amp; Posição Global</Badge>
+            <Badge tone="accent">{t("analytical.badge", "Perfil Analítico & Posição Global")}</Badge>
             <Badge tone="neutral">{country.isoCode}</Badge>
             {profile.referenceDate && (
               <span className="font-mono text-caption tabular-nums text-fg-muted">
@@ -93,12 +115,12 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
             onClick={handleCiteProfile}
           >
             <Quote aria-hidden="true" className="h-3.5 w-3.5 text-accent" />
-            <span>Citar Perfil Analítico</span>
+            <span>{t("analytical.citeButton", "Citar Perfil Analítico")}</span>
           </Button>
         </div>
 
         <h1 className="mt-4 font-serif text-display font-bold leading-snug text-fg">
-          {profile.nameCommon} — Perfil Analítico &amp; Posição Global
+          {displayName} — {t("analytical.headingSuffix", "Perfil Analítico & Posição Global")}
         </h1>
         {profile.nameOfficial && profile.nameOfficial !== profile.nameCommon && (
           <p className="mt-1 text-caption text-fg-secondary">{profile.nameOfficial}</p>
@@ -106,10 +128,10 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
       </header>
 
       {/* Síntese factual auditada (100% derivada de fontes oficiais) */}
-      <section aria-label="Resumo factual auditado" className="mb-6 space-y-3">
+      <section aria-label={t("analytical.summaryTitle", "Resumo factual auditado")} className="mb-6 space-y-3">
         <h2 className="flex items-center gap-2 text-title font-semibold text-fg">
           <Globe aria-hidden="true" className="h-4 w-4 text-accent" />
-          <span>Resumo Factual Auditado</span>
+          <span>{t("analytical.summaryTitle", "Resumo Factual Auditado")}</span>
         </h2>
 
         {profile.summarySentences.length > 0 && (
@@ -123,57 +145,57 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
         {/* Ficha administrativa e geográfica estruturada */}
         <dl className="grid grid-cols-2 gap-2.5 pt-2 sm:grid-cols-3">
           <div className="rounded-card border border-line bg-surface-raised p-3">
-            <dt className="text-caption text-fg-muted">Capital</dt>
+            <dt className="text-caption text-fg-muted">{t("inspector.capital", "Capital")}</dt>
             <dd className="mt-0.5 text-label font-medium text-fg">
-              {profile.capital ?? "Dado indisponível"}
+              {profile.capital ?? unavailable}
             </dd>
           </div>
           <div className="rounded-card border border-line bg-surface-raised p-3">
-            <dt className="text-caption text-fg-muted">Região / Continente</dt>
+            <dt className="text-caption text-fg-muted">{t("analytical.regionContinent", "Região / Continente")}</dt>
             <dd className="mt-0.5 text-label font-medium text-fg">
-              {profile.region || profile.continent || "Dado indisponível"}
+              {profile.region || profile.continent || unavailable}
             </dd>
           </div>
           <div className="rounded-card border border-line bg-surface-raised p-3">
-            <dt className="text-caption text-fg-muted">Moeda</dt>
+            <dt className="text-caption text-fg-muted">{t("metrics.currency", "Moeda")}</dt>
             <dd className="mt-0.5 text-label font-medium text-fg">
-              {profile.currencyLabel ?? "Dado indisponível"}
+              {profile.currencyLabel ?? unavailable}
             </dd>
           </div>
           <div className="rounded-card border border-line bg-surface-raised p-3">
-            <dt className="text-caption text-fg-muted">Densidade demográfica</dt>
+            <dt className="text-caption text-fg-muted">{t("analytical.density", "Densidade demográfica")}</dt>
             <dd className="mt-0.5 font-mono text-label font-medium tabular-nums text-fg">
               {profile.populationDensityPerKm2 !== null
-                ? `${profile.populationDensityPerKm2.toLocaleString("pt-BR")} hab./km²`
-                : "Dado indisponível"}
+                ? `${formatNumber(profile.populationDensityPerKm2, locale)} ${t("analytical.densityUnit", "hab./km²")}`
+                : unavailable}
             </dd>
           </div>
           <div className="rounded-card border border-line bg-surface-raised p-3">
-            <dt className="text-caption text-fg-muted">Coordenadas (Natural Earth)</dt>
+            <dt className="text-caption text-fg-muted">{t("analytical.coordinates", "Coordenadas (Natural Earth)")}</dt>
             <dd className="mt-0.5 font-mono text-label font-medium tabular-nums text-fg">
               {profile.latitude !== null && profile.longitude !== null
                 ? `${profile.latitude.toFixed(2)}°, ${profile.longitude.toFixed(2)}°`
-                : "Dado indisponível"}
+                : unavailable}
             </dd>
           </div>
           <div className="rounded-card border border-line bg-surface-raised p-3">
-            <dt className="text-caption text-fg-muted">Fuso horário</dt>
+            <dt className="text-caption text-fg-muted">{t("clock.timezone", "Fuso horário")}</dt>
             <dd className="mt-0.5 font-mono text-label font-medium text-fg">
-              {profile.timezone ?? "Dado indisponível"}
+              {profile.timezone ?? unavailable}
             </dd>
           </div>
         </dl>
       </section>
 
       {/* Ranking Global e Comparação Regional */}
-      <section aria-label="Ranking global e comparação regional" className="mb-6 space-y-3">
+      <section aria-label={t("analytical.rankingTitle", "Ranking global e comparação regional")} className="mb-6 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-title font-semibold text-fg">
             <TrendingUp aria-hidden="true" className="h-4 w-4 text-accent" />
-            <span>Posição Global &amp; Média Regional</span>
+            <span>{t("analytical.rankingTitle", "Posição Global & Média Regional")}</span>
           </h2>
           <span className="text-caption text-fg-muted">
-            Base: 177 territórios Natural Earth · World Bank WDI (CC BY 4.0)
+            {t("analytical.rankingBase", "Base: 177 territórios Natural Earth · World Bank WDI (CC BY 4.0)")}
           </span>
         </div>
 
@@ -184,9 +206,9 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
           >
             <Info aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-fg-muted" />
             <p>
-              Não há séries quantitativas publicadas pelo Banco Mundial para{" "}
-              <strong className="font-semibold text-fg">{profile.nameCommon}</strong>. Nenhum
-              ranking ou estimativa sintética foi gerado.
+              {t("analytical.noQuantPrefix", "Não há séries quantitativas publicadas pelo Banco Mundial para")}{" "}
+              <strong className="font-semibold text-fg">{displayName}</strong>.{" "}
+              {t("analytical.noQuantSuffix", "Nenhum ranking ou estimativa sintética foi gerado.")}
             </p>
           </div>
         ) : (
@@ -203,7 +225,7 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <span className="block text-caption font-medium text-fg-secondary">
-                        {entry.label}
+                        {localizeIndicatorLabel(entry.code, entry.label, t)}
                       </span>
                       <span className="mt-0.5 block font-mono text-title font-semibold tabular-nums text-fg">
                         {entry.formattedValue}
@@ -214,7 +236,7 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
                         #{entry.globalRank} / {entry.globalTotal}
                       </span>
                       <span className="mt-0.5 block font-mono text-caption tabular-nums text-fg-muted">
-                        P{entry.globalPercentile} global
+                        P{entry.globalPercentile} {t("analytical.globalPercentile", "global")}
                       </span>
                     </div>
                   </div>
@@ -236,10 +258,12 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
                     entry.formattedRegionalAverage && (
                       <div className="flex flex-wrap items-center justify-between gap-1 text-caption text-fg-secondary">
                         <span>
-                          {entry.regionalRank}º/{entry.regionalTotal} em {entry.regionalGroupName}
+                          {locale === "en"
+                            ? `#${entry.regionalRank}/${entry.regionalTotal} ${t("analytical.inRegion", "em")} ${entry.regionalGroupName}`
+                            : `${entry.regionalRank}º/${entry.regionalTotal} em ${entry.regionalGroupName}`}
                         </span>
                         <span className="font-mono tabular-nums text-fg-muted">
-                          Média: {entry.formattedRegionalAverage}
+                          {t("analytical.avg", "Média:")} {entry.formattedRegionalAverage}
                           {entry.deltaVsRegionalAvgPct !== null && (
                             <span
                               className={cn(
@@ -248,7 +272,7 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
                               )}
                             >
                               ({deltaPositive ? "+" : ""}
-                              {entry.deltaVsRegionalAvgPct.toLocaleString("pt-BR")}%)
+                              {formatNumber(entry.deltaVsRegionalAvgPct, locale)}%)
                             </span>
                           )}
                         </span>
@@ -279,19 +303,21 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
 
         {profile.missingIndicators.length > 0 && profile.hasQuantitativeData && (
           <p className="text-caption text-fg-muted">
-            Indicadores sem publicação oficial na base atual para {profile.nameCommon}:{" "}
-            {profile.missingIndicators.map((m) => `${m.label} (${m.code})`).join(", ")}.
+            {t("analytical.missingPrefix", "Indicadores sem publicação oficial na base atual para")} {displayName}:{" "}
+            {profile.missingIndicators
+              .map((m) => `${localizeIndicatorLabel(m.code, m.label, t)} (${m.code})`)
+              .join(", ")}.
           </p>
         )}
       </section>
 
       {/* Países mais próximos nos indicadores (Pares Comparáveis) */}
       {profile.peers.length > 0 && (
-        <section aria-label="Países mais próximos nos indicadores" className="mb-6 space-y-3">
+        <section aria-label={t("analytical.peersTitle", "Países mais próximos nos indicadores")} className="mb-6 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="flex items-center gap-2 text-title font-semibold text-fg">
               <Users aria-hidden="true" className="h-4 w-4 text-accent" />
-              <span>Países mais próximos nos indicadores</span>
+              <span>{t("analytical.peersTitle", "Países mais próximos nos indicadores")}</span>
             </h2>
 
             <Button
@@ -301,43 +327,51 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
               onClick={handleCompareWithPeers}
             >
               <BarChart2 aria-hidden="true" className="h-3.5 w-3.5 text-accent" />
-              <span>Abrir no Comparador</span>
+              <span>{t("analytical.openInComparator", "Abrir no Comparador")}</span>
             </Button>
           </div>
 
           <p className="text-caption text-fg-muted">
-            Proximidade estatística calculada por distância padronizada (z-score) sobre os
-            indicadores reais compartilhados (PIB, PIB per capita, população, expectativa de vida,
-            renováveis e CO₂ per capita).
+            {t(
+              "analytical.peersDesc",
+              "Proximidade estatística calculada por distância padronizada (z-score) sobre os indicadores reais compartilhados (PIB, PIB per capita, população, expectativa de vida, renováveis e CO₂ per capita)."
+            )}
           </p>
 
           <div className="grid gap-2.5 sm:grid-cols-2">
-            {profile.peers.map((peer) => (
-              <button
-                key={peer.isoCode}
-                type="button"
-                onClick={() => handleNavigatePeer(peer.isoCode)}
-                className="flex items-center justify-between gap-3 rounded-card border border-line bg-surface-raised p-3 text-left transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover"
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="truncate text-label font-semibold text-fg">
-                      {peer.nameCommon}
+            {profile.peers.map((peer) => {
+              const peerName = formatCountryName(
+                WORLD_COUNTRIES_CATALOG[peer.isoCode]?.iso2,
+                peer.nameCommon,
+                locale
+              );
+              return (
+                <button
+                  key={peer.isoCode}
+                  type="button"
+                  onClick={() => handleNavigatePeer(peer.isoCode)}
+                  className="flex items-center justify-between gap-3 rounded-card border border-line bg-surface-raised p-3 text-left transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate text-label font-semibold text-fg">
+                        {peerName}
+                      </span>
+                      <span className="font-mono text-caption text-fg-muted">{peer.isoCode}</span>
+                    </div>
+                    <span className="block truncate text-caption text-fg-secondary">
+                      {peer.region || peer.continent || t("analytical.globalCatalog", "Catálogo global")}
+                      {peer.gdpPerCapita !== null
+                        ? ` · ${t("choropleth.ind.NY.GDP.PCAP.CD.short", "PIB/hab.")} $ ${formatNumber(Math.round(peer.gdpPerCapita), locale)}`
+                        : ""}
                     </span>
-                    <span className="font-mono text-caption text-fg-muted">{peer.isoCode}</span>
                   </div>
-                  <span className="block truncate text-caption text-fg-secondary">
-                    {peer.region || peer.continent || "Catálogo global"}
-                    {peer.gdpPerCapita !== null
-                      ? ` · PIB/hab. $ ${Math.round(peer.gdpPerCapita).toLocaleString("pt-BR")}`
-                      : ""}
+                  <span className="shrink-0 rounded-control border border-line bg-surface px-2 py-0.5 font-mono text-caption tabular-nums text-fg-secondary">
+                    {peer.similarityScore}%
                   </span>
-                </div>
-                <span className="shrink-0 rounded-control border border-line bg-surface px-2 py-0.5 font-mono text-caption tabular-nums text-fg-secondary">
-                  {peer.similarityScore}%
-                </span>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </section>
       )}
@@ -352,7 +386,7 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
             className={buttonClasses("secondary", "sm")}
           >
             <Compass aria-hidden="true" className="h-3.5 w-3.5" />
-            <span>Banco Mundial ({country.isoCode})</span>
+            <span>{t("common.worldBank", "Banco Mundial")} ({country.isoCode})</span>
             <ExternalLink aria-hidden="true" className="h-3 w-3" />
           </a>
           <a
@@ -361,7 +395,7 @@ export const AnalyticalProfileView: React.FC<AnalyticalProfileViewProps> = ({ co
             rel="noopener noreferrer"
             className={buttonClasses("secondary", "sm")}
           >
-            <span>Wikipédia ({country.nameCommon})</span>
+            <span>{t("common.wikipedia", "Wikipédia")} ({displayName})</span>
             <ExternalLink aria-hidden="true" className="h-3 w-3" />
           </a>
           {wikidataUrl && (

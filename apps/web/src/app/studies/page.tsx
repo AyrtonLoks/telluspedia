@@ -16,7 +16,10 @@ import { Card } from "@/components/ui/Card";
 import { StudyExportActions } from "@/components/study/StudyExportActions";
 import { getCountryData, WORLD_COUNTRIES_CATALOG } from "@/lib/country-data";
 import { HISTORICAL_ERAS, type HistoricalEraId } from "@/lib/historical-entities";
-import { formatStudyPeriod } from "@/lib/server-loaders";
+import { buildStudiesMetadata, formatStudyPeriod } from "@/lib/server-loaders";
+import { formatCountryName } from "@/lib/i18n/format";
+import { getServerLocale, pickLocaleText } from "@/lib/i18n/server";
+import type { Locale } from "@/lib/i18n/types";
 import {
   buildStudiesGalleryHref,
   listStudies,
@@ -25,29 +28,19 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Galeria de Estudos Públicos — TellusPedia",
-  description:
-    "Explore estudos geopolíticos, históricos e cósmicos compartilhados na TellusPedia, filtre por era, país ou modo de visualização, navegue pela árvore de forks e exporte em Markdown acadêmico ou JSON.",
-  openGraph: {
-    title: "Galeria de Estudos Públicos — TellusPedia",
-    description:
-      "Descoberta de estudos imutáveis, linhagem de forks e exportação acadêmica (ABNT/APA) na TellusPedia.",
-    type: "website",
-    locale: "pt_BR",
-    siteName: "TellusPedia",
-    url: "/studies",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  return buildStudiesMetadata(locale);
+}
 
 interface StudiesPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-function formatDatePtBr(iso: string): string {
+function formatStudyDate(iso: string, locale: Locale): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
-  return new Intl.DateTimeFormat("pt-BR", {
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -56,7 +49,8 @@ function formatDatePtBr(iso: string): string {
 }
 
 export default async function StudiesGalleryPage({ searchParams }: StudiesPageProps) {
-  const resolvedParams = await searchParams;
+  const [resolvedParams, locale] = await Promise.all([searchParams, getServerLocale()]);
+  const tx = (pt: string, en: string) => pickLocaleText(locale, pt, en);
   const query = parseStudyListQuery(resolvedParams);
   const result = await listStudies(query);
 
@@ -65,8 +59,8 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
   );
 
   const countryOptions = Object.entries(WORLD_COUNTRIES_CATALOG)
-    .map(([iso, entry]) => ({ iso, name: entry.nameCommon }))
-    .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    .map(([iso, entry]) => ({ iso, name: formatCountryName(entry.iso2, entry.nameCommon, locale) }))
+    .sort((a, b) => a.name.localeCompare(b.name, locale));
 
   const eraOptions = Object.values(HISTORICAL_ERAS);
 
@@ -76,42 +70,45 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
         <header className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-6">
           <div className="space-y-2">
             <nav
-              aria-label="Navegação principal"
+              aria-label={tx("Navegação principal", "Primary navigation")}
               className="flex flex-wrap items-center gap-4 text-label text-accent"
             >
               <Link href="/" className="hover:text-accent-hover hover:underline">
-                Globo 3D
+                {tx("Globo 3D", "3D Globe")}
               </Link>
               <Link href="/compare" className="hover:text-accent-hover hover:underline">
-                Comparador
+                {tx("Comparador", "Comparator")}
               </Link>
               <Link href="/telluslab" className="hover:text-accent-hover hover:underline">
                 TellusLab
               </Link>
             </nav>
             <h1 className="text-display font-semibold text-fg">
-              Galeria de Estudos Públicos
+              {tx("Galeria de Estudos Públicos", "Public Studies Gallery")}
             </h1>
             <p className="max-w-2xl text-body text-fg-secondary">
-              Snapshots imutáveis criados pela comunidade com recorte histórico, países selecionados, linhagem de forks e exportação acadêmica (ABNT/APA).
+              {tx(
+                "Snapshots imutáveis criados pela comunidade com recorte histórico, países selecionados, linhagem de forks e exportação acadêmica (ABNT/APA).",
+                "Immutable community snapshots with historical periods, selected countries, fork lineage, and academic export (ABNT/APA)."
+              )}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Badge tone="neutral">
               <span className="font-mono tabular-nums">{result.pagination.total}</span>{" "}
-              {result.pagination.total === 1 ? "estudo" : "estudos"}
+              {result.pagination.total === 1 ? tx("estudo", "study") : tx("estudos", "studies")}
             </Badge>
             <Link
               href="/"
               className="inline-flex h-9 items-center gap-2 rounded-control bg-accent px-4 text-label font-medium text-accent-on transition-colors duration-fast ease-out hover:bg-accent-hover"
             >
               <Globe2 aria-hidden="true" className="size-4" />
-              <span>Criar novo estudo</span>
+              <span>{tx("Criar novo estudo", "Create new study")}</span>
             </Link>
           </div>
         </header>
 
-        <section aria-label="Filtros de busca" className="mt-6">
+        <section aria-label={tx("Filtros de busca", "Search filters")} className="mt-6">
           <form
             method="get"
             action="/studies"
@@ -123,7 +120,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 htmlFor="studies-q"
                 className="mb-1 block text-caption font-medium text-fg-secondary"
               >
-                Buscar por título ou descrição
+                {tx("Buscar por título ou descrição", "Search by title or description")}
               </label>
               <div className="relative">
                 <Search
@@ -135,7 +132,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                   name="q"
                   type="search"
                   defaultValue={query.q}
-                  placeholder="Ex.: Guerra Fria, Brasil, Apolo…"
+                  placeholder={tx("Ex.: Guerra Fria, Brasil, Apolo…", "e.g. Cold War, Brazil, Apollo…")}
                   className="h-9 w-full rounded-control border border-line-strong bg-surface-sunken pl-9 pr-3 text-label text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
                 />
               </div>
@@ -146,7 +143,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 htmlFor="studies-era"
                 className="mb-1 block text-caption font-medium text-fg-secondary"
               >
-                Era histórica
+                {tx("Era histórica", "Historical era")}
               </label>
               <select
                 id="studies-era"
@@ -154,7 +151,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 defaultValue={query.era ?? ""}
                 className="h-9 w-full rounded-control border border-line-strong bg-surface-sunken px-3 text-label text-fg focus:border-accent focus:outline-none"
               >
-                <option value="">Todas as eras</option>
+                <option value="">{tx("Todas as eras", "All eras")}</option>
                 {eraOptions.map((era) => (
                   <option key={era.id} value={era.id}>
                     {era.label}
@@ -168,7 +165,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 htmlFor="studies-country"
                 className="mb-1 block text-caption font-medium text-fg-secondary"
               >
-                País incluído
+                {tx("País incluído", "Included country")}
               </label>
               <select
                 id="studies-country"
@@ -176,7 +173,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 defaultValue={query.country ?? ""}
                 className="h-9 w-full rounded-control border border-line-strong bg-surface-sunken px-3 text-label text-fg focus:border-accent focus:outline-none"
               >
-                <option value="">Todos os países</option>
+                <option value="">{tx("Todos os países", "All countries")}</option>
                 {countryOptions.map((item) => (
                   <option key={item.iso} value={item.iso}>
                     {item.name} ({item.iso})
@@ -190,7 +187,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 htmlFor="studies-cosmic"
                 className="mb-1 block text-caption font-medium text-fg-secondary"
               >
-                Modo
+                {tx("Modo", "Mode")}
               </label>
               <select
                 id="studies-cosmic"
@@ -200,9 +197,9 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 }
                 className="h-9 w-full rounded-control border border-line-strong bg-surface-sunken px-3 text-label text-fg focus:border-accent focus:outline-none"
               >
-                <option value="">Todos</option>
-                <option value="false">Terrestre</option>
-                <option value="true">Cósmico</option>
+                <option value="">{tx("Todos", "All")}</option>
+                <option value="false">{tx("Terrestre", "Earth")}</option>
+                <option value="true">{tx("Cósmico", "Cosmic")}</option>
               </select>
             </div>
 
@@ -212,7 +209,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                   href="/studies"
                   className="inline-flex h-9 items-center rounded-control border border-line bg-surface-raised px-3.5 text-label font-medium text-fg-secondary transition-colors duration-fast ease-out hover:border-line-strong hover:text-fg"
                 >
-                  Limpar filtros
+                  {tx("Limpar filtros", "Clear filters")}
                 </Link>
               )}
               <button
@@ -220,7 +217,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 className="inline-flex h-9 items-center gap-2 rounded-control bg-accent px-4 text-label font-medium text-accent-on transition-colors duration-fast ease-out hover:bg-accent-hover"
               >
                 <Search aria-hidden="true" className="size-4" />
-                <span>Filtrar estudos</span>
+                <span>{tx("Filtrar estudos", "Filter studies")}</span>
               </button>
             </div>
           </form>
@@ -231,7 +228,10 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
             role="status"
             className="mt-4 rounded-card border border-warning/40 bg-warning/10 px-4 py-3 text-caption text-warning"
           >
-            Banco PostgreSQL indisponível neste ambiente de desenvolvimento — exibindo estudos temporários armazenados em memória.
+            {tx(
+              "Banco PostgreSQL indisponível neste ambiente de desenvolvimento — exibindo estudos temporários armazenados em memória.",
+              "PostgreSQL database unavailable in this development environment — displaying temporary in-memory studies."
+            )}
           </div>
         )}
 
@@ -241,10 +241,13 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
             className="mt-6 rounded-panel border border-danger/40 bg-danger/10 p-6 text-center"
           >
             <p className="text-title font-semibold text-fg">
-              Banco de dados de estudos temporariamente indisponível
+              {tx("Banco de dados de estudos temporariamente indisponível", "Studies database temporarily unavailable")}
             </p>
             <p className="mt-2 text-body text-fg-secondary">
-              Não foi possível consultar a galeria pública no momento. Tente atualizar a página em instantes.
+              {tx(
+                "Não foi possível consultar a galeria pública no momento. Tente atualizar a página em instantes.",
+                "Could not query the public gallery right now. Please refresh the page in a moment."
+              )}
             </p>
           </div>
         )}
@@ -255,10 +258,13 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
             className="mt-8 rounded-panel border border-line bg-surface p-10 text-center"
           >
             <p className="text-title font-semibold text-fg">
-              Nenhum estudo encontrado para este recorte
+              {tx("Nenhum estudo encontrado para este recorte", "No studies found for these filters")}
             </p>
             <p className="mt-2 text-body text-fg-secondary">
-              Ajuste os filtros acima ou abra o globo 3D para registrar um novo snapshot imutável.
+              {tx(
+                "Ajuste os filtros acima ou abra o globo 3D para registrar um novo snapshot imutável.",
+                "Adjust the filters above or open the 3D globe to save a new immutable snapshot."
+              )}
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               {hasActiveFilters && (
@@ -266,14 +272,14 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                   href="/studies"
                   className="inline-flex h-9 items-center rounded-control border border-line bg-surface-raised px-4 text-label font-medium text-fg transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover"
                 >
-                  Ver todos os estudos
+                  {tx("Ver todos os estudos", "View all studies")}
                 </Link>
               )}
               <Link
                 href="/"
                 className="inline-flex h-9 items-center rounded-control bg-accent px-4 text-label font-medium text-accent-on transition-colors duration-fast ease-out hover:bg-accent-hover"
               >
-                Abrir globo 3D
+                {tx("Abrir globo 3D", "Open 3D globe")}
               </Link>
             </div>
           </div>
@@ -281,7 +287,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
 
         {result.items.length > 0 && (
           <section
-            aria-label="Lista de estudos públicos"
+            aria-label={tx("Lista de estudos públicos", "Public studies list")}
             className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
           >
             {result.items.map((study) => {
@@ -291,7 +297,13 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                   : null;
               const countryLabels = study.selectedCountryIsos
                 .slice(0, 4)
-                .map((iso) => ({ iso, name: getCountryData(iso)?.nameCommon ?? iso }));
+                .map((iso) => {
+                  const c = getCountryData(iso);
+                  return {
+                    iso,
+                    name: c ? formatCountryName(c.iso2, c.nameCommon, locale) : iso,
+                  };
+                });
               const extraCountries = Math.max(0, study.selectedCountryIsos.length - 4);
 
               return (
@@ -304,13 +316,13 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-1.5 font-mono text-caption text-fg-muted tabular-nums">
                         <Calendar aria-hidden="true" className="size-3.5" />
-                        {formatStudyPeriod(study)}
+                        {formatStudyPeriod(study, locale)}
                       </span>
                       <div className="flex flex-wrap items-center gap-1.5">
                         {study.isCosmicMode ? (
                           <Badge tone="warning">
                             <Orbit aria-hidden="true" className="size-3" />
-                            <span>Cósmico</span>
+                            <span>{tx("Cósmico", "Cosmic")}</span>
                           </Badge>
                         ) : eraDef && eraDef.id !== "CONTEMPORARY" ? (
                           <Badge tone="cat-politics">
@@ -320,7 +332,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                         ) : (
                           <Badge tone="neutral">
                             <Compass aria-hidden="true" className="size-3" />
-                            <span>Globo</span>
+                            <span>{tx("Globo", "Globe")}</span>
                           </Badge>
                         )}
                       </div>
@@ -369,7 +381,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                         >
                           <ArrowUpLeft aria-hidden="true" className="size-3 shrink-0" />
                           <span className="truncate">
-                            Fork de {study.parentTitle || study.parentId}
+                            {tx("Fork de", "Fork of")} {study.parentTitle || study.parentId}
                           </span>
                         </Link>
                       )}
@@ -380,7 +392,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                         </span>
                       )}
                       <span className="font-mono tabular-nums">
-                        {formatDatePtBr(study.createdAt)}
+                        {formatStudyDate(study.createdAt, locale)}
                       </span>
                     </div>
                   </div>
@@ -390,7 +402,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                       href={`/study/${encodeURIComponent(study.id)}`}
                       className="inline-flex h-8 items-center rounded-control bg-accent px-3 text-caption font-medium text-accent-on transition-colors duration-fast ease-out hover:bg-accent-hover"
                     >
-                      Abrir estudo
+                      {tx("Abrir estudo", "Open study")}
                     </Link>
                     <StudyExportActions study={study} compact />
                   </div>
@@ -402,7 +414,7 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
 
         {result.pagination.totalPages > 1 && (
           <nav
-            aria-label="Paginação da galeria"
+            aria-label={tx("Paginação da galeria", "Gallery pagination")}
             className="mt-8 flex items-center justify-between border-t border-line pt-5 text-label"
           >
             {result.pagination.page > 1 ? (
@@ -413,16 +425,16 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 })}
                 className="inline-flex h-9 items-center rounded-control border border-line bg-surface-raised px-4 text-fg transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover"
               >
-                ← Anterior
+                {tx("← Anterior", "← Previous")}
               </Link>
             ) : (
               <span className="inline-flex h-9 items-center rounded-control border border-line px-4 text-fg-muted opacity-50">
-                ← Anterior
+                {tx("← Anterior", "← Previous")}
               </span>
             )}
 
             <span className="font-mono text-caption text-fg-secondary tabular-nums">
-              Página {result.pagination.page} de {result.pagination.totalPages}
+              {tx("Página", "Page")} {result.pagination.page} {tx("de", "of")} {result.pagination.totalPages}
             </span>
 
             {result.pagination.page < result.pagination.totalPages ? (
@@ -433,11 +445,11 @@ export default async function StudiesGalleryPage({ searchParams }: StudiesPagePr
                 })}
                 className="inline-flex h-9 items-center rounded-control border border-line bg-surface-raised px-4 text-fg transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover"
               >
-                Próxima →
+                {tx("Próxima →", "Next →")}
               </Link>
             ) : (
               <span className="inline-flex h-9 items-center rounded-control border border-line px-4 text-fg-muted opacity-50">
-                Próxima →
+                {tx("Próxima →", "Next →")}
               </span>
             )}
           </nav>

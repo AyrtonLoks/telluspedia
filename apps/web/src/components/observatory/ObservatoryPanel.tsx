@@ -36,6 +36,9 @@ import { Switch } from "@/components/ui/Switch";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TONES, type Tone } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
+import { useI18n, type TranslateFn } from "@/lib/i18n/useT";
+import type { Locale } from "@/lib/i18n/types";
+import { formatNumber } from "@/lib/i18n/format";
 
 // Controles do GIBS só baixam quando a camada é aberta (D25: não pesar no primeiro carregamento).
 const GibsLayerControls = dynamic(() => import("./GibsLayerControls").then((m) => m.GibsLayerControls), {
@@ -55,7 +58,7 @@ interface LayerOption {
   description: string;
   icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
   tone: Tone;
-  badgeText: (state: ReturnType<typeof useObservatoryStore.getState>) => string;
+  badgeText: (state: ReturnType<typeof useObservatoryStore.getState>, locale: Locale, t: TranslateFn) => string;
 }
 
 const LAYER_OPTIONS: LayerOption[] = [
@@ -66,7 +69,8 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Anomalias térmicas globais detectadas por satélite (VIIRS/MODIS): focos de calor ativos.",
     icon: Flame,
     tone: "layer-fires",
-    badgeText: (s) => `${(s.firmsTotal ?? s.firmsHotspots?.length ?? 0).toLocaleString("pt-BR")} focos ativos`,
+    badgeText: (s, locale, t) =>
+      `${formatNumber(s.firmsTotal ?? s.firmsHotspots?.length ?? 0, locale)} ${t("obs.badge.hotspots", "focos ativos")}`,
   },
   {
     id: "NASA_EONET",
@@ -75,11 +79,11 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Monitoramento de tempestades, vulcões, secas e eventos naturais.",
     icon: Activity,
     tone: "layer-events",
-    badgeText: (s: ReturnType<typeof useObservatoryStore.getState>) => {
+    badgeText: (s, locale, t) => {
       const count = s.eonetCategory === "all"
         ? s.eonetEvents.length
         : s.eonetEvents.filter((event) => event.category === s.eonetCategory).length;
-      return `${count.toLocaleString("pt-BR")} eventos`;
+      return `${formatNumber(count, locale)} ${t("obs.badge.events", "eventos")}`;
     },
   },
   {
@@ -89,10 +93,10 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Estação Espacial Internacional e satélites: posição real, órbita e rastro na superfície.",
     icon: Radio,
     tone: "layer-satellites",
-    badgeText: (s) =>
+    badgeText: (s, locale, t) =>
       typeof s.issTelemetry?.altitudeKm === "number"
-        ? `Altitude: ${s.issTelemetry.altitudeKm.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km`
-        : "Calculando órbita…",
+        ? `${t("obs.badge.altitude", "Altitude")}: ${formatNumber(s.issTelemetry.altitudeKm, locale, { maximumFractionDigits: 1 })} km`
+        : t("obs.badge.calculatingOrbit", "Calculando órbita…"),
   },
   {
     id: "FLIGHTS_OPENSKY",
@@ -101,7 +105,8 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Amostra global de aeronaves em voo. A posição entre transmissões é estimada.",
     icon: Plane,
     tone: "layer-aircraft",
-    badgeText: (s) => `${(s.aircraftFleet?.length ?? 0).toLocaleString("pt-BR")} voos`,
+    badgeText: (s, locale, t) =>
+      `${formatNumber(s.aircraftFleet?.length ?? 0, locale)} ${t("obs.badge.flights", "voos")}`,
   },
   {
     id: "MARITIME_ROUTES",
@@ -110,7 +115,8 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Amostra AIS em seis regiões monitoradas. Os números variam conforme as posições recebidas.",
     icon: Anchor,
     tone: "layer-maritime",
-    badgeText: (s) => `${s.ais.vessels.length.toLocaleString("pt-BR")} embarcações`,
+    badgeText: (s, locale, t) =>
+      `${formatNumber(s.ais.vessels.length, locale)} ${t("obs.badge.vessels", "embarcações")}`,
   },
   {
     id: "NASA_GIBS",
@@ -119,8 +125,11 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Mapas globais mensais de vegetação, neve, gelo marinho e temperatura da superfície, desde 2000.",
     icon: Satellite,
     tone: "layer-satellites",
-    badgeText: (s: ReturnType<typeof useObservatoryStore.getState>) =>
-      s.gibs ? `${GIBS_PRODUCTS[s.gibs.product].shortName} · ${formatGibsMonth(s.gibs.imageMonth)}` : GIBS_PRODUCTS[s.gibsProduct].shortName,
+    badgeText: (s, locale, t) => {
+      const pid = s.gibs ? s.gibs.product : s.gibsProduct;
+      const shortName = t(`obs.gibs.${pid}.short`, GIBS_PRODUCTS[pid].shortName);
+      return s.gibs ? `${shortName} · ${formatGibsMonth(s.gibs.imageMonth, locale)}` : shortName;
+    },
   },
   {
     id: "GLOBAL_WINDS",
@@ -129,29 +138,30 @@ const LAYER_OPTIONS: LayerOption[] = [
     description: "Circulação atmosférica (10 m e jato 250 hPa) e correntes oceânicas superficiais com partículas GPU.",
     icon: Wind,
     tone: "layer-satellites",
-    badgeText: (s: ReturnType<typeof useObservatoryStore.getState>) => {
+    badgeText: (s, locale, t) => {
       if (s.flowMode === "both") {
         const level = s.windAltitude === "jet250" ? "250 hPa" : "10 m";
-        return `${level} + Oceanos`;
+        return `${level} + ${t("obs.badge.oceans", "Oceanos")}`;
       }
       if (s.flowMode === "currents") {
-        if (!s.currents) return "Correntes";
+        if (!s.currents) return t("obs.badge.currents", "Correntes");
         const val = s.currentUnit === "knots" ? s.currents.maxSpeedMs * 1.9438444924 : s.currents.maxSpeedMs;
-        const unit = s.currentUnit === "knots" ? "nós" : "m/s";
-        return `Oceanos · ${val.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${unit}`;
+        const unit = s.currentUnit === "knots" ? t("obs.badge.knots", "nós") : "m/s";
+        return `${t("obs.badge.oceans", "Oceanos")} · ${formatNumber(val, locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${unit}`;
       }
       const grid = s.winds ? s.winds[s.windAltitude] : null;
       const level = s.windAltitude === "jet250" ? "250 hPa" : "10 m";
       if (!grid) return level;
       const factor = s.windUnit === "knots" ? 1.9438444924 : 3.6;
-      const unit = s.windUnit === "knots" ? "nós" : "km/h";
-      return `${level} · ${Math.round(grid.maxSpeedMs * factor).toLocaleString("pt-BR")} ${unit}`;
+      const unit = s.windUnit === "knots" ? t("obs.badge.knots", "nós") : "km/h";
+      return `${level} · ${formatNumber(Math.round(grid.maxSpeedMs * factor), locale)} ${unit}`;
     },
   },
 ];
 
 /** Opacidade da camada no globo (o store guarda 0–1; as camadas já leem `layerOpacity`). */
 const LayerOpacity: React.FC<{ layer: LayerOption }> = ({ layer }) => {
+  const { t } = useI18n();
   const id = useId();
   const storeValue = useObservatoryStore((s) => s.layerOpacity[layer.id] ?? 1);
   const value = typeof window === "undefined" ? (useObservatoryStore.getState().layerOpacity[layer.id] ?? 1) : storeValue;
@@ -159,7 +169,7 @@ const LayerOpacity: React.FC<{ layer: LayerOption }> = ({ layer }) => {
   const pct = Math.round(value * 100);
   return (
     <div className="flex items-center gap-3">
-      <label htmlFor={id} className="w-16 shrink-0 text-caption text-fg-secondary">Opacidade</label>
+      <label htmlFor={id} className="w-16 shrink-0 text-caption text-fg-secondary">{t("obs.opacity", "Opacidade")}</label>
       <input
         id={id}
         data-testid={`layer-opacity-${layer.id}`}
@@ -178,6 +188,7 @@ const LayerOpacity: React.FC<{ layer: LayerOption }> = ({ layer }) => {
 };
 
 export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }> = ({ initialExpanded }) => {
+  const { locale, t } = useI18n();
   // Opções de cada camada (descrição, controles, opacidade, TellusLab) ficam recolhidas (D16).
   const [expanded, setExpanded] = useState<ReadonlySet<ObservatoryLayer>>(() => new Set(initialExpanded));
   const toggleExpanded = (id: ObservatoryLayer) =>
@@ -218,12 +229,12 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
 
   // Posicionamento e convivência com outros painéis: RightDock (D15). Aqui o painel só preenche o dock.
   return (
-    <aside aria-label="Observatório Planetário" data-testid="observatory-panel" className="flex min-h-0 flex-1 flex-col">
+    <aside aria-label={t("obs.title", "Observatório Planetário")} data-testid="observatory-panel" className="flex min-h-0 flex-1 flex-col">
       <PanelHeader
-        title="Observatório Planetário"
+        title={t("obs.title", "Observatório Planetário")}
         subtitle="NASA · OpenSky · CelesTrak"
         icon={<Radio />}
-        actions={<IconButton label="Fechar painel do observatório" icon={<X />} size="sm" onClick={() => setPanelOpen(false)} />}
+        actions={<IconButton label={t("obs.closeAria", "Fechar painel do observatório")} icon={<X />} size="sm" onClick={() => setPanelOpen(false)} />}
       />
 
       {/* Aviso de anacronismo (RN09 & RN10) */}
@@ -234,14 +245,14 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
         >
           <AlertTriangle aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
           <div className="space-y-1">
-            <div className="text-label font-semibold text-fg">Telemetria Contemporânea Pausada</div>
+            <div className="text-label font-semibold text-fg">{t("obs.anachronismTitle", "Telemetria Contemporânea Pausada")}</div>
             <div className="text-caption text-fg-secondary">
               {effectiveMa
-                ? `A era geológica ativa (${effectiveMa} Ma atrás) precede a formação da atmosfera moderna e da civilização.`
+                ? `${t("obs.anachronismGeoPrefix", "A era geológica ativa")} (${effectiveMa} ${t("obs.anachronismGeoSuffix", "Ma atrás) precede a formação da atmosfera moderna e da civilização.")}`
                 : activeSceneData
-                ? `${activeSceneData.title} precede a Era Espacial (1957).`
-                : `O ano selecionado (${epoch.effectiveYear}) precede a Era Espacial (1957).`}
-              {" "}Satélites artificiais, queimadas orbitais e tráfego aéreo estão suprimidos nesta época.
+                ? `${activeSceneData.title} ${t("obs.anachronismSceneSuffix", "precede a Era Espacial (1957).")}`
+                : `${t("obs.anachronismYearPrefix", "O ano selecionado")} (${epoch.effectiveYear}) ${t("obs.anachronismYearSuffix", "precede a Era Espacial (1957).")}`}
+              {" "}{t("obs.anachronismNote", "Satélites artificiais, queimadas orbitais e tráfego aéreo estão suprimidos nesta época.")}
             </div>
           </div>
         </div>
@@ -255,6 +266,8 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
           const Icon = layer.icon;
           const tone = TONES[layer.tone];
           const optionsId = `layer-options-${layer.id}`;
+          const layerName = t(`obs.layer.${layer.id}.name`, layer.name);
+          const layerDesc = t(`obs.layer.${layer.id}.desc`, layer.description);
 
           return (
             <li
@@ -267,14 +280,14 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
             >
               <div className="flex items-center gap-3">
                 <Icon aria-hidden className={cn("h-4 w-4 shrink-0", tone.text, !isActive && "opacity-60")} />
-                <div className="flex min-w-0 flex-1 flex-col" title={layer.description}>
-                  <h3 className="truncate text-label font-medium text-fg">{layer.name}</h3>
+                <div className="flex min-w-0 flex-1 flex-col" title={layerDesc}>
+                  <h3 className="truncate text-label font-medium text-fg">{layerName}</h3>
                   {isActive ? (
                     <span className="flex min-w-0 items-center gap-2">
                       {storeState.isLoading[layer.id] && !storeState.hasLoaded[layer.id] ? (
                         <Skeleton className="h-3 w-20" />
                       ) : (
-                        <span className="truncate font-mono text-caption tabular-nums text-fg-secondary">{layer.badgeText(storeState)}</span>
+                        <span className="truncate font-mono text-caption tabular-nums text-fg-secondary">{layer.badgeText(storeState, locale, t)}</span>
                       )}
                       <DataSourceBadge
                         testId={`layer-source-${layer.id}`}
@@ -311,7 +324,11 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                 </div>
                 {isActive && (
                   <IconButton
-                    label={isOpen ? `Ocultar opções de ${layer.name}` : `Opções de ${layer.name}`}
+                    label={
+                      isOpen
+                        ? `${t("obs.hideOptions", "Ocultar opções de")} ${layerName}`
+                        : `${t("obs.showOptions", "Opções de")} ${layerName}`
+                    }
                     aria-expanded={isOpen}
                     aria-controls={optionsId}
                     data-testid={`layer-options-toggle-${layer.id}`}
@@ -323,7 +340,7 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                 <Switch
                   data-testid={`layer-toggle-${layer.id}`}
                   checked={isActive}
-                  label={layer.name}
+                  label={layerName}
                   onCheckedChange={() => toggleLayer(layer.id)}
                 />
               </div>
@@ -331,7 +348,7 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
               {isOpen && (
                 <div id={optionsId} data-testid={optionsId} className="mt-2 space-y-3 border-t border-line pb-1 pl-7 pt-2">
                   <p className="text-caption text-fg-secondary">
-                    {layer.description} <span className="text-fg-muted">Fonte: {layer.source}.</span>
+                    {layerDesc} <span className="text-fg-muted">{t("common.source", "Fonte")}: {layer.source}.</span>
                   </p>
                   {layer.id === "NASA_EONET" && <EonetLayerControls />}
                   {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
@@ -356,12 +373,12 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
       <PanelFooter className="justify-between">
         <span className="flex items-center gap-1.5 text-caption text-fg-muted">
           <Layers aria-hidden="true" className="h-4 w-4" />
-          {activeLayers.length} camadas ativas
+          {activeLayers.length} {t("obs.activeLayersCount", "camadas ativas")}
         </span>
         {activeLayers.length > 0 && (
           <Button variant="ghost" size="sm" onClick={resetObservatory}>
             <RotateCcw aria-hidden="true" className="h-4 w-4" />
-            Limpar Camadas
+            {t("obs.clearLayers", "Limpar Camadas")}
           </Button>
         )}
       </PanelFooter>

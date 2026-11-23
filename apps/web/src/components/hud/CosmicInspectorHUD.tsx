@@ -30,6 +30,8 @@ import { Panel } from "@/components/ui/Panel";
 import { Badge } from "@/components/ui/Badge";
 import { useRightDock } from "@/components/layout/useRightDock";
 import { clearCelestialFocus } from "@/stores/actions";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatNumber } from "@/lib/i18n/format";
 
 const HALLEY_EPOCH_PRESETS = [
   { id: "perihelion-1986", label: "Periélio 1986", sublabel: "0,59 UA · cauda máx.", year: 1986.1081 },
@@ -58,6 +60,7 @@ export interface CosmicInspectorHUDProps {
 }
 
 export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placement }) => {
+  const { locale, t } = useI18n();
   const isDockVisible = useRightDock().visible;
   const storeIsCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const isCosmicMode =
@@ -122,19 +125,19 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
             ? "border-accent text-accent"
             : "border-line text-fg hover:border-line-strong hover:bg-surface-hover"
         )}
-        title="Alternar camadas cósmicas"
+        title={t("cosmic.layersTitle", "Alternar camadas cósmicas")}
       >
         <Layers aria-hidden="true" className="h-4 w-4 text-accent" />
-        <span>Camadas Cósmicas</span>
+        <span>{t("cosmic.layersButton", "Camadas Cósmicas")}</span>
       </button>
 
       {showLayerPanel && (
         <Panel className="w-56 space-y-3 p-3 text-label">
           <div className="space-y-1.5">
-            <h4 className="text-caption font-medium text-fg-muted">Camadas visuais</h4>
+            <h4 className="text-caption font-medium text-fg-muted">{t("cosmic.visualLayers", "Camadas visuais")}</h4>
             <div className="flex flex-col gap-1">
               {ALL_COSMIC_LAYERS.map((layerId) => {
-                const label = COSMIC_LAYER_LABELS[layerId];
+                const label = t(`cosmic.layer.${layerId}`, COSMIC_LAYER_LABELS[layerId]);
                 const isActive = activeCosmicLayers.includes(layerId);
                 return (
                   <button
@@ -165,13 +168,13 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
 
           <div className="space-y-1.5 border-t border-line pt-2.5">
             <h4 id="cosmic-scale-heading" className="text-caption font-medium text-fg-muted">
-              Tamanho dos corpos
+              {t("cosmic.bodySizes", "Tamanho dos corpos")}
             </h4>
             <div role="group" aria-labelledby="cosmic-scale-heading" className="grid grid-cols-2 gap-1">
               {(
                 [
-                  ["visual", "Visual"],
-                  ["real", "Real"],
+                  ["visual", t("cosmic.scale.visual", "Visual")],
+                  ["real", t("cosmic.scale.real", "Real")],
                 ] as const
               ).map(([mode, label]) => (
                 <button
@@ -193,8 +196,8 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
             </div>
             <p className="text-caption text-fg-muted">
               {scaleMode === "real"
-                ? "Raios na proporção real entre os corpos. As distâncias continuam comprimidas."
-                : "Raios exagerados por um fator único para todos ficarem visíveis. Distâncias comprimidas."}
+                ? t("cosmic.scale.realDesc", "Raios na proporção real entre os corpos. As distâncias continuam comprimidas.")
+                : t("cosmic.scale.visualDesc", "Raios exagerados por um fator único para todos ficarem visíveis. Distâncias comprimidas.")}
             </p>
           </div>
 
@@ -204,7 +207,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
             rel="noreferrer"
             className="inline-block text-caption text-accent underline underline-offset-2 hover:text-accent-hover"
           >
-            Fontes do céu
+            {t("cosmic.skySources", "Fontes do céu")}
           </a>
         </Panel>
       )}
@@ -252,11 +255,17 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
   }
 
   const handleCopyCitation = () => {
-    const citation = `NASA / JPL (2026). ${meta.name} Fact Sheet. Consultado em TellusPedia em ${new Date().toLocaleDateString("pt-BR")}. Disponível em: <${meta.citationUrl}>.`;
+    const citation =
+      locale === "en"
+        ? `NASA / JPL (2026). ${meta.name} Fact Sheet. Accessed on TellusPedia on ${new Date().toLocaleDateString("en-US")}. Available at: <${meta.citationUrl}>.`
+        : `NASA / JPL (2026). ${meta.name} Fact Sheet. Consultado em TellusPedia em ${new Date().toLocaleDateString("pt-BR")}. Disponível em: <${meta.citationUrl}>.`;
     navigator.clipboard?.writeText(citation);
     setCopiedCitation(true);
     setTimeout(() => setCopiedCitation(false), 2000);
   };
+
+  const auUnit = t("cosmic.au", "UA");
+  const mkmUnit = t("cosmic.mkm", "mi km");
 
   return (
     <aside
@@ -275,16 +284,18 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="truncate text-title font-semibold text-fg">{meta.namePt}</h2>
+              <h2 className="truncate text-title font-semibold text-fg">
+                {locale === "en" ? meta.name : meta.namePt}
+              </h2>
               <Badge tone="neutral">{meta.category}</Badge>
             </div>
             <p className="mt-0.5 font-mono text-caption tabular-nums text-fg-muted">
-              Época: {formatCosmicEpoch(selectedYear)}
+              {t("cosmic.epoch", "Época")}: {formatCosmicEpoch(selectedYear)}
             </p>
           </div>
         </div>
         <IconButton
-          label="Fechar painel e deselecionar"
+          label={t("cosmic.closeAria", "Fechar painel e deselecionar")}
           icon={<X />}
           size="sm"
           onClick={clearCelestialFocus}
@@ -294,22 +305,22 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
       {/* Real-time Telemetry Grid */}
       <div className="grid grid-cols-2 gap-2">
         <div className="rounded-card border border-line bg-surface-raised p-2.5">
-          <span className="block text-caption text-fg-secondary">Distância até o Sol</span>
+          <span className="block text-caption text-fg-secondary">{t("cosmic.distSun", "Distância até o Sol")}</span>
           <span className="mt-0.5 block font-mono text-body font-medium tabular-nums text-warning">
-            {distanceSunAu} UA
+            {distanceSunAu} {auUnit}
           </span>
           <span className="font-mono text-caption tabular-nums text-fg-muted">
-            {distanceSunMkm.toLocaleString("pt-BR")} mi km
+            {formatNumber(distanceSunMkm, locale)} {mkmUnit}
           </span>
         </div>
 
         <div className="rounded-card border border-line bg-surface-raised p-2.5">
-          <span className="block text-caption text-fg-secondary">Distância até a Terra</span>
+          <span className="block text-caption text-fg-secondary">{t("cosmic.distEarth", "Distância até a Terra")}</span>
           <span className="mt-0.5 block font-mono text-body font-medium tabular-nums text-fg">
-            {distanceEarthAu} UA
+            {distanceEarthAu} {auUnit}
           </span>
           <span className="font-mono text-caption tabular-nums text-fg-muted">
-            {distanceEarthMkm.toLocaleString("pt-BR")} mi km
+            {formatNumber(distanceEarthMkm, locale)} {mkmUnit}
           </span>
         </div>
       </div>
@@ -322,7 +333,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
         >
           <div className="flex items-center justify-between gap-2">
             <span className="text-caption font-medium text-fg-secondary">
-              Atividade cometária
+              {t("cosmic.halleyActivity", "Atividade cometária")}
             </span>
             <span
               data-testid="halley-tail-status"
@@ -340,7 +351,9 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                   halleyTelemetry.hasTail ? "bg-accent" : "bg-fg-muted"
                 )}
               />
-              {halleyTelemetry.hasTail ? "Cauda dupla ativa" : "Sem cauda (afélio)"}
+              {halleyTelemetry.hasTail
+                ? t("cosmic.halleyTailActive", "Cauda dupla ativa")
+                : t("cosmic.halleyTailInactive", "Sem cauda (afélio)")}
             </span>
           </div>
 
@@ -348,7 +361,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-caption">
                 <span className="text-fg-secondary">
-                  Sublimação solar (&lt; {HALLEY_TAIL_ACTIVATION_AU} UA)
+                  {t("cosmic.halleySublimation", "Sublimação solar")} (&lt; {HALLEY_TAIL_ACTIVATION_AU} {auUnit})
                 </span>
                 <span className="font-mono tabular-nums text-accent">
                   {Math.round(halleyTelemetry.activityFactor * 100)}%
@@ -361,12 +374,16 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                 />
               </div>
               <p className="text-caption text-fg-muted">
-                Cauda iônica azulada (anti-solar) e cauda de poeira amarelada curvada.
+                {t("cosmic.halleyTailDesc", "Cauda iônica azulada (anti-solar) e cauda de poeira amarelada curvada.")}
               </p>
             </div>
           ) : (
             <p className="text-caption text-fg-muted">
-              Acima de {HALLEY_TAIL_ACTIVATION_AU} UA o gelo não sublima; apenas o núcleo rochoso e uma coma residual ficam visíveis.
+              {t("cosmic.halleyAbove", "Acima de")} {HALLEY_TAIL_ACTIVATION_AU} {auUnit}{" "}
+              {t(
+                "cosmic.halleyNoTailDesc",
+                "o gelo não sublima; apenas o núcleo rochoso e uma coma residual ficam visíveis."
+              )}
             </p>
           )}
 
@@ -387,9 +404,11 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
                       : "border-line bg-surface text-fg hover:border-line-strong"
                   )}
                 >
-                  <span className="text-caption font-medium leading-tight">{preset.label}</span>
+                  <span className="text-caption font-medium leading-tight">
+                    {t(`cosmic.halley.${preset.id}.label`, preset.label)}
+                  </span>
                   <span className="font-mono text-caption leading-tight tabular-nums text-fg-muted">
-                    {preset.sublabel}
+                    {t(`cosmic.halley.${preset.id}.sub`, preset.sublabel)}
                   </span>
                 </button>
               );
@@ -400,45 +419,47 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
 
       {/* Astrophysical Fact Sheet */}
       <div className="space-y-1.5 text-label">
-        <h3 className="text-caption font-medium text-fg-muted">Propriedades Astrofísicas</h3>
+        <h3 className="text-caption font-medium text-fg-muted">{t("cosmic.propsTitle", "Propriedades Astrofísicas")}</h3>
         <div className="divide-y divide-line rounded-card border border-line bg-surface-raised p-2.5 text-caption">
           <div className="flex items-center justify-between py-1">
-            <span className="text-fg-secondary">Raio equatorial</span>
+            <span className="text-fg-secondary">{t("cosmic.equatorialRadius", "Raio equatorial")}</span>
             <span className="font-mono tabular-nums text-fg">
-              {meta.equatorialRadiusKm.toLocaleString("pt-BR")} km
+              {formatNumber(meta.equatorialRadiusKm, locale)} km
             </span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-fg-secondary">Massa</span>
+            <span className="text-fg-secondary">{t("cosmic.mass", "Massa")}</span>
             <span className="font-mono tabular-nums text-fg">{meta.massKg} kg</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-fg-secondary">Gravidade superficial</span>
+            <span className="text-fg-secondary">{t("cosmic.surfaceGravity", "Gravidade superficial")}</span>
             <span className="font-mono tabular-nums text-fg">{meta.surfaceGravityMs2} m/s²</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-fg-secondary">Período orbital</span>
+            <span className="text-fg-secondary">{t("cosmic.orbitalPeriod", "Período orbital")}</span>
             <span className="font-mono tabular-nums text-fg">
-              {meta.orbitalPeriodDays > 0 ? `${meta.orbitalPeriodDays} dias` : "Centro Heliocêntrico"}
+              {meta.orbitalPeriodDays > 0
+                ? `${meta.orbitalPeriodDays} ${t("cosmic.days", "dias")}`
+                : t("cosmic.heliocentricCenter", "Centro Heliocêntrico")}
             </span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-fg-secondary">Duração do dia (rotação)</span>
+            <span className="text-fg-secondary">{t("cosmic.rotationPeriod", "Duração do dia (rotação)")}</span>
             <span className="font-mono tabular-nums text-fg">{meta.rotationPeriodHours} h</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-fg-secondary">Temperatura média</span>
+            <span className="text-fg-secondary">{t("cosmic.meanTemp", "Temperatura média")}</span>
             <span className="font-mono tabular-nums text-fg">{meta.meanTemperatureC} °C</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-fg-secondary">Luas confirmadas</span>
+            <span className="text-fg-secondary">{t("cosmic.confirmedMoons", "Luas confirmadas")}</span>
             <span className="font-mono font-semibold tabular-nums text-fg">
               {meta.confirmedMoons}
             </span>
           </div>
           {lunarPhase && (
             <div className="flex items-center justify-between py-1">
-              <span className="text-fg-secondary">Fase Lunar:</span>
+              <span className="text-fg-secondary">{t("cosmic.lunarPhase", "Fase Lunar:")}</span>
               <span className="font-mono font-medium tabular-nums text-accent">
                 {lunarPhase.phaseName} ({Math.round(lunarPhase.illumination * 100)}%)
               </span>
@@ -450,7 +471,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
       {/* Atmospheric Composition */}
       {meta.atmosphere && meta.atmosphere.length > 0 && (
         <div className="space-y-1.5">
-          <h3 className="text-caption font-medium text-fg-muted">Composição atmosférica</h3>
+          <h3 className="text-caption font-medium text-fg-muted">{t("cosmic.atmosphere", "Composição atmosférica")}</h3>
           <div className="flex flex-wrap gap-1.5">
             {meta.atmosphere.map((gas, i) => (
               <span
@@ -469,7 +490,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
         <div className="space-y-2">
           <div className="flex items-center gap-1.5 text-caption font-medium text-fg-muted">
             <Rocket aria-hidden="true" className="h-3.5 w-3.5 text-fg-muted" />
-            <span>Missões espaciais históricas</span>
+            <span>{t("cosmic.missions", "Missões espaciais históricas")}</span>
           </div>
           <div className="space-y-1.5">
             {meta.missions.map((mission, idx) => (
@@ -501,7 +522,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           }}
         >
           <Globe aria-hidden="true" className="h-4 w-4" />
-          <span>Explorar Superfície / Países</span>
+          <span>{t("cosmic.exploreEarth", "Explorar Superfície / Países")}</span>
         </Button>
       )}
 
@@ -513,7 +534,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           onClick={() => focusBody(null)}
         >
           <RotateCcw aria-hidden="true" className="h-4 w-4" />
-          <span>Voltar à Terra</span>
+          <span>{t("cosmic.returnEarth", "Voltar à Terra")}</span>
         </Button>
       )}
 
@@ -525,7 +546,7 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           onClick={() => focusBody("EARTH")}
         >
           <Globe aria-hidden="true" className="h-4 w-4" />
-          <span>Focar na Terra (Planeta-mãe)</span>
+          <span>{t("cosmic.focusEarth", "Focar na Terra (Planeta-mãe)")}</span>
         </Button>
       )}
 
@@ -533,23 +554,23 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
       <div className="flex items-center gap-2 border-t border-line pt-3">
         <Button variant="secondary" className="flex-1" onClick={() => focusBody(null)}>
           <RotateCw aria-hidden="true" className="h-3.5 w-3.5" />
-          <span>Visão Geral</span>
+          <span>{t("cosmic.overview", "Visão Geral")}</span>
         </Button>
 
         <Button
           variant="secondary"
           onClick={handleCopyCitation}
-          title="Copiar Citação Acadêmica (RN02)"
+          title={t("cosmic.copyCitationTitle", "Copiar Citação Acadêmica (RN02)")}
         >
           {copiedCitation ? (
             <>
               <Check aria-hidden="true" className="h-3.5 w-3.5 text-success" />
-              <span>Copiado!</span>
+              <span>{t("common.copiedBang", "Copiado!")}</span>
             </>
           ) : (
             <>
               <BookOpen aria-hidden="true" className="h-3.5 w-3.5" />
-              <span>Citação</span>
+              <span>{t("cosmic.citation", "Citação")}</span>
             </>
           )}
         </Button>
@@ -559,8 +580,8 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           target="_blank"
           rel="noopener noreferrer"
           className={buttonClasses("secondary", "sm", "px-2")}
-          title="Abrir Fonte Primária NASA"
-          aria-label="Abrir Fonte Primária NASA"
+          title={t("cosmic.openNasaSource", "Abrir Fonte Primária NASA")}
+          aria-label={t("cosmic.openNasaSource", "Abrir Fonte Primária NASA")}
         >
           <ExternalLink aria-hidden="true" className="h-4 w-4" />
         </a>

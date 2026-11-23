@@ -9,6 +9,7 @@ import {
   buildStudyAcademicMarkdown,
   buildStudyPortableJson,
 } from "@/lib/study-export";
+import { useI18n } from "@/lib/i18n/useT";
 
 export interface StudyExportActionsProps {
   study: StudyRecord;
@@ -34,6 +35,7 @@ export function StudyExportActions({
   lineage = null,
   compact = false,
 }: StudyExportActionsProps) {
+  const { locale, t } = useI18n();
   const [downloaded, setDownloaded] = useState<"md" | "json" | null>(null);
 
   const handleExport = (format: "md" | "json") => {
@@ -56,8 +58,8 @@ export function StudyExportActions({
         variant="secondary"
         size="sm"
         onClick={() => handleExport("md")}
-        title="Exportar estudo em Markdown acadêmico (com fontes primárias e citações ABNT/APA)"
-        aria-label={`Exportar ${study.title} em Markdown acadêmico`}
+        title={t("export.mdTitle", "Exportar estudo em Markdown acadêmico (com fontes primárias e citações ABNT/APA)")}
+        aria-label={locale === "en" ? `Export ${study.title} as academic Markdown` : `Exportar ${study.title} em Markdown acadêmico`}
       >
         {downloaded === "md" ? (
           <Check aria-hidden="true" className="size-3.5 text-success" />
@@ -70,8 +72,8 @@ export function StudyExportActions({
         variant="secondary"
         size="sm"
         onClick={() => handleExport("json")}
-        title="Exportar estudo em JSON portátil"
-        aria-label={`Exportar ${study.title} em JSON portátil`}
+        title={t("export.jsonTitle", "Exportar estudo em JSON portátil")}
+        aria-label={locale === "en" ? `Export ${study.title} as portable JSON` : `Exportar ${study.title} em JSON portátil`}
       >
         {downloaded === "json" ? (
           <Check aria-hidden="true" className="size-3.5 text-success" />

@@ -4,9 +4,11 @@ import React, { useId } from "react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { GIBS_PRODUCTS, GIBS_PRODUCT_IDS, formatGibsMonth, latestGibsMonth } from "@/lib/gibs";
 import { cn } from "@/components/ui/cn";
+import { useI18n } from "@/lib/i18n/useT";
 
 /** Produto, mês e legenda da camada NASA GIBS (D25). A opacidade vem do controle comum das camadas. */
 export const GibsLayerControls: React.FC = () => {
+  const { locale, t } = useI18n();
   const monthId = useId();
   const storeProduct = useObservatoryStore((s) => s.gibsProduct);
   const storeMonth = useObservatoryStore((s) => s.gibsMonth);
@@ -21,9 +23,13 @@ export const GibsLayerControls: React.FC = () => {
   const latest = latestGibsMonth();
   const showingReference = gibs && gibs.product === productId && gibs.imageMonth !== gibs.month;
 
+  const productName = t(`obs.gibs.${productId}.name`, product.name);
+  const productDesc = t(`obs.gibs.${productId}.desc`, product.description);
+  const productUnit = t(`obs.gibs.${productId}.unit`, product.scaleUnit);
+
   return (
     <div data-testid="gibs-controls" className="space-y-2.5">
-      <div role="group" aria-label="Produto de satélite" className="flex flex-wrap items-center gap-1">
+      <div role="group" aria-label={t("obs.gibs.productAria", "Produto de satélite")} className="flex flex-wrap items-center gap-1">
         {GIBS_PRODUCT_IDS.map((id) => (
           <button
             key={id}
@@ -37,13 +43,13 @@ export const GibsLayerControls: React.FC = () => {
               productId === id ? "bg-surface-hover text-fg" : "text-fg-secondary hover:bg-surface-hover/60 hover:text-fg"
             )}
           >
-            {GIBS_PRODUCTS[id].shortName}
+            {t(`obs.gibs.${id}.short`, GIBS_PRODUCTS[id].shortName)}
           </button>
         ))}
       </div>
 
       <div className="flex items-center gap-3">
-        <label htmlFor={monthId} className="w-16 shrink-0 text-caption text-fg-secondary">Mês</label>
+        <label htmlFor={monthId} className="w-16 shrink-0 text-caption text-fg-secondary">{t("obs.gibs.month", "Mês")}</label>
         <input
           id={monthId}
           data-testid="gibs-month"
@@ -60,7 +66,7 @@ export const GibsLayerControls: React.FC = () => {
         />
       </div>
 
-      <div className="space-y-1" aria-label={`Legenda: ${product.name}`}>
+      <div className="space-y-1" aria-label={`${t("obs.gibs.legend", "Legenda")}: ${productName}`}>
         <img src={product.scaleImage} alt="" aria-hidden="true" width={256} height={8} className="h-1.5 w-full rounded-full" />
         <div className="relative h-4 font-mono text-caption tabular-nums text-fg-muted">
           {product.scaleLabels.map((l) => (
@@ -74,13 +80,17 @@ export const GibsLayerControls: React.FC = () => {
           ))}
         </div>
         <p className="text-caption text-fg-muted">
-          {product.description} Escala: {product.scaleUnit}.{" "}
+          {productDesc} {t("obs.gibs.scale", "Escala")}: {productUnit}.{" "}
           {showingReference ? (
             <span data-testid="gibs-reference-note" className="text-warning">
-              Sem imagem do GIBS para {formatGibsMonth(gibs.month)}: mostrando a referência local de {formatGibsMonth(gibs.imageMonth)}.
+              {t("obs.gibs.noImagePrefix", "Sem imagem do GIBS para")} {formatGibsMonth(gibs.month, locale)}: {t("obs.gibs.noImageMid", "mostrando a referência local de")} {formatGibsMonth(gibs.imageMonth, locale)}.
             </span>
           ) : (
-            gibs && gibs.product === productId && <span>Imagem de {formatGibsMonth(gibs.imageMonth)} ({gibs.gibsLayer}).</span>
+            gibs && gibs.product === productId && (
+              <span>
+                {t("obs.gibs.imageFrom", "Imagem de")} {formatGibsMonth(gibs.imageMonth, locale)} ({gibs.gibsLayer}).
+              </span>
+            )
           )}
         </p>
       </div>

@@ -23,12 +23,22 @@ export function collectSourceClasses(dir: string = SRC): string[] {
       if (fs.statSync(p).isDirectory()) walk(p);
       else if (/\.tsx?$/.test(f) && p !== OUT) {
         const s = fs.readFileSync(p, "utf-8");
-        for (const m of s.matchAll(/"([^"\n]*)"|'([^'\n]*)'|`([^`]*)`/g)) {
-          const str = (m[1] ?? m[2] ?? m[3] ?? "").replace(/\$\{[^}]*\}/g, " ");
+        const scanString = (str: string) => {
           for (const raw of str.split(/\s+/)) {
             if (!raw) continue;
             const base = raw.split(/:(?![^[]*\])/).pop()!.replace(/^!/, "");
             if (/^-?[a-z][a-z0-9.-]*(\/[0-9a-z.]+)?$|^-?[a-z][a-z0-9-]*-\[[^\]\s]+\](\/[0-9]+)?$/.test(base)) tokens.add(base);
+          }
+        };
+        for (const m of s.matchAll(/"([^"\n]*)"|'([^'\n]*)'|`([^`]*)`/g)) {
+          const tpl = m[3];
+          if (tpl !== undefined) {
+            for (const inner of tpl.matchAll(/"([^"\n]*)"|'([^'\n]*)'/g)) {
+              scanString(inner[1] ?? inner[2] ?? "");
+            }
+            scanString(tpl.replace(/\$\{[^}]*\}/g, " "));
+          } else {
+            scanString(m[1] ?? m[2] ?? "");
           }
         }
       }

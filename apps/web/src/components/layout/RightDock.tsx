@@ -17,6 +17,8 @@ import { useRightDock } from "./useRightDock";
 import { DOCK_FRAME_CLASSES, dockMotionClasses } from "./dockFrame";
 import { useLastDefined } from "@/components/ui/motion";
 import { CountrySearchSuggestions } from "@/components/explore/CountrySearchSuggestions";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
 
 const TAB_ICON: Record<RightPanelId, React.ReactNode> = {
   country: <MapPin />,
@@ -38,6 +40,7 @@ export const RightDock: React.FC<{ closing?: boolean }> = ({ closing = false }) 
   const requestFocus = useLayoutStore((s) => s.requestRightPanelFocus);
   const storeIso = useGlobeStore((s) => s.selectedIso);
   const selectedIso = typeof window === "undefined" ? useGlobeStore.getState().selectedIso : storeIso;
+  const { locale, t } = useI18n();
   const container = useRef<HTMLElement>(null);
   useShellObstruction(container, "--dock-obstruction", Boolean(active));
   const previousFocus = useRef<{ panel: RightPanelId; element: HTMLElement } | null>(null);
@@ -85,8 +88,14 @@ export const RightDock: React.FC<{ closing?: boolean }> = ({ closing = false }) 
 
   if ((!dock.visible && !closing) || !active) return null;
 
-  const label = (id: RightPanelId) =>
-    id === "country" ? (selectedIso && getCountryData(selectedIso)?.nameCommon) || "País" : id === "observatory" ? "Observatório" : "Cosmos";
+  const label = (id: RightPanelId) => {
+    if (id === "country") {
+      const c = selectedIso ? getCountryData(selectedIso) : null;
+      return c ? formatCountryName(c.iso2, c.nameCommon, locale) : t("dock.tab.country", "País");
+    }
+    if (id === "observatory") return t("dock.tab.observatory", "Observatório");
+    return t("dock.tab.cosmos", "Cosmos");
+  };
 
   const content = (id: RightPanelId) => {
     switch (id) {
@@ -112,7 +121,7 @@ export const RightDock: React.FC<{ closing?: boolean }> = ({ closing = false }) 
     <Tabs value={active} onValueChange={(id) => setActive(id as RightPanelId)} asChild>
       <section
         ref={container}
-        aria-label="Painel lateral"
+        aria-label={t("dock.ariaLabel", "Painel lateral")}
         data-right-dock="true"
         data-active-panel={active}
         data-state={closing ? "closed" : "open"}
@@ -124,7 +133,7 @@ export const RightDock: React.FC<{ closing?: boolean }> = ({ closing = false }) 
 
         {dock.open.length > 1 ? (
           <>
-            <TabsList aria-label="Painéis abertos" className="flex shrink-0 rounded-none border-x-0 border-t-0 bg-transparent p-1.5">
+            <TabsList aria-label={t("dock.openPanels", "Painéis abertos")} className="flex shrink-0 rounded-none border-x-0 border-t-0 bg-transparent p-1.5">
               {dock.open.map((id) => (
                 <TabsTrigger
                   key={id}

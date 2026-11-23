@@ -6,6 +6,8 @@ import React from "react";
 import { X, MapPin, Globe } from "lucide-react";
 import { DataCompleteness } from "@/lib/country-data";
 import { IconButton } from "@/components/ui/IconButton";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
 
 interface CountryHeaderProps {
   nameCommon: string;
@@ -15,6 +17,7 @@ interface CountryHeaderProps {
   region: string | null;
   flagSvgUrl?: string;
   isoCode: string;
+  iso2?: string;
   completeness?: DataCompleteness;
 }
 
@@ -26,8 +29,11 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
   region,
   flagSvgUrl,
   isoCode,
+  iso2,
   completeness,
 }) => {
+  const { locale, t } = useI18n();
+  const displayName = formatCountryName(iso2, nameCommon, locale);
   const [flagError, setFlagError] = React.useState(false);
 
   React.useEffect(() => {
@@ -43,21 +49,21 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
           {flagSvgUrl && !flagError ? (
             <img
               src={flagSvgUrl}
-              alt={`Bandeira de ${nameCommon}`}
+              alt={`${t("inspector.flagOf", "Bandeira de")} ${displayName}`}
               onError={() => setFlagError(true)}
               className="h-7 w-10 shrink-0 rounded-sm border border-line object-cover"
             />
           ) : (
             <div
               className="flex h-7 w-10 shrink-0 items-center justify-center rounded-sm border border-line-strong bg-surface-raised font-mono text-caption font-medium text-fg-secondary"
-              title={`Código ISO: ${isoCode}`}
+              title={`${t("inspector.isoCode", "Código ISO")}: ${isoCode}`}
             >
               {isoCode}
             </div>
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="truncate text-display font-semibold text-fg">{nameCommon}</h2>
+              <h2 className="truncate text-display font-semibold text-fg">{displayName}</h2>
               <span className="shrink-0 rounded-sm border border-line-strong px-1.5 py-0.5 font-mono text-caption text-fg-secondary">
                 {isoCode}
               </span>
@@ -67,25 +73,25 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
             ) : (
               completeness === "none" && (
                 <p className="text-caption text-warning">
-                  Dados socioeconômicos indisponíveis
+                  {t("inspector.socioUnavailable", "Dados socioeconômicos indisponíveis")}
                 </p>
               )
             )}
           </div>
         </div>
 
-        <IconButton label="Fechar painel" icon={<X />} size="sm" onClick={resetGlobeView} />
+        <IconButton label={t("common.closePanel", "Fechar painel")} icon={<X />} size="sm" onClick={resetGlobeView} />
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-4 text-label text-fg-secondary">
         <div className="flex items-center gap-1">
           <MapPin aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
           <span>
-            Capital:{" "}
+            {t("inspector.capital", "Capital")}:{" "}
             {capital ? (
               <strong className="font-medium text-fg">{capital}</strong>
             ) : (
-              <span className="text-fg-muted">Dado indisponível</span>
+              <span className="text-fg-muted">{t("common.dataUnavailable", "Dado indisponível")}</span>
             )}
           </span>
         </div>

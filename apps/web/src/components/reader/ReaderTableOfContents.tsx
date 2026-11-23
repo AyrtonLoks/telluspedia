@@ -15,35 +15,39 @@ import {
 } from "lucide-react";
 import { useReaderStore } from "@/stores/readerStore";
 import { cn } from "@/components/ui/cn";
+import { useI18n } from "@/lib/i18n/useT";
+import type { EnMessageKey } from "@/lib/i18n/en";
 
 interface DimensionItem {
   key: string;
+  labelKey: EnMessageKey;
   label: string;
   icon: React.ReactNode;
   estimatedMin: number;
 }
 
 const DIMENSIONS: DimensionItem[] = [
-  { key: "ANALYTICAL_PROFILE", label: "Perfil Analítico & Global", icon: <BarChart2 aria-hidden="true" className="h-4 w-4" />, estimatedMin: 3 },
-  { key: "GEOGRAPHY", label: "Geografia & Biomas", icon: <Compass aria-hidden="true" className="h-4 w-4" />, estimatedMin: 6 },
-  { key: "GOVERNMENT_POLITICS", label: "Governo & Política", icon: <Landmark aria-hidden="true" className="h-4 w-4" />, estimatedMin: 8 },
-  { key: "ECONOMY_SOCIAL", label: "Economia & Social", icon: <TrendingUp aria-hidden="true" className="h-4 w-4" />, estimatedMin: 7 },
-  { key: "HISTORY", label: "História & Marcos", icon: <History aria-hidden="true" className="h-4 w-4" />, estimatedMin: 10 },
-  { key: "BIOGRAPHIES", label: "Biografias Históricas", icon: <UserCheck aria-hidden="true" className="h-4 w-4" />, estimatedMin: 5 },
-  { key: "CULTURE_HUMANITIES", label: "Cultura & Humanidades", icon: <Palette aria-hidden="true" className="h-4 w-4" />, estimatedMin: 6 },
-  { key: "BIOLOGY_HEALTH", label: "Biologia & Saúde Pública", icon: <HeartPulse aria-hidden="true" className="h-4 w-4" />, estimatedMin: 5 },
-  { key: "NEWS_CURRENT_AFFAIRS", label: "Atualidades & Relações", icon: <Newspaper aria-hidden="true" className="h-4 w-4" />, estimatedMin: 4 },
+  { key: "ANALYTICAL_PROFILE", labelKey: "reader.dim.ANALYTICAL_PROFILE", label: "Perfil Analítico & Global", icon: <BarChart2 aria-hidden="true" className="h-4 w-4" />, estimatedMin: 3 },
+  { key: "GEOGRAPHY", labelKey: "reader.dim.GEOGRAPHY", label: "Geografia & Biomas", icon: <Compass aria-hidden="true" className="h-4 w-4" />, estimatedMin: 6 },
+  { key: "GOVERNMENT_POLITICS", labelKey: "reader.dim.GOVERNMENT_POLITICS", label: "Governo & Política", icon: <Landmark aria-hidden="true" className="h-4 w-4" />, estimatedMin: 8 },
+  { key: "ECONOMY_SOCIAL", labelKey: "reader.dim.ECONOMY_SOCIAL", label: "Economia & Social", icon: <TrendingUp aria-hidden="true" className="h-4 w-4" />, estimatedMin: 7 },
+  { key: "HISTORY", labelKey: "reader.dim.HISTORY", label: "História & Marcos", icon: <History aria-hidden="true" className="h-4 w-4" />, estimatedMin: 10 },
+  { key: "BIOGRAPHIES", labelKey: "reader.dim.BIOGRAPHIES", label: "Biografias Históricas", icon: <UserCheck aria-hidden="true" className="h-4 w-4" />, estimatedMin: 5 },
+  { key: "CULTURE_HUMANITIES", labelKey: "reader.dim.CULTURE_HUMANITIES", label: "Cultura & Humanidades", icon: <Palette aria-hidden="true" className="h-4 w-4" />, estimatedMin: 6 },
+  { key: "BIOLOGY_HEALTH", labelKey: "reader.dim.BIOLOGY_HEALTH", label: "Biologia & Saúde Pública", icon: <HeartPulse aria-hidden="true" className="h-4 w-4" />, estimatedMin: 5 },
+  { key: "NEWS_CURRENT_AFFAIRS", labelKey: "reader.dim.NEWS_CURRENT_AFFAIRS", label: "Atualidades & Relações", icon: <Newspaper aria-hidden="true" className="h-4 w-4" />, estimatedMin: 4 },
 ];
 
 export const ReaderTableOfContents: React.FC = () => {
+  const { t } = useI18n();
   const activeDimension = useReaderStore((s) => s.activeDimension);
   const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
 
   return (
-    <nav aria-label="Sumário multidisciplinar" className="w-64 shrink-0 space-y-1 border-r border-line pr-4">
+    <nav aria-label={t("reader.tocTitle", "Sumário multidisciplinar")} className="w-64 shrink-0 space-y-1 border-r border-line pr-4">
       <div className="flex items-center gap-2 px-3 py-2 text-caption font-medium text-fg-muted">
         <BookOpen aria-hidden="true" className="h-3.5 w-3.5 text-fg-muted" />
-        <span>Sumário multidisciplinar</span>
+        <span>{t("reader.tocTitle", "Sumário multidisciplinar")}</span>
       </div>
 
       <div className="mt-2 space-y-1">
@@ -64,7 +68,7 @@ export const ReaderTableOfContents: React.FC = () => {
             >
               <div className="flex min-w-0 items-center gap-2.5">
                 <span className={isActive ? "text-accent" : "text-fg-muted"}>{dim.icon}</span>
-                <span className="line-clamp-1">{dim.label}</span>
+                <span className="line-clamp-1">{t(dim.labelKey, dim.label)}</span>
               </div>
               <span className="shrink-0 font-mono text-caption tabular-nums text-fg-muted">
                 {dim.estimatedMin}m

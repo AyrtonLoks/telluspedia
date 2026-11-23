@@ -21,6 +21,7 @@ import { StudyExportActions } from "@/components/study/StudyExportActions";
 import { CHOROPLETH_INDICATORS, isChoroplethIndicatorId } from "@/lib/choropleth";
 import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
 import { useComparatorStore } from "@/stores/comparatorStore";
+import { useI18n } from "@/lib/i18n/useT";
 
 export interface ForkStudyBannerProps {
   studyId: string;
@@ -44,6 +45,7 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
   onDismiss,
   onNavigate,
 }) => {
+  const { t } = useI18n();
   const [forking, setForking] = useState<boolean>(false);
   const [forkSuccess, setForkSuccess] = useState<boolean>(false);
   const [showForks, setShowForks] = useState<boolean>(false);
@@ -110,10 +112,10 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                   className="inline-flex max-w-full items-center gap-1 truncate text-accent hover:text-accent-hover hover:underline"
                 >
                   <ArrowUpLeft aria-hidden="true" className="size-3 shrink-0" />
-                  <span className="truncate">Fork de {effectiveParentTitle}</span>
+                  <span className="truncate">{t("fork.forkOf", "Fork de")} {effectiveParentTitle}</span>
                 </Link>
               ) : (
-                <span>Estudo compartilhado original</span>
+                <span>{t("fork.original", "Estudo compartilhado original")}</span>
               )}
 
               {choroplethMeta && (
@@ -121,7 +123,7 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                   data-testid="study-choropleth-indicator"
                   className="inline-flex items-center gap-1 rounded-control border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-caption text-accent"
                 >
-                  Mapa: {choroplethMeta.shortLabel}
+                  {t("fork.mapPrefix", "Mapa:")} {t(`choropleth.ind.${choroplethMeta.id}.short`, choroplethMeta.shortLabel)}
                 </span>
               )}
 
@@ -134,7 +136,7 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                   className="inline-flex items-center gap-1 font-mono text-caption text-fg-secondary tabular-nums transition-colors duration-fast ease-out hover:text-fg"
                 >
                   <span>
-                    {forkCount} {forkCount === 1 ? "fork derivado" : "forks derivados"}
+                    {forkCount} {forkCount === 1 ? t("fork.derivedSingle", "fork derivado") : t("fork.derivedPlural", "forks derivados")}
                   </span>
                   {showForks ? (
                     <ChevronUp aria-hidden="true" className="size-3" />
@@ -153,7 +155,7 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                   className="inline-flex items-center gap-1 text-caption text-fg-secondary transition-colors duration-fast ease-out hover:text-fg"
                 >
                   <FileText aria-hidden="true" className="size-3" />
-                  <span>{showNotes ? "Ocultar notas" : "Notas do estudo"}</span>
+                  <span>{showNotes ? t("fork.hideNotes", "Ocultar notas") : t("fork.studyNotes", "Notas do estudo")}</span>
                 </button>
               )}
             </div>
@@ -167,20 +169,20 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
               size="sm"
               data-testid="study-open-comparator"
               onClick={handleOpenComparator}
-              title="Abrir comparador multidimensional com os países deste estudo (inclui séries reais 1990–2024)"
+              title={t("fork.compareTitle", "Abrir comparador multidimensional com os países deste estudo (inclui séries reais 1990–2024)")}
             >
               <BarChart2 aria-hidden="true" className="size-3.5" />
-              <span>Comparar ({Math.min(studyIsos.length, 4)})</span>
+              <span>{t("inspector.compare", "Comparar")} ({Math.min(studyIsos.length, 4)})</span>
             </Button>
           )}
 
           <Link
             href="/studies"
             className="inline-flex h-8 items-center gap-1.5 rounded-control border border-line bg-surface-raised px-2.5 text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:border-line-strong hover:text-fg"
-            title="Explorar Galeria de Estudos Públicos"
+            title={t("fork.galleryTitle", "Explorar Galeria de Estudos Públicos")}
           >
             <Library aria-hidden="true" className="size-3.5" />
-            <span className="hidden sm:inline">Galeria</span>
+            <span className="hidden sm:inline">{t("fork.galleryShort", "Galeria")}</span>
           </Link>
 
           {study && <StudyExportActions study={study} lineage={lineage} compact />}
@@ -195,19 +197,19 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
             {forkSuccess ? (
               <>
                 <Check aria-hidden="true" className="h-3.5 w-3.5" />
-                <span>Fork criado!</span>
+                <span>{t("fork.created", "Fork criado!")}</span>
               </>
             ) : (
               <>
                 <GitFork aria-hidden="true" className="h-3.5 w-3.5" />
-                <span>{forking ? "Derivando..." : "Fazer fork"}</span>
+                <span>{forking ? t("fork.forking", "Derivando...") : t("fork.action", "Fazer fork")}</span>
               </>
             )}
           </Button>
 
           {onDismiss && (
             <IconButton
-              label="Sair do estudo"
+              label={t("fork.exitStudy", "Sair do estudo")}
               size="sm"
               data-testid="study-dismiss-button"
               icon={<X />}
@@ -228,10 +230,13 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
           )}
           {predatesWorldBank && (
             <p className="text-fg-muted">
-              Nota de cobertura (RN02): o recorte inicia em{" "}
-              <span className="font-mono tabular-nums">{study.timelineStartYear}</span>, enquanto as
-              séries quantitativas do Banco Mundial no comparador cobrem leituras anuais reais a
-              partir de <span className="font-mono tabular-nums">1990</span>.
+              {t("fork.coverageNotePrefix", "Nota de cobertura (RN02): o recorte inicia em")}{" "}
+              <span className="font-mono tabular-nums">{study.timelineStartYear}</span>,{" "}
+              {t(
+                "fork.coverageNoteMid",
+                "enquanto as séries quantitativas do Banco Mundial no comparador cobrem leituras anuais reais a partir de"
+              )}{" "}
+              <span className="font-mono tabular-nums">1990</span>.
             </p>
           )}
         </div>
@@ -243,7 +248,7 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
           className="border-t border-line pt-2 text-caption"
         >
           <p className="mb-1.5 font-medium text-fg-secondary">
-            Estudos derivados deste snapshot:
+            {t("fork.derivedHeading", "Estudos derivados deste snapshot:")}
           </p>
           <ul className="flex max-h-36 flex-col gap-1 overflow-y-auto">
             {forks.map((fork) => (

@@ -11,6 +11,8 @@ import { HoverCitationCard } from "./HoverCitationCard";
 import { AnalyticalProfileView } from "./AnalyticalProfileView";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
 
 interface ReaderContentProps {
   country: CountryData;
@@ -18,6 +20,8 @@ interface ReaderContentProps {
 }
 
 export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension }) => {
+  const { locale, t } = useI18n();
+  const displayName = formatCountryName(country.iso2, country.nameCommon, locale);
   const storeDimension = useReaderStore((s) => s.activeDimension);
   const activeDimension =
     dimension ||
@@ -102,7 +106,8 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
 
   // Empty state when no dossier has been authored for this country/dimension
   if (!section) {
-    const wikipediaUrl = `https://pt.wikipedia.org/wiki/${encodeURIComponent(country.nameCommon)}`;
+    const wikiHost = locale === "en" ? "en.wikipedia.org" : "pt.wikipedia.org";
+    const wikipediaUrl = `https://${wikiHost}/wiki/${encodeURIComponent(displayName)}`;
     const wikidataUrl = country.wikidataQid
       ? `https://www.wikidata.org/wiki/${encodeURIComponent(country.wikidataQid)}`
       : null;
@@ -118,11 +123,11 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
         <div className="border-b border-line pb-6">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="neutral">{activeDimension}</Badge>
-            <Badge tone="neutral">Sem verbete editorial</Badge>
+            <Badge tone="neutral">{t("reader.noEditorialBadge", "Sem verbete editorial")}</Badge>
           </div>
 
           <h1 className="mt-4 font-serif text-display font-bold leading-snug text-fg">
-            {country.nameCommon}
+            {displayName}
           </h1>
           {country.nameOfficial && (
             <p className="mt-1 text-caption text-fg-secondary">{country.nameOfficial}</p>
@@ -132,14 +137,14 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
         <div className="mt-8 space-y-4 rounded-card border border-line bg-surface-raised p-6">
           <div className="flex items-center gap-2.5 text-title font-semibold text-fg">
             <BookOpen aria-hidden="true" className="h-5 w-5 shrink-0 text-accent" />
-            <h2>Este dossiê ainda não foi escrito</h2>
+            <h2>{t("reader.notWrittenTitle", "Este dossiê ainda não foi escrito")}</h2>
           </div>
 
           <p className="text-body leading-relaxed text-fg-secondary">
-            Ainda não há um verbete curado com fontes primárias auditadas para a dimensão{" "}
-            <span className="font-mono text-fg">{activeDimension}</span> de{" "}
-            <strong className="font-semibold text-fg">{country.nameCommon}</strong> no TellusPedia.
-            Para consultar dados e referências verificáveis diretamente nas fontes externas:
+            {t("reader.notWrittenPrefix", "Ainda não há um verbete curado com fontes primárias auditadas para a dimensão")}{" "}
+            <span className="font-mono text-fg">{activeDimension}</span> {t("reader.notWrittenOf", "de")}{" "}
+            <strong className="font-semibold text-fg">{displayName}</strong>{" "}
+            {t("reader.notWrittenSuffix", "no TellusPedia. Para consultar dados e referências verificáveis diretamente nas fontes externas:")}
           </p>
 
           <div className="flex flex-wrap items-center gap-2.5 pt-2">
@@ -150,7 +155,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                 data-testid="open-analytical-profile-from-empty"
                 onClick={() => setActiveDimension("ANALYTICAL_PROFILE")}
               >
-                <span>Ver Perfil Analítico &amp; Posição Global</span>
+                <span>{t("reader.openAnalyticalProfile", "Ver Perfil Analítico & Posição Global")}</span>
               </Button>
             )}
             <a
@@ -159,7 +164,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
               rel="noopener noreferrer"
               className={buttonClasses("secondary", "sm")}
             >
-              <span>Wikipédia ({country.nameCommon})</span>
+              <span>{t("common.wikipedia", "Wikipédia")} ({displayName})</span>
               <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
             </a>
 
@@ -182,7 +187,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                 rel="noopener noreferrer"
                 className={buttonClasses("secondary", "sm")}
               >
-                <span>Banco Mundial ({country.isoCode})</span>
+                <span>{t("common.worldBank", "Banco Mundial")} ({country.isoCode})</span>
                 <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
               </a>
             )}
@@ -348,7 +353,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
             <Badge tone="neutral">{activeDimension}</Badge>
             <span className="flex items-center gap-1 font-mono text-caption tabular-nums text-fg-muted">
               <Clock aria-hidden="true" className="h-3.5 w-3.5" />
-              <span>Leitura de ~{section.estimatedReadMin || 6} min</span>
+              <span>{t("reader.readingTime", "Leitura de ~")}{section.estimatedReadMin || 6} min</span>
             </span>
           </div>
 
@@ -362,7 +367,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                   : `https://telluspedia.org/pais/${country.isoCode}`;
               setCitationModalOpen(true, {
                 title,
-                countryName: country.nameCommon,
+                countryName: displayName,
                 dimensionName: activeDimension,
                 url,
                 accessDate: new Date(),
@@ -371,7 +376,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
             }}
           >
             <Quote aria-hidden="true" className="h-3.5 w-3.5 text-accent" />
-            <span>Citar Verbete</span>
+            <span>{t("reader.citeEntry", "Citar Verbete")}</span>
           </Button>
         </div>
 
@@ -396,10 +401,10 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-label font-semibold text-fg">
               <Bookmark aria-hidden="true" className="h-4 w-4 text-accent" />
-              <span>Fontes primárias e notas de rodapé acadêmicas</span>
+              <span>{t("reader.footnotesTitle", "Fontes primárias e notas de rodapé acadêmicas")}</span>
             </div>
             <span className="font-mono text-caption text-fg-muted">
-              Conformidade ABNT NBR 6023 / APA 7
+              {t("reader.abntCompliance", "Conformidade ABNT NBR 6023 / APA 7")}
             </span>
           </div>
 
@@ -421,7 +426,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-label font-medium text-fg transition-colors duration-fast ease-out hover:text-accent hover:underline"
-                      title={`Abrir repositório da fonte primária (${fn.source})`}
+                      title={`${t("common.source", "Fonte primária")}: ${fn.source}`}
                     >
                       <span>{fn.source}</span>
                       <ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0 text-accent" />
@@ -437,7 +442,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                       className="inline-flex items-center gap-1 text-accent hover:text-accent-hover hover:underline"
                     >
                       <ExternalLink aria-hidden="true" className="h-3 w-3" />
-                      <span>Acessar dados primários</span>
+                      <span>{t("reader.accessPrimaryData", "Acessar dados primários")}</span>
                     </a>
                     <Button
                       variant="secondary"
@@ -445,16 +450,16 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                       onClick={() => {
                         setCitationModalOpen(true, {
                           title: `${fn.source}${fn.detail ? ` — ${fn.detail}` : ""}`,
-                          countryName: country.nameCommon,
+                          countryName: displayName,
                           url: getSourceUrl(fn.source),
                           accessDate: new Date(),
                           publicationYear: 2026,
                         });
                       }}
-                      title={`Gerar citação acadêmica para ${fn.source}`}
+                      title={`${t("reader.generateCitation", "Gerar citação")}: ${fn.source}`}
                     >
                       <Quote aria-hidden="true" className="h-3 w-3 text-accent" />
-                      <span>Gerar citação</span>
+                      <span>{t("reader.generateCitation", "Gerar citação")}</span>
                     </Button>
                   </div>
                 </div>

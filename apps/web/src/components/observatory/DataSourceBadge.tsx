@@ -4,6 +4,8 @@ import React from "react";
 import type { ObservatoryMeta } from "@/lib/observatory-source";
 import { Badge } from "@/components/ui/Badge";
 import { type Tone } from "@/components/ui/tones";
+import { useI18n, type TranslateFn } from "@/lib/i18n/useT";
+import type { Locale } from "@/lib/i18n/types";
 
 export type DataSourceStatus = "loading" | "live" | "stale" | "computed" | "fallback" | "offline";
 
@@ -27,14 +29,14 @@ export function resolveDataSourceStatus(
   return meta.source;
 }
 
-function describe(meta: ObservatoryMeta, status: DataSourceStatus): string {
-  const parts = [`Fonte: ${meta.provider}`];
+function describe(meta: ObservatoryMeta, status: DataSourceStatus, locale: Locale, t: TranslateFn): string {
+  const parts = [`${t("common.source", "Fonte")}: ${meta.provider}`];
   const fetched = new Date(meta.fetchedAt);
   if (fetched.getTime() > 0) {
-    parts.push(`Obtido em: ${fetched.toLocaleString("pt-BR")}`);
+    parts.push(`${t("obs.status.fetchedAt", "Obtido em")}: ${fetched.toLocaleString(locale)}`);
   }
-  if (meta.reason) parts.push(`Motivo: ${meta.reason}`);
-  if (status === "fallback") parts.push("Estes dados não são uma leitura ao vivo.");
+  if (meta.reason) parts.push(`${t("obs.status.reason", "Motivo")}: ${meta.reason}`);
+  if (status === "fallback") parts.push(t("obs.status.notLive", "Estes dados não são uma leitura ao vivo."));
   return parts.join("\n");
 }
 
@@ -44,6 +46,7 @@ export const DataSourceBadge: React.FC<{
   isOffline?: boolean;
   testId?: string;
 }> = ({ meta, isLoading, isOffline, testId }) => {
+  const { locale, t } = useI18n();
   const status = resolveDataSourceStatus(meta, { isLoading, isOffline });
   const style = STATUS_STYLE[status];
 
@@ -51,13 +54,13 @@ export const DataSourceBadge: React.FC<{
     <Badge
       data-testid={testId}
       data-source-status={status}
-      title={status === "loading" ? undefined : describe(meta, status)}
+      title={status === "loading" ? undefined : describe(meta, status, locale, t)}
       tone={style.tone}
       dot={style.dot}
       pulse={style.pulse}
       className="cursor-help"
     >
-      {style.label}
+      {t(`obs.status.${status}`, style.label)}
     </Badge>
   );
 };

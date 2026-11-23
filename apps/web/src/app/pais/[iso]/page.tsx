@@ -5,15 +5,16 @@ import { GlobeExperienceShell } from "@/components/shell/GlobeExperienceShell";
 import { JsonLdScript } from "@/components/seo/JsonLdScript";
 import { buildCountryJsonLd } from "@/lib/seo";
 import { buildCountryMetadata, loadCountryByIso } from "@/lib/server-loaders";
+import { getServerLocale } from "@/lib/i18n/server";
 
 interface CountryPageProps {
   params: Promise<{ iso: string }>;
 }
 
 export async function generateMetadata({ params }: CountryPageProps): Promise<Metadata> {
-  const { iso } = await params;
+  const [{ iso }, locale] = await Promise.all([params, getServerLocale()]);
   const country = loadCountryByIso(iso);
-  return buildCountryMetadata(country, iso);
+  return buildCountryMetadata(country, iso, locale);
 }
 
 export default async function CountryDirectPage({ params }: CountryPageProps) {

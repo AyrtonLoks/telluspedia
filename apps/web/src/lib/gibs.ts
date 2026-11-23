@@ -217,9 +217,9 @@ export interface GibsLayerData {
   time: string;
 }
 
-/** "2024-07" → "julho de 2024". */
-export function formatGibsMonth(month: string): string {
+/** "2024-07" → "julho de 2024" (`pt-BR`) ou "July 2024" (`en`). */
+export function formatGibsMonth(month: string, locale: "pt-BR" | "en" = "pt-BR"): string {
   const [y, m] = month.split("-").map(Number);
-  const name = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString("pt-BR", { month: "long", timeZone: "UTC" });
-  return `${name} de ${y}`;
+  const name = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString(locale, { month: "long", timeZone: "UTC" });
+  return locale === "en" ? `${name} ${y}` : `${name} de ${y}`;
 }

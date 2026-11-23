@@ -20,8 +20,10 @@ import { CHOROPLETH_INDICATORS } from "@/lib/choropleth";
 import { GIBS_PRODUCTS, formatGibsMonth } from "@/lib/gibs";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
+import { useI18n } from "@/lib/i18n/useT";
 
 export const StudyShareModal: React.FC = () => {
+  const { locale, t } = useI18n();
   const storeIsShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
   const isShareModalOpen =
     typeof window === "undefined"
@@ -185,12 +187,12 @@ export const StudyShareModal: React.FC = () => {
           choroplethIndicator: effectiveChoroplethIndicator,
         });
       } else if (res.status === 503) {
-        setErrorMsg("O banco de dados de estudos está indisponível. Tente gerar o link novamente em instantes.");
+        setErrorMsg(t("study.errDbUnavailable", "O banco de dados de estudos está indisponível. Tente gerar o link novamente em instantes."));
       } else {
-        setErrorMsg("Não foi possível registrar o snapshot do estudo no servidor.");
+        setErrorMsg(t("study.errSaveFailed", "Não foi possível registrar o snapshot do estudo no servidor."));
       }
     } catch {
-      setErrorMsg("Erro de conexão ao salvar estudo.");
+      setErrorMsg(t("study.errConnection", "Erro de conexão ao salvar estudo."));
     } finally {
       setLoading(false);
     }
@@ -209,10 +211,10 @@ export const StudyShareModal: React.FC = () => {
         title={
           <span className="flex items-center gap-2">
             <Share2 aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
-            <span>Compartilhar estudo imutável</span>
+            <span>{t("study.shareTitle", "Compartilhar estudo imutável")}</span>
           </span>
         }
-        description="Salve o estado atual do globo, linha do tempo e camadas como um link permanente."
+        description={t("study.shareDesc", "Salve o estado atual do globo, linha do tempo e camadas como um link permanente.")}
         footer={
           <>
             <Link
@@ -221,14 +223,14 @@ export const StudyShareModal: React.FC = () => {
               className="mr-auto inline-flex h-8 items-center gap-1.5 rounded-control px-2.5 text-caption font-medium text-accent transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-accent-hover"
             >
               <Library aria-hidden="true" className="h-3.5 w-3.5" />
-              <span>Galeria de estudos</span>
+              <span>{t("study.gallery", "Galeria de estudos")}</span>
             </Link>
             <Button variant="ghost" size="sm" onClick={() => setShareModalOpen(false)}>
-              Cancelar
+              {t("common.cancel", "Cancelar")}
             </Button>
             {!shareUrl && (
               <Button variant="primary" size="sm" onClick={handleGenerateLink} disabled={loading}>
-                {loading ? "Criando snapshot..." : "Gerar link de estudo"}
+                {loading ? t("study.creating", "Criando snapshot...") : t("study.generateLink", "Gerar link de estudo")}
               </Button>
             )}
           </>
@@ -237,7 +239,7 @@ export const StudyShareModal: React.FC = () => {
         <div className="space-y-4 text-label">
           <div>
             <label htmlFor="study-title-input" className="mb-1 block text-caption font-medium text-fg-secondary">
-              Título do estudo
+              {t("study.titleLabel", "Título do estudo")}
             </label>
             <input
               id="study-title-input"
@@ -245,13 +247,13 @@ export const StudyShareModal: React.FC = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full rounded-card border border-line-strong bg-surface-sunken px-3 py-2 text-label text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
-              placeholder="Ex: Análise Comparativa do Cone Sul e Europa"
+              placeholder={t("study.titlePlaceholder", "Ex: Análise Comparativa do Cone Sul e Europa")}
             />
           </div>
 
           <div>
             <label htmlFor="study-notes-input" className="mb-1 block text-caption font-medium text-fg-secondary">
-              Anotações e contexto científico
+              {t("study.notesLabel", "Anotações e contexto científico")}
             </label>
             <textarea
               id="study-notes-input"
@@ -259,7 +261,7 @@ export const StudyShareModal: React.FC = () => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full resize-none rounded-card border border-line-strong bg-surface-sunken px-3 py-2 text-label text-fg placeholder:text-fg-muted focus:border-accent focus:outline-none"
-              placeholder="Descreva as hipóteses ou conclusões deste recorte planetário..."
+              placeholder={t("study.notesPlaceholder", "Descreva as hipóteses ou conclusões deste recorte planetário...")}
             />
           </div>
 
@@ -271,7 +273,7 @@ export const StudyShareModal: React.FC = () => {
             >
               <span aria-hidden="true" className="select-none text-title">🏛️</span>
               <div className="flex-1">
-                <div className="font-semibold text-fg">Cartografia Histórica Ativa Capturada</div>
+                <div className="font-semibold text-fg">{t("study.badge.historical", "Cartografia Histórica Ativa Capturada")}</div>
                 <div className="text-caption text-warning">{eraDef.label}</div>
               </div>
             </div>
@@ -285,9 +287,9 @@ export const StudyShareModal: React.FC = () => {
             >
               <span aria-hidden="true" className="select-none text-title">🚀</span>
               <div className="flex-1">
-                <div className="font-semibold text-fg">Missão Espacial Apollo 11 (1969)</div>
+                <div className="font-semibold text-fg">{t("study.badge.apolloTitle", "Missão Espacial Apollo 11 (1969)")}</div>
                 <div className="text-caption text-accent">
-                  Trajetória Translunar 3D e telemetria incluídas no estudo.
+                  {t("study.badge.apolloDesc", "Trajetória Translunar 3D e telemetria incluídas no estudo.")}
                 </div>
               </div>
             </div>
@@ -301,9 +303,9 @@ export const StudyShareModal: React.FC = () => {
             >
               <span aria-hidden="true" className="select-none text-title">🌋</span>
               <div className="flex-1">
-                <div className="font-semibold text-fg">Paleogeografia &amp; Deriva Continental Ativa</div>
+                <div className="font-semibold text-fg">{t("study.badge.geoTitle", "Paleogeografia & Deriva Continental Ativa")}</div>
                 <div className="text-caption text-success">
-                  {geologicalEraDef?.name || `Era Geológica: ${geologicalMa} Ma atrás`}
+                  {geologicalEraDef?.name || `${geologicalMa} Ma`}
                 </div>
               </div>
             </div>
@@ -317,9 +319,9 @@ export const StudyShareModal: React.FC = () => {
             >
               <span aria-hidden="true" className="select-none text-title">⛵</span>
               <div className="flex-1">
-                <div className="font-semibold text-fg">Rota de Expedição Histórica 3D</div>
+                <div className="font-semibold text-fg">{t("study.badge.routeTitle", "Rota de Expedição Histórica 3D")}</div>
                 <div className="text-caption text-cat-politics">
-                  {historicalRouteDef?.title || `Expedição Marítima (${activeRouteId})`}
+                  {historicalRouteDef?.title || activeRouteId}
                 </div>
               </div>
             </div>
@@ -333,9 +335,9 @@ export const StudyShareModal: React.FC = () => {
             >
               <span aria-hidden="true" className="select-none text-title">📡</span>
               <div className="flex-1">
-                <div className="font-semibold text-fg">Observatório Planetário Ativo</div>
+                <div className="font-semibold text-fg">{t("study.badge.obsTitle", "Observatório Planetário Ativo")}</div>
                 <div className="text-caption text-accent">
-                  {effectiveObservatoryLayers.length} camada(s) científica(s) capturada(s) ({effectiveObservatoryLayers.join(", ")}).
+                  {effectiveObservatoryLayers.length} {t("study.badge.obsCaptured", "camada(s) científica(s) capturada(s)")} ({effectiveObservatoryLayers.join(", ")}).
                 </div>
               </div>
             </div>
@@ -349,9 +351,9 @@ export const StudyShareModal: React.FC = () => {
             >
               <span aria-hidden="true" className="select-none text-title">🗺️</span>
               <div className="flex-1">
-                <div className="font-semibold text-fg">Mapa Temático Coroplético Capturado</div>
+                <div className="font-semibold text-fg">{t("study.badge.choroplethTitle", "Mapa Temático Coroplético Capturado")}</div>
                 <div className="text-caption text-accent">
-                  {choroplethMeta.label} ({choroplethMeta.sourcePrimary}) — restaurado automaticamente ao abrir o link.
+                  {t(`choropleth.ind.${choroplethMeta.id}.label`, choroplethMeta.label)} ({choroplethMeta.sourcePrimary}) — {t("study.badge.choroplethRestored", "restaurado automaticamente ao abrir o link.")}
                 </div>
               </div>
             </div>
@@ -364,10 +366,10 @@ export const StudyShareModal: React.FC = () => {
             >
               <span aria-hidden="true" className="select-none text-title">🛰️</span>
               <div className="flex-1">
-                <div className="font-semibold text-fg">Imagem de Satélite Capturada</div>
+                <div className="font-semibold text-fg">{t("study.badge.gibsTitle", "Imagem de Satélite Capturada")}</div>
                 <div className="text-caption text-fg-secondary">
-                  {GIBS_PRODUCTS[gibsProduct].name}
-                  {gibsSnapshot.gibsMonth ? ` · ${formatGibsMonth(gibsSnapshot.gibsMonth)}` : ""} (NASA GIBS) — restaurada ao abrir o link.
+                  {t(`obs.gibs.${gibsProduct}.name`, GIBS_PRODUCTS[gibsProduct].name)}
+                  {gibsSnapshot.gibsMonth ? ` · ${formatGibsMonth(gibsSnapshot.gibsMonth, locale)}` : ""} (NASA GIBS) — {t("study.badge.gibsRestored", "restaurada ao abrir o link.")}
                 </div>
               </div>
             </div>
@@ -381,51 +383,54 @@ export const StudyShareModal: React.FC = () => {
             >
               <span aria-hidden="true" className="select-none text-title">🪐</span>
               <div className="flex-1">
-                <div className="font-semibold text-fg">Estudo Cósmico / Sistema Solar Ativo</div>
+                <div className="font-semibold text-fg">{t("study.badge.cosmicTitle", "Estudo Cósmico / Sistema Solar Ativo")}</div>
                 <div className="text-caption text-warning">
-                  {focusedBodyId ? `Foco Orbital: ${focusedBodyId}` : "Visão Panorâmica Heliocêntrica"} · {activeCosmicLayers.length} camadas cósmicas capturadas.
+                  {focusedBodyId
+                    ? `${t("study.badge.orbitalFocus", "Foco Orbital")}: ${focusedBodyId}`
+                    : t("study.badge.heliocentricOverview", "Visão Panorâmica Heliocêntrica")}{" "}
+                  · {activeCosmicLayers.length} {t("study.badge.cosmicCaptured", "camadas cósmicas capturadas.")}
                 </div>
               </div>
             </div>
           )}
 
           <div className="space-y-1 rounded-card border border-line bg-surface-sunken p-3 text-caption text-fg-secondary">
-            <div className="font-semibold text-fg">Recorte capturado automaticamente:</div>
+            <div className="font-semibold text-fg">{t("study.autoCaptured", "Recorte capturado automaticamente:")}</div>
             <div className="font-mono tabular-nums">
-              • Período: {startYear} — {endYear} ({endYear - startYear} anos)
+              • {t("study.period", "Período")}: {startYear} — {endYear} ({endYear - startYear} {t("common.years", "anos")})
             </div>
             <div>
-              • Países: {[selectedIso, ...comparatorIsos].filter(Boolean).join(", ") || "Visão Global"}
+              • {t("study.countries", "Países")}: {[selectedIso, ...comparatorIsos].filter(Boolean).join(", ") || t("study.globalView", "Visão Global")}
             </div>
             <div className="font-mono tabular-nums">
-              • Coordenadas da câmera: ({cameraLat.toFixed(1)}°, {cameraLng.toFixed(1)}°)
+              • {t("study.cameraCoords", "Coordenadas da câmera")}: ({cameraLat.toFixed(1)}°, {cameraLng.toFixed(1)}°)
             </div>
             {isHistoricalEraActive && (
-              <div className="font-medium text-warning">• Era Histórica: {eraDef.label}</div>
+              <div className="font-medium text-warning">• {t("study.historicalEra", "Era Histórica")}: {eraDef.label}</div>
             )}
             {isApollo11Active && (
               <div className="font-medium text-accent">
-                • Missão Espacial: Apollo 11 (Trajetória Translunar Ativa)
+                • {t("study.spaceMission", "Missão Espacial: Apollo 11 (Trajetória Translunar Ativa)")}
               </div>
             )}
             {geologicalMa && (
               <div className="font-medium text-success">
-                • Paleogeografia: {geologicalEraDef?.name || `${geologicalMa} Ma`}
+                • {t("study.paleogeography", "Paleogeografia")}: {geologicalEraDef?.name || `${geologicalMa} Ma`}
               </div>
             )}
             {activeRouteId && (
               <div className="font-medium text-cat-politics">
-                • Rota Histórica 3D: {historicalRouteDef?.title || activeRouteId}
+                • {t("study.route3d", "Rota Histórica 3D")}: {historicalRouteDef?.title || activeRouteId}
               </div>
             )}
             {effectiveObservatoryLayers.length > 0 && (
               <div className="font-medium text-accent">
-                • Observatório: {effectiveObservatoryLayers.length} camada(s) ativa(s)
+                • {t("study.observatory", "Observatório")}: {effectiveObservatoryLayers.length} {t("study.activeLayersShort", "camada(s) ativa(s)")}
               </div>
             )}
             {isCosmicMode && (
               <div className="font-medium text-warning">
-                • Expansão Cósmica: Sistema Solar ({focusedBodyId || "Visão Geral"}, {activeCosmicLayers.length} camadas)
+                • {t("study.cosmicExpansion", "Expansão Cósmica: Sistema Solar")} ({focusedBodyId || t("cosmic.overview", "Visão Geral")}, {activeCosmicLayers.length} {t("study.layersWord", "camadas")})
               </div>
             )}
           </div>
@@ -442,18 +447,20 @@ export const StudyShareModal: React.FC = () => {
           {shareUrl && (
             <div className="space-y-2 rounded-card border border-accent/40 bg-accent/10 p-3">
               <span className="block text-caption font-medium text-accent">
-                {temporaryShare ? "Link temporário deste servidor" : "Link permanente e imutável gerado:"}
+                {temporaryShare
+                  ? t("study.tempLinkTitle", "Link temporário deste servidor")
+                  : t("study.permLinkTitle", "Link permanente e imutável gerado:")}
               </span>
               {temporaryShare && (
                 <p className="text-caption text-fg-secondary">
-                  O link pode deixar de funcionar ao reiniciar o servidor.
+                  {t("study.tempLinkHint", "O link pode deixar de funcionar ao reiniciar o servidor.")}
                 </p>
               )}
               <div className="flex items-center gap-2">
                 <input
                   type="text"
                   readOnly
-                  aria-label="Link do estudo compartilhável"
+                  aria-label={t("study.linkAria", "Link do estudo compartilhável")}
                   value={shareUrl}
                   className="flex-1 select-all rounded-control border border-line-strong bg-surface-sunken px-2.5 py-1.5 font-mono text-caption text-fg"
                 />
@@ -463,7 +470,7 @@ export const StudyShareModal: React.FC = () => {
                   ) : (
                     <Copy aria-hidden="true" className="h-3.5 w-3.5" />
                   )}
-                  <span>{copied ? "Copiado" : "Copiar"}</span>
+                  <span>{copied ? t("common.copied", "Copiado") : t("common.copy", "Copiar")}</span>
                 </Button>
               </div>
             </div>

@@ -8,6 +8,7 @@ import { useReaderStore } from "@/stores/readerStore";
 import type { MilestoneItem } from "@/lib/milestones";
 import { getSourceUrl } from "@/lib/citations";
 import { cn } from "@/components/ui/cn";
+import { useI18n } from "@/lib/i18n/useT";
 
 const ACTION = "inline-flex items-center justify-center gap-1 rounded-control border border-line bg-surface px-2 py-1 text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg";
 
@@ -17,6 +18,7 @@ interface CountryMiniTimelineProps {
 }
 
 export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milestones, countryName }) => {
+  const { locale, t } = useI18n();
   const storeSelectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
   // Renderização no servidor (e testes) lê o estado atual; o Zustand devolveria o inicial.
   const selectedMilestoneId =
@@ -47,12 +49,13 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
     <div className="mt-3 border-t border-line pt-3">
       <div className="mb-2 flex items-center gap-1.5 text-label font-semibold text-fg">
         <History aria-hidden="true" className="h-4 w-4 text-fg-muted" />
-        <span>Marcos Históricos Decisivos</span>
+        <span>{t("timeline.countryMilestones", "Marcos Históricos Decisivos")}</span>
       </div>
 
       <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
         {milestones.map((m) => {
           const isSelected = selectedMilestoneId === m.id;
+          const wikiHost = locale === "en" ? "en.wikipedia.org" : "pt.wikipedia.org";
           return (
             <div
               key={m.id}
@@ -67,7 +70,7 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                 type="button"
                 aria-pressed={isSelected}
                 onClick={(e) => handleMilestoneClick(e, m)}
-                title={isSelected ? "Desmarcar este evento" : "Focar este evento no globo 3D"}
+                title={isSelected ? t("timeline.unselectEvent", "Desmarcar este evento") : t("timeline.focusEvent", "Focar este evento no globo 3D")}
                 className="block w-full rounded-card p-2.5 text-left"
               >
                 <span className="flex items-center justify-between gap-1 text-label">
@@ -89,7 +92,7 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       className="inline-flex min-w-0 items-center gap-1 text-accent hover:text-accent-hover hover:underline"
-                      title={`Fonte primária: ${m.sourcePrimary} (abrir repositório)`}
+                      title={`${t("inspector.sourcePrefix", "Fonte primária:")} ${m.sourcePrimary}`}
                     >
                       <span className="truncate">{m.sourcePrimary}</span>
                       <ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0" />
@@ -106,10 +109,10 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                           setReaderOpen(true);
                         }}
                         className={ACTION}
-                        title="Abrir seção de História no Dossiê do País"
+                        title={t("timeline.readDossierTitle", "Abrir seção de História no Dossiê do País")}
                       >
                         <BookOpen aria-hidden="true" className="h-3 w-3" />
-                        <span>Ler dossiê</span>
+                        <span>{t("timeline.readDossier", "Ler dossiê")}</span>
                       </button>
                       <button
                         type="button"
@@ -124,21 +127,21 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                           });
                         }}
                         className={ACTION}
-                        title={`Gerar citação acadêmica para '${m.title}'`}
+                        title={t("timeline.citeMilestoneTitle", `Gerar citação acadêmica para '${m.title}'`)}
                       >
                         <Quote aria-hidden="true" className="h-3 w-3" />
-                        <span>Citar</span>
+                        <span>{t("timeline.cite", "Citar")}</span>
                       </button>
                       <a
-                        href={`https://pt.wikipedia.org/wiki/${encodeURIComponent(m.title)}`}
+                        href={`https://${wikiHost}/wiki/${encodeURIComponent(m.title)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         className={ACTION}
-                        title={`Pesquisar '${m.title}' na Wikipédia`}
+                        title={`${t("common.wikipedia", "Wikipédia")}: ${m.title}`}
                       >
                         <ExternalLink aria-hidden="true" className="h-3 w-3" />
-                        <span>Wikipédia</span>
+                        <span>{t("common.wikipedia", "Wikipédia")}</span>
                       </a>
                     </span>
                   )}

@@ -9,6 +9,8 @@ import { searchComparableCountries } from "@/lib/comparator-data";
 import { ComparisonGrid } from "./ComparisonGrid";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
 
 const ComparisonCharts = dynamic(
   () => import("./ComparisonCharts").then((m) => m.ComparisonCharts),
@@ -16,6 +18,7 @@ const ComparisonCharts = dynamic(
 );
 
 export const CountryComparator: React.FC = () => {
+  const { locale, t } = useI18n();
   const storeIsOpen = useComparatorStore((s) => s.isOpen);
   const storeSelectedIsos = useComparatorStore((s) => s.selectedIsos);
   const closeComparator = useComparatorStore((s) => s.closeComparator);
@@ -50,17 +53,17 @@ export const CountryComparator: React.FC = () => {
         title={
           <span className="flex items-center gap-2.5">
             <BarChart2 aria-hidden="true" className="h-5 w-5 shrink-0 text-accent" />
-            <span>Comparador multidimensional de países (até 4 nações)</span>
+            <span>{t("comp.title", "Comparador multidimensional de países (até 4 nações)")}</span>
           </span>
         }
-        description={`Compare indicadores oficiais lado a lado entre todos os ${totalCatalogCount} países do catálogo.`}
+        description={`${t("comp.descPrefix", "Compare indicadores oficiais lado a lado entre todos os")} ${totalCatalogCount} ${t("comp.descSuffix", "países do catálogo.")}`}
       >
         {/* Subheader: busca entre os 177 países + atalhos de adição */}
         <div className="mb-5 space-y-3 border-b border-line pb-3 text-caption">
           <div className="flex flex-wrap items-center gap-2">
             <label className="relative flex h-9 min-w-[16rem] flex-1 items-center gap-2 rounded-control border border-line bg-surface-sunken px-3 text-label">
               <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
-              <span className="sr-only">Buscar país para adicionar ao comparador</span>
+              <span className="sr-only">{t("comp.searchSr", "Buscar país para adicionar ao comparador")}</span>
               <input
                 type="text"
                 value={query}
@@ -77,8 +80,8 @@ export const CountryComparator: React.FC = () => {
                 }}
                 placeholder={
                   isFull
-                    ? "Limite de 4 países atingido — remova um para trocar"
-                    : `Buscar entre ${totalCatalogCount} países ou código ISO…`
+                    ? t("comp.searchFull", "Limite de 4 países atingido — remova um para trocar")
+                    : `${t("comp.searchPlaceholderPrefix", "Buscar entre")} ${totalCatalogCount} ${t("comp.searchPlaceholderSuffix", "países ou código ISO…")}`
                 }
                 data-testid="comparator-country-search"
                 className="w-full min-w-0 border-none bg-transparent text-fg placeholder:text-fg-muted focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
@@ -86,7 +89,7 @@ export const CountryComparator: React.FC = () => {
               {query && (
                 <button
                   type="button"
-                  aria-label="Limpar busca de país"
+                  aria-label={t("comp.clearSearch", "Limpar busca de país")}
                   onClick={() => setQuery("")}
                   className="rounded-sm p-0.5 text-fg-muted hover:text-fg"
                 >
@@ -96,7 +99,7 @@ export const CountryComparator: React.FC = () => {
             </label>
 
             <span className="font-mono tabular-nums text-fg-muted">
-              {selectedIsos.length}/4 selecionados
+              {selectedIsos.length}/4 {t("comp.selectedCount", "selecionados")}
             </span>
           </div>
 
@@ -106,7 +109,7 @@ export const CountryComparator: React.FC = () => {
               data-testid="comparator-country-suggestions"
             >
               <span className="shrink-0 text-fg-muted">
-                {query.trim() ? "Resultados:" : "Sugestões:"}
+                {query.trim() ? t("comp.results", "Resultados:") : t("comp.suggestions", "Sugestões:")}
               </span>
               {suggestions.length > 0 ? (
                 suggestions.map((c) => (
@@ -118,13 +121,13 @@ export const CountryComparator: React.FC = () => {
                     onClick={() => handleAdd(c.isoCode)}
                   >
                     <Plus aria-hidden="true" className="h-3 w-3" />
-                    <span>{c.nameCommon}</span>
+                    <span>{formatCountryName(c.iso2, c.nameCommon, locale)}</span>
                     <span className="font-mono text-caption text-fg-muted">{c.isoCode}</span>
                   </Button>
                 ))
               ) : (
                 <span className="italic text-fg-muted">
-                  Nenhum país disponível encontrado para “{query.trim()}”.
+                  {t("comp.noCountryFound", "Nenhum país disponível encontrado para")} “{query.trim()}”.
                 </span>
               )}
             </div>

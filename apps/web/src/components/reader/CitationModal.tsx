@@ -17,6 +17,8 @@ import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
+import { useI18n } from "@/lib/i18n/useT";
+import { formatCountryName } from "@/lib/i18n/format";
 
 interface CitationModalProps {
   countryName?: string;
@@ -29,6 +31,7 @@ export const CitationModal: React.FC<CitationModalProps> = ({
   dimensionTitle: propDimensionTitle,
   countryIso: propCountryIso,
 }) => {
+  const { locale, t } = useI18n();
   const isCitationModalOpen = useReaderStore((s) => s.isCitationModalOpen);
   const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
   const citationFormat = useReaderStore((s) => s.citationFormat);
@@ -40,12 +43,17 @@ export const CitationModal: React.FC<CitationModalProps> = ({
 
   // Sem retorno antecipado: com `open` falso o Dialog não renderiza nada e anima a saída (D17).
   const currentCountry = selectedIso ? getCountryData(selectedIso) : null;
+  const localizedCountry = currentCountry
+    ? formatCountryName(currentCountry.iso2, currentCountry.nameCommon, locale)
+    : null;
   const effectiveIso = propCountryIso || currentCountry?.isoCode || "BRA";
-  const effectiveCountryName = propCountryName || currentCountry?.nameCommon || "TellusPedia";
+  const effectiveCountryName = propCountryName || localizedCountry || "TellusPedia";
   const effectiveTitle =
     propDimensionTitle ||
-    (currentCountry
-      ? `${currentCountry.nameCommon}: Dossiê Temático`
+    (localizedCountry
+      ? `${localizedCountry}: ${locale === "en" ? "Thematic Dossier" : "Dossiê Temático"}`
+      : locale === "en"
+      ? "TellusPedia Planetary Observatory"
       : "Observatório Planetário TellusPedia");
 
   const defaultUrl =
@@ -88,8 +96,8 @@ export const CitationModal: React.FC<CitationModalProps> = ({
   };
 
   const modalTitle = customCitationParams
-    ? `Citar: ${params.title}`
-    : "Citar verbete / fonte acadêmica";
+    ? `${t("citation.titlePrefix", "Citar:")} ${params.title}`
+    : t("citation.titleDefault", "Citar verbete / fonte acadêmica");
 
   return (
     <Dialog open={isCitationModalOpen} onOpenChange={(open) => setCitationModalOpen(open)}>
@@ -101,7 +109,7 @@ export const CitationModal: React.FC<CitationModalProps> = ({
             <span className="truncate">{modalTitle}</span>
           </span>
         }
-        description="Formatos acadêmicos ABNT NBR 6023, APA 7, MLA 9 e BibTeX."
+        description={t("citation.description", "Formatos acadêmicos ABNT NBR 6023, APA 7, MLA 9 e BibTeX.")}
         footer={
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
             <span className="max-w-[260px] truncate font-mono text-caption text-fg-muted">
@@ -111,19 +119,19 @@ export const CitationModal: React.FC<CitationModalProps> = ({
               {citationFormat === "BIBTEX" && (
                 <Button variant="secondary" size="sm" onClick={handleDownloadBib}>
                   <Download aria-hidden="true" className="h-3.5 w-3.5" />
-                  <span>Baixar .bib</span>
+                  <span>{t("citation.downloadBib", "Baixar .bib")}</span>
                 </Button>
               )}
               <Button variant="primary" size="sm" onClick={handleCopy}>
                 {copied ? (
                   <>
                     <Check aria-hidden="true" className="h-4 w-4" />
-                    <span>Copiado!</span>
+                    <span>{t("common.copiedBang", "Copiado!")}</span>
                   </>
                 ) : (
                   <>
                     <Copy aria-hidden="true" className="h-4 w-4" />
-                    <span>Copiar citação</span>
+                    <span>{t("citation.copyButton", "Copiar citação")}</span>
                   </>
                 )}
               </Button>
@@ -132,7 +140,7 @@ export const CitationModal: React.FC<CitationModalProps> = ({
         }
       >
         {/* Format Selector Tabs */}
-        <div role="tablist" aria-label="Formato de citação" className="mb-4 flex flex-wrap items-center gap-2">
+        <div role="tablist" aria-label={t("citation.formatAria", "Formato de citação")} className="mb-4 flex flex-wrap items-center gap-2">
           {(["ABNT", "APA", "MLA", "BIBTEX"] as const).map((fmt) => {
             const active = citationFormat === fmt;
             return (
@@ -159,7 +167,7 @@ export const CitationModal: React.FC<CitationModalProps> = ({
         <div className="group relative min-h-[96px] whitespace-pre-wrap break-words rounded-card border border-line bg-surface-sunken p-4 pr-11 font-mono text-caption leading-relaxed text-fg">
           <div className="absolute right-2 top-2">
             <IconButton
-              label="Copiar citação formatada"
+              label={t("citation.copyFormattedAria", "Copiar citação formatada")}
               size="sm"
               icon={copied ? <Check className="text-success" /> : <Copy />}
               onClick={handleCopy}
