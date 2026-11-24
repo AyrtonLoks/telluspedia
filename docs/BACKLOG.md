@@ -241,8 +241,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | DONE | antigravity | — | G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS |
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | DONE | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL |
-| D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | REVIEW | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
-| D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
+| D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
+| D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
 | D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
 | D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | TODO | — | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
@@ -2574,7 +2574,7 @@ Segunda metade da `D28` (`GG`): estender a fundação i18n da `D28a` para todos 
 
 ### D29 · Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d29-marine-debris-gyres · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/d29-marine-debris-gyres · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS
 
 **Contexto / problema**
@@ -2596,12 +2596,13 @@ Previsto desde o início no `DISCOVERY.md` (`RN17`, `CA07`) e no `ROADMAP.md` or
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 (resgate `RN17`/`CA07`, aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`ce3fbdc`) com grupos livres (`G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS`).
 - 2026-11-24 · antigravity · REVIEW · Implementada a camada `MARINE_DEBRIS` (`RN17` / `CA07`): (1) catálogo observado dos 5 giros oceânicos subtropicais (Pacífico Norte/GPGP, Atlântico Norte/Sargaços, Índico, Pacífico Sul e Atlântico Sul) com citações NOAA Marine Debris / Global Drifter Program / Eriksen (2014) / Lebreton (2018) em `src/lib/marine-debris-catalog.ts`, tipos leves em `src/lib/marine-debris-types.ts` (zero peso no bundle inicial de `/`) e motor físico Lagrangiano RK2 acoplado (`corrente superficial D27b + windage 1–3% D27a + convergência subtropical de Ekman + snap costeiro`) em `src/lib/marine-debris-data.ts`; (2) visualização 3D WebGL sob demanda (`React.lazy`) em `src/components/globe/MarineDebrisLayer.tsx` e `MarineDebrisRibbons.tsx` (nuvens de densidade nos 5 giros com rotação Coriolis, traçadores Lagrangianos contínuos na GPU e fitas 3D da simulação interativa de deriva, respeitando `T39`, `RN22` `isThrottled` e `dispose()` completo de geometrias e shaders); (3) controles D14 sob demanda (`next/dynamic`) em `src/components/observatory/MarineDebrisControls.tsx` (selo T05 dual observado vs. modelo Lagrangiano, legenda `10³ → 10⁶ part./km²`, fichas dos 5 giros com `flyTo`, modo clique no oceano em `EarthSphere.tsx`, 6 pontos costeiros rápidos, seletores de windage 1–3% e horizonte 12–36m, bilíngue `pt-BR`/`en` em `en-panels.ts`, adicionado a `MIGRATED` em `design-system.test.tsx`); (4) integração com `observatoryStore.ts`, `ObservatoryPanel.tsx`, busca `⌘K` (`search.ts`) e serialização/supressão anacrônica em Estudos (`study-schema.ts`). Validação: `pnpm build`, `pnpm typecheck`, `pnpm lint` (0 warnings), `pnpm test` (800/800 pass, +4 testes em `test/marine-debris.test.tsx`), `test/bundle-budget.test.ts` (6/6 pass, `/` = `162 kB` / `< 160 KiB` gzip) e Chromium WebGL E2E (`test/e2e/marine-debris.spec.ts` 2/2 pass em `desktop-1366` e `desktop-1920`, PT e EN, 0 erros).
+- 2026-11-24 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
 ### D30 · Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d30-inpe-environmental · **Worktree:** ../telluspedia-wt/antigravity-d30
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS
 
 **Contexto / problema**
@@ -2622,6 +2623,7 @@ O `DATA_SOURCES.md` e o `ROADMAP.md` original previam integração direta com o 
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 (resgate `RN17`/`DATA_SOURCES.md`, aprovada pelo Ayrton).
+- 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`fd2436d`) com grupos livres (`G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS`).
 
 ---
 
