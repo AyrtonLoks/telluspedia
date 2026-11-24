@@ -235,8 +235,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | DONE | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
 | T42 | Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs) | Infra/Docs | P1 | P | DONE | antigravity | — | G-INFRA |
 | T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | DONE | antigravity | — | G-OBS, G-PIPELINE, G-INFRA |
-| T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | REVIEW | antigravity | — | G-INFRA, G-SHELL, G-OBS |
-| T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | TODO | — | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA |
+| T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | DONE | antigravity | — | G-INFRA, G-SHELL, G-OBS |
+| T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | IN_PROGRESS | antigravity | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA |
 | T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
 | T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | TODO | — | — | G-OBS, G-INFRA |
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
@@ -1431,7 +1431,7 @@ Atualmente o limitador de taxa (Redis + fallback em memória de `study-rate-limi
 
 ### T44 · Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t44-e2e-cycle2 · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t44-e2e-cycle2 · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Qualidade · **Tamanho:** M · **Depende de:** — · **Grupos:** G-INFRA, G-SHELL, G-OBS
 
 **Contexto / problema**
@@ -1455,12 +1455,13 @@ Os 5 arquivos E2E em `apps/web/test/e2e/` (`home`, `explore-search`, `keyboard-a
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`3af7f98`) com grupos livres (`G-INFRA, G-SHELL, G-OBS`).
 - 2026-11-24 · antigravity · REVIEW · Adicionadas 2 novas suítes Playwright E2E e helper de fixtures determinísticos sem rede externa: (1) `apps/web/test/e2e/helpers/cycle2-fixtures.ts` (`attachErrorCollector` verificando **0 `pageerror`, 0 `console.error` e 0 avisos de hidratação/aninhamento DOM do React**, `paceSoftwareWebGL` mantendo a cena WebGL real responsiva em SwiftShader e `installDeterministicRoutes` mockando `/api/weather`, `/api/observatory/{firms,gibs,gibs/image,winds,currents}` e `flagcdn.com`); (2) `apps/web/test/e2e/i18n-and-hub.spec.ts` cobrindo troca `PT ↔ EN` na URL `/?visao=1&pais=BRA&observatorio=1&camadas=NASA_FIRMS`, reload completo em `EN` com `<html lang="en">`, país + Observatório + camada FIRMS preservados com 0 erros de hidratação, navegação para `/telluslab` e `/dossies/astronomia-optica` em `EN` e volta para `PT`; (3) `apps/web/test/e2e/cycle2-features.spec.ts` cobrindo Modo Coroplético (`D22`: seletor, legenda contínua, swatch de dado indisponível, fonte Banco Mundial, seleção de Brasil + tooltip/ranking, troca de indicador e desativação), Observatório com NASA GIBS (`D25`: NDVI → LST + nota de referência local) e Ventos/Correntes/Ambos (`D27`: 10 m → Jato 250 hPa + nós, Correntes + nós, modo simultâneo Ambos e limpeza de camadas) e Galeria `/studies` (`D23`: navegação, filtros combinados `q/era/country/cosmic`, limpeza, `PT ↔ EN` SSR e abertura de estudo compartilhado `/study/[slug]` com fallback gracioso para ambiente CI stateless sem PostgreSQL). Validação: `pnpm typecheck`, `pnpm lint` (`eslint .`, 0 warnings), `pnpm test` (775/775 pass), `pnpm build`, `test/bundle-budget.test.ts` (6/6 pass) e `pnpm test:e2e` (**26/26 pass em 7,0 min**, bem abaixo dos `15 min` do job CI).
+- 2026-11-24 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
 ### T45 · Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t45-modularization-texture-budget · **Worktree:** ../telluspedia-wt/antigravity-t45
 - **Prioridade:** P2 · **Área:** Perf/Qualidade · **Tamanho:** M · **Depende de:** — · **Grupos:** G-COSMOS, G-GLOBO, G-PAIS, G-INFRA
 
 **Contexto / problema**
@@ -1479,6 +1480,7 @@ Quatro arquivos centrais encostaram no teto rígido de 600 linhas do `code-hygie
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`36988bc`) com grupos livres (`G-COSMOS, G-GLOBO, G-PAIS, G-INFRA`).
 
 ---
 
