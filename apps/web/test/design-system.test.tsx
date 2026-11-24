@@ -152,6 +152,7 @@ const MIGRATED = [
   "src/components/globe/WebGLErrorBoundary.tsx",
   "src/components/shell/GlobalErrorView.tsx",
   "src/components/shell/GlobeExperienceShell.tsx",
+  "src/components/pwa/PwaLifecycle.tsx",
   "src/app/page.tsx",
   "src/app/error.tsx",
   "src/app/global-error.tsx",

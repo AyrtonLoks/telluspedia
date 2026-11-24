@@ -67,3 +67,19 @@ export function ktx2WorkerHeaders() {
     { key: "Cache-Control", value: "public, max-age=3600, must-revalidate" },
   ];
 }
+
+/** Caminho do Service Worker PWA (T46). */
+export const SERVICE_WORKER_PATH = "/sw.js";
+
+/**
+ * Cabeçalhos do Service Worker: sem cache HTTP para que atualizações de versão sejam detectadas
+ * imediatamente e com CSP estrita (`default-src 'self'`, sem `unsafe-eval`).
+ */
+export function serviceWorkerHeaders() {
+  return [
+    { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'; connect-src 'self'" },
+    { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+    { key: "Service-Worker-Allowed", value: "/" },
+    { key: "X-Content-Type-Options", value: "nosniff" },
+  ];
+}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
 import { SearchProvider } from "@/components/explore/SearchProvider";
+import { PwaLifecycle } from "@/components/pwa/PwaLifecycle";
 import { getServerLocale } from "@/lib/i18n/server";
 import { buildRootMetadata } from "@/lib/server-loaders";
 
@@ -63,7 +64,10 @@ export default async function RootLayout({
       className={`dark ${geistSans.variable} ${geistMono.variable} ${merriweather.variable}`}
     >
       <body className="bg-bg text-fg antialiased min-h-screen font-sans">
-        <SearchProvider>{children}</SearchProvider>
+        <SearchProvider>
+          {children}
+          <PwaLifecycle />
+        </SearchProvider>
       </body>
     </html>
   );

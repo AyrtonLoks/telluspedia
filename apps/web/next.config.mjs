@@ -1,7 +1,13 @@
 import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
-import { KTX2_WORKER_PATH, ktx2WorkerHeaders, securityHeaders } from "./security-headers.mjs";
+import {
+  KTX2_WORKER_PATH,
+  SERVICE_WORKER_PATH,
+  ktx2WorkerHeaders,
+  securityHeaders,
+  serviceWorkerHeaders,
+} from "./security-headers.mjs";
 
 const withBundleAnalyzer = createBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -37,6 +43,8 @@ const createNextConfig = (phase) => {
         { source: "/:path*", headers: securityHeaders({ dev }) },
         // Vem depois: no mesmo cabeçalho, a última regra vale. Só o worker do KTX2 libera eval.
         { source: KTX2_WORKER_PATH, headers: ktx2WorkerHeaders() },
+        // T46: Service Worker PWA sem cache HTTP e com CSP estrita (sem eval).
+        { source: SERVICE_WORKER_PATH, headers: serviceWorkerHeaders() },
       ];
     },
     distDir: dev ? ".next-dev" : ".next",

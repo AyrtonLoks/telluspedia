@@ -237,7 +237,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | DONE | antigravity | — | G-OBS, G-PIPELINE, G-INFRA |
 | T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | DONE | antigravity | — | G-INFRA, G-SHELL, G-OBS |
 | T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | DONE | antigravity | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA, G-OBS, G-TIMELINE |
-| T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | IN_PROGRESS | antigravity | — | G-SHELL, G-INFRA |
+| T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | REVIEW | antigravity | — | G-SHELL, G-INFRA |
 | T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | TODO | — | — | G-OBS, G-INFRA |
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | TODO | — | — | G-FRONTEIRAS, G-GLOBO, G-PAIS |
@@ -1488,7 +1488,7 @@ Quatro arquivos centrais encostaram no teto rígido de 600 linhas do `code-hygie
 
 ### T46 · PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t46-pwa-service-worker · **Worktree:** ../telluspedia-wt/antigravity-t46
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t46-pwa-service-worker · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Infra/UX · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA
 
 **Contexto / problema**
@@ -1500,15 +1500,16 @@ A tarefa `T33` adicionou `manifest.ts` e ícones, mas o aplicativo ainda não po
 3. Exibir um indicador discreto D14 (bilíngue `pt-BR`/`en`) quando o navegador estiver offline, informando que camadas ao vivo estão pausadas enquanto o catálogo enciclopédico continua acessível.
 
 **Critérios de aceite**
-- [ ] Service Worker registra limpo em produção (`next start`) respeitando CSP e sem interferir em testes E2E.
-- [ ] Limpeza automática de caches antigos ao incrementar versão do SW.
-- [ ] Aviso discreto de modo offline com tokens D14 e tradução `pt-BR`/`en`.
+- [x] Service Worker registra limpo em produção (`next start`) respeitando CSP e sem interferir em testes E2E.
+- [x] Limpeza automática de caches antigos ao incrementar versão do SW.
+- [x] Aviso discreto de modo offline com tokens D14 e tradução `pt-BR`/`en`.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + validação no Chromium em modo offline.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`d6b7b08`) com grupos livres (`G-SHELL, G-INFRA`).
+- 2026-11-24 · antigravity · REVIEW · Implementado Service Worker versionado `apps/web/public/sw.js` (`telluspedia-static-v1` + `telluspedia-pages-v1`) com precache da casca (`/`), manifesto, ícone, `countries-ne-110m.json`, `countries-worldbank-indicators.json` e `worldbank-timeseries.json`, limpeza automática de caches `telluspedia-*` obsoletos na ativação, `cache-first` para `/_next/static/*`, `/data/*.json`, `/flags/*`, `/observatory/gibs/*` e texturas 2K/1K/paleo (excluindo `_4k.`), `network-first` com fallback controlado (página exata → `/` → HTML bilíngue 503 sem cachear `/studies` nem `/study/*`) e bypass estrito para non-GET, cross-origin, `/sw.js`, `/basis/*`, `/api/*` e `/dev/*`. Adicionada política tipada e registro seguro apenas em produção (`NODE_ENV === "production"` + `isSecureContext`) em `src/lib/pwa/sw-policy.ts`, cabeçalhos CSP/no-cache dedicados para `/sw.js` em `security-headers.mjs` + `next.config.mjs` (preservando os índices de `/:path*` e `/basis/ktx2-worker.js`), indicador discreto D14 bilíngue `pt-BR`/`en` em `src/components/pwa/PwaLifecycle.tsx` (adicionado a `layout.tsx`, `en-shell.ts`, `MIGRATED` em `test/design-system.test.tsx` e `tw-merge-table.ts`), testes unitários de runtime real do SW em `test/pwa-offline.test.tsx` e teste E2E Chromium offline em `test/e2e/pwa-offline.spec.ts`. Validação: `pnpm typecheck`, `pnpm lint` (0 warnings), `pnpm test` (787/787 pass), `pnpm build`, `test/bundle-budget.test.ts` (6/6 pass) e Playwright em `next start` (`pwa-offline.spec.ts` 2/2 pass em `desktop-1366` e `desktop-1920`, além de `home.spec.ts` e `i18n-and-hub.spec.ts` verdes com SW ativo).
 
 ---
 

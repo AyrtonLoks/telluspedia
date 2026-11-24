@@ -167,6 +167,11 @@ export const EN_SHELL_MESSAGES = {
   "choropleth.ind.NASA_FIRMS.scale": "Logarithmic scale",
   "choropleth.ind.NASA_FIRMS.unit": "hotspots",
 
+  // PWA / Modo offline (T46)
+  "pwa.offlineTitle": "Offline mode",
+  "pwa.offlineBody": "Live layers paused; encyclopedic catalog remains available.",
+  "pwa.dismissOfflineAria": "Dismiss offline mode notice",
+
   // Comuns (D28b)
   "common.dataUnavailable": "Data unavailable",
   "common.unavailable": "Unavailable",
