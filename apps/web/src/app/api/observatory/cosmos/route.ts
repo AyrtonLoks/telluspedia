@@ -6,6 +6,7 @@ import {
 } from "@/lib/astronomy-planets";
 import { LruCache } from "@/lib/lru-cache";
 import { parseCosmosBody, parseCosmosYear } from "@/lib/cosmos-validation";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 const COSMOS_CACHE_MAX_ENTRIES = 500;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour TTL for planetary telemetry
@@ -16,16 +17,19 @@ const cache = new LruCache<string, unknown>({
 });
 
 export async function GET(request: Request) {
+  const limit = await enforceRateLimit("observatory:cosmos", request);
+  if (limit.blocked) return limit.blocked;
+
   const { searchParams } = new URL(request.url);
 
   const yearResult = parseCosmosYear(searchParams.get("year"));
   if (!yearResult.ok) {
-    return NextResponse.json({ error: yearResult.error }, { status: 400 });
+    return NextResponse.json({ error: yearResult.error }, { status: 400, headers: limit.headers });
   }
 
   const bodyResult = parseCosmosBody(searchParams.get("body"));
   if (!bodyResult.ok) {
-    return NextResponse.json({ error: bodyResult.error }, { status: 400 });
+    return NextResponse.json({ error: bodyResult.error }, { status: 400, headers: limit.headers });
   }
 
   const year = yearResult.value;
@@ -39,6 +43,7 @@ export async function GET(request: Request) {
       headers: {
         "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
         "X-Cache": "HIT",
+        ...limit.headers,
       },
     });
   }
@@ -81,6 +86,7 @@ export async function GET(request: Request) {
     headers: {
       "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
       "X-Cache": "MISS",
+      ...limit.headers,
     },
   });
 }

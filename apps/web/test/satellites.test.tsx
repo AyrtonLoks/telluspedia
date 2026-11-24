@@ -121,7 +121,7 @@ describe("D04: rota /api/observatory/satellites", () => {
       urls.push(u);
       return new Response(u.includes("GROUP=stations") ? STATIONS : VISUAL);
     }) as typeof fetch;
-    const body = await (await satellitesGET()).json();
+    const body = await (await satellitesGET(new Request("http://localhost/api/observatory/satellites"))).json();
     assert.equal(body.meta.source, "live");
     assert.match(body.meta.provider, /CelesTrak/);
     assert.equal(urls.length, 2);
@@ -132,7 +132,7 @@ describe("D04: rota /api/observatory/satellites", () => {
     globalThis.fetch = (async () => {
       throw new TypeError("fetch failed");
     }) as typeof fetch;
-    const body = await (await satellitesGET()).json();
+    const body = await (await satellitesGET(new Request("http://localhost/api/observatory/satellites"))).json();
     assert.equal(body.meta.source, "fallback");
     assert.match(body.meta.provider, /impreciso/);
     assert.equal(body.data[0].noradId, ISS_NORAD_ID);

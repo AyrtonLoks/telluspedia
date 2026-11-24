@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getFirmsSource } from "@/lib/observatory-sources";
 import { observatoryHeaders } from "@/lib/observatory-source";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import {
   FIRMS_SCHEMA,
   encodeFirmsColumns,
@@ -18,6 +19,9 @@ import {
  * (lib/firms-aggregate.ts), mais `total`, `byCountry` (ISO alfa-3 → contagem/FRP), `window` e `schema`.
  */
 export async function GET(request: Request) {
+  const limit = await enforceRateLimit("observatory:firms", request);
+  if (limit.blocked) return limit.blocked;
+
   const params = new URL(request.url).searchParams;
   const days = parseFirmsWindow(params.get("days"));
   const confidence = parseFirmsConfidence(params.get("confidence"));
@@ -33,6 +37,6 @@ export async function GET(request: Request) {
       window: { days: data.days, confidence: data.confidence },
       schema: FIRMS_SCHEMA,
     },
-    { headers: observatoryHeaders(result) }
+    { headers: { ...observatoryHeaders(result), ...limit.headers } }
   );
 }

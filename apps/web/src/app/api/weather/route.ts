@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import type { WeatherData } from "@/lib/api-client";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 const COORDINATE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
 const CURRENT_FIELDS = "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m";
@@ -18,12 +19,15 @@ function numberOrNull(value: unknown): number | null {
 }
 
 async function getHandler(req: NextRequest) {
+  const limit = await enforceRateLimit("weather", req);
+  if (limit.blocked) return limit.blocked;
+
   const searchParams = req.nextUrl.searchParams;
   const lat = parseCoordinate(searchParams.get("lat"), 90);
   const lng = parseCoordinate(searchParams.get("lng"), 180);
 
   if (lat === null || lng === null) {
-    return NextResponse.json({ error: "Invalid coordinates" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid coordinates" }, { status: 400, headers: limit.headers });
   }
 
   const pipelineUrl = process.env.DATA_PIPELINE_URL || "http://localhost:8000";
@@ -38,16 +42,19 @@ async function getHandler(req: NextRequest) {
     if (pipelineRes.ok) {
       const data = await pipelineRes.json();
       const current = data.current ?? data;
-      return NextResponse.json({
-        temperature: numberOrNull(current.temperature),
-        apparent_temperature: numberOrNull(current.apparent_temperature),
-        relative_humidity: numberOrNull(current.relative_humidity),
-        precipitation: numberOrNull(current.precipitation),
-        weather_code: numberOrNull(current.weather_code),
-        wind_speed: numberOrNull(current.wind_speed),
-        reference_time: numberOrNull(current.reference_time),
-        cached: typeof data.cached === "boolean" ? data.cached : undefined,
-      } satisfies WeatherData);
+      return NextResponse.json(
+        {
+          temperature: numberOrNull(current.temperature),
+          apparent_temperature: numberOrNull(current.apparent_temperature),
+          relative_humidity: numberOrNull(current.relative_humidity),
+          precipitation: numberOrNull(current.precipitation),
+          weather_code: numberOrNull(current.weather_code),
+          wind_speed: numberOrNull(current.wind_speed),
+          reference_time: numberOrNull(current.reference_time),
+          cached: typeof data.cached === "boolean" ? data.cached : undefined,
+        } satisfies WeatherData,
+        { headers: limit.headers }
+      );
     }
   } catch {
     // Pipeline not reachable, fall back to direct Open-Meteo.
@@ -66,17 +73,20 @@ async function getHandler(req: NextRequest) {
     if (!res.ok) throw new Error("Open-Meteo error");
     const raw = await res.json();
     const current = raw?.current ?? {};
-    return NextResponse.json({
-      temperature: numberOrNull(current.temperature_2m),
-      apparent_temperature: numberOrNull(current.apparent_temperature),
-      relative_humidity: numberOrNull(current.relative_humidity_2m),
-      precipitation: numberOrNull(current.precipitation),
-      weather_code: numberOrNull(current.weather_code),
-      wind_speed: numberOrNull(current.wind_speed_10m),
-      reference_time: numberOrNull(current.time),
-    } satisfies WeatherData);
+    return NextResponse.json(
+      {
+        temperature: numberOrNull(current.temperature_2m),
+        apparent_temperature: numberOrNull(current.apparent_temperature),
+        relative_humidity: numberOrNull(current.relative_humidity_2m),
+        precipitation: numberOrNull(current.precipitation),
+        weather_code: numberOrNull(current.weather_code),
+        wind_speed: numberOrNull(current.wind_speed_10m),
+        reference_time: numberOrNull(current.time),
+      } satisfies WeatherData,
+      { headers: limit.headers }
+    );
   } catch {
-    return NextResponse.json({ error: "Weather fetch failed" }, { status: 502 });
+    return NextResponse.json({ error: "Weather fetch failed" }, { status: 502, headers: limit.headers });
   }
 }
 

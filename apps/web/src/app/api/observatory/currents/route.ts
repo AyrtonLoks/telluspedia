@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { observatoryHeaders } from "@/lib/observatory-source";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { currentsSource } from "@/lib/currents-source";
 
 /**
@@ -8,9 +9,12 @@ import { currentsSource } from "@/lib/currents-source";
  * via Open-Meteo Marine (Copernicus / NOAA) no envelope padrão `{ data, meta }` da T05,
  * com fallback climatológico explícito de giros oceânicos quando o provedor estiver indisponível.
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const limit = await enforceRateLimit("observatory:currents", request);
+  if (limit.blocked) return limit.blocked;
+
   const result = await currentsSource.get();
   return NextResponse.json(result.envelope, {
-    headers: observatoryHeaders(result),
+    headers: { ...observatoryHeaders(result), ...limit.headers },
   });
 }

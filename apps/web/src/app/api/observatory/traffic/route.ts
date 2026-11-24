@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
 import { aircraftSource, maritimeRoutesEnvelope, type TrafficPayload } from "@/lib/observatory-sources";
 import { observatoryHeaders } from "@/lib/observatory-source";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 // Dois conjuntos com procedências distintas, cada um no seu envelope { data, meta }.
-export async function GET() {
+export async function GET(request: Request) {
+  const limit = await enforceRateLimit("observatory:traffic", request);
+  if (limit.blocked) return limit.blocked;
+
   const aircraft = await aircraftSource.get();
   const payload: TrafficPayload = {
     aircraft: aircraft.envelope,
     maritimeRoutes: maritimeRoutesEnvelope(),
   };
-  return NextResponse.json(payload, { headers: observatoryHeaders(aircraft) });
+  return NextResponse.json(payload, {
+    headers: { ...observatoryHeaders(aircraft), ...limit.headers },
+  });
 }

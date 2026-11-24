@@ -120,7 +120,7 @@ describe("T05: rotas do Observatório", () => {
         geometry: [{ date: "2026-11-19T00:00:00Z", coordinates: [-60, -10] },
           { date: "2026-11-18T00:00:00Z", coordinates: [-61, -10] }], sources: [] }] })
     );
-    const res = await eonetGET();
+    const res = await eonetGET(new Request("http://localhost/api/observatory/eonet"));
     const body = await res.json();
     assert.ok(isObservatoryEnvelope(body));
     assert.equal(body.meta.source, "live");
@@ -132,7 +132,7 @@ describe("T05: rotas do Observatório", () => {
 
   test("EONET com provedor fora do ar → fallback rotulado, nunca live", async () => {
     mockFetch(() => { throw new TypeError("fetch failed"); });
-    const body = await (await eonetGET()).json();
+    const body = await (await eonetGET(new Request("http://localhost/api/observatory/eonet"))).json();
     assert.equal(body.meta.source, "fallback");
     assert.equal(body.data.length, FALLBACK_EONET_EVENTS.length);
     assert.ok(body.meta.reason);
@@ -140,7 +140,7 @@ describe("T05: rotas do Observatório", () => {
 
   test("EONET com HTTP 503 → fallback com o status no motivo", async () => {
     mockFetch(() => json({}, 503));
-    const body = await (await eonetGET()).json();
+    const body = await (await eonetGET(new Request("http://localhost/api/observatory/eonet"))).json();
     assert.equal(body.meta.source, "fallback");
     assert.match(body.meta.reason, /503/);
   });
@@ -159,7 +159,7 @@ describe("T05: rotas do Observatório", () => {
 
   test("ISS sem provedor → modelo aproximado rotulado como fallback", async () => {
     mockFetch(() => { throw new TypeError("fetch failed"); });
-    const body = await (await issGET()).json();
+    const body = await (await issGET(new Request("http://localhost/api/observatory/iss"))).json();
     assert.equal(body.meta.source, "fallback");
     assert.match(body.meta.provider, /modelo orbital aproximado/);
     assert.equal(typeof body.data.latitude, "number");
@@ -167,7 +167,7 @@ describe("T05: rotas do Observatório", () => {
 
   test("Tráfego: aviões e rotas marítimas com procedências próprias", async () => {
     mockFetch(() => { throw new TypeError("fetch failed"); });
-    const body = await (await trafficGET()).json();
+    const body = await (await trafficGET(new Request("http://localhost/api/observatory/traffic"))).json();
     assert.ok(isObservatoryEnvelope(body.aircraft));
     assert.ok(isObservatoryEnvelope(body.maritimeRoutes));
     assert.equal(body.aircraft.meta.source, "fallback");

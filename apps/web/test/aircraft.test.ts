@@ -88,7 +88,7 @@ test("Traffic route requests global authenticated states and refreshes an expire
       if (stateCalls === 1) return new Response(null, { status: 401 });
       return Response.json({ states: [makeState("a00001", 144, -37), makeState("a00002", -46, -23)] });
     };
-    const result = await (await traffic()).json();
+    const result = await (await traffic(new Request("http://localhost/api/observatory/traffic"))).json();
     assert.equal(result.aircraft.meta.source, "live");
     assert.deepEqual(result.aircraft.data.map(({ lng }: { lng: number }) => lng), [144, -46]);
     assert.equal(result.maritimeRoutes.meta.source, "fallback");

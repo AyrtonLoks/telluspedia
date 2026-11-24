@@ -234,7 +234,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | DONE | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
 | D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | DONE | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
 | T42 | Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs) | Infra/Docs | P1 | P | DONE | antigravity | — | G-INFRA |
-| T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | IN_PROGRESS | antigravity | — | G-OBS, G-PIPELINE, G-INFRA |
+| T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | REVIEW | antigravity | — | G-OBS, G-PIPELINE, G-INFRA |
 | T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | TODO | — | — | G-INFRA, G-SHELL, G-OBS |
 | T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | TODO | — | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA |
 | T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
@@ -1402,7 +1402,7 @@ Na auditoria pós-Ciclo 2 foram identificados 4 débitos leves de manutenção: 
 
 ### T43 · Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t43-unified-rate-limit · **Worktree:** ../telluspedia-wt/antigravity-t43
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t43-unified-rate-limit · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-OBS, G-PIPELINE, G-INFRA
 
 **Contexto / problema**
@@ -1415,15 +1415,16 @@ Atualmente o limitador de taxa (Redis + fallback em memória de `study-rate-limi
 4. Cobrir com testes automatizados (limite atingido → 429 + `Retry-After`, cabeçalhos e isolamento por bucket).
 
 **Critérios de aceite**
-- [ ] Todas as rotas `/api/observatory/*` e `/api/weather` protegidas por rate-limit unificado com `429` + `Retry-After`.
-- [ ] Limite em memória com teto rígido de chaves (sem crescimento ilimitado de RAM).
-- [ ] Nenhuma regressão nos testes existentes de API, estudos e observatório.
+- [x] Todas as rotas `/api/observatory/*` e `/api/weather` protegidas por rate-limit unificado com `429` + `Retry-After`.
+- [x] Limite em memória com teto rígido de chaves (sem crescimento ilimitado de RAM).
+- [x] Nenhuma regressão nos testes existentes de API, estudos e observatório.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`7129fef`) com grupos livres (`G-OBS, G-PIPELINE, G-INFRA`).
+- 2026-11-24 · antigravity · REVIEW · Extraído motor unificado em `apps/web/src/lib/rate-limit.ts` (Redis RESP2 via `incrementRedisFixedWindow` com circuit breaker de 30 s + fallback em memória com teto rígido `maxClients = 4096`, evicção LRU em buckets de leitura e modo fail-closed em escrita de estudos; suporte a `TRUST_PROXY=true` ou `STUDIES_TRUST_PROXY=true` via `x-real-ip` validado com `isIP`) e migrado `study-rate-limit.ts` para delegar ao motor mantendo compatibilidade 100% com as rotas/testes de estudos. Aplicado `enforceRateLimit` com cabeçalhos `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` e `429` + `Retry-After` + `Cache-Control: no-store` nas 12 rotas alvo (`/api/observatory/{firms,eonet,gibs,gibs/image,iss,satellites,traffic,ais,winds,currents,cosmos}` e `/api/weather`), com buckets isolados por rota (`60 req/min` em `weather` e `observatory:gibs-image`, `120 req/min` nas 9 leituras JSON do Observatório, `600 req/min` nas efemérides locais `observatory:cosmos` e `10 req/min` em `studies`). Endurecido o proxy binário NASA GIBS (`apps/web/src/lib/gibs-source.ts` + `/api/observatory/gibs/image/route.ts`) com teto estrito `MAX_GIBS_IMAGE_BYTES = 5 MiB` (verificado em `Content-Length` e incrementalmente no stream `ReadableStream` com cancelamento imediato), mapeamento de `TimeoutError` durante leitura do corpo (`GIBS_TIMEOUT_MS = 15 s`) e `X-Content-Type-Options: nosniff`. Adicionados 13 novos testes em `apps/web/test/rate-limit.test.ts` (Redis mock em `127.0.0.1`, fallback/cooldown sem vazamento de segredos, evicção LRU/fail-closed, isolamento de buckets, cobertura das 12 rotas e guarda GIBS). Validação: `pnpm typecheck`, `pnpm lint` (`eslint .`, 0 warnings), `pnpm test` (775/775 pass, 0 fail), `pnpm build` e `test/bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB).
 
 ---
 

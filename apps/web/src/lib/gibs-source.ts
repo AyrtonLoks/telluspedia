@@ -8,11 +8,15 @@ import { SourceUnavailableError, type ObservatoryEnvelope } from "./observatory-
  * imagem para saber se há dado ("live") ou não ("fallback", com a referência local), e a rota da
  * imagem a serve da memória.
  */
-const TIMEOUT_MS = 15_000;
+export const GIBS_TIMEOUT_MS = 15_000;
+/** Limite rígido da imagem PNG devolvida pelo upstream GIBS (imagens reais têm ~0,1 a ~0,7 MB). */
+export const MAX_GIBS_IMAGE_BYTES = 5 * 1024 * 1024;
 /** Imagens em memória (cada uma tem de ~0,1 a ~0,7 MB). */
 const MAX_CACHED = 12;
 /** Falhas também ficam em cache por pouco tempo, para não martelar o GIBS. */
 const FAILURE_TTL_MS = 60_000;
+
+const OVERSIZED_IMAGE_REASON = "Imagem retornada pelo NASA GIBS excedeu o limite de tamanho";
 
 type Entry = { bytes: Uint8Array; fetchedAt: number } | { error: string; until: number };
 const cache = new Map<string, Entry>();
@@ -24,6 +28,57 @@ function remember(key: string, entry: Entry) {
   cache.delete(key);
   cache.set(key, entry);
   while (cache.size > MAX_CACHED) cache.delete(cache.keys().next().value!);
+}
+
+function isTimeoutError(err: unknown): boolean {
+  return err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+}
+
+async function readResponseBytesWithLimit(res: Response, maxBytes: number): Promise<Uint8Array> {
+  const declaredHeader = res.headers.get("content-length");
+  if (declaredHeader !== null) {
+    const declared = Number(declaredHeader.trim());
+    if (Number.isFinite(declared) && declared > maxBytes) {
+      await res.body?.cancel().catch(() => undefined);
+      throw new SourceUnavailableError(OVERSIZED_IMAGE_REASON);
+    }
+  }
+
+  const reader = res.body?.getReader();
+  if (!reader) {
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    if (bytes.byteLength > maxBytes) {
+      throw new SourceUnavailableError(OVERSIZED_IMAGE_REASON);
+    }
+    return bytes;
+  }
+
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value || value.byteLength === 0) continue;
+      totalBytes += value.byteLength;
+      if (totalBytes > maxBytes) {
+        await reader.cancel().catch(() => undefined);
+        throw new SourceUnavailableError(OVERSIZED_IMAGE_REASON);
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  if (chunks.length === 1) return chunks[0];
+  const merged = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return merged;
 }
 
 /** Baixa a imagem do GIBS (ou da memória). Lança `SourceUnavailableError` com motivo exibível. */
@@ -46,11 +101,11 @@ export async function fetchGibsImage(
       let res: Response;
       try {
         res = await fetchImpl(gibsGetMapUrl(req.product, req.time), {
-          signal: AbortSignal.timeout(TIMEOUT_MS),
+          signal: AbortSignal.timeout(GIBS_TIMEOUT_MS),
           headers: { Accept: "image/png" },
         });
       } catch (err) {
-        const reason = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError")
+        const reason = isTimeoutError(err)
           ? "Tempo limite excedido ao contatar o NASA GIBS"
           : "NASA GIBS indisponível";
         throw new SourceUnavailableError(reason);
@@ -59,7 +114,16 @@ export async function fetchGibsImage(
       if (!(res.headers.get("content-type") ?? "").startsWith("image/png")) {
         throw new SourceUnavailableError("NASA GIBS não devolveu uma imagem (possível erro do serviço)");
       }
-      const bytes = new Uint8Array(await res.arrayBuffer());
+      let bytes: Uint8Array;
+      try {
+        bytes = await readResponseBytesWithLimit(res, MAX_GIBS_IMAGE_BYTES);
+      } catch (err) {
+        if (err instanceof SourceUnavailableError) throw err;
+        const reason = isTimeoutError(err)
+          ? "Tempo limite excedido ao contatar o NASA GIBS"
+          : "NASA GIBS indisponível";
+        throw new SourceUnavailableError(reason);
+      }
       if (isBlankGibsImage(bytes.byteLength)) {
         throw new SourceUnavailableError(`Sem imagem do NASA GIBS para ${req.product.shortName.toLowerCase()} nesta data`);
       }
