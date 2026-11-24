@@ -20,7 +20,7 @@ Mapear, classificar e documentar todas as APIs públicas, repositórios científ
 
 ---
 
-## 3.1. Estado atual das fontes (sincronizado com o código em 2026-11-21, T37)
+## 3.1. Estado atual das fontes (sincronizado com o código em 2026-11-23, T42)
 
 A seção 4 é o **mapeamento de discovery**: lista as fontes avaliadas para cada regra de negócio, inclusive as que ainda não foram integradas. A tabela abaixo diz o que o código usa hoje; os anexos ao fim do documento detalham licença, cobertura e procedência das fontes em uso.
 
@@ -46,11 +46,13 @@ A seção 4 é o **mapeamento de discovery**: lista as fontes avaliadas para cad
 | Space-Track.org, JPL Horizons, Minor Planet Center, SPICE | Planejado | Sem integração |
 | NOAA GFS (ventos globais, via Open-Meteo) | **Em uso** | `/api/observatory/winds`, superfície 10 m e jato 250 hPa (D27a) |
 | Open-Meteo Marine / Copernicus–NOAA (correntes oceânicas) | **Em uso** | `/api/observatory/currents`, superfície oceânica com máscara costeira (D27b) |
-| NOAA Marine Debris, Global Drifter Program, CYGNSS | Planejado | Sem tarefa |
+| NOAA Marine Debris, Global Drifter Program, CYGNSS | Planejado (Ciclo 3) | `D29` — Lixo marítimo, giros oceânicos e advecção Lagrangiana acoplada a D27 |
 | Global Fishing Watch, MarineCadastre, OpenSeaMap | Planejado | O tráfego marítimo usa AIS Stream e uma malha fixa de rotas |
-| Wikipedia REST API, GDELT, Crossref/OpenAlex/Citoid | Planejado | Os dossiês e citações são curados no código |
-| OpenHistoricalMap, Clio-Infra/Euratlas, CShapes 2.0, PeriodO | Planejado | As fronteiras históricas vêm de TopoJSON próprios (`public/data/history`) |
-| INPE BDQueimadas, REST Countries | Planejado | Sem integração |
+| Wikipedia REST API, GDELT, Crossref/OpenAlex/Citoid | Planejado (Ciclo 3) | `D38` (GDELT) e `D35` (expansão editorial curada) |
+| OpenHistoricalMap, Clio-Infra/Euratlas, CShapes 2.0, PeriodO | Planejado (Ciclo 3) | Fronteiras históricas próprias (`1870–1969`), expansão `1500`/`1815` em `D43` |
+| INPE BDQueimadas & TerraBrasilis (DETER/PRODES) | Planejado (Ciclo 3) | `D30` — Queimadas por bioma e desmatamento Amazônia/Cerrado |
+| WWF / RESOLVE Ecoregions, IBGE Biomas, GBIF, IUCN Red List | Planejado (Ciclo 3) | `D31` (Mapa dos Biomas) e `D32` (Mapa de Espécies Animais) |
+| USGS Earthquake Hazards, PB2002, TeleGeography, Open-Meteo Air Quality | Planejado (Ciclo 3) | `D39` (Sismologia/tectônica) e `D40` (Cabos submarinos e PM2.5/AQI) |
 
 ---
 

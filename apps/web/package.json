@@ -7,7 +7,7 @@
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "node scripts/run-tests.mjs",
     "typecheck": "next typegen && tsc --noEmit",
     "textures:build": "node scripts/textures/build-earth-textures.mjs",
@@ -15,9 +15,6 @@
     "scenes:wikidata": "tsx scripts/ingest-wikidata.ts",
     "textures:planets": "node scripts/textures/build-planet-textures.mjs",
     "textures:ktx2-worker": "tsx scripts/textures/build-ktx2-worker.ts"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.4.0",
@@ -28,7 +25,6 @@
     "@react-three/fiber": "^9.8.2",
     "clsx": "^2.1.1",
     "d3-geo": "^3.1.1",
-    "framer-motion": "^11.11.0",
     "lucide-react": "^0.460.0",
     "nanoid": "^5.0.8",
     "next": "15.5.29",

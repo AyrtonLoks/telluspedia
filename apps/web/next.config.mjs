@@ -25,7 +25,7 @@ const nextConfig = {
   },
 };
 
-export default (phase) => {
+const createNextConfig = (phase) => {
   const dev = phase === PHASE_DEVELOPMENT_SERVER;
   return withBundleAnalyzer({
     ...nextConfig,
@@ -42,3 +42,5 @@ export default (phase) => {
     distDir: dev ? ".next-dev" : ".next",
   });
 };
+
+export default createNextConfig;
