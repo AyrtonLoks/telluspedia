@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { providerMetrics, type ProviderMetricsSummary } from "@/lib/provider-metrics";
+import { safeErrorLabel, serverLogger } from "@/lib/server-logger";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 2500;
 const DEFAULT_DATA_PIPELINE_URL = "http://localhost:8000";
@@ -17,6 +19,8 @@ export interface HealthReport {
     database: HealthDependencyStatus;
     dataPipeline: HealthDependencyStatus;
   };
+  /** Telemetria leve em memória dos provedores T05 (presente quando `?detail=1`). */
+  providers?: ProviderMetricsSummary;
 }
 
 export interface HealthCheckDeps {
@@ -26,14 +30,7 @@ export interface HealthCheckDeps {
   timeoutMs?: number;
   now?: () => Date;
   uptimeSeconds?: () => number;
-}
-
-function safeErrorLabel(error: unknown): string {
-  if (error instanceof Error) {
-    const code = (error as NodeJS.ErrnoException).code;
-    return code ? `${error.name}:${code}` : error.name;
-  }
-  return "UnknownError";
+  includeProviders?: boolean;
 }
 
 function withTimeout<T>(operation: () => Promise<T>, timeoutMs: number): Promise<T> {
@@ -77,8 +74,16 @@ async function checkDatabase(
     await withTimeout(queryDatabase, timeoutMs);
     return { status: "ok", latencyMs: Math.max(0, Math.round(performance.now() - startedAt)) };
   } catch (error) {
-    console.warn("[health] Database check failed", { reason: safeErrorLabel(error) });
-    return { status: "error", latencyMs: Math.max(0, Math.round(performance.now() - startedAt)) };
+    const latencyMs = Math.max(0, Math.round(performance.now() - startedAt));
+    serverLogger.warn({
+      route: "/api/health",
+      provider: "postgresql",
+      durationMs: latencyMs,
+      status: 503,
+      reason: safeErrorLabel(error),
+      message: "Database check failed",
+    });
+    return { status: "error", latencyMs };
   }
 }
 
@@ -90,7 +95,14 @@ async function checkDataPipeline(
   const startedAt = performance.now();
   const targetUrl = resolvePipelineHealthUrl(rawBaseUrl);
   if (!targetUrl) {
-    console.warn("[health] Invalid DATA_PIPELINE_URL protocol or syntax");
+    serverLogger.warn({
+      route: "/api/health",
+      provider: "data-pipeline",
+      durationMs: 0,
+      status: 503,
+      reason: "Invalid DATA_PIPELINE_URL protocol or syntax",
+      message: "Data pipeline check skipped",
+    });
     return { status: "error", latencyMs: 0 };
   }
 
@@ -122,8 +134,16 @@ async function checkDataPipeline(
 
     return { status: "ok", latencyMs: Math.max(0, Math.round(performance.now() - startedAt)) };
   } catch (error) {
-    console.warn("[health] Data pipeline check failed", { reason: safeErrorLabel(error) });
-    return { status: "error", latencyMs: Math.max(0, Math.round(performance.now() - startedAt)) };
+    const latencyMs = Math.max(0, Math.round(performance.now() - startedAt));
+    serverLogger.warn({
+      route: "/api/health",
+      provider: "data-pipeline",
+      durationMs: latencyMs,
+      status: 503,
+      reason: safeErrorLabel(error),
+      message: "Data pipeline check failed",
+    });
+    return { status: "error", latencyMs };
   }
 }
 
@@ -142,7 +162,7 @@ export async function runHealthChecks(deps: HealthCheckDeps = {}): Promise<Healt
 
   const status = database.status === "ok" && dataPipeline.status === "ok" ? "ok" : "degraded";
 
-  return {
+  const report: HealthReport = {
     status,
     service: "telluspedia-web",
     timestamp: now().toISOString(),
@@ -152,4 +172,10 @@ export async function runHealthChecks(deps: HealthCheckDeps = {}): Promise<Healt
       dataPipeline,
     },
   };
+
+  if (deps.includeProviders) {
+    report.providers = providerMetrics.snapshot();
+  }
+
+  return report;
 }

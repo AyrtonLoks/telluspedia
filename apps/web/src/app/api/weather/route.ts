@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CACHE_POLICY, withCachePolicy } from "@/lib/http-cache";
 import type { WeatherData } from "@/lib/api-client";
+import { providerMetrics } from "@/lib/provider-metrics";
 import { enforceRateLimit } from "@/lib/rate-limit";
+import { serverLogger } from "@/lib/server-logger";
 
 const COORDINATE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
 const CURRENT_FIELDS = "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m";
@@ -32,6 +34,7 @@ async function getHandler(req: NextRequest) {
 
   const pipelineUrl = process.env.DATA_PIPELINE_URL || "http://localhost:8000";
   const pipelineParams = new URLSearchParams({ lat: String(lat), lng: String(lng) });
+  const startedAt = performance.now();
 
   // Try Python data-pipeline first.
   try {
@@ -42,6 +45,14 @@ async function getHandler(req: NextRequest) {
     if (pipelineRes.ok) {
       const data = await pipelineRes.json();
       const current = data.current ?? data;
+      const cached = typeof data.cached === "boolean" ? data.cached : false;
+      providerMetrics.record({
+        id: "weather",
+        provider: "Data Pipeline (Open-Meteo)",
+        mode: "live",
+        cacheHit: cached,
+        durationMs: cached ? undefined : Math.max(0, Math.round(performance.now() - startedAt)),
+      });
       return NextResponse.json(
         {
           temperature: numberOrNull(current.temperature),
@@ -70,9 +81,16 @@ async function getHandler(req: NextRequest) {
     const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, {
       signal: AbortSignal.timeout(5000),
     });
-    if (!res.ok) throw new Error("Open-Meteo error");
+    if (!res.ok) throw new Error(`Open-Meteo HTTP ${res.status}`);
     const raw = await res.json();
     const current = raw?.current ?? {};
+    providerMetrics.record({
+      id: "weather",
+      provider: "Open-Meteo",
+      mode: "live",
+      cacheHit: false,
+      durationMs: Math.max(0, Math.round(performance.now() - startedAt)),
+    });
     return NextResponse.json(
       {
         temperature: numberOrNull(current.temperature_2m),
@@ -85,7 +103,25 @@ async function getHandler(req: NextRequest) {
       } satisfies WeatherData,
       { headers: limit.headers }
     );
-  } catch {
+  } catch (error) {
+    const durationMs = Math.max(0, Math.round(performance.now() - startedAt));
+    providerMetrics.record({
+      id: "weather",
+      provider: "Open-Meteo",
+      mode: "fallback",
+      cacheHit: false,
+      durationMs,
+      reason: "Provedor meteorológico indisponível",
+    });
+    serverLogger.warn({
+      route: "/api/weather",
+      provider: "Open-Meteo",
+      mode: "fallback",
+      durationMs,
+      status: 502,
+      error,
+      message: "Weather fetch failed",
+    });
     return NextResponse.json({ error: "Weather fetch failed" }, { status: 502, headers: limit.headers });
   }
 }

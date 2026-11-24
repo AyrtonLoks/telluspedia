@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "./prisma";
+import { serverLogger } from "./server-logger";
 import { getMemoryStudy, saveMemoryStudy, type StudyRecord } from "./studies-store";
 
 type DatabaseOperation = "create" | "read" | "fork.read" | "fork.create";
@@ -10,7 +11,14 @@ function memoryAllowed() {
 }
 
 export function studyDatabaseFailure(operation: DatabaseOperation, id: string, error: unknown) {
-  console.error("[studies] Database operation failed", { operation, id, error });
+  serverLogger.error({
+    route: "/api/studies",
+    provider: "postgresql",
+    status: memoryAllowed() ? undefined : 503,
+    error,
+    message: "Database operation failed",
+    meta: { operation, id },
+  });
 
   if (memoryAllowed()) return undefined;
 
@@ -21,7 +29,13 @@ export function studyDatabaseFailure(operation: DatabaseOperation, id: string, e
 }
 
 function warnTemporary(operation: DatabaseOperation, id: string) {
-  console.warn("[studies] Using temporary in-memory storage", { operation, id });
+  serverLogger.warn({
+    route: "/api/studies",
+    provider: "memory-store",
+    mode: "fallback",
+    message: "Using temporary in-memory storage",
+    meta: { operation, id },
+  });
 }
 
 export function readDevelopmentStudy(id: string, operation: "read" | "fork.read") {

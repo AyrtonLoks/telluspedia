@@ -195,6 +195,24 @@ function setNodeEnv(t: TestContext, env: "production" | "development") {
   });
 }
 
+function loggedOperation(args: unknown[]): string | undefined {
+  const first = args[0];
+  if (typeof first === "string") {
+    const trimmed = first.trim();
+    if (trimmed.startsWith("{")) {
+      const parsed = JSON.parse(trimmed) as { meta?: { operation?: string } };
+      return parsed.meta?.operation;
+    }
+    const metaMatch = trimmed.match(/(\{.*"operation".*\})$/);
+    if (metaMatch) {
+      const parsed = JSON.parse(metaMatch[1]) as { operation?: string };
+      return parsed.operation;
+    }
+  }
+  const second = args[1] as { operation?: string } | undefined;
+  return second?.operation;
+}
+
 test("production reports database failures across creation, reading and fork", async (t) => {
   setNodeEnv(t, "production");
   trustTestProxy(t);
@@ -224,7 +242,7 @@ test("production reports database failures across creation, reading and fork", a
   assert.equal(read.mock.callCount(), 2);
   assert.equal(warn.mock.callCount(), 0);
   assert.deepEqual(
-    log.mock.calls.map(({ arguments: [, context] }) => context.operation),
+    log.mock.calls.map(({ arguments: args }) => loggedOperation(args)),
     ["create", "read", "fork.read"],
   );
   const createInput = create.mock.calls[0].arguments[0];
@@ -246,7 +264,7 @@ test("production distinguishes missing studies from a failed fork write", async 
   const create = mockStudyMethod(t, "create", async () => { throw new Error("Fork write failed"); });
   assert.equal((await forkStudy(post("{}", "192.0.2.7"), context)).status, 503);
   assert.equal(create.mock.callCount(), 1);
-  assert.equal(log.mock.calls[0].arguments[1].operation, "fork.create");
+  assert.equal(loggedOperation(log.mock.calls[0].arguments), "fork.create");
 });
 
 test("development marks temporary studies and reports when memory storage is used", async (t) => {
@@ -272,7 +290,7 @@ test("development marks temporary studies and reports when memory storage is use
   assert.equal(response.headers.get("X-Study-Persistence"), "memory");
   assert.equal((await response.json()).parentId, original.id);
   assert.deepEqual(
-    warn.mock.calls.map(({ arguments: [, context] }) => context.operation),
+    warn.mock.calls.map(({ arguments: args }) => loggedOperation(args)),
     ["create", "read", "fork.read", "fork.create"],
   );
   assert.equal(log.mock.callCount(), 4);

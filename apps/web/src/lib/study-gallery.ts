@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { PILOT_COUNTRIES, WORLD_COUNTRIES_CATALOG } from "./country-data";
 import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "./historical-entities";
 import { prisma } from "./prisma";
+import { serverLogger } from "./server-logger";
 import {
   listMemoryStudies,
   restoreStudyRecord,
@@ -197,7 +198,14 @@ export async function listStudies(query: StudyListQuery): Promise<StudyListResul
   } catch (error) {
     const reason = safeErrorSummary(error);
     if (!memoryAllowed()) {
-      console.error("[studies] Database operation failed", { operation: "list", reason });
+      serverLogger.error({
+        route: "/api/studies",
+        provider: "postgresql",
+        status: 503,
+        reason,
+        message: "Database operation failed",
+        meta: { operation: "list" },
+      });
       return {
         items: [],
         pagination: { page: query.page, pageSize: query.pageSize, total: 0, totalPages: 1 },
@@ -207,7 +215,14 @@ export async function listStudies(query: StudyListQuery): Promise<StudyListResul
     }
 
     // Em dev, evitar console.error no Server Component (dispara o overlay de erro do Next.js 15).
-    console.warn("[studies] Using temporary in-memory storage", { operation: "list", reason });
+    serverLogger.warn({
+      route: "/api/studies",
+      provider: "memory-store",
+      mode: "fallback",
+      reason,
+      message: "Using temporary in-memory storage",
+      meta: { operation: "list" },
+    });
     return listFromMemory(query);
   }
 }

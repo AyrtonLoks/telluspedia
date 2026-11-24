@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { forkStudyRecord, type StudyRecord } from "@/lib/studies-store";
 import { persistStudy, readDevelopmentStudy, studyDatabaseFailure } from "@/lib/study-persistence";
 import { studyCreationRetryAfterAsync } from "@/lib/study-rate-limit";
+import { serverLogger } from "@/lib/server-logger";
 
 async function postHandler(
   req: NextRequest,
@@ -38,7 +39,13 @@ async function postHandler(
     const forkedData = forkStudyRecord(original, `fork-${nanoid(8)}`);
     return await persistStudy(forkedData, "fork.create");
   } catch (error) {
-    console.error("[studies] Unable to fork snapshot", { error });
+    serverLogger.error({
+      route: "/api/studies/[slug]/fork",
+      provider: "postgresql",
+      status: 500,
+      error,
+      message: "Unable to fork snapshot",
+    });
     return NextResponse.json({ error: "Failed to fork study" }, { status: 500 });
   }
 }

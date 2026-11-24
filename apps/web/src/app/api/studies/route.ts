@@ -6,6 +6,7 @@ import { listStudies, parseStudyListQuery } from "@/lib/study-gallery";
 import { persistStudy } from "@/lib/study-persistence";
 import { sanitizeStudy, studyInput } from "@/lib/study-schema";
 import { studyCreationRetryAfterAsync } from "@/lib/study-rate-limit";
+import { serverLogger } from "@/lib/server-logger";
 
 const MAX_BODY_BYTES = 384 * 1024;
 
@@ -71,7 +72,13 @@ async function postHandler(req: NextRequest) {
 
     return await persistStudy(studyData, "create");
   } catch (error) {
-    console.error("[studies] Unable to create snapshot", { error });
+    serverLogger.error({
+      route: "/api/studies",
+      provider: "postgresql",
+      status: 500,
+      error,
+      message: "Unable to create snapshot",
+    });
     return NextResponse.json({ error: "Failed to create study" }, { status: 500 });
   }
 }

@@ -9,6 +9,9 @@
  *                 está indisponível ou não configurado. NUNCA deve ser exibido como "ao vivo".
  */
 
+import { providerMetrics, type ProviderTelemetryMode } from "./provider-metrics";
+import { serverLogger } from "./server-logger";
+
 export type ObservatoryDataSource = "live" | "computed" | "fallback";
 
 export interface ObservatoryMeta {
@@ -88,8 +91,21 @@ export function createObservatorySource<T>(opts: ObservatorySourceOptions<T>) {
   let cache: CacheEntry<T> | null = null;
   let lastGood: { data: T; fetchedAt: number; provider: string } | null = null;
 
+  function resolveTelemetryMode(meta: ObservatoryMeta): Exclude<ProviderTelemetryMode, "idle"> {
+    if (meta.stale) return "stale";
+    return meta.source;
+  }
+
   async function get(now: number = Date.now()): Promise<ObservatorySourceResult<T>> {
     if (cache && now < cache.expiresAt) {
+      providerMetrics.record({
+        id: opts.name,
+        provider: cache.envelope.meta.provider,
+        mode: resolveTelemetryMode(cache.envelope.meta),
+        cacheHit: true,
+        timestampMs: now,
+        reason: cache.envelope.meta.reason,
+      });
       return {
         envelope: cache.envelope,
         cacheHit: true,
@@ -99,6 +115,7 @@ export function createObservatorySource<T>(opts: ObservatorySourceOptions<T>) {
 
     let envelope: ObservatoryEnvelope<T>;
     let ttlMs: number;
+    const startedAt = performance.now();
 
     try {
       let provider = opts.liveProvider;
@@ -111,7 +128,7 @@ export function createObservatorySource<T>(opts: ObservatorySourceOptions<T>) {
       ttlMs = opts.liveTtlMs;
     } catch (err) {
       const reason = describeError(err);
-      console.warn(`[observatory/${opts.name}] provedor indisponível: ${reason}`);
+      const durationMs = Math.max(0, Math.round(performance.now() - startedAt));
 
       if (lastGood && now - lastGood.fetchedAt <= lastGoodMaxAgeMs) {
         envelope = {
@@ -136,9 +153,31 @@ export function createObservatorySource<T>(opts: ObservatorySourceOptions<T>) {
           },
         };
       }
+
+      serverLogger.warn({
+        route: `/api/observatory/${opts.name}`,
+        provider: opts.liveProvider,
+        mode: resolveTelemetryMode(envelope.meta),
+        durationMs,
+        cache: "miss",
+        reason,
+        message: "Provedor indisponível",
+      });
+
       // Falhas não ficam cacheadas pelo TTL inteiro: tenta o provedor de novo logo.
       ttlMs = Math.min(fallbackTtlMs, opts.liveTtlMs);
     }
+
+    const durationMs = Math.max(0, Math.round(performance.now() - startedAt));
+    providerMetrics.record({
+      id: opts.name,
+      provider: envelope.meta.provider,
+      mode: resolveTelemetryMode(envelope.meta),
+      cacheHit: false,
+      durationMs,
+      timestampMs: now,
+      reason: envelope.meta.reason,
+    });
 
     cache = { envelope, expiresAt: now + ttlMs };
     return { envelope, cacheHit: false, maxAgeSeconds: Math.max(1, Math.round(ttlMs / 1000)) };

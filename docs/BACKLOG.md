@@ -238,7 +238,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | DONE | antigravity | — | G-INFRA, G-SHELL, G-OBS |
 | T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | DONE | antigravity | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA, G-OBS, G-TIMELINE |
 | T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA |
-| T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | IN_PROGRESS | antigravity | — | G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS |
+| T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | REVIEW | antigravity | — | G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS |
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | TODO | — | — | G-FRONTEIRAS, G-GLOBO, G-PAIS |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
@@ -1516,7 +1516,7 @@ A tarefa `T33` adicionou `manifest.ts` e ícones, mas o aplicativo ainda não po
 
 ### T47 · Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t47-structured-observability · **Worktree:** ../telluspedia-wt/antigravity-t47
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t47-structured-observability · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS
 
 **Contexto / problema**
@@ -1528,15 +1528,16 @@ Os logs das rotas `/api/observatory/*`, `/api/weather` e `/api/studies` usam `co
 3. Expor esse resumo em `GET /api/health?detail=1` (sem disparar chamadas externas extras) mantendo `GET /api/health` rápido e retrocompatível.
 
 **Critérios de aceite**
-- [ ] `GET /api/health` mantém contrato atual (`200`/`503`) e `GET /api/health?detail=1` retorna telemetria dos provedores T05 sem I/O externo.
-- [ ] Logs JSON estruturados sem vazamento de chaves de API ou PII.
-- [ ] Coberto por testes unitários.
+- [x] `GET /api/health` mantém contrato atual (`200`/`503`) e `GET /api/health?detail=1` retorna telemetria dos provedores T05 sem I/O externo.
+- [x] Logs JSON estruturados sem vazamento de chaves de API ou PII.
+- [x] Coberto por testes unitários.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`77a92ac`) com grupos livres (`G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS`).
+- 2026-11-24 · antigravity · REVIEW · Criado logger estruturado `apps/web/src/lib/server-logger.ts` (JSON compacto de linha única em produção/`LOG_FORMAT=json` com `timestamp`, `level`, `route`, `provider`, `mode`, `durationMs`, `status`, `cache`, `reason` e redação automática de URIs PostgreSQL/Redis, tokens `Bearer`/`Basic`, parâmetros sensíveis, e-mails e chaves sensíveis em `meta`) e painel leve em memória `apps/web/src/lib/provider-metrics.ts` (`providerMetrics`, cardinalidade fixa ≤ 32 provedores, normalizando chaves dinâmicas como `firms-*` e `traffic/aircraft`, registrando último modo T05, `lastSuccessAt`, latência última/média e `cacheHitRate`). Integrado em `observatory-source.ts`, `gibs-source.ts`, `/api/weather`, `health-check.ts`, `rate-limit.ts`, `study-persistence.ts`, `study-gallery.ts` e rotas `/api/studies*`. Estendido `GET /api/health` (`src/app/api/health/route.ts` + `health-check.ts`) para expor `providers` via `?detail=1` (ou `?detail=true`) diretamente da memória sem I/O externo extra, mantendo `GET /api/health` 100% retrocompatível (`200`/`503`, `Cache-Control: no-store`). Criada suíte `apps/web/test/observability.test.ts` (4 testes) e atualizados `study-routes.test.ts` e `production-packaging.test.ts`. Validação: `pnpm typecheck`, `pnpm lint` (0 warnings), `pnpm test` (791/791 pass), `pnpm build` e `test/bundle-budget.test.ts` (6/6 pass).
 
 ---
 

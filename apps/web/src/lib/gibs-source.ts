@@ -1,6 +1,8 @@
 /* Só servidor: importado apenas pelas rotas de /api/observatory/gibs. */
 import { GIBS_PROVIDER, gibsGetMapUrl, gibsImagePath, isBlankGibsImage, type GibsLayerData, type GibsRequest } from "./gibs";
 import { SourceUnavailableError, type ObservatoryEnvelope } from "./observatory-source";
+import { providerMetrics } from "./provider-metrics";
+import { serverLogger } from "./server-logger";
 
 /**
  * Proxy da camada NASA GIBS (D25). O envelope T05 (`/api/observatory/gibs`) e a imagem
@@ -149,14 +151,50 @@ export async function gibsEnvelope(
   now: () => number = Date.now
 ): Promise<ObservatoryEnvelope<GibsLayerData>> {
   const { product, month, time } = req;
+  const key = keyOf(req);
+  const existing = cache.get(key);
+  const wasCacheHit = Boolean(existing && "bytes" in existing);
+  const startedAt = performance.now();
   try {
     const { fetchedAt } = await fetchGibsImage(req, fetchImpl, now);
+    const provider = `${GIBS_PROVIDER} — ${product.composite}`;
+    providerMetrics.record({
+      id: "gibs",
+      provider,
+      mode: "live",
+      cacheHit: wasCacheHit,
+      durationMs: wasCacheHit ? undefined : Math.max(0, Math.round(performance.now() - startedAt)),
+      timestampMs: now(),
+    });
     return {
       data: { product: product.id, month, imageMonth: month, imageUrl: gibsImagePath(product.id, month), gibsLayer: product.gibsLayer, time },
-      meta: { source: "live", provider: `${GIBS_PROVIDER} — ${product.composite}`, fetchedAt: new Date(fetchedAt).toISOString(), stale: false },
+      meta: { source: "live", provider, fetchedAt: new Date(fetchedAt).toISOString(), stale: false },
     };
   } catch (err) {
     const reason = err instanceof SourceUnavailableError ? err.message : "NASA GIBS indisponível";
+    const durationMs = Math.max(0, Math.round(performance.now() - startedAt));
+    const wasErrorHit = Boolean(existing && "error" in existing && now() < existing.until);
+    const fallbackProvider = `Referência local (NASA GIBS, ${product.fallbackMonth})`;
+    providerMetrics.record({
+      id: "gibs",
+      provider: fallbackProvider,
+      mode: "fallback",
+      cacheHit: wasErrorHit,
+      durationMs: wasErrorHit ? undefined : durationMs,
+      timestampMs: now(),
+      reason,
+    });
+    if (!wasErrorHit) {
+      serverLogger.warn({
+        route: "/api/observatory/gibs",
+        provider: GIBS_PROVIDER,
+        mode: "fallback",
+        durationMs,
+        cache: "miss",
+        reason,
+        message: "Provedor indisponível",
+      });
+    }
     return {
       data: {
         product: product.id,
@@ -168,7 +206,7 @@ export async function gibsEnvelope(
       },
       meta: {
         source: "fallback",
-        provider: `Referência local (NASA GIBS, ${product.fallbackMonth})`,
+        provider: fallbackProvider,
         fetchedAt: new Date(now()).toISOString(),
         stale: false,
         reason: `${reason}. Mostrando a referência local de ${product.fallbackMonth}.`,

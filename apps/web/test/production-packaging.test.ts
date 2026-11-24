@@ -7,6 +7,7 @@ import fs from "node:fs";
 import net from "node:net";
 import path from "node:path";
 import { describe, test, type TestContext } from "node:test";
+import { NextRequest } from "next/server";
 import { GET as healthGET } from "../src/app/api/health/route";
 import { runHealthChecks } from "../src/lib/health-check";
 import { prisma } from "../src/lib/prisma";
@@ -208,7 +209,7 @@ describe("T34: GET /api/health", () => {
         headers: { "content-type": "application/json" },
       })) as typeof fetch;
 
-    const okRes = await healthGET();
+    const okRes = await healthGET(new NextRequest("http://localhost:3000/api/health"));
     assert.equal(okRes.status, 200);
     assert.equal(okRes.headers.get("Cache-Control"), "no-store");
     const okJson = await okRes.json();
@@ -218,7 +219,7 @@ describe("T34: GET /api/health", () => {
     Reflect.set(prisma, "$queryRaw", async () => {
       throw new Error("Connection refused");
     });
-    const degradedRes = await healthGET();
+    const degradedRes = await healthGET(new NextRequest("http://localhost:3000/api/health"));
     assert.equal(degradedRes.status, 503);
     assert.equal(degradedRes.headers.get("Cache-Control"), "no-store");
     const degradedJson = await degradedRes.json();

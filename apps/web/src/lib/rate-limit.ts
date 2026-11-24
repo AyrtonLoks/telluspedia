@@ -1,6 +1,7 @@
 import { isIP } from "node:net";
 import { NextResponse } from "next/server";
 import { incrementRedisFixedWindow } from "@/lib/redis-client";
+import { serverLogger } from "@/lib/server-logger";
 
 const DEFAULT_WINDOW_MS = 60_000;
 const DEFAULT_MAX_CLIENTS = 4096;
@@ -300,8 +301,12 @@ export async function checkRateLimitWithConfig(
     };
   } catch (error) {
     globalState.redisUnavailableUntil = now + REDIS_FAILURE_COOLDOWN_MS;
-    console.warn(`[rate-limit:${config.name}] Redis unavailable; falling back to in-memory limiter`, {
+    serverLogger.warn({
+      route: `/rate-limit/${config.name}`,
+      provider: "redis",
+      mode: "fallback",
       reason: safeErrorLabel(error),
+      message: "Redis unavailable; falling back to in-memory limiter",
     });
     return checkRateLimitMemory(config, headers, now);
   }
