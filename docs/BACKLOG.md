@@ -33,18 +33,18 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 
 | Grupo | Escopo (arquivos/conceitos principais) | Tarefas |
 |---|---|---|
-| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18, T22, D19, D25, T35, T36 |
-| `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27, D21, D24 |
-| `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22, T35 |
-| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28 |
-| `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19, D25 |
-| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24, T41, T36 |
-| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24, T35 |
-| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41 |
-| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26, T35 |
-| `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34 |
-| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19, T35 |
-| `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26, T35 |
+| `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18, T22, D19, D25, T35, T36, T48, D29, D39, D41, D42, D43 |
+| `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27, D21, D24, T45, T49, D29, D30, D31, D32, D33, D37, D39, D40, D41 |
+| `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22, T35, T49, D31, D33, D34, D36, D43 |
+| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28, T45, T49, D32, D34, D35, D36, D37, D38, D42, D44 |
+| `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19, D25, T48, D29, D30, D31, D33, D34, D37, D39, D40, D44 |
+| `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24, T41, T36, T43, T44, T47, D29, D30, D31, D32, D38, D39, D40 |
+| `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24, T35, T45, D41 |
+| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41, T44, T46, D33, D34, D36, D37 |
+| `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26, T35, T48, D36, D38, D43 |
+| `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34, T43, D30 |
+| `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19, T35, T42, T43, T44, T45, T46, T47 |
+| `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26, T35, T48, D31, D32, D35, D36, D38, D42, D43, D44 |
 
 Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está listado nela: **pare**, adicione o grupo à tarefa no Quadro (commit + push, como na reivindicação) e reavalie se ela ainda pode seguir.
 
@@ -149,6 +149,12 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | 9 | Ciclo 2 — Segurança crítica, integridade e conteúdo imediato | T28, T29, D21, D24 |
 | 10 | Ciclo 2 — Resiliência, produção, SEO e séries históricas reais | T30, T31, T32, T33, T34 |
 | 11 | Ciclo 2 — Diferenciação científica, 3D avançado e higiene | D22, D23, D25, D26, D27, D28, T35, T36, T37, T38, T39, T41 |
+| 12 | Ciclo 3 — Blindagem técnica, ano dinâmico 2026+, E2E e LoD | T42, T43, T44, T48, T45, T46, T47, T49 |
+| 13 | Ciclo 3 — Observatório ambiental, lixo marítimo, INPE, biomas e espécies | D29, D30, D31, D32 |
+| 14 | Ciclo 3 — Cartografia 2D/projeções, coroplético temporal e perfis editoriais | D33, D34, D35 |
+| 15 | Ciclo 3 — Geografia crítica (Milton Santos), estúdio de pesquisa e transversalidade | D36, D37, D38 |
+| 16 | Ciclo 3 — Sismologia/tectônica, infraestrutura global e Cosmos avançado | D39, D40, D41 |
+| 17 | Ciclo 3 — i18n profundo, cartografia histórica 1500/1815 e TellusBridge v2 | D42, D43, D44 |
 
 ---
 
@@ -227,6 +233,30 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | DONE | antigravity | D27a | G-OBS, G-GLOBO |
 | D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | DONE | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
 | D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | DONE | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
+| T42 | Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs) | Infra/Docs | P1 | P | TODO | — | — | G-INFRA |
+| T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | TODO | — | — | G-OBS, G-PIPELINE, G-INFRA |
+| T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | TODO | — | — | G-INFRA, G-SHELL, G-OBS |
+| T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | TODO | — | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA |
+| T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
+| T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | TODO | — | — | G-OBS, G-INFRA |
+| T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | TODO | — | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
+| T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | TODO | — | — | G-FRONTEIRAS, G-GLOBO, G-PAIS |
+| D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
+| D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
+| D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
+| D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | TODO | — | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
+| D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
+| D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | TODO | — | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
+| D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | TODO | — | — | G-PAIS, G-CONTEUDO |
+| D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | TODO | — | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
+| D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | TODO | — | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
+| D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | TODO | — | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS |
+| D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
+| D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | TODO | — | — | G-OBS, G-GLOBO, G-ESTUDOS |
+| D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | TODO | — | — | G-COSMOS, G-GLOBO, G-EPOCA |
+| D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | TODO | — | — | G-CONTEUDO, G-EPOCA, G-PAIS |
+| D43 | Cartografia Histórica Expandida: snapshots TopoJSON 1500 (Grandes Navegações) e 1815 (Congresso de Viena) + 2 novas cenas curadas | Conteúdo/3D | P2 | G | TODO | — | — | G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE |
+| D44 | TellusBridge v2: cobertura 100% dos 299 nós (biomas, Milton Santos, sismologia, eclipses), trilhas em `/study/[slug]` e selos no globo | Produto/Conteúdo | P2 | M | TODO | — | D31, D36, D39, D41 | G-CONTEUDO, G-ESTUDOS, G-PAIS |
 
 ---
 
@@ -1340,6 +1370,213 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 
 ---
 
+### T42 · Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Infra/Docs · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA
+
+**Contexto / problema**
+Na auditoria pós-Ciclo 2 foram identificados 4 débitos leves de manutenção: (1) `framer-motion` permanece nas `dependencies` de `apps/web/package.json` com 0 imports em `apps/web/src/`; (2) `pnpm lint` exibe aviso de depreciação do `next lint` (removido no Next.js 16) com `.eslintrc.json` legado; (3) `pnpm db:generate` exibe aviso de depreciação de `package.json#prisma` (removido no Prisma 7); (4) `docs/ROADMAP.md` (última sync em 2026-11-21) ainda lista `D27`, `D28`, `T39` e `T41` como planejados/em andamento.
+
+**O que fazer**
+1. Remover `framer-motion` de `apps/web/package.json` e atualizar `pnpm-lock.yaml`.
+2. Migrar `apps/web/.eslintrc.json` para ESLint flat config (`eslint.config.mjs`) usando ESLint CLI direto no script `"lint"` (eliminando o aviso de depreciação de `next lint`).
+3. Migrar `package.json#prisma` (`seed`) para `apps/web/prisma.config.ts` compatível com Prisma 6/7.
+4. Sincronizar `docs/ROADMAP.md` e `docs/DATA_SOURCES.md` refletindo o fechamento dos Ciclos 1 e 2 e o plano do Ciclo 3.
+
+**Critérios de aceite**
+- [ ] `framer-motion` ausente de `apps/web/package.json` e 0 regressões em testes/build.
+- [ ] `pnpm lint` executa sem aviso de depreciação de `next lint` e com 0 erros/avisos.
+- [ ] `pnpm db:generate` executa sem aviso de `package.json#prisma` e `pnpm db:seed` continua idempotente.
+- [ ] `docs/ROADMAP.md` e `docs/DATA_SOURCES.md` sincronizados com o estado real em `origin/master`.
+
+**Como verificar**: `pnpm db:generate && pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### T43 · Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Segurança · **Tamanho:** M · **Depende de:** — · **Grupos:** G-OBS, G-PIPELINE, G-INFRA
+
+**Contexto / problema**
+Atualmente o limitador de taxa (Redis + fallback em memória de `study-rate-limit.ts`) protege apenas `POST /api/studies` e `POST /api/studies/[slug]/fork`. Todas as 12 rotas de proxy externo (`/api/observatory/{firms,eonet,gibs,gibs/image,iss,satellites,traffic,ais,winds,currents,cosmos}` e `/api/weather`) estão sem rate-limit por IP/bucket, expondo cotas de provedores externos e banda do proxy binário `/api/observatory/gibs/image` a abuso ou loops de clientes.
+
+**O que fazer**
+1. Extrair um helper genérico `src/lib/rate-limit.ts` (compartilhado por estudos, observatório e clima) com suporte a Redis (quando `REDIS_URL` configurado) e fallback LRU em memória limitado por chaves.
+2. Aplicar janelas e limites coerentes por perfil de rota (leitura JSON cacheada vs proxy binário GIBS vs escrita em estudos), devolvendo HTTP `429` com `Retry-After` e `X-RateLimit-*`.
+3. Validar limites de tamanho de resposta e timeout estrito no proxy `/api/observatory/gibs/image`.
+4. Cobrir com testes automatizados (limite atingido → 429 + `Retry-After`, cabeçalhos e isolamento por bucket).
+
+**Critérios de aceite**
+- [ ] Todas as rotas `/api/observatory/*` e `/api/weather` protegidas por rate-limit unificado com `429` + `Retry-After`.
+- [ ] Limite em memória com teto rígido de chaves (sem crescimento ilimitado de RAM).
+- [ ] Nenhuma regressão nos testes existentes de API, estudos e observatório.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### T44 · Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Qualidade · **Tamanho:** M · **Depende de:** — · **Grupos:** G-INFRA, G-SHELL, G-OBS
+
+**Contexto / problema**
+Os 5 arquivos E2E em `apps/web/test/e2e/` (`home`, `explore-search`, `keyboard-access`, `responsive`, `celestial-labels`) não cobrem nenhuma das entregas do Ciclo 2 (`D22` Coroplético, `D23` `/studies`, `D25` GIBS, `D27` Ventos/Correntes, `D28` i18n `PT ↔ EN` e `/telluslab`). Regressões de hidratação no reload em `EN` com camadas ativas só foram detectadas em revisão manual.
+
+**O que fazer**
+1. Adicionar suítes Playwright E2E cobrindo:
+   - Troca `PT ↔ EN`, persistência após reload (inclusive com `/?visao=1&pais=BRA&observatorio=1&camadas=NASA_FIRMS`) com asserção de **0 erros de console/hidratação** e navegação para `/telluslab` e `/dossies/astronomia-optica` em `EN`.
+   - Ativação do Modo Coroplético (`D22`), legenda e seleção de país.
+   - Abertura do Observatório com NASA GIBS (`D25`) e Ventos/Correntes/Ambos (`D27`).
+   - Navegação na Galeria `/studies` (`D23`), filtros e abertura de estudo compartilhado.
+2. Garantir estabilidade sem dependência de rede externa (fallbacks/fixtures determinísticos) e tempo compatível com o job CI.
+
+**Critérios de aceite**
+- [ ] Novos specs Playwright passam de forma determinística no Chromium WebGL (`pnpm test:e2e`), sem erros de console ou hidratação.
+- [ ] Tempo total da suíte E2E permanece dentro do orçamento do CI (`timeout-minutes: 15`).
+
+**Como verificar**: `pnpm build && pnpm test:e2e`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### T45 · Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Perf/Qualidade · **Tamanho:** M · **Depende de:** — · **Grupos:** G-COSMOS, G-GLOBO, G-PAIS, G-INFRA
+
+**Contexto / problema**
+Quatro arquivos centrais encostaram no teto rígido de 600 linhas do `code-hygiene.test.ts`: `CosmicInspectorHUD.tsx` (592 linhas — a 8 linhas de falhar), `en-panels.ts` (573), `EarthSphere.tsx` (544) e `ComparisonCharts.tsx` (541). Além disso, `apps/web/public/textures/` atingiu 28 MB (incluindo arquivos PNG/JPG pesados lado a lado com `.ktx2`), sem guarda automatizada de tamanho de assets estáticos.
+
+**O que fazer**
+1. Extrair subcomponentes/submódulos coesos de `CosmicInspectorHUD.tsx`, `en-panels.ts`, `EarthSphere.tsx` e `ComparisonCharts.tsx` para trazê-los abaixo de ~420 linhas cada, preservando comportamento e testes.
+2. Auditar `apps/web/public/textures/` (especialmente `paleo/` e `earth_surface_2k.png`), remover eventuais arquivos órfãos ou comprimir PNGs excessivos para WebP/JPG otimizado quando não usados diretamente pelo decoder, e adicionar um teste leve de orçamento de assets estáticos.
+
+**Critérios de aceite**
+- [ ] Nenhum arquivo em `apps/web/src/` acima de 520 linhas (folga segura abaixo do teto de 600 do T36).
+- [ ] Assets em `apps/web/public/textures/` auditados, sem arquivos órfãos e com guarda automatizada no `pnpm test`.
+- [ ] Zero regressões visuais ou funcionais no WebGL, Cosmos e Comparador.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### T46 · PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Infra/UX · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA
+
+**Contexto / problema**
+A tarefa `T33` adicionou `manifest.ts` e ícones, mas o aplicativo ainda não possui Service Worker. Sem SW, o TellusPedia não é instalável como PWA completo nem tolera quedas temporárias de conexão, apesar de quase todo o núcleo enciclopédico (`countries-ne-110m.json`, `countries-worldbank-indicators.json`, `worldbank-timeseries.json`, dossiês e texturas 2K) ser estático.
+
+**O que fazer**
+1. Implementar um Service Worker enxuto e versionado (`public/sw.js` + registro seguro em produção no cliente), sem quebrar a política CSP (`T30`) nem interferir no `ktx2-worker.js`.
+2. Configurar estratégias de cache adequadas: `cache-first` para `/data/*.json`, `/flags/*`, `/textures/*` (2K) e assets `_next/static/*`; `network-first` com fallback controlado para páginas HTML e sem cache agressivo para rotas mutáveis `/api/studies`.
+3. Exibir um indicador discreto D14 (bilíngue `pt-BR`/`en`) quando o navegador estiver offline, informando que camadas ao vivo estão pausadas enquanto o catálogo enciclopédico continua acessível.
+
+**Critérios de aceite**
+- [ ] Service Worker registra limpo em produção (`next start`) respeitando CSP e sem interferir em testes E2E.
+- [ ] Limpeza automática de caches antigos ao incrementar versão do SW.
+- [ ] Aviso discreto de modo offline com tokens D14 e tradução `pt-BR`/`en`.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + validação no Chromium em modo offline.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### T47 · Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-OBS, G-INFRA
+
+**Contexto / problema**
+Os logs das rotas `/api/observatory/*`, `/api/weather` e `/api/studies` usam `console.warn`/`console.error` com formatos heterogêneos, e `/api/health` hoje reporta apenas conectividade básica de banco/serviço sem visibilidade do estado dos provedores externos (`live` / `stale` / `fallback`) nem latências médias ou taxa de acerto de cache.
+
+**O que fazer**
+1. Criar um logger estruturado minimalista (`src/lib/server-logger.ts`) emitindo JSON compacto em produção (`timestamp`, `level`, `route`, `provider`, `mode`, `durationMs`, `status`, sem vazar segredos ou tokens).
+2. Registrar um painel em memória leve (`providerMetrics`) com último estado T05, timestamp de sucesso, taxa de cache hit/miss e última latência de cada provedor do Observatório.
+3. Expor esse resumo em `GET /api/health?detail=1` (sem disparar chamadas externas extras) mantendo `GET /api/health` rápido e retrocompatível.
+
+**Critérios de aceite**
+- [ ] `GET /api/health` mantém contrato atual (`200`/`503`) e `GET /api/health?detail=1` retorna telemetria dos provedores T05 sem I/O externo.
+- [ ] Logs JSON estruturados sem vazamento de chaves de API ou PII.
+- [ ] Coberto por testes unitários.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### T48 · Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Produto/Dados · **Tamanho:** P · **Depende de:** — · **Grupos:** G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS
+
+**Contexto / problema**
+A janela padrão da linha do tempo e o preset "50 Anos Padrão" ainda estão hardcoded em `1974–2024` (`timelineStore.ts:49`, `PresetSelector.tsx:76`, `actions.ts:47,61`, `historical-eras.ts:28`, `study-schema.ts:21`), impedindo que a visualização padrão acompanhe o ano corrente (`2026`). Além disso, o evento mais recente em `src/data/scenes/milestones.json` é `glo-2021` (2021), deixando o trecho 2022–2026 vazio mesmo no preset "Século XXI".
+
+**O que fazer**
+1. Centralizar uma constante/helper `CURRENT_YEAR` (`src/lib/timeline/current-year.ts`, segura para SSR/hidratação) e atualizar `timelineStore.ts`, `PresetSelector.tsx`, `actions.ts`, `historical-eras.ts`, `study-schema.ts`, `cosmos-validation.ts` e o teto do input em `TimelineBar.tsx` para que:
+   - "50 Anos Padrão" cubra `[CURRENT_YEAR - 50, CURRENT_YEAR]` (`1976–2026` hoje);
+   - "Século XXI" cubra `[2000, CURRENT_YEAR]`;
+   - `Era Contemporânea` acompanhe `CURRENT_YEAR` automaticamente nos anos futuros.
+2. Curar e adicionar **marcos históricos verificados de 2022 a 2026** em `src/data/scenes/milestones.json` (com fontes primárias auditadas e tradução `en`), cobrindo política, economia, conflitos, ciência e saúde (ex.: primeiras imagens do JWST / Artemis I 2022, Guerra na Ucrânia 2022, Expansão BRICS+ 2024, COP30 em Belém 2025, etc.).
+3. Atualizar testes que assumiam `endYear === 2024` como padrão fixo.
+
+**Critérios de aceite**
+- [ ] Ao abrir `/` sem parâmetros, a timeline inicia automaticamente em `[CURRENT_YEAR - 50, CURRENT_YEAR]` (`1976–2026`) sem erro de hidratação SSR.
+- [ ] Preset "Século XXI", `Era Contemporânea` e input `Ano final` alcançam dinamicamente `CURRENT_YEAR` (e permitem navegar até o ano atual + margem futura).
+- [ ] Pelo menos 6 marcos históricos auditados entre 2022 e 2026 renderizam na timeline em `pt-BR` e `en` com fontes clicáveis (RN02).
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual da timeline em `/` (`pt-BR` e `en`).
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada após solicitação do Ayrton na auditoria do Ciclo 3.
+
+---
+
+### T49 · LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-FRONTEIRAS, G-GLOBO, G-PAIS
+
+**Contexto / problema**
+Atualmente o globo usa apenas a malha Natural Earth `1:110m` (`countries-ne-110m.json`), mesmo em aproximações fechadas onde litorais, arquipélagos e países menores perdem definição (`RN21`), e não há sinalização visual diferenciada para territórios disputados ou regiões autônomas (`RN07`).
+
+**O que fazer**
+1. Gerar/armazenar snapshot TopoJSON Natural Earth `1:50m` simplificado em `public/data/countries-ne-50m.json` carregado **sob demanda** somente quando a câmera se aproximar abaixo de um limiar de altitude (preservando `/` < 160 KiB e `dispose()` na GPU).
+2. Adicionar metadados e estilo de linha tracejada/diferenciada (RN07) para territórios disputados / regiões autônomas relevantes no catálogo (com nota neutra e fonte ONU / Natural Earth).
+3. Manter raycast picking `< 0,2 ms` e zero-padding ISO (`AGENTS.md` §2).
+
+**Critérios de aceite**
+- [ ] Transição automática `1:110m` ↔ `1:50m` conforme altitude da câmera sem travamento de frame nem vazamento GPU (`dispose()`).
+- [ ] Territórios disputados/autônomos sinalizados de forma visualmente distinta e bilíngue (`pt-BR`/`en`).
+- [ ] `bundle-budget.test.ts` permanece 6/6 (`/` `< 160 KiB`).
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção de zoom no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (resgate `RN07`/`RN21`, aprovada pelo Ayrton).
+
+---
+
 ## 5. Tarefas — Design, visual e experiência (D)
 
 ### T40 · Corrigir desmontagem dos rótulos HTML no WebGL
@@ -2308,6 +2545,409 @@ Segunda metade da `D28` (`GG`): estender a fundação i18n da `D28a` para todos 
 - 2026-11-23 · antigravity · IN_PROGRESS · Reaberta após revisão do Ayrton: traduzir integralmente `/telluslab` (`StudyHub`), páginas standalone (`/dossies/[slug]`, `/not-found`, `/error`, `GlobalErrorView`), eras históricas em `/studies`/`HistoricalEraBadge` e hidratar `useLocaleStore` globalmente no `SearchProvider`.
 - 2026-11-23 · antigravity · REVIEW · Correções entregues no commit `1129cf4`: (1) hidratação global de idioma em `SearchProvider.tsx` garantindo que todas as rotas standalone apliquem `telluspedia_locale`/`localStorage`; (2) novo módulo sob demanda `src/lib/i18n/en-telluslab.ts` cobrindo toda a UI do `StudyHub` (`/telluslab`, incluindo seletor customizado de arquivo JSON, formatação `Intl` de datas/percentuais, todos os 8 domínios, 39 trilhas e 14 vínculos de dossiês/figuras), metadados SSR de `/telluslab`, tradução SSR completa dos 14 dossiês em `/dossies/[slug]`, eras históricas em `/studies` e `HistoricalEraBadge`, `EntityLaunch`, `/not-found`, `/error` e `GlobalErrorView`; (3) novo componente D14 `LocaleToggleButton` / `ServerLocaleToggleButton` presente em `/telluslab`, `/studies` e `/dossies/[slug]`. Validado com `pnpm typecheck` (0 erros), `pnpm lint` (0 avisos), `pnpm test` (759/760 pass, 0 fail, 1 skip), `pnpm build` + `bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB), verificação real no Chromium + screenshot de `/telluslab` em `EN` (0 erros) e Playwright E2E completa (18/18 pass).
 - 2026-11-23 · ayrton · DONE · Aprovada pelo Ayrton.
+
+---
+
+### D29 · Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS
+
+**Contexto / problema**
+Previsto desde o início no `DISCOVERY.md` (`RN17`, `CA07`) e no `ROADMAP.md` original (*"Fluxos de Ventos e Lixo Marítimo: visualização de correntes oceânicas e microplásticos"*), este módulo dependia do motor vetorial de ventos e correntes oceânicas concluído em `D27a`/`D27b`. Agora o motor GPU já possui ambos os campos (`NOAA GFS` + `Open-Meteo Marine / OSCAR`), destravando a visualização científica dos giros de acumulação e da deriva Lagrangiana de resíduos marinhos.
+
+**O que fazer**
+1. Incorporar o mapa de densidade observada de microplásticos nos **5 grandes giros oceânicos subtropicais** (Pacífico Norte / *Great Pacific Garbage Patch*, Pacífico Sul, Atlântico Norte, Atlântico Sul, Índico) com base em literatura/dados abertos (**NOAA Marine Debris Program / Global Drifter Program / Eriksen–Lebreton**), com ficha científica e citação primária (RN02, T05).
+2. Integrar um modo de **advecção Lagrangiana no motor GPU** impulsionado pela composição `corrente superficial + fator de deriva de vento (windage 1–3%)` herdada de `D27a`/`D27b`, evidenciando fisicamente a convergência de Ekman nos giros.
+3. Adicionar um **simulador educativo de deriva**: clicar em qualquer ponto costeiro ou oceânico lança traçadores virtuais mostrando para qual giro os resíduos convergem ao longo de meses/anos, com controle D14 no `ObservatoryPanel`, suporte `pt-BR`/`en`, `dispose()` na GPU e serialização em Estudos.
+
+**Critérios de aceite**
+- [ ] 5 giros oceânicos e zonas de concentração de microplásticos renderizam no globo 3D com legenda, fontes primárias e selo explícito de procedência T05 (observado vs. modelo Lagrangiano).
+- [ ] Simulação de deriva a partir de ponto costeiro utiliza os campos reais de correntes + ventos (`D27`), respeita `RN22` (`isThrottled`) e descarta buffers GPU (`dispose()`).
+- [ ] `bundle-budget.test.ts` permanece `< 160 KiB` e interface 100% bilíngue (`pt-BR`/`en`).
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 (resgate `RN17`/`CA07`, aprovada pelo Ayrton).
+
+---
+
+### D30 · Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS
+
+**Contexto / problema**
+O `DATA_SOURCES.md` e o `ROADMAP.md` original previam integração direta com o **INPE** (além da NASA), mas hoje o Observatório consome apenas NASA FIRMS/EONET/GIBS. Integrar fontes oficiais brasileiras do INPE eleva drasticamente a precisão ambiental na América do Sul e no Brasil (queimadas por bioma e monitoramento oficial de desmatamento).
+
+**O que fazer**
+1. Criar rotas server-side com cache SWR e contrato `T05` (`live`/`cache`/`stale`/`fallback` + fontes clicáveis):
+   - **INPE BDQueimadas**: focos de calor na América do Sul com agregação oficial por **bioma brasileiro** (Amazônia, Cerrado, Pantanal, Mata Atlântica, Caatinga, Pampa), selecionável como fonte complementar/alternativa no controle de Queimadas ao lado do NASA FIRMS.
+   - **INPE TerraBrasilis (DETER / PRODES)**: alertas recentes e série histórica anual oficial de desmatamento na Amazônia Legal e no Cerrado (com painel analítico + visualização espacial no globo 3D).
+2. Exibir citação acadêmica (INPE / MCTI) e data de referência explícita (RN02), tradução completa `pt-BR`/`en` e persistência em Estudos.
+
+**Critérios de aceite**
+- [ ] Dados do INPE BDQueimadas e TerraBrasilis (DETER/PRODES) exibidos com procedência T05 clara, link direto ao portal oficial do INPE e fallback honesto quando o provedor oscilar.
+- [ ] Agregação por bioma brasileiro e série histórica de desmatamento sem valores sintéticos (`T03`).
+- [ ] Cobertura de testes unitários para parsers/cache/fallback e `bundle-budget.test.ts` `< 160 KiB`.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 (resgate `RN17`/`DATA_SOURCES.md`, aprovada pelo Ayrton).
+
+---
+
+### D31 · Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D/Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS
+
+**Contexto / problema**
+Embora a ficha de país mencione biomas em texto, o TellusPedia ainda não possui uma **camada cartográfica interativa dos biomas** do planeta e do Brasil, impedindo o estudante de ver no globo onde começam e terminam florestas tropicais, savanas, tundras, desertos, taiga, Cerrado, Caatinga ou Pantanal — e cruzar isso diretamente com queimadas (FIRMS/INPE), desmatamento (PRODES) e vegetação (GIBS NDVI).
+
+**O que fazer**
+1. Preparar dataset TopoJSON otimizado sob demanda em `public/data/biomes/` cobrindo os **14 biomas terrestres globais (RESOLVE Ecoregions 2017 / WWF)** e, em recorte dedicado de alta clareza, os **6 Biomas Brasileiros oficiais (IBGE)** (Amazônia, Cerrado, Mata Atlântica, Caatinga, Pampa, Pantanal).
+2. Renderizar a camada temática de Biomas sobre o globo 3D (com paleta ecológica D14 acessível, controle de opacidade, legenda interativa e filtro por bioma) e picking ao passar/clicar exibindo uma **ficha ecológica** (clima, solos, vegetação típica, área, ameaças e links diretos para fontes WWF/RESOLVE/IBGE).
+3. Integrar o cruzamento com camadas ambientais existentes (INPE/FIRMS/GIBS NDVI), persistência em URL/Estudos e tradução completa `pt-BR`/`en`.
+
+**Critérios de aceite**
+- [ ] 14 biomas globais (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) renderizam suavemente no globo com picking, filtro por bioma e ficha ecológica bilíngue (`pt-BR`/`en`).
+- [ ] Dataset carregado sob demanda (lazy-load, `/` `< 160 KiB`) com descarte adequado de geometrias (`dispose()`).
+- [ ] Testes unitários validando integridade dos códigos/paletas/fontes dos biomas.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
+
+---
+
+### D32 · Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** D31 · **Grupos:** G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO
+
+**Contexto / problema**
+A regra `RN13.7` (*Biologia e Saúde Pública*) e o `DATA_SOURCES.md` listam **GBIF** e **IUCN Red List** para biodiversidade, mas o TellusPedia ainda não tem visualização espacial de **espécies animais**. Conectado ao Mapa dos Biomas (`D31`), um Mapa de Espécies Animais transforma a dimensão biológica da enciclopédia em exploração visual real sobre o globo.
+
+**O que fazer**
+1. Criar proxy server-side `/api/observatory/species` consultando a **GBIF Occurrence / Species API** (gratuita, sem chave, cache SWR e contrato `T05`) para exibir registros georreferenciados reais de fauna por espécie, país ou bioma.
+2. Curar um catálogo base bilíngue (`pt-BR`/`en`, nomes populares e científicos, grupo taxonômico — mamíferos, aves, répteis, anfíbios, peixes/marinhos — biomas associados e status oficial **IUCN Red List**: `CR`, `EN`, `VU`, `NT`, `LC`, com link direto para IUCN/GBIF) destacando espécies emblemáticas e ameaçadas de cada continente e bioma brasileiro (ex.: onça-pintada, arara-azul, lobo-guará, mico-leão-dourado, peixe-boi, panda-gigante, tigre-de-bengala, elefante-africano, urso-polar, baleia-azul, etc.).
+3. Permitir explorar no globo 3D (pontos/clusters por espécie e áreas de distribuição associadas ao bioma `D31`), filtrar por status de ameaça ou grupo taxonômico e abrir a ficha biológica a partir do globo ou do painel do país.
+
+**Critérios de aceite**
+- [ ] Mapa de espécies exibe ocorrências reais do GBIF (com selo T05) e catálogo curado com nome científico, status IUCN, bioma e fonte clicável em `pt-BR` e `en`.
+- [ ] Filtros por bioma (`D31`), país, grupo taxonômico e categoria IUCN funcionando sem degradar FPS nem estourar `< 160 KiB` em `/`.
+- [ ] Cobertura de testes unitários para validação taxonômica/IUCN e proxy GBIF.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
+
+---
+
+### D33 · Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D/UX · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS
+
+**Contexto / problema**
+Embora o Globo 3D seja a experiência principal sem distorção cartográfica, um **Modo 2D com projeções selecionáveis** traz dois ganhos enormes: (1) visão simultânea de todos os 177 países (especialmente poderosa para o Coroplético e o Mapa de Biomas); (2) valor pedagógico direto ao permitir comparar **Equal Earth** (áreas fiéis) contra **Mercator** (distorção polar — Groenlândia vs. África), além de servir como alternativa ultraleve em dispositivos sem WebGL forte.
+
+**O que fazer**
+1. Construir componente `FlatMapCanvas` (carregado sob demanda via `next/dynamic`, reaproveitando `d3-geo` já presente em `package.json`) com pan/zoom suave, seleção e hover sincronizados com `globeStore` (mesmo `selectedIso`, mesmo `InspectorHUD`, mesma Timeline).
+2. Oferecer seletor D14 de projeções cartográficas (**Equal Earth** padrão, **Mercator**, **Natural Earth / Robinson**, **Azimutal Equidistante**) com nota didática breve sobre propriedades/distorções (área vs. forma vs. direção) e gratícula de meridianos/paralelos.
+3. Suportar sobreposição do **Coroplético**, **Fronteiras Históricas**, **Biomas** (quando disponível) e pausa automática do loop WebGL 3D enquanto o Modo 2D estiver ativo (`RN22`), com alternância `3D ↔ 2D` discreta na casca e persistência em URL/Estudos.
+
+**Critérios de aceite**
+- [ ] Alternância limpa `Globo 3D ↔ Mapa 2D` preservando país selecionado, recorte temporal e Coroplético, pausando o render loop 3D no modo 2D.
+- [ ] 4 projeções cartográficas (`Equal Earth`, `Mercator`, `Natural Earth`, `Azimutal`) com picking exato dos 177 países em `pt-BR` e `en`.
+- [ ] Carregamento sob demanda (`bundle-budget.test.ts` `< 160 KiB`) e testes unitários das projeções.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts` + inspeção visual no Chromium.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
+
+---
+
+### D34 · Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS
+
+**Contexto / problema**
+O dataset `public/data/worldbank-timeseries.json` já armazena séries reais anuais de **1990 a 2024** para ~170 países e **7 indicadores** (incluindo `EN.GHG.CO2.PC.CE.AR5` — CO₂ per capita — e `EG.FEC.RNEW.ZS` — Energia Renovável %). Contudo, o Modo Coroplético (`D22`) só pinta o snapshot mais recente e oferece apenas 5 indicadores do Banco Mundial, desperdiçando o potencial de visualizar a evolução socioeconômica e climática global ano a ano no globo 3D (e no mapa 2D).
+
+**O que fazer**
+1. Adicionar os 2 indicadores já ingeridos (`EN.GHG.CO2.PC.CE.AR5` e `EG.FEC.RNEW.ZS`) ao catálogo do Coroplético (`src/lib/choropleth.ts`) com escalas, paletas D14, unidades e traduções `pt-BR`/`en`.
+2. Conectar `worldbank-timeseries.json` sob demanda (lazy-load, sem engordar `/` < 160 KiB) ao Coroplético com um **slider de ano (1990–2024) + botão Play/Pause** na legenda/seletor, mantendo escala fixa ao longo do tempo para comparação visual honesta e exibindo explicitamente lacunas oficiais (`null` nunca interpolado).
+3. Permitir sincronizar o ano selecionado com a Timeline e serializar `choroplethYear` em URL (`D18`) e Estudos imutáveis (`/study/[slug]`, com migration Prisma compatível).
+
+**Critérios de aceite**
+- [ ] 7 indicadores do Banco Mundial (+ `NASA_FIRMS`) disponíveis no Coroplético em `pt-BR` e `en`.
+- [ ] Slider e reprodução animada 1990 → 2024 atualizam a coloração dos 177 países suavemente sem recriar geometrias nem vazar memória GPU (`dispose()`).
+- [ ] Lacunas reais (`null`) são exibidas como "Sem dado" no tooltip e na legenda; First Load JS de `/` permanece `< 160 KiB`.
+
+**Como verificar**: `pnpm db:generate && pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### D35 · Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-PAIS, G-CONTEUDO
+
+**Contexto / problema**
+Hoje apenas **6 países** (`BRA`, `DEU`, `USA`, `JPN`, `ZAF`, `EGY`) possuem dossiê editorial multidisciplinar em `country-pilots.ts`, enquanto os outros 171 contam apenas com o perfil analítico quantitativo (`T38`). Para cumprir com profundidade a matriz `RN13` / `CA04` do `DISCOVERY.md`, precisamos ampliar substancialmente a base editorial com curadoria auditada e carregamento sob demanda.
+
+**O que fazer**
+1. Estruturar carregamento sob demanda por país/lote (`src/data/editorial/<iso>.json` ou módulos lazy) para que expandir dezenas de perfis editoriais tenha **0 bytes** de impacto no First Load JS de `/`.
+2. Produzir e auditar perfis editoriais multidisciplinares bilíngues (`pt-BR` e `en`, com fontes primárias clicáveis e compatíveis com o gerador ABNT/APA/MLA/BibTeX — RN02) para **20 a 25 países prioritários** além dos 6 pilotos atuais: membros do **G20** (`CHN`, `IND`, `GBR`, `FRA`, `ITA`, `CAN`, `AUS`, `KOR`, `MEX`, `ARG`, `RUS`, `IDN`, `TUR`, `SAU`), **Lusofonia** (`PRT`, `AGO`, `MOZ`, `CPV`) e **América Latina** (`COL`, `CHL`, `PER`, `URY`).
+3. Cobrir as dimensões `RN13` (Geografia/Biomas, Estado/Política, Economia, História/Marcos, Personalidades, Cultura/UNESCO e Saúde Pública), mantendo rigor contra dados inventados (`T03`) e o *HTML5 Phrasing Content Invariant*.
+
+**Critérios de aceite**
+- [ ] Ao menos 26 países totais (6 pilotos + ≥ 20 novos) com perfil editorial completo em `pt-BR` e `en` no Reader Mode, com citações verificadas.
+- [ ] Carregamento 100% sob demanda (`bundle-budget.test.ts` `< 160 KiB`) e respeito ao teto de 600 linhas (`T36`).
+- [ ] Testes de integridade verificando presença de fontes primárias, datas de referência e ausência de `<div>` em `<p>`.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
+
+---
+
+### D36 · Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Conteúdo/UX · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL
+
+**Contexto / problema**
+A obra do geógrafo brasileiro **Milton Santos** (1926–2001, Prêmio Vautrin Lud — o "Nobel da Geografia") fornece um dos arcabouços teóricos mais potentes do mundo para interpretar exatamente o que o TellusPedia mostra no globo: a relação entre técnica, ciência, informação, fluxos globais e desigualdade territorial. Incorporar sua obra transforma o TellusPedia de um atlas descritivo em um instrumento de **leitura geográfica crítica**.
+
+**O que fazer**
+1. **Dossiê & Figura Histórica (`figure:milton-santos`)**: criar página dedicada `/dossies/milton-santos` (bilíngue `pt-BR`/`en`), biografia e linha do tempo intelectual (1926–2001, Salvador → França/exílio → USP → Prêmio Vautrin Lud 1994), obras fundamentais (*Por uma outra globalização*, *A Natureza do Espaço*, *O Espaço Dividido*, *O Brasil: Território e Sociedade no Início do Século XXI*) com referências bibliográficas padronizadas (ABNT/APA/MLA/BibTeX) e vínculo com TellusLab.
+2. **Lentes Analíticas Espaciais (baseadas em dados reais auditados)**:
+   - *Meio Técnico-Científico-Informacional*: leitura temática combinando indicadores reais de PIB per capita, infraestrutura/conectividade e densidade de fluxos, com nota metodológica transparente (sem indicadores inventados).
+   - *Horizontalidades vs. Verticalidades*: modo interpretativo conectando os fluxos globais de alta velocidade do Observatório (aviação, rotas marítimas, cabos submarinos) ao conceito de território usado e circuitos superior/inferior da economia urbana.
+   - *Os Quatro Brasis* (Milton Santos & María Laura Silveira, 2001): sobreposição cartográfica regionalizada sobre o Brasil (**Região Concentrada**, **Centro-Oeste**, **Nordeste**, **Amazônia**) comparável às 5 regiões clássicas do IBGE, com ficha conceitual e fontes bibliográficas.
+3. Integrar busca `⌘K`, timeline histórica (centenário de Milton Santos em **2026**!) e interface 100% D14 bilíngue (`pt-BR`/`en`).
+
+**Critérios de aceite**
+- [ ] Dossiê `/dossies/milton-santos` e marco na timeline (incluindo referência ao centenário 1926–2026) publicados em `pt-BR` e `en` com citações acadêmicas completas.
+- [ ] Lentes espaciais (*Meio Técnico-Científico-Informacional*, *Verticalidades/Horizontalidades* e mapa regional *Os Quatro Brasis*) renderizam no globo com rigor bibliográfico e zero valores sintéticos.
+- [ ] `bundle-budget.test.ts` `< 160 KiB` e testes de integridade do dossiê/geometria passando.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
+
+---
+
+### D37 · Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** Produto/UX · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL
+
+**Contexto / problema**
+Pesquisadores, professores e estudantes conseguem comparar indicadores e salvar estudos imutáveis, mas ainda sentem falta de três ferramentas autorais diretas: (1) medir distâncias reais entre dois pontos/capitais no globo; (2) exportar dados e gráficos do Comparador para planilhas/apresentações; (3) fixar pinos anotados com coordenadas `(lat, lng)` dentro de um Estudo compartilhável.
+
+**O que fazer**
+1. **Régua geodésica 3D**: ferramenta discreta para marcar 2+ pontos na superfície esférica traçando arco ortodrômico real (`slerpVectors` em raio `1.004`), exibindo distância em `km`, milhas náuticas (`nm`) e azimute inicial/final (fórmula esférica/Haversine), com limpeza e `dispose()`.
+2. **Exportação no Comparador**: botões D14 no `ComparisonGrid` / `ComparisonCharts` para baixar **CSV** (RFC 4180 com metadados de fonte/ano e valores brutos) e **PNG/SVG** do gráfico ativo com legenda e atribuição de fonte (RN02).
+3. **Pinos anotados em Estudos**: permitir adicionar/remover marcadores `(lat, lng, título, nota curta)` no estudo em edição, renderizados no globo 3D e persistidos de forma imutável (e herdados no fork) no campo JSON `annotations` do Prisma `Study` (validado por Zod em `study-schema.ts`).
+
+**Critérios de aceite**
+- [ ] Régua geodésica calcula distâncias ortodrômicas com precisão `< 0,5%` vs Haversine (testado em pares de capitais) e não conflita com seleção normal de países quando desligada.
+- [ ] Comparador exporta CSV válido e imagem do gráfico com atribuição de fonte primária em `pt-BR` e `en`.
+- [ ] Pinos anotados persistem em `/api/studies` e `/api/studies/[slug]/fork`, com limites rígidos de quantidade/tamanho no Zod.
+
+**Como verificar**: `pnpm db:generate && pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### D38 · Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Produto/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS
+
+**Contexto / problema**
+Dois requisitos explícitos do `DISCOVERY.md` ainda não têm implementação completa: `RN14` / `Fluxo 05` (linha do tempo transversal de uma personalidade influente ou tema, articulando múltiplos países/locais no globo e registrando a trilha de estudo `RN04`) e `RN13.8` (notícias e atualidades geopolíticas recentes vinculadas ao país via **GDELT Project API**).
+
+**O que fazer**
+1. **Visão Transversal de Personalidade/Tema (`RN14` + `RN04`)**: ao selecionar uma personalidade (ex.: Isaac Newton, Albert Einstein, Dom Pedro II, Luís de Camões, Milton Santos) ou um tema transversal (ex.: Corrida Espacial, Descolonização, Pandemias), exibir uma linha do tempo filtrada com destaque simultâneo de todos os países envolvidos no globo e trilha de navegação (*breadcrumbs*).
+2. **Atualidades por País via GDELT (`RN13.8`)**: criar proxy server-side `/api/countries/[iso]/news` consultando a **GDELT 2.0 Doc API** (gratuita, sem chave, cache SWR 30 min, contrato `T05`), exibindo manchetes recentes auditadas com fonte e data no painel/Reader do país, com degradação limpa caso o provedor fique indisponível.
+
+**Critérios de aceite**
+- [ ] Personalidades e temas transversais acionam destaque multipaís no globo, timeline filtrada e trilha de estudo (`breadcrumbs`) em `pt-BR` e `en`.
+- [ ] Feed GDELT respeita contrato `T05`, rate-limit (`T43`), sanitização estrita de URLs externas e nunca bloqueia o carregamento do país.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (resgate `RN04`/`RN13.8`/`RN14`, aprovada pelo Ayrton).
+
+---
+
+### D39 · Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS
+
+**Contexto / problema**
+O Observatório Planetário cobre queimadas, eventos severos, satélite GIBS, órbitas, tráfego aéreo/marítimo e ventos/correntes, mas ainda não oferece a dinâmica geofísica sólida da Terra contemporânea — nem conecta visualmente a Paleogeografia (`250–66 Ma`) à tectônica de placas ativa hoje.
+
+**O que fazer**
+1. Criar rota proxy `/api/observatory/earthquakes` consumindo o feed oficial **USGS Earthquake Hazards GeoJSON** (gratuito, sem chave, janelas `24h` / `7d` / `30d`, filtro de magnitude `M2.5+` / `M4.5+` / `M6.0+`), seguindo estritamente o contrato `T05` (`live`/`cache`/`stale`/`fallback`) com cache em memória e `Cache-Control`.
+2. Renderizar os epicentros no globo 3D (pontos/anéis dimensionados por magnitude e coloridos por profundidade, com picking para exibir ficha sísmica no `ObservatoryTelemetryHUD`: local, magnitude, profundidade, alerta de tsunami e link oficial USGS).
+3. Adicionar camada vetorial leve das **fronteiras de placas tectônicas contemporâneas** (limites convergentes, divergentes e transformantes — dataset PB2002 otimizado em `public/data/`, carregado sob demanda), com alternância no controle da camada e `dispose()` adequado na GPU.
+4. Suportar serialização em URL e Estudos (`/study/[slug]`), supressão coerente em eras geológicas/históricas e tradução completa `pt-BR`/`en`.
+
+**Critérios de aceite**
+- [ ] Camada sísmica exibe dados reais da USGS com selo explícito de procedência T05 e fallback honesto quando offline.
+- [ ] Controles D14 de janela temporal, magnitude mínima e toggle de placas tectônicas com picking interativo e telemetria.
+- [ ] Zero vazamento de `BufferGeometry` (`dispose()`), respeito a `RN22` (`isThrottled`) e `bundle-budget.test.ts` `< 160 KiB`.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### D40 · Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo)
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-ESTUDOS
+
+**Contexto / problema**
+Mais de 95% do tráfego intercontinental de dados trafega por cabos submarinos que passam pelos mesmos gargalos geopolíticos já visíveis na camada marítima AIS (Mar Vermelho, Malaca, Suez, Atlântico Norte — dialogando diretamente com as *verticalidades* de Milton Santos em `D36`), enquanto a qualidade do ar (PM2.5/AQI) é um indicador ambiental imediato complementar ao clima ao vivo.
+
+**O que fazer**
+1. **Cabos Submarinos de Internet**: incorporar dataset aberto curado/otimizado da TeleGeography (principais sistemas transoceânicos + estações de aterramento em `public/data/`, carregado sob demanda) renderizados como arcos sutis no raio `1.0025` no Observatório, com picking de sistema/capacidade/pontos de aterramento e destaque de gargalos estratégicos.
+2. **Qualidade do Ar (PM2.5 / US AQI & European AQI)**: integrar o endpoint gratuito sem chave **Open-Meteo Air Quality API** (mesmo provedor já confiável em `/api/weather`), exibindo o índice no `LiveWeatherWidget` do país selecionado e como opção/sobreposição de estações capitais no Observatório, seguindo o contrato `T05`.
+3. Tradução completa `pt-BR`/`en`, tokens D14 e `dispose()` na GPU.
+
+**Critérios de aceite**
+- [ ] Camada de cabos submarinos liga/desliga limpa no Observatório com picking e ficha de fonte primária (TeleGeography).
+- [ ] Qualidade do ar (PM2.5 + AQI com escala clara) exibida com origem explícita (`Open-Meteo`) e tratamento gracioso de indisponibilidade.
+- [ ] `bundle-budget.test.ts` continua `< 160 KiB`.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** 3D/Cosmos · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS, G-GLOBO, G-EPOCA
+
+**Contexto / problema**
+O Modo Cosmos (`Horizonte 4`) já modela o Sistema Solar, Halley, asteroides, chuvas de meteoros e 88 constelações, mas ainda não contempla dois fenômenos astronômicos icônicos: (1) eclipses solares/lunares históricos e futuros (incluindo Sobral 1919 — que comprovou a relatividade geral de Einstein e já tem dossiê no TellusPedia — e 2024/2026/2027); (2) sondas ativas/históricas no espaço profundo.
+
+**O que fazer**
+1. **Eclipses solares selecionáveis**: catálogo curado de eclipses emblemáticos (1919 Sobral, 2024 América do Norte, 2026 Atlântico/Espanha, 2027 Egito/Luxor) com posicionamento astronômico da Lua/Sol na data exata, projeção da sombra de umbra/penumbra sobre a Terra e trilha da faixa de totalidade em 3D, com ficha científica e atalho na Timeline/Cosmos.
+2. **Sondas do espaço profundo**: camada opcional no Modo Cosmos para **Voyager 1**, **Voyager 2**, **New Horizons** e **James Webb (L2)** usando efemérides simplificadas calibradas (posição heliocêntrica em UA + velocidade + atraso de sinal em luz-hora/minuto) e ficha detalhada no `CosmicInspectorHUD` com links NASA/JPL.
+3. Garantir handover seguro de câmera sem `NaN` (`AGENTS.md` §1) e tradução `pt-BR`/`en`.
+
+**Critérios de aceite**
+- [ ] Pelo menos 4 eclipses emblemáticos projetam sombra coerente e faixa de totalidade sobre a Terra na data correta.
+- [ ] Sondas espaciais selecionáveis no Modo Cosmos com distância em UA e tempo-luz calculados em função da data da timeline.
+- [ ] Testes unitários para cálculo de distância/tempo-luz das sondas e geometria de totalidade; zero regressões no Cosmos.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### D42 · i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Produto/Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-EPOCA, G-PAIS
+
+**Contexto / problema**
+Embora toda a casca, painéis, metadados SSR, `/studies`, `/telluslab` e os 14 dossiês já estejam traduzidos (`D28a`/`D28b`), a auditoria revelou que `src/components/scenes/` ainda não usa `useI18n()` (o player de cenas e as 7 crônicas históricas permanecem em português), assim como as fichas de entidades históricas (`PRU`, `SUN`, `AHU`, `GDR`, `FRG`, `TUR_HIST`, `YUG`, `CSK`) e os textos editoriais narrativos dos 6 países-piloto (`BRA`, `DEU`, `USA`, `JPN`, `ZAF`, `EGY`) no Reader Mode.
+
+**O que fazer**
+1. Internacionalizar a UI do `ScenePlayerOverlay` e criar módulo sob demanda (`src/lib/i18n/en-scenes.ts`) traduzindo títulos, resumos, capítulos e crônicas das 7 cenas publicadas (`polo-1271`, `gama-1497`, `magellan-1519`, `glo-1914`, `glo-1939`, `glo-1969`, `glo-1989`).
+2. Traduzir nomes, regimes, governantes e descrições das 8 entidades históricas (`historical-entities-*.ts`) em módulo sob demanda (`en-historical.ts`).
+3. Traduzir os textos editoriais narrativos dos 6 países-piloto (`country-pilots.ts`) exibidos no `ReaderContent` quando `locale === "en"`, carregados sob demanda para não inflar o bundle inicial de `/`.
+
+**Critérios de aceite**
+- [ ] Ao abrir qualquer uma das 7 cenas históricas ou qualquer entidade histórica em `EN`, 100% da interface e do texto narrativo aparece em inglês.
+- [ ] Reader Mode dos 6 países-piloto renderiza integralmente em inglês quando `locale === "en"`, sem violar o *HTML5 Phrasing Content Invariant* nem o teto de 600 linhas (`T36`).
+- [ ] `bundle-budget.test.ts` continua 6/6 (`/` `< 160 KiB`).
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### D43 · Cartografia Histórica Expandida: snapshots TopoJSON 1500 (Grandes Navegações) e 1815 (Congresso de Viena) + 2 novas cenas curadas
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Conteúdo/3D · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE
+
+**Contexto / problema**
+Os snapshots cartográficos históricos atuais cobrem apenas o século XIX tardio e o século XX (`1870`, `1914`, `1939`, `1969`). Cenas já publicadas como Marco Polo (`1271`), Vasco da Gama (`1497`) e Magalhães (`1519`) ainda aparecem sobre fronteiras contemporâneas, enfraquecendo a imersão histórica.
+
+**O que fazer**
+1. Gerar e validar dois novos snapshots TopoJSON históricos em `public/data/history/`: **`borders-1500.json`** (Grandes Navegações: Impérios Português, Espanhol, Otomano, Dinastia Ming, Inca, Asteca) e **`borders-1815.json`** (Congresso de Viena / Impérios Napoleônico tardio, Britânico, Russo, Reino Unido de Portugal, Brasil e Algarves), com respectivas entidades históricas e resolução bidirecional em `historical-eras.ts` e `historical-entities.ts`.
+2. Conectar as cenas de 1497 e 1519 à cartografia de 1500 (com cross-fade existente em `CountryBorders.tsx`).
+3. Publicar **2 novas cenas históricas curadas** no catálogo D12/D24 (em `pt-BR` e `en`, com fontes auditadas e trajetória 3D): **Expedição do HMS Beagle / Charles Darwin (1831–1836)** e **Expedição do Eclipse de Sobral (1919)** (conectada diretamente ao dossiê `albert-einstein` e à `D41`).
+
+**Critérios de aceite**
+- [ ] Snapshots `1500` e `1815` renderizam sem artefatos no globo 3D com raycast picking `< 0,2 ms` e `HistoricalEraBadge` bilíngue.
+- [ ] 2 novas cenas curadas validadas pelo schema de cenas (`scenes-build-index.ts`) e reproduzíveis no `ScenePlayerOverlay`.
+- [ ] Testes de integridade de entidades históricas e cartografia passando.
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+
+---
+
+### D44 · TellusBridge v2: cobertura 100% dos 299 nós (biomas, Milton Santos, sismologia, eclipses), trilhas em `/study/[slug]` e selos no globo
+
+- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Prioridade:** P2 · **Área:** Produto/Conteúdo · **Tamanho:** M · **Depende de:** D31, D36, D39, D41 · **Grupos:** G-CONTEUDO, G-ESTUDOS, G-PAIS
+
+**Contexto / problema**
+A tarefa `D26` elevou a cobertura curricular do TellusBridge acima de 85% dos 299 nós do TellusLab, mas ainda há nós sem ponto de entrada no TellusPedia — especialmente tópicos que ganharão âncoras naturais no Ciclo 3 (biomas/ecologia `D31`, geografia crítica / Milton Santos `D36`, tectônica/sismologia `D39`, eclipses/relatividade `D41`, clima/CO₂ `D34`, redes/infraestrutura `D40`). Além disso, páginas de Estudos (`/study/[slug]`) ainda não recomendam trilhas do TellusLab com base nos países/eras/camadas do estudo.
+
+**O que fazer**
+1. Completar o mapeamento em `manifest.json` (mantendo compatibilidade segura com `lab-compat.ts`) para atingir **100% dos 299 nós curriculares** sem links quebrados.
+2. Adicionar na visualização de Estudo (`/study/[slug]`) um bloco discreto D14 "Aprofundar este estudo no TellusLab" (bilíngue `pt-BR`/`en`) agregando automaticamente os nós e obras relacionados aos países, eras e camadas presentes no estudo.
+3. Quando o visitante tiver um snapshot do TellusLab importado no navegador, exibir selos discretos de proficiência (`S0`–`S6`) ao lado dos vínculos em dossiês e `StudyContext`.
+
+**Critérios de aceite**
+- [ ] Cobertura do manifesto atinge **299/299 nós (100%)** com 100% dos deep-links aprovados em `parseLabLink` (`tellus-bridge.test.tsx`).
+- [ ] Estudos (`/study/[slug]`) exibem recomendações curriculares derivadas automaticamente do conteúdo do estudo em `pt-BR` e `en`.
+- [ ] Selos de progresso respeitam tokens D14 e funcionam sem snapshot importado (degradação limpa).
+
+**Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
+
+**Log**
+- 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 
 ---
 
