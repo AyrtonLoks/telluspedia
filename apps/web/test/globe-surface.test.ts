@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
+import sharp from "sharp";
 import { pickEarthTextureSet, DEFAULT_PALEO_TEXTURE } from "../src/components/globe/EarthSphere";
 import { CLOUD_RADIUS, cloudOpacityTarget } from "../src/components/globe/CloudLayer";
 import { textureSource } from "../src/lib/textures/globeTextures";
@@ -103,7 +104,7 @@ describe("D02: assets do globo", () => {
   test("KTX2: Basis com mipmaps, potência de 2 e espaço de cor correto (cor em sRGB, dados lineares)", () => {
     const tex = (f: string) => readKtx2(path.join(root, "public/textures", f));
     const color = ["earth_day_4k.ktx2", "earth_day_2k.ktx2", "earth_night_4k.ktx2", "earth_night_2k.ktx2", "earth_clouds_2k.ktx2"];
-    const paleo = [...new Set(Object.values(PALEO_ERAS))].map((e) => e.textureUrl.replace("/textures/", "").replace(/\.png$/, ".ktx2"));
+    const paleo = [...new Set(Object.values(PALEO_ERAS))].map((e) => e.textureUrl.replace("/textures/", "").replace(/\.(png|webp)$/, ".ktx2"));
     for (const f of [...color, ...paleo, "earth_surface_2k.ktx2"]) {
       const k = tex(f);
       assert.equal(k.vkFormat, 0, `${f}: formato Basis (transcodificado na GPU)`);
@@ -182,7 +183,7 @@ describe("D02: assets do globo", () => {
 
   test("fontes e licenças documentadas", () => {
     const doc = read("../../docs/DATA_SOURCES.md");
-    for (const f of ["earth_day_4k.jpg", "earth_night_4k.jpg", "earth_surface_2k.png", "earth_clouds_2k.jpg", "paleo_250ma.png"]) assert.match(doc, new RegExp(f.replace(".", "\\.")));
+    for (const f of ["earth_day_4k.jpg", "earth_night_4k.jpg", "earth_surface_2k.png", "earth_clouds_2k.jpg", "paleo_250ma.webp"]) assert.match(doc, new RegExp(f.replace(".", "\\.")));
     assert.match(doc, /Domínio público \(NASA\)/);
     assert.match(doc, /CC BY 4\.0/);
     assert.match(doc, /Scotese/);
@@ -193,30 +194,39 @@ describe("Paleogeografia (PALEOMAP PaleoDEM)", () => {
   // PALEO_ERAS tem apelidos (várias chaves para a mesma era); aqui interessam as definições.
   const eras = [...new Set(Object.values(PALEO_ERAS))];
 
-  test("cada era geológica tem seu próprio paleomapa (PNG + KTX2), sem duplicatas antigas", () => {
+  test("cada era geológica tem seu próprio paleomapa (WebP RGBA + KTX2), sem duplicatas antigas", () => {
     assert.equal(eras.length, 4);
     const urls = eras.map((e) => e.textureUrl);
     assert.equal(new Set(urls).size, urls.length, "eras diferentes, mapas diferentes");
     assert.equal(DEFAULT_PALEO_TEXTURE, PALEO_ERAS["pangea-250ma"].textureUrl);
     for (const u of urls) {
-      assert.match(u, /^\/textures\/paleo\/paleo_\d+ma\.png$/);
+      assert.match(u, /^\/textures\/paleo\/paleo_\d+ma\.webp$/);
       assert.ok(fs.existsSync(path.join(root, "public", u)), `${u} existe`);
-      assert.ok(fs.existsSync(path.join(root, "public", u.replace(".png", ".ktx2"))), `${u} tem KTX2`);
+      assert.ok(fs.existsSync(path.join(root, "public", u.replace(".webp", ".ktx2"))), `${u} tem KTX2`);
     }
     for (const old of ["paleo_pangea.png", "paleo_gondwana.png", "pangea_250ma.png", "gondwana_150ma.png", "paleo/pangea_250ma.png", "paleo/pangea_250ma.jpg", "paleo/gondwana_150ma.png"]) {
       assert.ok(!fs.existsSync(path.join(root, "public/textures", old)), `${old} removido (T21)`);
     }
   });
 
-  test("alfa = água: Panthalassa é oceano, interior do supercontinente é terra; fração de terra plausível", () => {
+  test("alfa = água: Panthalassa é oceano, interior do supercontinente é terra; fração de terra plausível", async () => {
     for (const era of eras) {
-      const s = decodePng(path.join(root, "public", era.textureUrl));
-      assert.deepEqual([s.width, s.height, s.channels], [2048, 1024, 4]);
-      assert.ok(s.at(0, -150)[3] > 200, `${era.eraId}: Pacífico/Panthalassa é água`);
-      assert.ok(s.at(0, 10)[3] < 50, `${era.eraId}: África equatorial é terra`);
+      const { data, info } = await sharp(path.join(root, "public", era.textureUrl))
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      const at = (lat: number, lng: number) => {
+        const x = Math.min(info.width - 1, Math.max(0, Math.round(((lng + 180) / 360) * info.width)));
+        const y = Math.min(info.height - 1, Math.max(0, Math.round(((90 - lat) / 180) * info.height)));
+        const i = (y * info.width + x) * info.channels;
+        return [data[i], data[i + 1], data[i + 2], data[i + 3]];
+      };
+      assert.deepEqual([info.width, info.height, info.channels], [2048, 1024, 4]);
+      assert.ok(at(0, -150)[3] > 200, `${era.eraId}: Pacífico/Panthalassa é água`);
+      assert.ok(at(0, 10)[3] < 50, `${era.eraId}: África equatorial é terra`);
       let land = 0;
-      for (let i = 3; i < s.data.length; i += 4 * 97) land += s.data[i] < 128 ? 1 : 0;
-      const frac = land / Math.ceil(s.data.length / (4 * 97));
+      for (let i = 3; i < data.length; i += 4 * 97) land += data[i] < 128 ? 1 : 0;
+      const frac = land / Math.ceil(data.length / (4 * 97));
       assert.ok(frac > 0.2 && frac < 0.5, `${era.eraId}: fração de terra ${frac.toFixed(2)}`);
     }
   });

@@ -1,6 +1,7 @@
 import type { MessageDictionary } from "./types";
 import { EN_SHELL_MESSAGES } from "./en-shell";
 import { EN_PANEL_MESSAGES } from "./en-panels";
+import { EN_PANEL_STUDY_MESSAGES } from "./en-panels-study";
 import { EN_COUNTRY_META_MESSAGES } from "./en-country-meta";
 import { EN_TELLUSLAB_MESSAGES } from "./en-telluslab";
 
@@ -11,6 +12,7 @@ import { EN_TELLUSLAB_MESSAGES } from "./en-telluslab";
 export const EN_MESSAGES = {
   ...EN_SHELL_MESSAGES,
   ...EN_PANEL_MESSAGES,
+  ...EN_PANEL_STUDY_MESSAGES,
   ...EN_COUNTRY_META_MESSAGES,
   ...EN_TELLUSLAB_MESSAGES,
 } as const satisfies MessageDictionary;

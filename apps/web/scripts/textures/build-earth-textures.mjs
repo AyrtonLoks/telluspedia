@@ -75,6 +75,8 @@ async function writeKtx2(pngOrJpgBuffer, outPath, profile) {
 async function emit(name, pipeline, { format, profile }) {
   const buf = format === "jpg"
     ? await pipeline.clone().jpeg({ quality: 88, mozjpeg: true, chromaSubsampling: "4:4:4" }).toBuffer()
+    : format === "webp"
+    ? await pipeline.clone().webp({ quality: 88, alphaQuality: 95, effort: 6 }).toBuffer()
     : await pipeline.clone().png({ compressionLevel: 9 }).toBuffer();
   const fallback = path.join(OUT, `${name}.${format}`);
   fs.mkdirSync(path.dirname(fallback), { recursive: true });
@@ -237,7 +239,7 @@ async function buildPaleo() {
         rgba[i * 4 + 3] = Math.round(wet * 255); // A = água (reflexo do Sol no shader)
       }
     }
-    await emit(`paleo/paleo_${map.ma}ma`, sharp(rgba, { raw: { width: W, height: H, channels: 4 } }), { format: "png", profile: "data_rgba" });
+    await emit(`paleo/paleo_${map.ma}ma`, sharp(rgba, { raw: { width: W, height: H, channels: 4 } }), { format: "webp", profile: "data_rgba" });
   }
   fs.rmSync(tmp, { recursive: true, force: true });
 }

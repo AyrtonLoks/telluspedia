@@ -169,13 +169,14 @@ describe("Componente 1 (Horizonte 2 Fechamento): Datasets Paleogeográficos & Ro
     assert.ok(hasSubduction, "Deve conter feição de subducção");
 
     // 2. Paleomapas equirretangulares (PALEOMAP PaleoDEM — ver test/globe-surface.test.ts)
-    for (const [eraId, file] of [["pangea-250ma", "paleo_250ma.png"], ["gondwana-150ma", "paleo_150ma.png"]] as const) {
+    for (const [eraId, file] of [["pangea-250ma", "paleo_250ma.webp"], ["gondwana-150ma", "paleo_150ma.webp"]] as const) {
       const texturePath = path.join(__dirname, "../public/textures/paleo", file);
       assert.ok(fs.existsSync(texturePath), `${file} deve existir em public/textures/paleo/`);
       const textureBuffer = fs.readFileSync(texturePath);
-      assert.ok(textureBuffer.length > 50000, "Textura PNG deve ter tamanho > 50KB");
-      // Assinatura PNG canônica: 89 50 4E 47
-      assert.deepEqual(Array.from(textureBuffer.subarray(0, 4)), [0x89, 0x50, 0x4e, 0x47]);
+      assert.ok(textureBuffer.length > 50000, "Textura WebP deve ter tamanho > 50KB");
+      // Assinatura WebP canônica: RIFF....WEBP
+      assert.equal(textureBuffer.subarray(0, 4).toString("ascii"), "RIFF");
+      assert.equal(textureBuffer.subarray(8, 12).toString("ascii"), "WEBP");
       assert.equal(PALEO_ERAS[eraId].textureUrl, `/textures/paleo/${file}`);
     }
   });

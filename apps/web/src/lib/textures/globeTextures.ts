@@ -21,9 +21,9 @@ export interface GlobeTextureSource {
   fallback: string;
 }
 
-/** Deriva o par KTX2 + fallback a partir do caminho do JPG/PNG (mesmo nome, extensão .ktx2). */
+/** Deriva o par KTX2 + fallback a partir do caminho do JPG/PNG/WebP (mesmo nome, extensão .ktx2). */
 export function textureSource(fallback: string): GlobeTextureSource {
-  return { ktx2: fallback.replace(/\.(png|jpe?g)$/i, ".ktx2"), fallback };
+  return { ktx2: fallback.replace(/\.(png|jpe?g|webp)$/i, ".ktx2"), fallback };
 }
 
 /**

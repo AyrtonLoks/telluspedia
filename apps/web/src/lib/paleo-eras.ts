@@ -94,7 +94,7 @@ export const PANGEA_DEFINITION: PaleoEraDefinition = {
   co2PpmEstimate: 2400,
   averageGlobalTempC: 28.0,
   seaLevelDiffMeters: -30,
-  textureUrl: "/textures/paleo/paleo_250ma.png",
+  textureUrl: "/textures/paleo/paleo_250ma.webp",
   platesDataUrl: "/data/paleo/pangea-plates-250ma.json",
   badgeLabel: "🌋 Paleogeografia: Pangeia (250 Ma — Permiano/Triássico)",
   events: [
@@ -187,7 +187,7 @@ export const BREAKUP_DEFINITION: PaleoEraDefinition = {
   co2PpmEstimate: 2000,
   averageGlobalTempC: 24.5,
   seaLevelDiffMeters: 15,
-  textureUrl: "/textures/paleo/paleo_200ma.png",
+  textureUrl: "/textures/paleo/paleo_200ma.webp",
   platesDataUrl: "/data/paleo/pangea-plates-250ma.json",
   badgeLabel: "🌋 Paleogeografia: Fragmentação (200 Ma — Triássico/Jurássico)",
   events: [
@@ -271,7 +271,7 @@ export const GONDWANA_DEFINITION: PaleoEraDefinition = {
   co2PpmEstimate: 1600,
   averageGlobalTempC: 22.0,
   seaLevelDiffMeters: 60,
-  textureUrl: "/textures/paleo/paleo_150ma.png",
+  textureUrl: "/textures/paleo/paleo_150ma.webp",
   platesDataUrl: "/data/paleo/pangea-plates-250ma.json",
   badgeLabel: "🌋 Paleogeografia: Gondwana & Laurásia (150 Ma — Jurássico)",
   events: [
@@ -354,7 +354,7 @@ export const KPG_DEFINITION: PaleoEraDefinition = {
   co2PpmEstimate: 1200,
   averageGlobalTempC: 20.0,
   seaLevelDiffMeters: 120,
-  textureUrl: "/textures/paleo/paleo_66ma.png",
+  textureUrl: "/textures/paleo/paleo_66ma.webp",
   platesDataUrl: "/data/paleo/pangea-plates-250ma.json",
   badgeLabel: "☄️ Paleogeografia: Cretáceo K-Pg (66 Ma — Extinção em Massa)",
   events: [
