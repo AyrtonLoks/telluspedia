@@ -240,8 +240,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA |
 | T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | DONE | antigravity | — | G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS |
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
-| T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | REVIEW | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL |
-| D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
+| T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | DONE | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL |
+| D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
 | D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
 | D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | TODO | — | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
@@ -1575,7 +1575,7 @@ A janela padrão da linha do tempo e o preset "50 Anos Padrão" ainda estão har
 
 ### T49 · LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t49-borders-lod-50m · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t49-borders-lod-50m · **Worktree:** —
 - **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL
 
 **Contexto / problema**
@@ -1597,6 +1597,7 @@ Atualmente o globo usa apenas a malha Natural Earth `1:110m` (`countries-ne-110m
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (resgate `RN07`/`RN21`, aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`8a23c38`) com grupos livres (`G-FRONTEIRAS, G-GLOBO, G-PAIS`).
 - 2026-11-24 · antigravity · REVIEW · Gerado snapshot Natural Earth `1:50m` (`apps/web/public/data/countries-ne-50m.json`, 726 KiB, 241 geometrias, 1.959 arcos, zero-padded ISO 3166-1) via `apps/web/scripts/build-borders-50m.mjs`. Criado gerenciador de LoD com histerese (`apps/web/src/lib/borders-lod.ts`, `ENTER=2.2` / `EXIT=2.5`, carregamento estritamente sob demanda via `fetch` com deduplicação e índice espacial `which-polygon` `WORLD_ATLAS_50M` medido em ~0,0045 ms/lookup) conectado a `globeStore.ts`, `CountryBorders.tsx` (com `dispose()` de geometria/material na troca) e `EarthSphere.tsx` (picking sincronizado em alta resolução + códigos numéricos 1:50m em `country-codes.ts`). Criado catálogo neutro bilíngue `pt-BR`/`en` de territórios disputados e regiões autônomas (`apps/web/src/lib/territorial-status.ts`, fonte ONU / Natural Earth / Tratado da Antártida), linhas tracejadas diferenciadas 3D (`SpecialTerritoryBorders` em `CountryBorders.tsx` + `getSpecialTerritoryBorderPositions` em `country-border-geometry.ts` com `dashed: true`, `computeLineDistances()` e `dispose()`) e nota/selo D14 em `CountryHeader.tsx`. Bônus de estabilidade SSR descoberto no E2E: adicionado reset de stores Zustand entre requisições SSR consecutivas em `applyInitialGlobeState` (`GlobeExperienceShell.tsx`), eliminando vazamento de `selectedIso` entre `/pais/[iso]` e `/` (React `#418`). Validação: `pnpm typecheck`, `pnpm lint` (0 warnings), `pnpm test` (795/795 pass, +4 testes em `test/borders-lod.test.tsx`), `pnpm build`, `test/bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB) e Chromium WebGL E2E (`borders-lod.spec.ts` + `home.spec.ts` 2/2 pass em `next start`).
+- 2026-11-24 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
@@ -2573,7 +2574,7 @@ Segunda metade da `D28` (`GG`): estender a fundação i18n da `D28a` para todos 
 
 ### D29 · Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d29-marine-debris-gyres · **Worktree:** ../telluspedia-wt/antigravity-d29
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS
 
 **Contexto / problema**
@@ -2593,6 +2594,7 @@ Previsto desde o início no `DISCOVERY.md` (`RN17`, `CA07`) e no `ROADMAP.md` or
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 (resgate `RN17`/`CA07`, aprovada pelo Ayrton).
+- 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`ce3fbdc`) com grupos livres (`G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS`).
 
 ---
 
