@@ -37,12 +37,12 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27, D21, D24, T45, T49, D29, D30, D31, D32, D33, D37, D39, D40, D41 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22, T35, T49, D31, D33, D34, D36, D43 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28, T45, T49, D32, D34, D35, D36, D37, D38, D42, D44 |
-| `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19, D25, T48, D29, D30, D31, D33, D34, D37, D39, D40, D44 |
+| `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19, D25, T47, T48, D29, D30, D31, D33, D34, D37, D39, D40, D44 |
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24, T41, T36, T43, T44, T45, T47, D29, D30, D31, D32, D38, D39, D40 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24, T35, T45, D41 |
 | `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41, T44, T46, D33, D34, D36, D37 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26, T35, T45, T48, D36, D38, D43 |
-| `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34, T43, D30 |
+| `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34, T43, T47, D30 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19, T35, T42, T43, T44, T45, T46, T47 |
 | `G-CONTEUDO` | `src/data/scenes/*`, `tellus-bridge/contract/manifest.json`, dossiês (`/dossies/*`), ingestão de conteúdo enciclopédico | D24, D26, T35, T48, D31, D32, D35, D36, D38, D42, D43, D44 |
 
@@ -237,8 +237,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | DONE | antigravity | — | G-OBS, G-PIPELINE, G-INFRA |
 | T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | DONE | antigravity | — | G-INFRA, G-SHELL, G-OBS |
 | T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | DONE | antigravity | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA, G-OBS, G-TIMELINE |
-| T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | REVIEW | antigravity | — | G-SHELL, G-INFRA |
-| T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | TODO | — | — | G-OBS, G-INFRA |
+| T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA |
+| T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | IN_PROGRESS | antigravity | — | G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS |
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | TODO | — | — | G-FRONTEIRAS, G-GLOBO, G-PAIS |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
@@ -1488,7 +1488,7 @@ Quatro arquivos centrais encostaram no teto rígido de 600 linhas do `code-hygie
 
 ### T46 · PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t46-pwa-service-worker · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t46-pwa-service-worker · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Infra/UX · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA
 
 **Contexto / problema**
@@ -1510,13 +1510,14 @@ A tarefa `T33` adicionou `manifest.ts` e ícones, mas o aplicativo ainda não po
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`d6b7b08`) com grupos livres (`G-SHELL, G-INFRA`).
 - 2026-11-24 · antigravity · REVIEW · Implementado Service Worker versionado `apps/web/public/sw.js` (`telluspedia-static-v1` + `telluspedia-pages-v1`) com precache da casca (`/`), manifesto, ícone, `countries-ne-110m.json`, `countries-worldbank-indicators.json` e `worldbank-timeseries.json`, limpeza automática de caches `telluspedia-*` obsoletos na ativação, `cache-first` para `/_next/static/*`, `/data/*.json`, `/flags/*`, `/observatory/gibs/*` e texturas 2K/1K/paleo (excluindo `_4k.`), `network-first` com fallback controlado (página exata → `/` → HTML bilíngue 503 sem cachear `/studies` nem `/study/*`) e bypass estrito para non-GET, cross-origin, `/sw.js`, `/basis/*`, `/api/*` e `/dev/*`. Adicionada política tipada e registro seguro apenas em produção (`NODE_ENV === "production"` + `isSecureContext`) em `src/lib/pwa/sw-policy.ts`, cabeçalhos CSP/no-cache dedicados para `/sw.js` em `security-headers.mjs` + `next.config.mjs` (preservando os índices de `/:path*` e `/basis/ktx2-worker.js`), indicador discreto D14 bilíngue `pt-BR`/`en` em `src/components/pwa/PwaLifecycle.tsx` (adicionado a `layout.tsx`, `en-shell.ts`, `MIGRATED` em `test/design-system.test.tsx` e `tw-merge-table.ts`), testes unitários de runtime real do SW em `test/pwa-offline.test.tsx` e teste E2E Chromium offline em `test/e2e/pwa-offline.spec.ts`. Validação: `pnpm typecheck`, `pnpm lint` (0 warnings), `pnpm test` (787/787 pass), `pnpm build`, `test/bundle-budget.test.ts` (6/6 pass) e Playwright em `next start` (`pwa-offline.spec.ts` 2/2 pass em `desktop-1366` e `desktop-1920`, além de `home.spec.ts` e `i18n-and-hub.spec.ts` verdes com SW ativo).
+- 2026-11-24 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
 ### T47 · Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P2 · **Área:** Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-OBS, G-INFRA
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t47-structured-observability · **Worktree:** ../telluspedia-wt/antigravity-t47
+- **Prioridade:** P2 · **Área:** Infra · **Tamanho:** P · **Depende de:** — · **Grupos:** G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS
 
 **Contexto / problema**
 Os logs das rotas `/api/observatory/*`, `/api/weather` e `/api/studies` usam `console.warn`/`console.error` com formatos heterogêneos, e `/api/health` hoje reporta apenas conectividade básica de banco/serviço sem visibilidade do estado dos provedores externos (`live` / `stale` / `fallback`) nem latências médias ou taxa de acerto de cache.
@@ -1535,6 +1536,7 @@ Os logs das rotas `/api/observatory/*`, `/api/weather` e `/api/studies` usam `co
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`77a92ac`) com grupos livres (`G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS`).
 
 ---
 
