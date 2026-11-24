@@ -233,13 +233,13 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | DONE | antigravity | D27a | G-OBS, G-GLOBO |
 | D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | DONE | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
 | D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | DONE | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
-| T42 | Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs) | Infra/Docs | P1 | P | TODO | — | — | G-INFRA |
+| T42 | Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs) | Infra/Docs | P1 | P | IN_PROGRESS | antigravity | — | G-INFRA |
 | T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | TODO | — | — | G-OBS, G-PIPELINE, G-INFRA |
 | T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | TODO | — | — | G-INFRA, G-SHELL, G-OBS |
 | T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | TODO | — | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA |
 | T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
 | T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | TODO | — | — | G-OBS, G-INFRA |
-| T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | REVIEW | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
+| T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | TODO | — | — | G-FRONTEIRAS, G-GLOBO, G-PAIS |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
@@ -1372,7 +1372,7 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 
 ### T42 · Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t42-configs-cleanup · **Worktree:** ../telluspedia-wt/antigravity-t42
 - **Prioridade:** P1 · **Área:** Infra/Docs · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -1394,6 +1394,7 @@ Na auditoria pós-Ciclo 2 foram identificados 4 débitos leves de manutenção: 
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-23 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`3424192`) com grupo `G-INFRA` livre.
 
 ---
 
@@ -1526,7 +1527,7 @@ Os logs das rotas `/api/observatory/*`, `/api/weather` e `/api/studies` usam `co
 
 ### T48 · Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t48-dynamic-current-year · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t48-dynamic-current-year · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Produto/Dados · **Tamanho:** P · **Depende de:** — · **Grupos:** G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS
 
 **Contexto / problema**
@@ -1551,6 +1552,7 @@ A janela padrão da linha do tempo e o preset "50 Anos Padrão" ainda estão har
 - 2026-11-23 · antigravity · TODO · Tarefa criada após solicitação do Ayrton na auditoria do Ciclo 3.
 - 2026-11-23 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`dd79682`) com todos os grupos livres (`G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS`).
 - 2026-11-23 · antigravity · REVIEW · Implementação entregue no commit `c7bc450`: criada fonte única `src/lib/timeline/current-year.ts` (`CURRENT_YEAR` via ano UTC com piso 2026, `DEFAULT_TIMELINE_START_YEAR = CURRENT_YEAR - 50`, `DEFAULT_TIMELINE_END_YEAR = CURRENT_YEAR`, `TIMELINE_INPUT_MAX_YEAR = max(CURRENT_YEAR + 10, 2030)`) conectada a `timelineStore.ts`, `actions.ts`, `PresetSelector.tsx`, `TimelineBar.tsx`, `historical-eras.ts`, `study-schema.ts`, `cosmos-validation.ts`, `view-url.ts`, `search.ts` (`year:<CURRENT_YEAR>`), `SearchPalette.tsx` e `MilestonePin.tsx` (agora com `useI18n()` para traduzir títulos/resumos/botões de marcos). Adicionados 7 marcos históricos curados 2022–2026 em `src/data/scenes/milestones.json` (`glo-2022-ukr`, `glo-2022-artemis`, `glo-2023-who`, `glo-2023-chandrayaan`, `glo-2024-brics`, `glo-2025-cop30`, `glo-2026-milton`) com URLs de fonte primária em `source-urls.ts` (`ISRO`, `UNFCCC`, `ONU`, `NASA`, `OMS`, `Banco Mundial`, `UNESCO`) e traduções `en` em `en-country-meta.ts` / `en-panels.ts`. Corrigido também bug no `TimelineAxis.tsx` em que eventos ocorridos após 01/jan no último ano da janela (`endYear`, ex.: `2026-05-03` = `2026.33`) eram filtrados fora por `p.value <= view.end`. **Captura antes/depois (§1.5):** antes, a timeline abria fixa em `1974–2024` (vazia após 2021); depois, abre em `1976–2026` (desktop e mobile-375), com scrubber em `2026` e novos clusters/marcos `2021–2022 (2)`, `2022–2024 (4)` e `2025–2026 (2)` sem sobreposição nem violação de contraste AA nos 6 breakpoints (`375`, `768`, `1366`, `1680`, `1920`, `2560 px`). **Validação:** `pnpm typecheck` (0 erros), `pnpm lint` (0 avisos), `pnpm test` (762/763 pass, 0 fail, 1 skip; +3 testes em `test/timeline-current-year.test.tsx`), `pnpm build` + `bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB), checagem ao vivo no Chromium WebGL (`T48_LIVE_OK`: `1976–2026` + marcos de 2025/2026 em `PT` e `EN`, 0 erros) e Playwright E2E (6/6 `responsive.spec.ts` com snapshots atualizados + `home`, `celestial-labels`, `keyboard-access` e `explore-search` em `desktop-1366` aprovados; único timeout transitório sob carga de host ~8 em `explore-search:30` durante segunda aba simultânea). Aguarda aceite do Ayrton.
+- 2026-11-23 · ayrton · DONE · Aprovada pelo Ayrton.
 
 ---
 
