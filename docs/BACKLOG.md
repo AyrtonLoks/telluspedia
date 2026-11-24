@@ -233,7 +233,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D27b | Correntes Oceânicas Superficiais (OSCAR / Open-Meteo Marine + seletor Ventos ↔ Correntes no motor GPU) | 3D/Dados | P2 | M | DONE | antigravity | D27a | G-OBS, G-GLOBO |
 | D28a | Fundação i18n (`pt-BR`/`en`, cookie+localStorage, `Intl`, `Intl.DisplayNames`), seletor de idioma e Shell principal | Produto | P2 | G | DONE | antigravity | — | G-SHELL, G-TIMELINE, G-GLOBO, G-PAIS |
 | D28b | Tradução dos painéis analíticos (Inspector, Observatório, Cosmos, Comparador, Reader/Citações, Estudos e metadados SSR) | Produto | P2 | G | DONE | antigravity | D28a | G-PAIS, G-OBS, G-COSMOS, G-ESTUDOS |
-| T42 | Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs) | Infra/Docs | P1 | P | IN_PROGRESS | antigravity | — | G-INFRA |
+| T42 | Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs) | Infra/Docs | P1 | P | REVIEW | antigravity | — | G-INFRA |
 | T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | TODO | — | — | G-OBS, G-PIPELINE, G-INFRA |
 | T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | TODO | — | — | G-INFRA, G-SHELL, G-OBS |
 | T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | TODO | — | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA |
@@ -1372,7 +1372,7 @@ O globo 3D roda sempre com a mesma densidade de partículas/estrelas/texturas (2
 
 ### T42 · Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t42-configs-cleanup · **Worktree:** ../telluspedia-wt/antigravity-t42
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t42-configs-cleanup · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Infra/Docs · **Tamanho:** P · **Depende de:** — · **Grupos:** G-INFRA
 
 **Contexto / problema**
@@ -1385,16 +1385,17 @@ Na auditoria pós-Ciclo 2 foram identificados 4 débitos leves de manutenção: 
 4. Sincronizar `docs/ROADMAP.md` e `docs/DATA_SOURCES.md` refletindo o fechamento dos Ciclos 1 e 2 e o plano do Ciclo 3.
 
 **Critérios de aceite**
-- [ ] `framer-motion` ausente de `apps/web/package.json` e 0 regressões em testes/build.
-- [ ] `pnpm lint` executa sem aviso de depreciação de `next lint` e com 0 erros/avisos.
-- [ ] `pnpm db:generate` executa sem aviso de `package.json#prisma` e `pnpm db:seed` continua idempotente.
-- [ ] `docs/ROADMAP.md` e `docs/DATA_SOURCES.md` sincronizados com o estado real em `origin/master`.
+- [x] `framer-motion` ausente de `apps/web/package.json` e 0 regressões em testes/build.
+- [x] `pnpm lint` executa sem aviso de depreciação de `next lint` e com 0 erros/avisos.
+- [x] `pnpm db:generate` executa sem aviso de `package.json#prisma` e `pnpm db:seed` continua idempotente.
+- [x] `docs/ROADMAP.md` e `docs/DATA_SOURCES.md` sincronizados com o estado real em `origin/master`.
 
 **Como verificar**: `pnpm db:generate && pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-23 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`3424192`) com grupo `G-INFRA` livre.
+- 2026-11-23 · antigravity · REVIEW · Implementação entregue no commit `916a016`: (1) `framer-motion` removido de `apps/web/package.json` e `pnpm-lock.yaml`; (2) `apps/web/.eslintrc.json` substituído por `apps/web/eslint.config.mjs` (ESLint 9 flat config usando `FlatCompat` via `eslint-config-next`, sem adicionar dependências) e script `"lint": "eslint ."` + exports nomeados em `next.config.mjs`/`postcss.config.mjs`, eliminando o aviso de depreciação de `next lint`; (3) `package.json#prisma` migrado para `apps/web/prisma.config.ts` (`defineConfig` com `schema`, `migrations.path`, `migrations.seed` e carga opcional de `.env` local via `process.loadEnvFile`), eliminando o aviso de depreciação do Prisma 7; (4) `docs/ROADMAP.md` e `docs/DATA_SOURCES.md` sincronizados com a conclusão dos Ciclos 1 e 2 (`D27a/b`, `D28a/b`, `T39`, `T41`, `T48`) e o plano do Ciclo 3. **Validação:** `pnpm db:generate` ok (0 avisos), `pnpm typecheck` ok (0 erros), `pnpm lint` ok (0 erros/avisos), `pnpm test` ok (762/763 pass, 0 falhas, 1 skip; `firms-layer`, `prisma-schema` e `code-hygiene` 20/20), `pnpm build` ok (`✓ Compiled successfully`, 27/27 estáticas) e `bundle-budget.test.ts` (6/6 pass, `/` < 160 KiB). Aguarda aceite do Ayrton.
 
 ---
 
