@@ -236,8 +236,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T42 | Limpeza técnica e preparação de configs (remover `framer-motion`, ESLint flat config, `prisma.config.ts`, sync docs) | Infra/Docs | P1 | P | DONE | antigravity | — | G-INFRA |
 | T43 | Rate-limiting unificado (Redis + fallback) nas 12 rotas `/api/observatory/*` e `/api/weather` + guarda no proxy GIBS | Segurança | P1 | M | DONE | antigravity | — | G-OBS, G-PIPELINE, G-INFRA |
 | T44 | Cobertura E2E do Ciclo 2 (Coroplético, `/studies`, GIBS, Ventos/Correntes, `PT ↔ EN` + reload sem hidratação e `/telluslab`) | Qualidade | P1 | M | DONE | antigravity | — | G-INFRA, G-SHELL, G-OBS |
-| T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | REVIEW | antigravity | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA, G-OBS, G-TIMELINE |
-| T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
+| T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | DONE | antigravity | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA, G-OBS, G-TIMELINE |
+| T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | IN_PROGRESS | antigravity | — | G-SHELL, G-INFRA |
 | T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | TODO | — | — | G-OBS, G-INFRA |
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | TODO | — | — | G-FRONTEIRAS, G-GLOBO, G-PAIS |
@@ -1461,7 +1461,7 @@ Os 5 arquivos E2E em `apps/web/test/e2e/` (`home`, `explore-search`, `keyboard-a
 
 ### T45 · Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/t45-modularization-texture-budget · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/t45-modularization-texture-budget · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Perf/Qualidade · **Tamanho:** M · **Depende de:** — · **Grupos:** G-COSMOS, G-GLOBO, G-PAIS, G-INFRA, G-OBS, G-TIMELINE
 
 **Contexto / problema**
@@ -1482,12 +1482,13 @@ Quatro arquivos centrais encostaram no teto rígido de 600 linhas do `code-hygie
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`36988bc`) com grupos livres (`G-COSMOS, G-GLOBO, G-PAIS, G-INFRA`).
 - 2026-11-24 · antigravity · REVIEW · Modularizados os 6 arquivos acima de 520 linhas em `apps/web/src/`: (1) `CosmicInspectorHUD.tsx` (592 → 403 linhas) extraindo `CosmicLayersMenu.tsx` e `CosmicHalleyCard.tsx`; (2) `en-panels.ts` (581 → 326 linhas) extraindo `en-panels-study.ts` (Cosmos, Comparador, Reader/Analítico, Citações e Estudos); (3) `EarthSphere.tsx` (544 → 432 linhas) extraindo `lib/textures/proceduralPangea.ts` e `lib/textures/earthTextureSet.ts` (re-exportando `pickEarthTextureSet` e `DEFAULT_PALEO_TEXTURE`); (4) `ComparisonCharts.tsx` (541 → 424 linhas) extraindo `ComparisonLatestChart.tsx`; (5) `observatoryStore.ts` (535 → 399 linhas) extraindo `observatory-store-helpers.ts`; (6) `TimelineAxis.tsx` (535 → 399 linhas) extraindo `GeologicalTimelineAxis.tsx`. Os 4 novos componentes UI foram adicionados a `MIGRATED` em `test/design-system.test.tsx`; o maior arquivo em `apps/web/src/` agora tem 519 linhas (folga segura de 81 linhas abaixo do teto T36). Auditoria de `apps/web/public/textures/`: todos os 51 assets validados (0 órfãos); `earth_surface_2k.png` mantido lossless por codificar canais lineares (elevação/água/batimetria) e `saturn_ring.png` (9 KB); os 4 paleomapas fallback (`paleo_{66,150,200,250}ma.png`, 5,86 MB) foram convertidos para WebP RGBA (`quality: 88, alphaQuality: 95`, 489 KB totais — redução de 91–93% preservando o canal alfa de água verificado pixel a pixel via `sharp` em `globe-surface.test.ts`), baixando `public/textures/` de **28 MB → 23 MB** (atualizados `globeTextures.ts`, `paleo-eras.ts`, `build-earth-textures.mjs`, `docs/DATA_SOURCES.md` e testes). Criado guarda automatizado `apps/web/test/texture-budget.test.ts` (0 órfãos, 0 ausentes, teto total ≤ 24 MiB, teto paleo ≤ 300 KiB, allow-list de PNGs e teto ≤ 520 linhas em `src/`). Validação: `pnpm typecheck`, `pnpm lint` (`eslint .`, 0 warnings), `pnpm test` (782/782 pass), `pnpm build` e `test/bundle-budget.test.ts` (6/6 pass).
+- 2026-11-24 · ayrton · DONE · Aprovado pelo Ayrton (registrado pelo antigravity a pedido).
 
 ---
 
 ### T46 · PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t46-pwa-service-worker · **Worktree:** ../telluspedia-wt/antigravity-t46
 - **Prioridade:** P2 · **Área:** Infra/UX · **Tamanho:** M · **Depende de:** — · **Grupos:** G-SHELL, G-INFRA
 
 **Contexto / problema**
@@ -1507,6 +1508,7 @@ A tarefa `T33` adicionou `manifest.ts` e ícones, mas o aplicativo ainda não po
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`d6b7b08`) com grupos livres (`G-SHELL, G-INFRA`).
 
 ---
 
