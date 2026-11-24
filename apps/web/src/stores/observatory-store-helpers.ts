@@ -32,6 +32,12 @@ import type {
   MarineDebrisWindage,
   OceanGyreId,
 } from "@/lib/marine-debris-types";
+import type {
+  FireSourceProvider,
+  InpeBdQueimadasPayload,
+  ProdesBiomeId,
+  TerraBrasilisPayload,
+} from "@/lib/inpe-types";
 
 export interface FirmsWindow {
   days: FirmsWindowDays;
@@ -49,6 +55,7 @@ export const ALL_OBSERVATORY_LAYERS: readonly ObservatoryLayer[] = [
   "NASA_GIBS",
   "GLOBAL_WINDS",
   "MARINE_DEBRIS",
+  "INPE_DEFORESTATION",
 ];
 
 export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
@@ -61,6 +68,7 @@ export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
   NASA_GIBS: 0.75,
   GLOBAL_WINDS: 0.85,
   MARINE_DEBRIS: 0.9,
+  INPE_DEFORESTATION: 0.9,
 };
 
 export function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
@@ -160,6 +168,13 @@ export interface ObservatoryState {
   setMarineDebrisPickMode: (enabled: boolean) => void;
   setMarineDebrisReleasePoint: (point: DebrisReleasePoint | null) => void;
   setSelectedGyreId: (gyreId: OceanGyreId | null) => void;
+  /** Dados Ambientais & INPE (D30): alternância FIRMS/BDQueimadas + TerraBrasilis DETER/PRODES. */
+  fireSource: FireSourceProvider;
+  inpeFires: InpeBdQueimadasPayload | null;
+  inpeDeforestation: TerraBrasilisPayload | null;
+  prodesBiome: ProdesBiomeId;
+  setFireSource: (source: FireSourceProvider) => void;
+  setProdesBiome: (biome: ProdesBiomeId) => void;
 
   isLoading: Record<ObservatoryLayer, boolean>;
   hasLoaded: Record<ObservatoryLayer, boolean>;

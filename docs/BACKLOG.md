@@ -242,7 +242,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | DONE | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
-| D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
+| D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | REVIEW | antigravity | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
 | D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
 | D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | TODO | — | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
@@ -2602,7 +2602,7 @@ Previsto desde o início no `DISCOVERY.md` (`RN17`, `CA07`) e no `ROADMAP.md` or
 
 ### D30 · Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d30-inpe-environmental · **Worktree:** ../telluspedia-wt/antigravity-d30
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d30-inpe-environmental · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS
 
 **Contexto / problema**
@@ -2615,15 +2615,16 @@ O `DATA_SOURCES.md` e o `ROADMAP.md` original previam integração direta com o 
 2. Exibir citação acadêmica (INPE / MCTI) e data de referência explícita (RN02), tradução completa `pt-BR`/`en` e persistência em Estudos.
 
 **Critérios de aceite**
-- [ ] Dados do INPE BDQueimadas e TerraBrasilis (DETER/PRODES) exibidos com procedência T05 clara, link direto ao portal oficial do INPE e fallback honesto quando o provedor oscilar.
-- [ ] Agregação por bioma brasileiro e série histórica de desmatamento sem valores sintéticos (`T03`).
-- [ ] Cobertura de testes unitários para parsers/cache/fallback e `bundle-budget.test.ts` `< 160 KiB`.
+- [x] Dados do INPE BDQueimadas e TerraBrasilis (DETER/PRODES) exibidos com procedência T05 clara, link direto ao portal oficial do INPE e fallback honesto quando o provedor oscilar.
+- [x] Agregação por bioma brasileiro e série histórica de desmatamento sem valores sintéticos (`T03`).
+- [x] Cobertura de testes unitários para parsers/cache/fallback e `bundle-budget.test.ts` `< 160 KiB`.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 (resgate `RN17`/`DATA_SOURCES.md`, aprovada pelo Ayrton).
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`fd2436d`) com grupos livres (`G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS`).
+- 2026-11-24 · antigravity · REVIEW · Implementada integração oficial com dados ambientais do INPE (`RN17` / `T03` / `T05`): (1) tipos leves em `src/lib/inpe-types.ts`, séries históricas anuais oficiais PRODES (2015–2025, Amazônia Legal e Cerrado) + parsers reais para CSV diário do `dataserver-coids.inpe.br` (agregando os 6 biomas brasileiros oficiais: Amazônia, Cerrado, Mata Atlântica, Caatinga, Pantanal e Pampa) e GeoJSON WFS do `terrabrasilis.dpi.inpe.br` (DETER) em `src/lib/inpe-data.ts`; (2) fontes server-side SWR T05 em `src/lib/inpe-sources.ts` com fallback estritamente honesto (zero focos/alertas sintéticos) e rotas rate-limited (`T43`) + telemetria (`T47`) em `/api/observatory/inpe-fires` e `/api/observatory/inpe-deforestation` (`rate-limit.ts`, `provider-metrics.ts`); (3) seletor **NASA FIRMS | INPE BDQueimadas** com tabela interativa dos 6 biomas em `FirmsLayerControls.tsx`, nova camada `INPE_DEFORESTATION` com contorno espacial + alertas DETER 3D em `InpeDeforestationLayer.tsx` (`React.lazy`, `dispose()`, `RN22`) e painel analítico D14 com gráfico oficial PRODES 2015–2025, status DETER honesto e citação INPE/MCTI em `InpeDeforestationControls.tsx` (`next/dynamic`, adicionado a `MIGRATED` em `design-system.test.tsx`); (4) tradução completa `pt-BR`/`en` (`en-panels.ts`), busca `⌘K` (`search.ts`), serialização/supressão anacrônica em Estudos (`study-schema.ts`) e atualização de `docs/DATA_SOURCES.md`. Validação: `pnpm build`, `pnpm typecheck`, `pnpm lint` (0 warnings), `pnpm test` (805/805 pass, +4 testes em `test/inpe-environmental.test.tsx`), `test/bundle-budget.test.ts` (6/6 pass, `/` `< 160 KiB`) e Chromium WebGL E2E (`test/e2e/inpe-environmental.spec.ts` 2/2 pass em `desktop-1366` e `desktop-1920`, PT e EN, 0 erros).
 
 ---
 

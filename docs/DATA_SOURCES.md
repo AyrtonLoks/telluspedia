@@ -46,11 +46,11 @@ A seção 4 é o **mapeamento de discovery**: lista as fontes avaliadas para cad
 | Space-Track.org, JPL Horizons, Minor Planet Center, SPICE | Planejado | Sem integração |
 | NOAA GFS (ventos globais, via Open-Meteo) | **Em uso** | `/api/observatory/winds`, superfície 10 m e jato 250 hPa (D27a) |
 | Open-Meteo Marine / Copernicus–NOAA (correntes oceânicas) | **Em uso** | `/api/observatory/currents`, superfície oceânica com máscara costeira (D27b) |
-| NOAA Marine Debris, Global Drifter Program, CYGNSS | Planejado (Ciclo 3) | `D29` — Lixo marítimo, giros oceânicos e advecção Lagrangiana acoplada a D27 |
+| NOAA Marine Debris, Global Drifter Program, Eriksen–Lebreton | **Em uso** | Camada `MARINE_DEBRIS` (`D29`): 5 giros observados + advecção Lagrangiana acoplada a D27 |
 | Global Fishing Watch, MarineCadastre, OpenSeaMap | Planejado | O tráfego marítimo usa AIS Stream e uma malha fixa de rotas |
 | Wikipedia REST API, GDELT, Crossref/OpenAlex/Citoid | Planejado (Ciclo 3) | `D38` (GDELT) e `D35` (expansão editorial curada) |
 | OpenHistoricalMap, Clio-Infra/Euratlas, CShapes 2.0, PeriodO | Planejado (Ciclo 3) | Fronteiras históricas próprias (`1870–1969`), expansão `1500`/`1815` em `D43` |
-| INPE BDQueimadas & TerraBrasilis (DETER/PRODES) | Planejado (Ciclo 3) | `D30` — Queimadas por bioma e desmatamento Amazônia/Cerrado |
+| INPE BDQueimadas & TerraBrasilis (DETER/PRODES) | **Em uso** | `/api/observatory/inpe-fires` (biomas BR) e `/api/observatory/inpe-deforestation` (PRODES 2015–2025 + DETER WFS, `D30`) |
 | WWF / RESOLVE Ecoregions, IBGE Biomas, GBIF, IUCN Red List | Planejado (Ciclo 3) | `D31` (Mapa dos Biomas) e `D32` (Mapa de Espécies Animais) |
 | USGS Earthquake Hazards, PB2002, TeleGeography, Open-Meteo Air Quality | Planejado (Ciclo 3) | `D39` (Sismologia/tectônica) e `D40` (Cabos submarinos e PM2.5/AQI) |
 

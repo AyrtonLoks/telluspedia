@@ -112,6 +112,7 @@ const MIGRATED = [
   "src/components/observatory/GibsLayerControls.tsx",
   "src/components/observatory/WindLayerControls.tsx",
   "src/components/observatory/MarineDebrisControls.tsx",
+  "src/components/observatory/InpeDeforestationControls.tsx",
   "src/components/hud/InspectorHUD.tsx",
   "src/components/hud/CountryHeader.tsx",
   "src/components/hud/CountryMetricsGrid.tsx",

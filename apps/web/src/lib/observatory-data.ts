@@ -17,7 +17,8 @@ export type ObservatoryLayer =
   | ObservatoryLayerId
   | "NASA_GIBS"
   | "GLOBAL_WINDS"
-  | "MARINE_DEBRIS";
+  | "MARINE_DEBRIS"
+  | "INPE_DEFORESTATION";
 
 export interface FirmsHotspot {
   id: string;

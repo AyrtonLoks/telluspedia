@@ -30,6 +30,10 @@ const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywo
     title: "Lixo marítimo e giros oceânicos",
     keywords: "microplásticos lixo marítimo giros oceânicos NOAA Ekman Pacífico Atlântico Índico",
   },
+  INPE_DEFORESTATION: {
+    title: "Desmatamento INPE (DETER / PRODES)",
+    keywords: "INPE TerraBrasilis PRODES DETER desmatamento Amazônia Cerrado BDQueimadas biomas Brasil",
+  },
 };
 
 const presets: Record<TimelinePreset, string> = {

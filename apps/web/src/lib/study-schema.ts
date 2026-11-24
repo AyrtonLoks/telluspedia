@@ -45,6 +45,7 @@ const observatoryLayer = z.enum([
   "NASA_GIBS",
   "GLOBAL_WINDS",
   "MARINE_DEBRIS",
+  "INPE_DEFORESTATION",
 ] satisfies ObservatoryLayer[]);
 const gibsProduct = z.enum(GIBS_PRODUCT_IDS);
 const gibsMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);

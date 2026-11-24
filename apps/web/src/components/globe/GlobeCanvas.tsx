@@ -62,6 +62,10 @@ const WindParticlesLayer = lazy(() =>
 const MarineDebrisLayer = lazy(() =>
   import("./MarineDebrisLayer").then((m) => ({ default: m.MarineDebrisLayer }))
 );
+// Monitoramento ambiental INPE TerraBrasilis DETER/PRODES (D30) só baixa quando a camada é ligada.
+const InpeDeforestationLayer = lazy(() =>
+  import("./InpeDeforestationLayer").then((m) => ({ default: m.InpeDeforestationLayer }))
+);
 
 /**
  * Primary directional sunlight synchronized with EarthSphere and OrbitingMoon via
@@ -288,6 +292,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {isContemporary && activeObservatoryLayers.includes("MARINE_DEBRIS") && (
               <Suspense fallback={null}>
                 <MarineDebrisLayer />
+              </Suspense>
+            )}
+            {isContemporary && activeObservatoryLayers.includes("INPE_DEFORESTATION") && (
+              <Suspense fallback={null}>
+                <InpeDeforestationLayer />
               </Suspense>
             )}
           </EarthOrientationGroup>

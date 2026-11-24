@@ -18,6 +18,7 @@ import {
   Satellite,
   Wind,
   Waves,
+  Trees,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
@@ -54,6 +55,14 @@ const WindLayerControls = dynamic(() => import("./WindLayerControls").then((m) =
 // Controles de Lixo Marítimo & Giros Oceânicos (D29) só baixam quando a camada é aberta.
 const MarineDebrisControls = dynamic(
   () => import("./MarineDebrisControls").then((m) => m.MarineDebrisControls),
+  {
+    ssr: false,
+    loading: () => <div className="h-24" aria-hidden="true" />,
+  }
+);
+// Controles INPE TerraBrasilis DETER/PRODES (D30) só baixam quando a camada é aberta.
+const InpeDeforestationControls = dynamic(
+  () => import("./InpeDeforestationControls").then((m) => m.InpeDeforestationControls),
   {
     ssr: false,
     loading: () => <div className="h-24" aria-hidden="true" />,
@@ -177,6 +186,25 @@ const LAYER_OPTIONS: LayerOption[] = [
       s.marineDebrisReleasePoint
         ? t("obs.badge.driftActive", "5 giros · Deriva ativa")
         : t("obs.badge.gyres5", "5 giros · Ekman"),
+  },
+  {
+    id: "INPE_DEFORESTATION",
+    name: "Desmatamento INPE (DETER / PRODES)",
+    source: "INPE / MCTI · TerraBrasilis",
+    description: "Série anual oficial PRODES (2015–2025) e alertas DETER na Amazônia Legal e no Cerrado.",
+    icon: Trees,
+    tone: "layer-fires",
+    badgeText: (s, locale, t) => {
+      const biomeLabel =
+        s.prodesBiome === "cerrado"
+          ? "Cerrado"
+          : t("obs.inpe.amazonShort", "Amazônia");
+      const alertsCount = s.inpeDeforestation?.deterAlerts.length ?? 0;
+      if (s.inpeDeforestation?.deterAvailable && alertsCount > 0) {
+        return `${biomeLabel} · ${formatNumber(alertsCount, locale)} ${t("obs.inpe.alertsShort", "alertas")}`;
+      }
+      return `${biomeLabel} · PRODES 2025`;
+    },
   },
 ];
 
@@ -376,6 +404,7 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                   {layer.id === "NASA_GIBS" && <GibsLayerControls />}
                   {layer.id === "GLOBAL_WINDS" && <WindLayerControls />}
                   {layer.id === "MARINE_DEBRIS" && <MarineDebrisControls />}
+                  {layer.id === "INPE_DEFORESTATION" && <InpeDeforestationControls />}
                   {layer.id === "MARITIME_ROUTES" && isContemporary && <MaritimeLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>

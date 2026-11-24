@@ -95,6 +95,8 @@ export const RATE_LIMIT_BUCKETS = {
   "observatory:ais": observatoryReadBucket("ais"),
   "observatory:winds": observatoryReadBucket("winds"),
   "observatory:currents": observatoryReadBucket("currents"),
+  "observatory:inpe-fires": observatoryReadBucket("inpe-fires"),
+  "observatory:inpe-deforestation": observatoryReadBucket("inpe-deforestation"),
   "observatory:cosmos": {
     name: "observatory:cosmos",
     limit: 600,

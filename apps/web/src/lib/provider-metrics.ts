@@ -74,6 +74,8 @@ const KNOWN_PROVIDER_DEFAULTS: ReadonlyArray<{ id: string; provider: string }> =
   { id: "eonet", provider: "NASA EONET v3" },
   { id: "firms", provider: "NASA FIRMS" },
   { id: "gibs", provider: "NASA GIBS" },
+  { id: "inpe-deforestation", provider: "INPE TerraBrasilis (DETER + PRODES)" },
+  { id: "inpe-fires", provider: "INPE BDQueimadas (Programa Queimadas)" },
   { id: "iss", provider: "wheretheiss.at" },
   { id: "satellites", provider: "CelesTrak (TLE) + SGP4" },
   { id: "traffic", provider: "OpenSky Network" },

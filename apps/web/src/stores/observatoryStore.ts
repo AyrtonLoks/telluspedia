@@ -27,6 +27,12 @@ import {
   DEFAULT_DEBRIS_WINDAGE,
 } from "@/lib/marine-debris-types";
 import {
+  DEFAULT_FIRE_SOURCE,
+  DEFAULT_PRODES_BIOME,
+  type InpeBdQueimadasPayload,
+  type TerraBrasilisPayload,
+} from "@/lib/inpe-types";
+import {
   DEFAULT_FIRMS_WINDOW,
   DEFAULT_LAYER_OPACITY,
   fetchObservatoryEnvelope as fetchEnvelope,
@@ -128,6 +134,18 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   setMarineDebrisReleasePoint: (marineDebrisReleasePoint) =>
     set({ marineDebrisReleasePoint, marineDebrisPickMode: false }),
   setSelectedGyreId: (selectedGyreId) => set({ selectedGyreId }),
+  fireSource: DEFAULT_FIRE_SOURCE,
+  inpeFires: null,
+  inpeDeforestation: null,
+  prodesBiome: DEFAULT_PRODES_BIOME,
+  setFireSource: (fireSource) => {
+    if (get().fireSource === fireSource) return;
+    set({ fireSource, selectedEntity: null });
+    if (get().activeLayers.includes("NASA_FIRMS")) {
+      void get().loadLayerData("NASA_FIRMS");
+    }
+  },
+  setProdesBiome: (prodesBiome) => set({ prodesBiome }),
   loadCurrentsData: async () => {
     if (get().currentsLoading) return;
     set({ currentsLoading: true });
@@ -277,23 +295,44 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
 
     try {
       if (layerId === "NASA_FIRMS") {
-        const { days, confidence } = get().firmsWindow;
-        const body = await fetchEnvelope(
-          `/api/observatory/firms?days=${days}&confidence=${confidence}&schema=${FIRMS_SCHEMA}`
-        );
-        const hotspots = isObservatoryEnvelope(body) ? decodeFirmsColumns(body.data) : null;
-        if (isObservatoryEnvelope(body) && hotspots) {
-          const extra = body as unknown as { total?: unknown; byCountry?: unknown };
-          set({
-            firmsHotspots: hotspots,
-            firmsTotal: typeof extra.total === "number" ? extra.total : hotspots.length,
-            firmsByCountry:
-              extra.byCountry && typeof extra.byCountry === "object"
-                ? (extra.byCountry as Record<string, FirmsCountryStats>)
-                : null,
-          });
-          applyMeta("NASA_FIRMS", body.meta);
-        } else throw new Error("Resposta FIRMS inválida"); // cai nos dados locais (o estado começa vazio)
+        if (get().fireSource === "inpe") {
+          const body = await fetchEnvelope("/api/observatory/inpe-fires");
+          const data = isObservatoryEnvelope(body) ? (body.data as InpeBdQueimadasPayload) : null;
+          if (data && Array.isArray(data.hotspots) && Array.isArray(data.byBiome)) {
+            set({
+              inpeFires: data,
+              firmsHotspots: data.hotspots,
+              firmsTotal: data.total,
+              firmsByCountry: null,
+            });
+            applyMeta("NASA_FIRMS", body.meta);
+          } else throw new Error("Resposta INPE BDQueimadas inválida");
+        } else {
+          const { days, confidence } = get().firmsWindow;
+          const body = await fetchEnvelope(
+            `/api/observatory/firms?days=${days}&confidence=${confidence}&schema=${FIRMS_SCHEMA}`
+          );
+          const hotspots = isObservatoryEnvelope(body) ? decodeFirmsColumns(body.data) : null;
+          if (isObservatoryEnvelope(body) && hotspots) {
+            const extra = body as unknown as { total?: unknown; byCountry?: unknown };
+            set({
+              firmsHotspots: hotspots,
+              firmsTotal: typeof extra.total === "number" ? extra.total : hotspots.length,
+              firmsByCountry:
+                extra.byCountry && typeof extra.byCountry === "object"
+                  ? (extra.byCountry as Record<string, FirmsCountryStats>)
+                  : null,
+            });
+            applyMeta("NASA_FIRMS", body.meta);
+          } else throw new Error("Resposta FIRMS inválida"); // cai nos dados locais (o estado começa vazio)
+        }
+      } else if (layerId === "INPE_DEFORESTATION") {
+        const body = await fetchEnvelope("/api/observatory/inpe-deforestation");
+        const data = isObservatoryEnvelope(body) ? (body.data as TerraBrasilisPayload) : null;
+        if (data && data.prodes && Array.isArray(data.deterAlerts)) {
+          set({ inpeDeforestation: data });
+          applyMeta("INPE_DEFORESTATION", body.meta);
+        } else throw new Error("Resposta INPE TerraBrasilis inválida");
       } else if (layerId === "NASA_EONET") {
         const body = await fetchEnvelope("/api/observatory/eonet");
         if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
@@ -376,8 +415,12 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       const fb = await loadObservatoryFallback().catch(() => null);
       if (fb) {
         if (layerId === "NASA_FIRMS") {
-          const hotspots = filterByConfidence(fb.FALLBACK_FIRMS_HOTSPOTS, get().firmsWindow.confidence);
-          set({ firmsHotspots: hotspots, firmsTotal: hotspots.length, firmsByCountry: null });
+          if (get().fireSource === "inpe") {
+            set({ firmsHotspots: [], firmsTotal: 0, firmsByCountry: null, inpeFires: null });
+          } else {
+            const hotspots = filterByConfidence(fb.FALLBACK_FIRMS_HOTSPOTS, get().firmsWindow.confidence);
+            set({ firmsHotspots: hotspots, firmsTotal: hotspots.length, firmsByCountry: null });
+          }
         } else if (layerId === "NASA_EONET") set({ eonetEvents: fb.FALLBACK_EONET_EVENTS });
         else if (layerId === "FLIGHTS_OPENSKY") set({ aircraftFleet: fb.FALLBACK_AIRCRAFT_FLEET });
         else if (layerId === "MARITIME_ROUTES") set({ maritimeRoutes: fb.FALLBACK_MARITIME_ROUTES });
@@ -404,6 +447,10 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       if (layerId === "GLOBAL_WINDS") {
         const { buildClimatologyWindField } = await import("@/lib/winds-data");
         set({ winds: buildClimatologyWindField() });
+      }
+      if (layerId === "INPE_DEFORESTATION") {
+        const { buildTerraBrasilisPayload } = await import("@/lib/inpe-data");
+        set({ inpeDeforestation: buildTerraBrasilisPayload([], 30) });
       }
     } finally {
       set((s) => ({
