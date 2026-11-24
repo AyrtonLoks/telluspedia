@@ -40,7 +40,7 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19, D25, T47, T48, D29, D30, D31, D33, D34, D37, D39, D40, D44 |
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24, T41, T36, T43, T44, T45, T47, D29, D30, D31, D32, D38, D39, D40 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24, T35, T45, D41 |
-| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41, T44, T46, D33, D34, D36, D37 |
+| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41, T44, T46, T49, D33, D34, D36, D37 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26, T35, T45, T48, D36, D38, D43 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34, T43, T47, D30 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19, T35, T42, T43, T44, T45, T46, T47 |
@@ -240,7 +240,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | DONE | antigravity | — | G-SHELL, G-INFRA |
 | T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | DONE | antigravity | — | G-OBS, G-INFRA, G-PIPELINE, G-ESTUDOS |
 | T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | DONE | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
-| T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | IN_PROGRESS | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS |
+| T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | IN_PROGRESS | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
 | D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
@@ -1576,7 +1576,7 @@ A janela padrão da linha do tempo e o preset "50 Anos Padrão" ainda estão har
 ### T49 · LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos
 
 - **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t49-borders-lod-50m · **Worktree:** ../telluspedia-wt/antigravity-t49
-- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-FRONTEIRAS, G-GLOBO, G-PAIS
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL
 
 **Contexto / problema**
 Atualmente o globo usa apenas a malha Natural Earth `1:110m` (`countries-ne-110m.json`), mesmo em aproximações fechadas onde litorais, arquipélagos e países menores perdem definição (`RN21`), e não há sinalização visual diferenciada para territórios disputados ou regiões autônomas (`RN07`).
