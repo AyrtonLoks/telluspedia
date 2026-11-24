@@ -239,7 +239,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T45 | Modularização preventiva pré-teto T36 (`CosmicInspectorHUD`, `en-panels`, `EarthSphere`, `ComparisonCharts`) + budget de texturas | Perf/Qualidade | P2 | M | TODO | — | — | G-COSMOS, G-GLOBO, G-PAIS, G-INFRA |
 | T46 | PWA Offline-ready: Service Worker com cache versionado de casca, TopoJSON e snapshots do Banco Mundial | Infra/UX | P2 | M | TODO | — | — | G-SHELL, G-INFRA |
 | T47 | Observabilidade estruturada: logs JSON nas APIs + `/api/health` estendido com status/latência dos provedores T05 | Infra | P2 | P | TODO | — | — | G-OBS, G-INFRA |
-| T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | TODO | — | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
+| T48 | Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`) | Produto/Dados | P1 | P | IN_PROGRESS | antigravity | — | G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS |
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | TODO | — | — | G-FRONTEIRAS, G-GLOBO, G-PAIS |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
@@ -1526,7 +1526,7 @@ Os logs das rotas `/api/observatory/*`, `/api/weather` e `/api/studies` usam `co
 
 ### T48 · Janela de visualização dinâmica até o ano atual (`CURRENT_YEAR`) + marcos históricos curados 2022–2026 (`pt-BR` e `en`)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/t48-dynamic-current-year · **Worktree:** ../telluspedia-wt/antigravity-t48
 - **Prioridade:** P1 · **Área:** Produto/Dados · **Tamanho:** P · **Depende de:** — · **Grupos:** G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS
 
 **Contexto / problema**
@@ -1549,6 +1549,7 @@ A janela padrão da linha do tempo e o preset "50 Anos Padrão" ainda estão har
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada após solicitação do Ayrton na auditoria do Ciclo 3.
+- 2026-11-23 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`dd79682`) com todos os grupos livres (`G-TIMELINE, G-EPOCA, G-CONTEUDO, G-ESTUDOS`).
 
 ---
 
