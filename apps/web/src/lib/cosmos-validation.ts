@@ -1,4 +1,5 @@
 import type { CelestialBodyId } from "@/lib/astronomy-planets";
+import { CURRENT_YEAR } from "@/lib/timeline/current-year";
 import { ALL_CATEGORIES, type MilestoneCategoryType } from "@/stores/timelineStore";
 
 export const COSMOS_MIN_YEAR = -3000;
@@ -120,7 +121,7 @@ export function parseTimelineQuery(
   const startResult = parseTimelineYear(searchParams.get("startYear"), 1900, "startYear");
   if (!startResult.ok) return startResult;
 
-  const endResult = parseTimelineYear(searchParams.get("endYear"), 2026, "endYear");
+  const endResult = parseTimelineYear(searchParams.get("endYear"), CURRENT_YEAR, "endYear");
   if (!endResult.ok) return endResult;
 
   if (startResult.value > endResult.value) {

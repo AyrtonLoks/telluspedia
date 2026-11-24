@@ -15,6 +15,7 @@ import { useGlobeStore } from "@/stores/globeStore";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useSceneStore } from "@/stores/sceneStore";
+import { CURRENT_YEAR } from "@/lib/timeline/current-year";
 import { useTimelineStore, type TimelinePreset } from "@/stores/timelineStore";
 
 const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywords: string }> = {
@@ -112,7 +113,7 @@ const entries: SearchResult[] = [
   })),
   { id: "compare:", group: "command", title: "Abrir comparador", keywords: "comparar países" },
   { id: "route:/studies", group: "command", title: "Abrir Galeria de Estudos", detail: "/studies", keywords: "estudos públicos galeria forks snapshots" },
-  { id: "year:2024", group: "command", title: "Ir para 2024", keywords: "época presente ano" },
+  { id: `year:${CURRENT_YEAR}`, group: "command", title: `Ir para ${CURRENT_YEAR}`, keywords: "época presente ano hoje atual" },
 ];
 
 function normalize(value: string) {

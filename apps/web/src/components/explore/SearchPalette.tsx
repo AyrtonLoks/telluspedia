@@ -150,7 +150,9 @@ export function SearchPalette({ onClose, previousFocus }: { onClose: () => void;
                         } else if (result.group === "command") {
                           if (result.id === "compare:") displayTitle = t("search.cmd.compare", result.title);
                           else if (result.id === "route:/studies") displayTitle = t("search.cmd.studies", result.title);
-                          else if (result.id === "year:2024") displayTitle = t("search.cmd.year2024", result.title);
+                          else if (result.id.startsWith("year:")) {
+                            displayTitle = `${t("search.cmd.goToYear", "Ir para")} ${result.id.slice("year:".length)}`;
+                          }
                         }
                       }
                       return (

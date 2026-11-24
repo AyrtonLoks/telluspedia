@@ -4,6 +4,11 @@ import assert from "node:assert/strict";
 import * as THREE from "three";
 import { latLngToVector3, slerpVectors } from "../src/lib/geo-spatial";
 import { useTimelineStore } from "../src/stores/timelineStore";
+import {
+  CURRENT_YEAR,
+  DEFAULT_TIMELINE_END_YEAR,
+  DEFAULT_TIMELINE_START_YEAR,
+} from "../src/lib/timeline/current-year";
 import fs from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -155,8 +160,8 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
     applyTimelinePreset("LAST_50_YEARS");
     assert.equal(useTimelineStore.getState().geologicalMa, null);
     assert.equal(useSceneStore.getState().activeSceneId, null);
-    assert.equal(useTimelineStore.getState().startYear, 1974);
-    assert.equal(useTimelineStore.getState().endYear, 2024);
+    assert.equal(useTimelineStore.getState().startYear, DEFAULT_TIMELINE_START_YEAR);
+    assert.equal(useTimelineStore.getState().endYear, DEFAULT_TIMELINE_END_YEAR);
 
     // Preset Pangeia
     applyTimelinePreset("PANGEA_250MA");
@@ -181,7 +186,7 @@ describe("Componente 3: Interface do Usuário, Modo Geológico e Telemetria Nava
     applyTimelinePreset("21ST_CENTURY");
     assert.equal(useSceneStore.getState().activeSceneId, null);
     assert.equal(useTimelineStore.getState().startYear, 2000);
-    assert.equal(useTimelineStore.getState().endYear, 2026);
+    assert.equal(useTimelineStore.getState().endYear, CURRENT_YEAR);
   });
 
   test("5. PresetSelector renderiza opções humanas, geológicas e marítimas", () => {

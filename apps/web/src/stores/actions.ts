@@ -19,6 +19,12 @@ import { useSceneStore } from "./sceneStore";
 import { useObservatoryStore } from "./observatoryStore";
 import { useReaderStore } from "./readerStore";
 import { useStudyStore } from "./studyStore";
+import {
+  CURRENT_YEAR,
+  DEFAULT_TIMELINE_END_YEAR,
+  DEFAULT_TIMELINE_START_YEAR,
+  TWENTY_FIRST_CENTURY_START_YEAR,
+} from "@/lib/timeline/current-year";
 import { ALL_CATEGORIES, useTimelineStore, type MilestoneCategoryType, type TimelinePreset } from "./timelineStore";
 
 export function selectCountry(iso: string | null) {
@@ -43,9 +49,9 @@ export function restoreContemporaryTimeline() {
   useSceneStore.getState().closeScene({ restore: false });
   useTimelineStore.setState({
     geologicalMa: null,
-    startYear: 1974,
-    endYear: 2024,
-    selectedYear: 2024,
+    startYear: DEFAULT_TIMELINE_START_YEAR,
+    endYear: DEFAULT_TIMELINE_END_YEAR,
+    selectedYear: CURRENT_YEAR,
     selectedMilestoneId: null,
   });
 }
@@ -58,10 +64,10 @@ export function selectHistoricalRoute(id: string | null) {
 }
 
 const historicalRanges = {
-  LAST_50_YEARS: [1974, 2024],
+  LAST_50_YEARS: [DEFAULT_TIMELINE_START_YEAR, DEFAULT_TIMELINE_END_YEAR],
   COLD_WAR: [1947, 1991],
   WORLD_WARS: [1914, 1945],
-  "21ST_CENTURY": [2000, 2026],
+  "21ST_CENTURY": [TWENTY_FIRST_CENTURY_START_YEAR, CURRENT_YEAR],
 } as const;
 
 export function applyTimelinePreset(preset: TimelinePreset | string) {

@@ -9,6 +9,10 @@ import { GIBS_PRODUCT_IDS, isGibsMonthFor, isGibsProductId } from "./gibs";
 import { normalizeStudyEpoch, MAX_STUDY_GEOLOGICAL_MA } from "./study-epoch";
 import { ALL_COSMIC_LAYERS } from "../stores/cosmicStore";
 import { MAX_CAMERA_ALTITUDE, MIN_CAMERA_ALTITUDE } from "../stores/globeStore";
+import {
+  DEFAULT_TIMELINE_END_YEAR,
+  DEFAULT_TIMELINE_START_YEAR,
+} from "./timeline/current-year";
 import { ALL_CATEGORIES } from "../stores/timelineStore";
 import type { StudyRecord } from "./studies-store";
 
@@ -17,8 +21,8 @@ export const MAX_STUDY_TITLE_LENGTH = 200;
 export const MAX_STUDY_DESCRIPTION_LENGTH = 2000;
 export const MAX_STUDY_NOTES_LENGTH = 50000;
 export const MAX_STUDY_ITEMS = 50;
-const DEFAULT_START_YEAR = 1974;
-const DEFAULT_END_YEAR = 2024;
+const DEFAULT_START_YEAR = DEFAULT_TIMELINE_START_YEAR;
+const DEFAULT_END_YEAR = DEFAULT_TIMELINE_END_YEAR;
 const country = z.enum([
   ...new Set([
     ...Object.keys(WORLD_COUNTRIES_CATALOG),

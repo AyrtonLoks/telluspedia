@@ -8,6 +8,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTimelineStore, TimelinePreset } from "@/stores/timelineStore";
 import { cn } from "@/components/ui/cn";
 import { MAGELLAN_ROUTE_ID } from "@/lib/epoch/constants";
+import {
+  CURRENT_YEAR,
+  DEFAULT_TIMELINE_END_YEAR,
+  DEFAULT_TIMELINE_START_YEAR,
+  TWENTY_FIRST_CENTURY_START_YEAR,
+} from "@/lib/timeline/current-year";
 import { useI18n } from "@/lib/i18n/useT";
 
 /** Todos os recortes usam o mesmo estilo; selecionado = superfície elevada (segmento ativo). */
@@ -72,15 +78,15 @@ export const PresetSelector: React.FC = () => {
       id: "LAST_50_YEARS" as TimelinePreset,
       label: t("timeline.preset.LAST_50_YEARS", "50 Anos Padrão"),
       shortLabel: t("timeline.preset.LAST_50_YEARS.short", "50 Anos"),
-      start: 1974,
-      end: 2024,
+      start: DEFAULT_TIMELINE_START_YEAR,
+      end: DEFAULT_TIMELINE_END_YEAR,
     },
     {
       id: "21ST_CENTURY" as TimelinePreset,
       label: t("timeline.preset.21ST_CENTURY", "Século XXI"),
       shortLabel: t("timeline.preset.21ST_CENTURY.short", "Séc. XXI"),
-      start: 2000,
-      end: 2026,
+      start: TWENTY_FIRST_CENTURY_START_YEAR,
+      end: CURRENT_YEAR,
     },
     {
       id: "COLD_WAR" as TimelinePreset,

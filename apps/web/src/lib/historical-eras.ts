@@ -1,3 +1,5 @@
+import { CURRENT_YEAR } from "./timeline/current-year";
+
 /**
  * Eras históricas (T35): definição das eras e resolução do ano efetivo, sem as entidades
  * históricas (fronteiras, dossiês) de `historical-entities.ts`, que re-exporta tudo daqui.
@@ -24,8 +26,8 @@ export const HISTORICAL_ERAS: Record<HistoricalEraId, HistoricalEraDefinition> =
     id: "CONTEMPORARY",
     label: "Era Contemporânea",
     startYear: 1991,
-    endYear: 2026,
-    representativeYear: 2024,
+    endYear: CURRENT_YEAR,
+    representativeYear: CURRENT_YEAR,
     topoJsonPath: "",
     description: "Ordem geopolítica pós-Guerra Fria e globalização multipolar.",
   },

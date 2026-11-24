@@ -11,6 +11,10 @@ import { useComparatorStore } from "@/stores/comparatorStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { RIGHT_PANEL_ORDER, useLayoutStore } from "@/stores/layoutStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import {
+  DEFAULT_TIMELINE_END_YEAR,
+  DEFAULT_TIMELINE_START_YEAR,
+} from "@/lib/timeline/current-year";
 import { ALL_CATEGORIES, useTimelineStore } from "@/stores/timelineStore";
 import { parseCameraOffset, DEFAULT_CAMERA_OFFSET, type ViewCamera } from "./view-camera";
 
@@ -44,7 +48,7 @@ export function encodeView(view: ViewCamera) {
   if (iso) params.set("pais", iso);
   if (timeline.selectedYear !== null) params.set("ano", String(timeline.selectedYear));
   if (timeline.geologicalMa !== null) params.set("ma", String(timeline.geologicalMa));
-  if (timeline.startYear !== 1974 || timeline.endYear !== 2024) {
+  if (timeline.startYear !== DEFAULT_TIMELINE_START_YEAR || timeline.endYear !== DEFAULT_TIMELINE_END_YEAR) {
     params.set("periodo", `${timeline.startYear},${timeline.endYear}`);
   }
   if (timeline.selectedMilestoneId) params.set("marco", timeline.selectedMilestoneId);
@@ -93,8 +97,8 @@ export function restoreView(search: string, view: ViewCamera) {
   const ma = numberIn(params.get("ma"), 0, 4600);
   const categories = members(params.get("categorias"), ALL_CATEGORIES);
   useTimelineStore.setState({
-    startYear: validRange ? start : 1974,
-    endYear: validRange ? end : 2024,
+    startYear: validRange ? start : DEFAULT_TIMELINE_START_YEAR,
+    endYear: validRange ? end : DEFAULT_TIMELINE_END_YEAR,
     selectedYear: ma === null ? numberIn(params.get("ano"), 1, 9999) : null,
     geologicalMa: ma,
     selectedMilestoneId: milestone && (findMilestoneById(milestone) || Object.hasOwn(GEOLOGICAL_MILESTONE_MA, milestone)) ? milestone : null,

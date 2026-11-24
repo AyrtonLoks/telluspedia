@@ -517,6 +517,148 @@
     ]
   },
   {
+    "id": "glo-2022-ukr",
+    "title": "Invasão da Ucrânia pela Rússia",
+    "summary": "Ofensiva militar em larga escala desencadeia o maior conflito convencional na Europa desde a Segunda Guerra Mundial.",
+    "category": "WAR_MILITARY",
+    "date": {
+      "start": "2022-02-24",
+      "precision": "day"
+    },
+    "country": "UKR",
+    "countries": ["UKR", "RUS"],
+    "location": {
+      "lat": 50.4501,
+      "lng": 30.5234
+    },
+    "sources": [
+      {
+        "label": "ONU"
+      }
+    ]
+  },
+  {
+    "id": "glo-2022-artemis",
+    "title": "Lançamento da Missão Artemis I",
+    "summary": "Primeiro voo não tripulado do foguete SLS e da cápsula Orion ao redor da Lua, inaugurando o retorno ao espaço cislunar.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "2022-11-16",
+      "precision": "day"
+    },
+    "country": "USA",
+    "location": {
+      "lat": 28.5721,
+      "lng": -80.648
+    },
+    "sources": [
+      {
+        "label": "NASA / ESA"
+      }
+    ]
+  },
+  {
+    "id": "glo-2023-who",
+    "title": "Fim da Emergência Global de COVID-19",
+    "summary": "OMS declara o encerramento da Emergência de Saúde Pública de Importância Internacional após mais de três anos.",
+    "category": "HEALTH_PANDEMICS",
+    "date": {
+      "start": "2023-05-05",
+      "precision": "day"
+    },
+    "country": "CHE",
+    "location": {
+      "lat": 46.2044,
+      "lng": 6.1432
+    },
+    "sources": [
+      {
+        "label": "OMS"
+      }
+    ]
+  },
+  {
+    "id": "glo-2023-chandrayaan",
+    "title": "Pouso da Chandrayaan-3 no Polo Sul Lunar",
+    "summary": "Índia torna-se o primeiro país a realizar um pouso suave próximo ao polo sul da Lua.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "2023-08-23",
+      "precision": "day"
+    },
+    "country": "IND",
+    "location": {
+      "lat": 13.7199,
+      "lng": 80.2304
+    },
+    "sources": [
+      {
+        "label": "ISRO / NASA"
+      }
+    ]
+  },
+  {
+    "id": "glo-2024-brics",
+    "title": "Expansão do Bloco BRICS+",
+    "summary": "Adesão de Egito, Etiópia, Irã e Emirados Árabes Unidos amplia o peso econômico e geopolítico do bloco.",
+    "category": "ECONOMY",
+    "date": {
+      "start": "2024-01-01",
+      "precision": "day"
+    },
+    "country": "ZAF",
+    "countries": ["BRA", "RUS", "IND", "CHN", "ZAF", "EGY", "ETH", "IRN", "ARE"],
+    "location": {
+      "lat": -26.2041,
+      "lng": 28.0473
+    },
+    "sources": [
+      {
+        "label": "Banco Mundial"
+      }
+    ]
+  },
+  {
+    "id": "glo-2025-cop30",
+    "title": "COP30 em Belém do Pará",
+    "summary": "Conferência do Clima da ONU na Amazônia reúne negociações internacionais sobre financiamento climático e metas do Acordo de Paris.",
+    "category": "POLITICS_REGIMES",
+    "date": {
+      "start": "2025-11-10",
+      "precision": "day"
+    },
+    "country": "BRA",
+    "location": {
+      "lat": -1.4558,
+      "lng": -48.4902
+    },
+    "sources": [
+      {
+        "label": "UNFCCC"
+      }
+    ]
+  },
+  {
+    "id": "glo-2026-milton",
+    "title": "Centenário de Milton Santos (1926–2026)",
+    "summary": "Cem anos do nascimento do geógrafo brasileiro vencedor do Prêmio Vautrin Lud, referência mundial em geografia crítica.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "2026-05-03",
+      "precision": "day"
+    },
+    "country": "BRA",
+    "location": {
+      "lat": -12.9714,
+      "lng": -38.5014
+    },
+    "sources": [
+      {
+        "label": "UNESCO"
+      }
+    ]
+  },
+  {
     "id": "bra-1822",
     "title": "Independência do Brasil",
     "summary": "Rompe os laços coloniais com Portugal e funda o Império do Brasil.",

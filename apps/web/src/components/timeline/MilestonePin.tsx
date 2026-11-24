@@ -20,6 +20,8 @@ import {
 } from "@/lib/panel-preload";
 import { CATEGORY_TONE, TONES } from "@/components/ui/tones";
 import { cn } from "@/components/ui/cn";
+import { CURRENT_YEAR } from "@/lib/timeline/current-year";
+import { useI18n } from "@/lib/i18n/useT";
 
 const StudyContext = dynamic(
   () => import("@/components/tellus-bridge/StudyContext").then((m) => m.StudyContext),
@@ -62,6 +64,9 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   index,
   percent,
 }) => {
+  const { locale, t, tRaw } = useI18n();
+  const displayTitle = tRaw(`event.${id}`, title);
+  const displaySummary = tRaw(`event.${id}.summary`, summary);
   const pinRef = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
@@ -174,7 +179,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
       <button
         type="button"
         ref={trigger}
-        aria-label={`${title}, ${year}`}
+        aria-label={`${displayTitle}, ${year}`}
         aria-expanded={isSelected}
         onClick={handleClick}
         className={cn(
@@ -212,16 +217,16 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
                 trigger.current?.focus();
               }}
               className="ml-auto rounded-sm p-0.5 text-fg-muted transition-colors duration-fast ease-out hover:bg-surface-hover hover:text-fg"
-              title="Fechar (Esc)"
-              aria-label="Fechar evento"
+              title={t("milestone.closeTitle", "Fechar (Esc)")}
+              aria-label={t("milestone.closeAria", "Fechar evento")}
             >
               <X aria-hidden="true" className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
-        <div className="line-clamp-1 text-label font-semibold text-fg">{title}</div>
+        <div className="line-clamp-1 text-label font-semibold text-fg">{displayTitle}</div>
         <div className="mt-1 line-clamp-2 text-caption text-fg-secondary">
-          {summary}
+          {displaySummary}
         </div>
         {sourcePrimary && (
           <div className="mt-2 flex items-center justify-between gap-1 border-t border-line pt-1.5">
@@ -231,9 +236,9 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="inline-flex max-w-[140px] items-center gap-1 truncate text-caption text-accent hover:text-accent-hover hover:underline"
-              title={`Repositório da fonte primária: ${sourcePrimary}`}
+              title={`${t("milestone.sourceRepoPrefix", "Repositório da fonte primária:")} ${sourcePrimary}`}
             >
-              <span className="truncate">Fonte: {sourcePrimary}</span>
+              <span className="truncate">{t("milestone.sourcePrefix", "Fonte:")} {sourcePrimary}</span>
               <ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0" />
             </a>
             <button
@@ -247,18 +252,18 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
                 const { getCountryData } = await import("@/lib/country-data");
                 const country = effectiveCountryIso ? getCountryData(effectiveCountryIso) : null;
                 setCitationModalOpen(true, {
-                  title: `${title} (${year}) - ${summary}`,
+                  title: `${displayTitle} (${year}) - ${displaySummary}`,
                   countryName: country?.nameCommon || effectiveCountryIso || "TellusPedia",
                   url: getSourceUrl(sourcePrimary),
                   accessDate: new Date(),
-                  publicationYear: 2026,
+                  publicationYear: CURRENT_YEAR,
                 });
               }}
               className={ACTION}
-              title={`Gerar citação acadêmica para '${title}'`}
+              title={displayTitle}
             >
               <Quote aria-hidden="true" className="h-3 w-3" />
-              <span>Citar</span>
+              <span>{t("milestone.cite", "Citar")}</span>
             </button>
           </div>
         )}
@@ -280,10 +285,10 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
                 }
               }}
               className={cn(ACTION, "flex-1")}
-              title={`Explorar ${effectiveCountryIso} no globo`}
+              title={`${t("milestone.viewCountry", "Ver")} ${effectiveCountryIso}`}
             >
               <Globe aria-hidden="true" className="h-3 w-3" />
-              <span>Ver {effectiveCountryIso}</span>
+              <span>{t("milestone.viewCountry", "Ver")} {effectiveCountryIso}</span>
             </button>
           )}
           {effectiveCountryIso && (
@@ -298,19 +303,19 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
                 setReaderOpen(true);
               }}
               className={ACTION}
-              title="Aprofundar Dossiê do País (História)"
+              title={t("milestone.dossierTitle", "Aprofundar Dossiê do País (História)")}
             >
               <BookOpen aria-hidden="true" className="h-3 w-3" />
-              <span>Dossiê</span>
+              <span>{t("milestone.dossier", "Dossiê")}</span>
             </button>
           )}
           <a
-            href={`https://pt.wikipedia.org/wiki/${encodeURIComponent(title)}`}
+            href={`https://${locale === "en" ? "en" : "pt"}.wikipedia.org/wiki/${encodeURIComponent(displayTitle)}`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
             className={ACTION}
-            title={`Abrir '${title}' em fonte enciclopédica externa`}
+            title={displayTitle}
           >
             <ExternalLink aria-hidden="true" className="h-3 w-3" />
             <span>Info</span>

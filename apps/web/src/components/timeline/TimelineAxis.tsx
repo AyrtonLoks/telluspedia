@@ -356,10 +356,15 @@ const HistoricalAxis: React.FC<{
   const ticks = useMemo(() => adaptiveTicks(view, width), [view, width]);
   const clusters = useMemo(() => {
     const visible = milestones
-      .map((m) => ({ item: m, value: milestoneDecimalYear(m.year, m.exactDate) }))
+      .map((m) => {
+        const raw = milestoneDecimalYear(m.year, m.exactDate);
+        // Garante visibilidade de marcos com data após 01/jan no último ano da janela (`endYear`)
+        const value = m.year === Math.floor(bounds.end) ? Math.min(bounds.end, raw) : raw;
+        return { item: m, value };
+      })
       .filter((p) => p.value >= view.start && p.value <= view.end);
     return clusterPins(visible, view, width, (m) => m.id);
-  }, [milestones, view, width]);
+  }, [milestones, view, width, bounds.end]);
   const pinPercents = clusters.map((c) => yearToPercent(c.value, view));
   const isZoomed = view.end - view.start < bounds.end - bounds.start - 1e-6;
 

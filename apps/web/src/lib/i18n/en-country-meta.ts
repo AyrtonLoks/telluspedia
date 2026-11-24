@@ -156,4 +156,20 @@ export const EN_COUNTRY_META_MESSAGES = {
   "event.zaf-1994": "End of Apartheid & Election of Nelson Mandela",
   "event.egy-1869": "Opening of the Suez Canal",
   "event.egy-1952": "Egyptian Revolution of 1952",
+
+  // Marcos históricos globais recentes 2022–2026 (T48)
+  "event.glo-2022-ukr": "Russian Invasion of Ukraine",
+  "event.glo-2022-ukr.summary": "Full-scale military offensive triggers the largest conventional conflict in Europe since World War II.",
+  "event.glo-2022-artemis": "Launch of the Artemis I Mission",
+  "event.glo-2022-artemis.summary": "First uncrewed test flight of the SLS rocket and Orion spacecraft around the Moon, opening the return to cislunar space.",
+  "event.glo-2023-who": "End of the COVID-19 Global Health Emergency",
+  "event.glo-2023-who.summary": "WHO declares the end of the Public Health Emergency of International Concern after more than three years.",
+  "event.glo-2023-chandrayaan": "Chandrayaan-3 Landing near the Lunar South Pole",
+  "event.glo-2023-chandrayaan.summary": "India becomes the first nation to achieve a soft landing near the lunar south pole.",
+  "event.glo-2024-brics": "BRICS+ Bloc Expansion",
+  "event.glo-2024-brics.summary": "Accession of Egypt, Ethiopia, Iran, and the United Arab Emirates expands the bloc's economic and geopolitical footprint.",
+  "event.glo-2025-cop30": "COP30 Climate Conference in Belém",
+  "event.glo-2025-cop30.summary": "UN Climate Conference in the Amazon convenes international negotiations on climate finance and Paris Agreement pledges.",
+  "event.glo-2026-milton": "Centennial of Milton Santos (1926–2026)",
+  "event.glo-2026-milton.summary": "One hundred years since the birth of the Vautrin Lud Prize-winning Brazilian geographer, a global reference in critical geography.",
 } as const satisfies MessageDictionary;

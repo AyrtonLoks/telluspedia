@@ -1,4 +1,8 @@
 import { create } from "zustand";
+import {
+  DEFAULT_TIMELINE_END_YEAR,
+  DEFAULT_TIMELINE_START_YEAR,
+} from "@/lib/timeline/current-year";
 
 export type MilestoneCategoryType =
   | "POLITICS_REGIMES"
@@ -45,8 +49,8 @@ interface TimelineState {
 }
 
 export const useTimelineStore = create<TimelineState>((set) => ({
-  startYear: 1974,
-  endYear: 2024,
+  startYear: DEFAULT_TIMELINE_START_YEAR,
+  endYear: DEFAULT_TIMELINE_END_YEAR,
   selectedYear: null,
   selectedMilestoneId: null,
   activeCategories: [...ALL_CATEGORIES],

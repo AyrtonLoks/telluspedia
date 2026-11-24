@@ -487,9 +487,17 @@ export const EN_PANEL_MESSAGES = {
   "suggestions.layer.GLOBAL_WINDS": "Global winds (GFS)",
   "search.cmd.compare": "Open comparator",
   "search.cmd.studies": "Open Studies Gallery",
-  "search.cmd.year2024": "Go to 2024",
+  "search.cmd.goToYear": "Go to",
   "search.prefix.satellite": "Satellite:",
   "search.prefix.thematic": "Thematic map:",
+  "milestone.closeTitle": "Close (Esc)",
+  "milestone.closeAria": "Close event",
+  "milestone.sourcePrefix": "Source:",
+  "milestone.sourceRepoPrefix": "Primary source repository:",
+  "milestone.cite": "Cite",
+  "milestone.viewCountry": "View",
+  "milestone.dossier": "Dossier",
+  "milestone.dossierTitle": "Deepen Country Dossier (History)",
 
   // TellusBridge (StudyContext)
   "bridge.deepen": "Deepen in TellusLab",

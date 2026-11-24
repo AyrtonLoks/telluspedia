@@ -16,6 +16,7 @@ import { CategoryFilterPills } from "./CategoryFilterPills";
 import { TimelineAxis } from "./TimelineAxis";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { resolveEraStudyEntityId } from "@/lib/timeline/era-study";
+import { TIMELINE_INPUT_MAX_YEAR } from "@/lib/timeline/current-year";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
 import { useTimelineExpanded } from "./useTimelineExpanded";
@@ -219,7 +220,7 @@ export const TimelineBar: React.FC = () => {
                 onChange={handleEndChange}
                 className={YEAR_INPUT}
                 min={startYear + 1}
-                max={2030}
+                max={TIMELINE_INPUT_MAX_YEAR}
               />
               <span className="hidden whitespace-nowrap text-caption text-fg-muted 2xl:inline">
                 ({endYear - startYear} {t("timeline.yearsSuffix", "anos")})

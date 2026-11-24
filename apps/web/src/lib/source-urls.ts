@@ -59,6 +59,12 @@ export function getSourceUrl(source?: string, indicatorCode?: string): string {
   if (s.includes("nasa")) {
     return "https://www.nasa.gov/";
   }
+  if (s.includes("isro")) {
+    return "https://www.isro.gov.in/";
+  }
+  if (s.includes("unfccc")) {
+    return "https://unfccc.int/";
+  }
   if (s.includes("cern")) {
     return "https://home.cern/";
   }
