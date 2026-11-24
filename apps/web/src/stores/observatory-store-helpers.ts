@@ -26,6 +26,12 @@ import type {
   WindFieldPayload,
   WindUnit,
 } from "@/lib/winds-types";
+import type {
+  DebrisReleasePoint,
+  MarineDebrisHorizonMonths,
+  MarineDebrisWindage,
+  OceanGyreId,
+} from "@/lib/marine-debris-types";
 
 export interface FirmsWindow {
   days: FirmsWindowDays;
@@ -42,6 +48,7 @@ export const ALL_OBSERVATORY_LAYERS: readonly ObservatoryLayer[] = [
   "MARITIME_ROUTES",
   "NASA_GIBS",
   "GLOBAL_WINDS",
+  "MARINE_DEBRIS",
 ];
 
 export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
@@ -53,6 +60,7 @@ export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
   // Imagem cobre o globo inteiro: começa translúcida para o relevo e as fronteiras aparecerem.
   NASA_GIBS: 0.75,
   GLOBAL_WINDS: 0.85,
+  MARINE_DEBRIS: 0.9,
 };
 
 export function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
@@ -141,6 +149,17 @@ export interface ObservatoryState {
   setWindUnit: (unit: WindUnit) => void;
   setCurrentUnit: (unit: CurrentUnit) => void;
   loadCurrentsData: () => Promise<void>;
+  /** Camada de Lixo Marítimo, Giros Oceânicos & Microplásticos (D29 / RN17). */
+  marineDebrisWindage: MarineDebrisWindage;
+  marineDebrisHorizonMonths: MarineDebrisHorizonMonths;
+  marineDebrisPickMode: boolean;
+  marineDebrisReleasePoint: DebrisReleasePoint | null;
+  selectedGyreId: OceanGyreId | null;
+  setMarineDebrisWindage: (windage: MarineDebrisWindage) => void;
+  setMarineDebrisHorizonMonths: (months: MarineDebrisHorizonMonths) => void;
+  setMarineDebrisPickMode: (enabled: boolean) => void;
+  setMarineDebrisReleasePoint: (point: DebrisReleasePoint | null) => void;
+  setSelectedGyreId: (gyreId: OceanGyreId | null) => void;
 
   isLoading: Record<ObservatoryLayer, boolean>;
   hasLoaded: Record<ObservatoryLayer, boolean>;

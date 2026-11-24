@@ -23,6 +23,10 @@ import {
   DEFAULT_WIND_UNIT,
 } from "@/lib/winds-types";
 import {
+  DEFAULT_DEBRIS_HORIZON_MONTHS,
+  DEFAULT_DEBRIS_WINDAGE,
+} from "@/lib/marine-debris-types";
+import {
   DEFAULT_FIRMS_WINDOW,
   DEFAULT_LAYER_OPACITY,
   fetchObservatoryEnvelope as fetchEnvelope,
@@ -113,6 +117,17 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   setWindAltitude: (windAltitude) => set({ windAltitude }),
   setWindUnit: (windUnit) => set({ windUnit }),
   setCurrentUnit: (currentUnit) => set({ currentUnit }),
+  marineDebrisWindage: DEFAULT_DEBRIS_WINDAGE,
+  marineDebrisHorizonMonths: DEFAULT_DEBRIS_HORIZON_MONTHS,
+  marineDebrisPickMode: false,
+  marineDebrisReleasePoint: null,
+  selectedGyreId: null,
+  setMarineDebrisWindage: (marineDebrisWindage) => set({ marineDebrisWindage }),
+  setMarineDebrisHorizonMonths: (marineDebrisHorizonMonths) => set({ marineDebrisHorizonMonths }),
+  setMarineDebrisPickMode: (marineDebrisPickMode) => set({ marineDebrisPickMode }),
+  setMarineDebrisReleasePoint: (marineDebrisReleasePoint) =>
+    set({ marineDebrisReleasePoint, marineDebrisPickMode: false }),
+  setSelectedGyreId: (selectedGyreId) => set({ selectedGyreId }),
   loadCurrentsData: async () => {
     if (get().currentsLoading) return;
     set({ currentsLoading: true });
@@ -159,24 +174,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       ? null : state.selectedEntity,
   })),
 
-  isLoading: {
-    NASA_FIRMS: false,
-    NASA_EONET: false,
-    ISS_SATELLITES: false,
-    FLIGHTS_OPENSKY: false,
-    MARITIME_ROUTES: false,
-    NASA_GIBS: false,
-    GLOBAL_WINDS: false,
-  },
-  hasLoaded: {
-    NASA_FIRMS: false,
-    NASA_EONET: false,
-    ISS_SATELLITES: false,
-    FLIGHTS_OPENSKY: false,
-    MARITIME_ROUTES: false,
-    NASA_GIBS: false,
-    GLOBAL_WINDS: false,
-  },
+  isLoading: perLayer(() => false),
+  hasLoaded: perLayer(() => false),
   layerMeta: perLayer(initialLocalMeta),
   layerError: perLayer(() => false),
 
@@ -194,6 +193,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       set((state) => ({
         activeLayers: activeLayers.filter((id) => id !== layerId),
         selectedEntity: layerId === "NASA_EONET" && isEonetSelection(state.selectedEntity) ? null : state.selectedEntity,
+        marineDebrisPickMode: layerId === "MARINE_DEBRIS" ? false : state.marineDebrisPickMode,
       }));
     }
   },
@@ -328,6 +328,31 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           set({ winds: body.data });
           applyMeta("GLOBAL_WINDS", body.meta);
         } else throw new Error("Resposta de ventos inválida");
+      } else if (layerId === "MARINE_DEBRIS") {
+        // D29: acopla correntes superficiais (D27b) + ventos 10 m (D27a) ao mapa observado NOAA/Eriksen-Lebreton.
+        const state = get();
+        const tasks: Promise<unknown>[] = [];
+        if (!state.hasLoaded.GLOBAL_WINDS && !state.isLoading.GLOBAL_WINDS) {
+          tasks.push(state.loadLayerData("GLOBAL_WINDS"));
+        }
+        if (!state.currentsHasLoaded && !state.currentsLoading) {
+          tasks.push(state.loadCurrentsData());
+        }
+        await Promise.all(tasks);
+        const latest = get();
+        const liveDriven =
+          latest.currentsMeta.source === "live" || latest.layerMeta.GLOBAL_WINDS.source === "live";
+        applyMeta("MARINE_DEBRIS", {
+          source: liveDriven ? "computed" : "fallback",
+          provider: liveDriven
+            ? "NOAA Marine Debris · Eriksen–Lebreton + Modelo Lagrangiano (D27)"
+            : "NOAA Marine Debris · Eriksen–Lebreton + Climatologia Lagrangiana",
+          fetchedAt: new Date().toISOString(),
+          stale: false,
+          reason: liveDriven
+            ? "Giros observados (NOAA/Eriksen–Lebreton) acoplados a correntes e ventos ao vivo (D27)."
+            : "Giros observados (NOAA/Eriksen–Lebreton) com advecção climatológica de referência.",
+        });
       } else if (layerId === "MARITIME_ROUTES") {
         // A malha de corredores é fixa (referência local), com ou sem a amostra AIS ao vivo.
         void loadObservatoryFallback().then((fb) => set({ maritimeRoutes: fb.FALLBACK_MARITIME_ROUTES })).catch(() => {});
@@ -395,5 +420,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       isPanelOpen: false,
       eonetCategory: "all",
       vesselsMovingOnly: false,
+      marineDebrisPickMode: false,
+      marineDebrisReleasePoint: null,
+      selectedGyreId: null,
     }),
 }));

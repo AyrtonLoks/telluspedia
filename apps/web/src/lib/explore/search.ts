@@ -26,6 +26,10 @@ const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywo
   MARITIME_ROUTES: { title: "Tráfego marítimo", keywords: "navios barcos embarcações AIS" },
   NASA_GIBS: { title: "Imagens de satélite (GIBS)", keywords: "NASA GIBS MODIS satélite mapa mensal" },
   GLOBAL_WINDS: { title: "Ventos globais (GFS)", keywords: "ventos atmosfera jato 250 hPa alísios NOAA GFS circulação" },
+  MARINE_DEBRIS: {
+    title: "Lixo marítimo e giros oceânicos",
+    keywords: "microplásticos lixo marítimo giros oceânicos NOAA Ekman Pacífico Atlântico Índico",
+  },
 };
 
 const presets: Record<TimelinePreset, string> = {

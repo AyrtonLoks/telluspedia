@@ -58,6 +58,10 @@ const IssOrbitLayer = lazy(() => import("./IssOrbitLayer").then((m) => ({ defaul
 const WindParticlesLayer = lazy(() =>
   import("./WindParticlesLayer").then((m) => ({ default: m.WindParticlesLayer }))
 );
+// Lixo marítimo, giros oceânicos e deriva Lagrangiana (D29) só baixam quando a camada é ligada.
+const MarineDebrisLayer = lazy(() =>
+  import("./MarineDebrisLayer").then((m) => ({ default: m.MarineDebrisLayer }))
+);
 
 /**
  * Primary directional sunlight synchronized with EarthSphere and OrbitingMoon via
@@ -279,6 +283,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {isContemporary && activeObservatoryLayers.includes("GLOBAL_WINDS") && (
               <Suspense fallback={null}>
                 <WindParticlesLayer />
+              </Suspense>
+            )}
+            {isContemporary && activeObservatoryLayers.includes("MARINE_DEBRIS") && (
+              <Suspense fallback={null}>
+                <MarineDebrisLayer />
               </Suspense>
             )}
           </EarthOrientationGroup>

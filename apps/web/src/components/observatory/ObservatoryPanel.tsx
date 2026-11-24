@@ -17,6 +17,7 @@ import {
   ChevronDown,
   Satellite,
   Wind,
+  Waves,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
@@ -50,6 +51,14 @@ const WindLayerControls = dynamic(() => import("./WindLayerControls").then((m) =
   ssr: false,
   loading: () => <div className="h-20" aria-hidden="true" />,
 });
+// Controles de Lixo Marítimo & Giros Oceânicos (D29) só baixam quando a camada é aberta.
+const MarineDebrisControls = dynamic(
+  () => import("./MarineDebrisControls").then((m) => m.MarineDebrisControls),
+  {
+    ssr: false,
+    loading: () => <div className="h-24" aria-hidden="true" />,
+  }
+);
 
 interface LayerOption {
   id: ObservatoryLayer;
@@ -156,6 +165,18 @@ const LAYER_OPTIONS: LayerOption[] = [
       const unit = s.windUnit === "knots" ? t("obs.badge.knots", "nós") : "km/h";
       return `${level} · ${formatNumber(Math.round(grid.maxSpeedMs * factor), locale)} ${unit}`;
     },
+  },
+  {
+    id: "MARINE_DEBRIS",
+    name: "Lixo Marítimo & Giros Oceânicos",
+    source: "NOAA · Eriksen–Lebreton · D27",
+    description: "5 giros subtropicais de microplásticos e advecção Lagrangiana acoplada a correntes + ventos.",
+    icon: Waves,
+    tone: "layer-maritime",
+    badgeText: (s, _locale, t) =>
+      s.marineDebrisReleasePoint
+        ? t("obs.badge.driftActive", "5 giros · Deriva ativa")
+        : t("obs.badge.gyres5", "5 giros · Ekman"),
   },
 ];
 
@@ -354,6 +375,7 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                   {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
                   {layer.id === "NASA_GIBS" && <GibsLayerControls />}
                   {layer.id === "GLOBAL_WINDS" && <WindLayerControls />}
+                  {layer.id === "MARINE_DEBRIS" && <MarineDebrisControls />}
                   {layer.id === "MARITIME_ROUTES" && isContemporary && <MaritimeLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>

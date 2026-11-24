@@ -13,7 +13,11 @@ export type ObservatoryLayerId =
  * Todas as camadas do Observatório. A NASA GIBS (D25) ainda fica fora da busca, da URL e dos estudos
  * (arquivos de outros grupos): quando entrar neles, junte-a a `ObservatoryLayerId`.
  */
-export type ObservatoryLayer = ObservatoryLayerId | "NASA_GIBS" | "GLOBAL_WINDS";
+export type ObservatoryLayer =
+  | ObservatoryLayerId
+  | "NASA_GIBS"
+  | "GLOBAL_WINDS"
+  | "MARINE_DEBRIS";
 
 export interface FirmsHotspot {
   id: string;

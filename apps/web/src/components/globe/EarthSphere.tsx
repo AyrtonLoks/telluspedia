@@ -391,6 +391,15 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
     if (!e.point || !activeSpatialIndex) return;
 
     const { lat, lng } = vector3ToLatLng(e.object.worldToLocal(e.point.clone()));
+    const obsState = useObservatoryStore.getState();
+    if (obsState.marineDebrisPickMode && obsState.activeLayers.includes("MARINE_DEBRIS")) {
+      obsState.setMarineDebrisReleasePoint({
+        lat: Number(lat.toFixed(2)),
+        lng: Number(lng.toFixed(2)),
+      });
+      return;
+    }
+
     const feature = activeSpatialIndex([lng, lat]);
     const iso = resolveIsoFromFeature(feature);
 
