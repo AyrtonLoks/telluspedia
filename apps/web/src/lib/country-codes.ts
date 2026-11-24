@@ -22,6 +22,9 @@ export const NUMERIC_TO_ISO: Record<string, string> = {
   "760": "SYR", "762": "TJK", "764": "THA", "768": "TGO", "780": "TTO", "784": "ARE", "788": "TUN", "792": "TUR",
   "795": "TKM", "800": "UGA", "804": "UKR", "807": "MKD", "818": "EGY", "826": "GBR", "834": "TZA", "840": "USA",
   "854": "BFA", "858": "URY", "860": "UZB", "862": "VEN", "887": "YEM", "894": "ZMB",
+  // Natural Earth 1:50m microstates & special administrative regions (T49)
+  "020": "AND", "048": "BHR", "052": "BRB", "132": "CPV", "344": "HKG", "446": "MAC",
+  "462": "MDV", "470": "MLT", "480": "MUS", "702": "SGP",
   // Historical Entity Standard Numeric Codes
   "810": "SUN", "278": "GDR", "280": "FRG", "891": "YUG", "200": "CSK", "901": "AHU", "902": "PRU", "903": "TUR_HIST",
   // Historical Entity IDs & Territories
@@ -93,7 +96,7 @@ export const ISO3_TO_ISO2: Record<string, string> = {
   TUV: "TV", UGA: "UG", UKR: "UA", ARE: "AE", GBR: "GB", USA: "US", URY: "UY", UZB: "UZ", VUT: "VU", VEN: "VE",
   VNM: "VN", YEM: "YE", ZMB: "ZM", ZWE: "ZW",
   // Territories & Non-Sovereign ISO 3166-1 Codes
-  ATA: "AQ", ATF: "TF", ESH: "EH", FLK: "FK", GRL: "GL", GUF: "GF", NCL: "NC", PRI: "PR", PSE: "PS",
+  ATA: "AQ", ATF: "TF", ESH: "EH", FLK: "FK", GRL: "GL", GUF: "GF", HKG: "HK", MAC: "MO", NCL: "NC", PRI: "PR", PSE: "PS",
   // Historical Entities & Territories
   PRU: "PR", SUN: "SU", AHU: "AH", GDR: "DD", FRG: "DE", TUR_HIST: "TR",
   YUG: "YU", CSK: "CS", CYN: "CY", XKX: "XK",

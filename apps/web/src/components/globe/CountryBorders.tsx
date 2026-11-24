@@ -10,7 +10,18 @@ import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { findMilestoneById } from "@/lib/milestones";
-import { getBaseBorderPositions, getCountryFill, getCountryOutline } from "@/lib/country-border-geometry";
+import {
+  getBaseBorderPositions,
+  getCountryFill,
+  getCountryOutline,
+  getSpecialTerritoryBorderPositions,
+} from "@/lib/country-border-geometry";
+import {
+  getHighResTopologySync,
+  loadHighResTopology,
+  resolveBorderLod,
+  type BordersLodLevel,
+} from "@/lib/borders-lod";
 import { resolveHistoricalEntity, HISTORICAL_ERAS } from "@/lib/historical-entities";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import {
@@ -28,7 +39,14 @@ function getBorderZoom(object: Object3D, cameraPosition: Vector3, center: Vector
   return 1 - MathUtils.smoothstep(cameraPosition.distanceTo(center), 1.5, 5);
 }
 
-function makeWideLine(geometry: LineSegmentsGeometry, color: string, width: number, opacity: number, order: number) {
+function makeWideLine(
+  geometry: LineSegmentsGeometry,
+  color: string,
+  width: number,
+  opacity: number,
+  order: number,
+  dash?: { dashSize: number; gapSize: number }
+) {
   const material = new LineMaterial({
     color,
     linewidth: width,
@@ -37,11 +55,79 @@ function makeWideLine(geometry: LineSegmentsGeometry, color: string, width: numb
     // Keep the requested opacity on the rounded caps of translucent lines.
     alphaToCoverage: false,
     depthWrite: false,
+    ...(dash
+      ? {
+          dashed: true,
+          dashSize: dash.dashSize,
+          gapSize: dash.gapSize,
+          dashScale: 1,
+        }
+      : {}),
   });
   const line = new LineSegments2(geometry, material);
+  if (dash) {
+    line.computeLineDistances();
+  }
   line.renderOrder = order;
   line.raycast = ignoreRaycast;
   return line;
+}
+
+function SpecialTerritoryBorders({ topology, opacity }: { topology: CountryTopology; opacity: number }) {
+  const { disputedLine, autonomousLine } = useMemo(() => {
+    const special = getSpecialTerritoryBorderPositions(topology);
+    const make = (positions: Float32Array, color: string, dash: { dashSize: number; gapSize: number }) => {
+      if (!positions.length) return null;
+      const geometry = new LineSegmentsGeometry().setPositions(positions);
+      return makeWideLine(geometry, color, 1.05, 0, 2, dash);
+    };
+    return {
+      // RN07: fronteiras disputadas (âmbar tracejado) e territórios autônomos (violeta tracejado)
+      disputedLine: make(special.disputed, "#f59e0b", { dashSize: 0.012, gapSize: 0.008 }),
+      autonomousLine: make(special.autonomous, "#a78bfa", { dashSize: 0.016, gapSize: 0.009 }),
+    };
+  }, [topology]);
+  const center = useMemo(() => new Vector3(), []);
+
+  useEffect(() => () => {
+    disputedLine?.geometry.dispose();
+    disputedLine?.material.dispose();
+    autonomousLine?.geometry.dispose();
+    autonomousLine?.material.dispose();
+  }, [disputedLine, autonomousLine]);
+
+  useFrame(({ camera }, delta) => {
+    const refLine = disputedLine ?? autonomousLine;
+    if (!refLine) return;
+    const zoom = getBorderZoom(refLine, camera.position, center);
+    if (disputedLine) {
+      disputedLine.material.linewidth = MathUtils.lerp(0.95, 1.75, zoom);
+      disputedLine.material.opacity = MathUtils.damp(
+        disputedLine.material.opacity,
+        opacity * (0.68 + 0.32 * zoom),
+        5,
+        delta
+      );
+      disputedLine.visible = disputedLine.material.opacity > 0.005;
+    }
+    if (autonomousLine) {
+      autonomousLine.material.linewidth = MathUtils.lerp(0.85, 1.5, zoom);
+      autonomousLine.material.opacity = MathUtils.damp(
+        autonomousLine.material.opacity,
+        opacity * (0.55 + 0.35 * zoom),
+        5,
+        delta
+      );
+      autonomousLine.visible = autonomousLine.material.opacity > 0.005;
+    }
+  });
+
+  return (
+    <>
+      {disputedLine && <primitive object={disputedLine} />}
+      {autonomousLine && <primitive object={autonomousLine} />}
+    </>
+  );
 }
 
 function BaseBorders({ topology, opacity, onFadedOut }: {
@@ -223,6 +309,9 @@ function addHighlight(isos: Set<string>, iso: string | null | undefined, effecti
 export function CountryBorders() {
   const selectedIso = useGlobeStore((state) => state.selectedIso);
   const hoveredIso = useGlobeStore((state) => state.hoveredIso);
+  const bordersLod = useGlobeStore((state) => state.bordersLod);
+  const setBordersLod = useGlobeStore((state) => state.setBordersLod);
+  const setHighResBordersReady = useGlobeStore((state) => state.setHighResBordersReady);
   const isComparatorOpen = useComparatorStore((state) => state.isOpen);
   const comparatorIsos = useComparatorStore((state) => state.selectedIsos);
   const selectedMilestoneId = useTimelineStore((state) => state.selectedMilestoneId);
@@ -235,6 +324,46 @@ export function CountryBorders() {
   const [historicalTopology, setHistoricalTopology] = useState<CountryTopology | null>(
     () => era.topoJsonPath ? getHistoricalTopologySync(era.topoJsonPath) : null
   );
+  const [highResTopology, setHighResTopology] = useState<CountryTopology | null>(
+    () => getHighResTopologySync()
+  );
+  const groupRef = useRef<Object3D>(null);
+  const lodCenter = useMemo(() => new Vector3(), []);
+  const lodRef = useRef<BordersLodLevel>(bordersLod);
+  lodRef.current = bordersLod;
+
+  // RN21 / T49: monitora distância da câmera com histerese para alternar 1:110m ↔ 1:50m sem churn de estado
+  useFrame(({ camera }) => {
+    if (isHistorical || isGeological || !groupRef.current) return;
+    groupRef.current.getWorldPosition(lodCenter);
+    const distance = camera.position.distanceTo(lodCenter);
+    const nextLod = resolveBorderLod(lodRef.current, distance);
+    if (nextLod !== lodRef.current) {
+      lodRef.current = nextLod;
+      setBordersLod(nextLod);
+    }
+  });
+
+  // Carregamento sob demanda do snapshot Natural Earth 1:50m somente ao aproximar a câmera
+  useEffect(() => {
+    if (isHistorical || isGeological || bordersLod !== "50m" || highResTopology) return;
+
+    const cached = getHighResTopologySync();
+    if (cached) {
+      setHighResTopology(cached);
+      setHighResBordersReady(true);
+      return;
+    }
+
+    let active = true;
+    loadHighResTopology().then((loaded) => {
+      if (active && loaded) {
+        setHighResTopology(loaded);
+        setHighResBordersReady(true);
+      }
+    });
+    return () => { active = false; };
+  }, [bordersLod, isHistorical, isGeological, highResTopology, setHighResBordersReady]);
 
   useEffect(() => {
     if (!isHistorical || !era.topoJsonPath) return;
@@ -252,7 +381,9 @@ export function CountryBorders() {
     return () => { active = false; };
   }, [isHistorical, era.topoJsonPath]);
 
-  const topology = isHistorical && historicalTopology ? historicalTopology : contemporaryTopology;
+  const activeContemporaryTopology =
+    bordersLod === "50m" && highResTopology ? highResTopology : contemporaryTopology;
+  const topology = isHistorical && historicalTopology ? historicalTopology : activeContemporaryTopology;
   const selected = useMemo(() => {
     const isos = new Set<string>();
     addHighlight(isos, selectedIso, effectiveYear);
@@ -288,9 +419,13 @@ export function CountryBorders() {
   }, [isGeological, topology, isComparatorOpen, comparatorIsos, selectedMilestoneId, effectiveYear, selected]);
 
   return (
-    <group>
+    <group ref={groupRef}>
       <ChoroplethOverlay visible={!isHistorical && !isGeological} />
-      <BaseBorders topology={contemporaryTopology} opacity={isHistorical || isGeological ? 0 : 0.46} />
+      <BaseBorders topology={activeContemporaryTopology} opacity={isHistorical || isGeological ? 0 : 0.46} />
+      <SpecialTerritoryBorders
+        topology={activeContemporaryTopology}
+        opacity={isHistorical || isGeological ? 0 : 0.78}
+      />
       {historicalTopology && (
         <BaseBorders
           topology={historicalTopology}

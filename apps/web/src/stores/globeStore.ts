@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { BordersLodLevel } from "@/lib/borders-lod";
 
 export const MIN_CAMERA_ALTITUDE = 1.5;
 export const MAX_CAMERA_ALTITUDE = 6.0;
@@ -13,12 +14,16 @@ interface GlobeState {
   flyToTrigger: number;
   isReaderOpen: boolean;
   isThrottled: boolean;
+  bordersLod: BordersLodLevel;
+  highResBordersReady: boolean;
 
   setSelectedIso: (iso: string | null) => void;
   setHoveredIso: (iso: string | null) => void;
   flyTo: (lat: number, lng: number, altitude?: number) => void;
   setCameraPosition: (lat: number, lng: number, altitude?: number) => void;
   setReaderOpen: (isOpen: boolean) => void;
+  setBordersLod: (lod: BordersLodLevel) => void;
+  setHighResBordersReady: (ready: boolean) => void;
   resetView: () => void;
 }
 
@@ -56,6 +61,8 @@ export const useGlobeStore = create<GlobeState>((set) => ({
   flyToTrigger: 0,
   isReaderOpen: false,
   isThrottled: false,
+  bordersLod: "110m",
+  highResBordersReady: false,
 
   setSelectedIso: (iso) =>
     set({ selectedIso: iso, ...(iso === null ? { hoveredIso: null } : {}) }),
@@ -82,6 +89,12 @@ export const useGlobeStore = create<GlobeState>((set) => ({
       isReaderOpen: isOpen,
       isThrottled: isOpen,
     }),
+
+  setBordersLod: (lod) =>
+    set((state) => (state.bordersLod === lod ? state : { bordersLod: lod })),
+
+  setHighResBordersReady: (ready) =>
+    set((state) => (state.highResBordersReady === ready ? state : { highResBordersReady: ready })),
 
   resetView: () =>
     set((state) => ({

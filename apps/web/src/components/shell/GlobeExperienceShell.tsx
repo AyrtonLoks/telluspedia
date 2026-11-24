@@ -133,6 +133,15 @@ export function getInitialGlobeStateKey(state: InitialGlobeState): string {
  * or comparison without flashing the default landing state.
  */
 export function applyInitialGlobeState(initialState: InitialGlobeState): void {
+  if (typeof window === "undefined") {
+    // Evita vazamento de estado de stores Zustand entre requisições SSR consecutivas
+    // no mesmo processo Node (ex.: `/pais/GRL` seguido de `/`, que causaria erro React #418).
+    selectCountry(null);
+    useComparatorStore.getState().closeComparator();
+    useChoroplethStore.getState().restoreIndicator(null);
+    useStudyStore.getState().setCurrentStudyId(null);
+  }
+
   if (initialState.kind === "study") {
     restoreStudySnapshot(initialState.study);
     useChoroplethStore.getState().restoreIndicator(initialState.study.choroplethIndicator);

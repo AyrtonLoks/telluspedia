@@ -4,11 +4,13 @@ import { NAME_TO_ISO, NUMERIC_TO_ISO } from "./country-data";
 import { latLngToVector3 } from "./geo-spatial";
 import { HISTORICAL_ENTITIES } from "./historical-entities";
 import type { CountryTopology } from "./historical-topology";
+import { getTerritorialStatusKindForGeometry } from "./territorial-status";
 
 type CountryGeometry = CountryTopology["objects"]["countries"]["geometries"][number];
 
 const BASE_RADIUS = 1.0015;
 const FILL_RADIUS = 1.002;
+const SPECIAL_BORDER_RADIUS = 1.0022;
 const HIGHLIGHT_RADIUS = 1.004;
 // Chords of at most 3° stay above the unit Earth at every point.
 const MIN_EDGE_DOT = Math.cos(Math.PI / 60);
@@ -52,6 +54,53 @@ export function getBaseBorderPositions(topology: CountryTopology): Float32Array 
   const positions: number[] = [];
   appendBorders(positions, topology, topology.objects.countries, BASE_RADIUS);
   return new Float32Array(positions);
+}
+
+export interface SpecialTerritoryBorders {
+  disputed: Float32Array;
+  autonomous: Float32Array;
+}
+
+const specialBordersCache = new WeakMap<CountryTopology, SpecialTerritoryBorders>();
+
+/**
+ * Extrai segmentos 3D de fronteiras de territórios disputados e regiões autônomas (RN07 / T49)
+ * para renderização tracejada diferenciada no globo.
+ */
+export function getSpecialTerritoryBorderPositions(
+  topology: CountryTopology
+): SpecialTerritoryBorders {
+  const cached = specialBordersCache.get(topology);
+  if (cached) return cached;
+
+  const disputed: number[] = [];
+  const autonomous: number[] = [];
+
+  for (const geometry of topology.objects.countries.geometries) {
+    const rawId = geometry.id !== undefined && geometry.id !== null ? String(geometry.id) : "";
+    const paddedId = /^\d+$/.test(rawId) ? rawId.padStart(3, "0") : rawId;
+    const name = geometry.properties?.name;
+    const iso =
+      (paddedId && NUMERIC_TO_ISO[paddedId]) ||
+      (name ? NAME_TO_ISO[name] : undefined) ||
+      (rawId || undefined);
+
+    const kind = getTerritorialStatusKindForGeometry(iso, name);
+    if (!kind) continue;
+
+    if (kind === "disputed") {
+      appendBorders(disputed, topology, geometry, SPECIAL_BORDER_RADIUS);
+    } else {
+      appendBorders(autonomous, topology, geometry, SPECIAL_BORDER_RADIUS);
+    }
+  }
+
+  const result: SpecialTerritoryBorders = {
+    disputed: new Float32Array(disputed),
+    autonomous: new Float32Array(autonomous),
+  };
+  specialBordersCache.set(topology, result);
+  return result;
 }
 
 interface CountryBorder {

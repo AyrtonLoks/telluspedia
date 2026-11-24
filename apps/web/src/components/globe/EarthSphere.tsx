@@ -30,8 +30,8 @@ import {
   type CountryProperties,
   type CountrySpatialIndex,
   getHistoricalSpatialIndex,
-  getContemporarySpatialIndex,
 } from "@/lib/historical-topology";
+import { getContemporarySpatialIndexForLod } from "@/lib/borders-lod";
 import { resolveGeologicalEra } from "@/lib/paleo-data";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGraphicsQualityStore } from "@/stores/graphicsQualityStore";
@@ -52,6 +52,8 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
 
   const setHoveredIso = useGlobeStore((s) => s.setHoveredIso);
   const flyTo = useGlobeStore((s) => s.flyTo);
+  const bordersLod = useGlobeStore((s) => s.bordersLod);
+  const highResBordersReady = useGlobeStore((s) => s.highResBordersReady);
 
   // Época ativa (T12) e direção solar canônica compartilhada (T14)
   const epoch = useEpochState();
@@ -261,8 +263,8 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
         }
       }
     }
-    return getContemporarySpatialIndex();
-  }, [era.id, era.topoJsonPath, historicalSpatialIndex]);
+    return getContemporarySpatialIndexForLod(highResBordersReady ? bordersLod : "110m");
+  }, [era.id, era.topoJsonPath, historicalSpatialIndex, bordersLod, highResBordersReady]);
 
   // Continuity transition: when timeline moves across eras, smoothly resolve selected modern country to historical entity
   useEffect(() => {

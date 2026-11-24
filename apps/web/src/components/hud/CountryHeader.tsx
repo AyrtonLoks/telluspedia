@@ -3,11 +3,13 @@
 import { resetGlobeView } from "@/stores/actions";
 
 import React from "react";
-import { X, MapPin, Globe } from "lucide-react";
+import { X, MapPin, Globe, Info, ExternalLink } from "lucide-react";
 import { DataCompleteness } from "@/lib/country-data";
 import { IconButton } from "@/components/ui/IconButton";
 import { useI18n } from "@/lib/i18n/useT";
 import { formatCountryName } from "@/lib/i18n/format";
+import { formatTerritorialStatus, getTerritorialStatus } from "@/lib/territorial-status";
+import { cn } from "@/components/ui/cn";
 
 interface CountryHeaderProps {
   nameCommon: string;
@@ -43,6 +45,10 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
 
   const rawLocation = region || continent;
   const locationLabel = rawLocation ? tRaw(`region.${rawLocation}`, rawLocation) : null;
+  const territorialStatusRaw = getTerritorialStatus(isoCode);
+  const territorialStatus = territorialStatusRaw
+    ? formatTerritorialStatus(territorialStatusRaw, locale)
+    : null;
 
   return (
     <div className="relative border-b border-line pb-4">
@@ -104,6 +110,43 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
           </div>
         )}
       </div>
+
+      {territorialStatus && (
+        <div
+          data-testid="territorial-status-note"
+          data-territorial-kind={territorialStatus.kind}
+          className={cn(
+            "mt-3 rounded-card border px-3 py-2 text-caption",
+            territorialStatus.kind === "disputed"
+              ? "border-warning/40 bg-warning/10"
+              : "border-accent/35 bg-accent/10"
+          )}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 font-medium",
+                territorialStatus.kind === "disputed" ? "text-warning" : "text-accent"
+              )}
+            >
+              <Info aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+              {territorialStatus.label}
+            </span>
+            <a
+              href={territorialStatus.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-caption text-fg-secondary transition-colors duration-fast ease-out hover:text-fg"
+            >
+              <span>
+                {t("inspector.sourcePrefix", "Fonte:")} {territorialStatus.sourceLabel}
+              </span>
+              <ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0" />
+            </a>
+          </div>
+          <p className="mt-1 leading-snug text-fg-secondary">{territorialStatus.note}</p>
+        </div>
+      )}
     </div>
   );
 };
