@@ -5,6 +5,7 @@ import { findMilestoneById } from "@/lib/milestones";
 import { HISTORICAL_ENTITY_IDS } from "@/lib/historical-eras";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { encodeGibsView, readGibsView } from "@/lib/gibs-view";
+import { DEFAULT_BIOME_SCOPE, encodeBiomesView, readBiomesView } from "@/lib/biomes-types";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "@/stores/cosmicStore";
 import { selectCountry } from "@/stores/actions";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -19,11 +20,20 @@ import { ALL_CATEGORIES, useTimelineStore } from "@/stores/timelineStore";
 import { parseCameraOffset, DEFAULT_CAMERA_OFFSET, type ViewCamera } from "./view-camera";
 
 const layerIds: readonly ObservatoryLayer[] = [
-  "NASA_FIRMS", "NASA_EONET", "ISS_SATELLITES", "FLIGHTS_OPENSKY", "MARITIME_ROUTES", "NASA_GIBS", "GLOBAL_WINDS",
+  "NASA_FIRMS",
+  "NASA_EONET",
+  "ISS_SATELLITES",
+  "FLIGHTS_OPENSKY",
+  "MARITIME_ROUTES",
+  "NASA_GIBS",
+  "GLOBAL_WINDS",
+  "MARINE_DEBRIS",
+  "INPE_DEFORESTATION",
+  "BIOMES_MAP",
 ];
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
-  "camadas", "gibs", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
+  "camadas", "gibs", "bioma", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
 ];
 
 function numberIn(value: string | null, min: number, max: number) {
@@ -65,6 +75,9 @@ export function encodeView(view: ViewCamera) {
   // Produto e mês da camada GIBS (D25); sem mês = o último processado quando o link for aberto.
   if (observatory.activeLayers.includes("NASA_GIBS")) {
     params.set("gibs", encodeGibsView(observatory.gibsProduct, observatory.gibsMonth));
+  }
+  if (observatory.activeLayers.includes("BIOMES_MAP")) {
+    params.set("bioma", encodeBiomesView(observatory.biomeScope, observatory.biomeFilterId));
   }
   if (observatory.isPanelOpen) params.set("observatorio", "1");
   if (panel) params.set("painel", panel);
@@ -125,6 +138,10 @@ export function restoreView(search: string, view: ViewCamera) {
   const gibs = readGibsView(gibsProduct, gibsMonth ?? null);
   // Antes de ligar as camadas, para a primeira carga já pedir o produto e o mês do link.
   observatory.setGibsRequest(gibs ?? { product: "ndvi", month: null });
+  const biomesView = readBiomesView(params.get("bioma"));
+  observatory.setBiomeScope(biomesView?.scope ?? DEFAULT_BIOME_SCOPE);
+  observatory.setBiomeFilterId(biomesView?.filterId ?? null);
+  observatory.setSelectedBiomeId(biomesView?.filterId ?? null);
   if (layers.length !== observatory.activeLayers.length || layers.some((id) => !observatory.activeLayers.includes(id))) {
     observatory.setAllLayers(layers);
   }

@@ -34,6 +34,10 @@ const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywo
     title: "Desmatamento INPE (DETER / PRODES)",
     keywords: "INPE TerraBrasilis PRODES DETER desmatamento Amazônia Cerrado BDQueimadas biomas Brasil",
   },
+  BIOMES_MAP: {
+    title: "Mapa dos Biomas (Global & Brasil)",
+    keywords: "biomas ecologia WWF RESOLVE IBGE Amazônia Cerrado Mata Atlântica Caatinga Pampa Pantanal tundra taiga savana deserto manguezal",
+  },
 };
 
 const presets: Record<TimelinePreset, string> = {

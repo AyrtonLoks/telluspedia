@@ -243,7 +243,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | DONE | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
-| D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | IN_PROGRESS | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
+| D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | REVIEW | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
 | D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | TODO | — | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
 | D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | TODO | — | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
@@ -2631,7 +2631,7 @@ O `DATA_SOURCES.md` e o `ROADMAP.md` original previam integração direta com o 
 
 ### D31 · Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d31-biomes-map · **Worktree:** ../telluspedia-wt/antigravity-d31
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d31-biomes-map · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS
 
 **Contexto / problema**
@@ -2643,15 +2643,16 @@ Embora a ficha de país mencione biomas em texto, o TellusPedia ainda não possu
 3. Integrar o cruzamento com camadas ambientais existentes (INPE/FIRMS/GIBS NDVI), persistência em URL/Estudos e tradução completa `pt-BR`/`en`.
 
 **Critérios de aceite**
-- [ ] 14 biomas globais (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) renderizam suavemente no globo com picking, filtro por bioma e ficha ecológica bilíngue (`pt-BR`/`en`).
-- [ ] Dataset carregado sob demanda (lazy-load, `/` `< 160 KiB`) com descarte adequado de geometrias (`dispose()`).
-- [ ] Testes unitários validando integridade dos códigos/paletas/fontes dos biomas.
+- [x] 14 biomas globais (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) renderizam suavemente no globo com picking, filtro por bioma e ficha ecológica bilíngue (`pt-BR`/`en`).
+- [x] Dataset carregado sob demanda (lazy-load, `/` `< 160 KiB`) com descarte adequado de geometrias (`dispose()`).
+- [x] Testes unitários validando integridade dos códigos/paletas/fontes dos biomas.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts` + inspeção visual no Chromium WebGL.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`3b1b1a0`) com grupos livres (`G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS`).
+- 2026-11-24 · antigravity · REVIEW · Implementado Mapa dos Biomas `BIOMES_MAP` (`public/data/biomes/{global-biomes-wwf,brazil-biomes-ibge}.json` gerados por `build-biomes-topojson.mjs`, `biomes-types.ts`, `biomes-catalog-{global,brazil}.ts`, `biomes-data.ts`, `BiomesLayer.tsx` O(1) GPU com máscara costeira Natural Earth + `dispose()`, `BiomesLayerControls.tsx` D14 bilíngue com ficha ecológica e cruzamentos INPE BDQueimadas / PRODES / NASA GIBS NDVI, picking no `EarthSphere.tsx`, persistência em `view-url.ts` / `study-schema.ts` / `search.ts`). Validado: `build` (`/` 163 kB / `< 160 kB` gzip, `bundle-budget` 6/6), `typecheck`, `lint`, testes unitários (`biomes-map.test.tsx` 10/10, `design-system.test.tsx` e suíte completa) e Playwright Chromium WebGL E2E (`biomes-map.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros).
 
 ---
 

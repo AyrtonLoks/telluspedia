@@ -66,6 +66,10 @@ const MarineDebrisLayer = lazy(() =>
 const InpeDeforestationLayer = lazy(() =>
   import("./InpeDeforestationLayer").then((m) => ({ default: m.InpeDeforestationLayer }))
 );
+// Mapa dos Biomas Global (14 WWF/RESOLVE) & Brasil (6 IBGE) (D31) só baixa quando a camada é ligada.
+const BiomesLayer = lazy(() =>
+  import("./BiomesLayer").then((m) => ({ default: m.BiomesLayer }))
+);
 
 /**
  * Primary directional sunlight synchronized with EarthSphere and OrbitingMoon via
@@ -297,6 +301,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {isContemporary && activeObservatoryLayers.includes("INPE_DEFORESTATION") && (
               <Suspense fallback={null}>
                 <InpeDeforestationLayer />
+              </Suspense>
+            )}
+            {isContemporary && activeObservatoryLayers.includes("BIOMES_MAP") && (
+              <Suspense fallback={null}>
+                <BiomesLayer />
               </Suspense>
             )}
           </EarthOrientationGroup>

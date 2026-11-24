@@ -24,6 +24,7 @@ import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { worldSunDirection } from "@/lib/earth-orientation";
 import { isDragRelease } from "@/lib/pointer-intent";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { pickLoadedBiomeAt } from "@/lib/biomes-types";
 import {
   loadHistoricalTopology,
   getHistoricalTopologySync,
@@ -398,6 +399,15 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
         lng: Number(lng.toFixed(2)),
       });
       return;
+    }
+    if (obsState.activeLayers.includes("BIOMES_MAP")) {
+      const hitBiome = pickLoadedBiomeAt(obsState.biomeScope, lat, lng);
+      if (obsState.biomePickMode) {
+        obsState.setSelectedBiomeId(hitBiome);
+        if (hitBiome) return;
+      } else if (hitBiome) {
+        obsState.setSelectedBiomeId(hitBiome);
+      }
     }
 
     const feature = activeSpatialIndex([lng, lat]);

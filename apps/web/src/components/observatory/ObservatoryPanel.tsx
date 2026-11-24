@@ -19,6 +19,7 @@ import {
   Wind,
   Waves,
   Trees,
+  Leaf,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
@@ -63,6 +64,14 @@ const MarineDebrisControls = dynamic(
 // Controles INPE TerraBrasilis DETER/PRODES (D30) só baixam quando a camada é aberta.
 const InpeDeforestationControls = dynamic(
   () => import("./InpeDeforestationControls").then((m) => m.InpeDeforestationControls),
+  {
+    ssr: false,
+    loading: () => <div className="h-24" aria-hidden="true" />,
+  }
+);
+// Controles do Mapa dos Biomas (Global 14 WWF + Brasil 6 IBGE — D31) só baixam quando a camada é aberta.
+const BiomesLayerControls = dynamic(
+  () => import("./BiomesLayerControls").then((m) => m.BiomesLayerControls),
   {
     ssr: false,
     loading: () => <div className="h-24" aria-hidden="true" />,
@@ -205,6 +214,18 @@ const LAYER_OPTIONS: LayerOption[] = [
       }
       return `${biomeLabel} · PRODES 2025`;
     },
+  },
+  {
+    id: "BIOMES_MAP",
+    name: "Mapa dos Biomas (WWF & IBGE)",
+    source: "WWF / RESOLVE · IBGE Biomas",
+    description: "14 biomas terrestres globais (RESOLVE/WWF) e 6 Biomas Brasileiros (IBGE) com fichas ecológicas.",
+    icon: Leaf,
+    tone: "success",
+    badgeText: (s, _locale, t) =>
+      s.biomeScope === "brazil"
+        ? t("obs.biomes.badgeBrazil", "Brasil · 6 IBGE")
+        : t("obs.biomes.badgeGlobal", "Global · 14 WWF"),
   },
 ];
 
@@ -405,6 +426,7 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                   {layer.id === "GLOBAL_WINDS" && <WindLayerControls />}
                   {layer.id === "MARINE_DEBRIS" && <MarineDebrisControls />}
                   {layer.id === "INPE_DEFORESTATION" && <InpeDeforestationControls />}
+                  {layer.id === "BIOMES_MAP" && <BiomesLayerControls />}
                   {layer.id === "MARITIME_ROUTES" && isContemporary && <MaritimeLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>

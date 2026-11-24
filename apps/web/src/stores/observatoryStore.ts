@@ -32,7 +32,9 @@ import {
   type InpeBdQueimadasPayload,
   type TerraBrasilisPayload,
 } from "@/lib/inpe-types";
+import { DEFAULT_BIOME_SCOPE, isBiomeIdForScope } from "@/lib/biomes-types";
 import {
+  buildBiomesMeta,
   DEFAULT_FIRMS_WINDOW,
   DEFAULT_LAYER_OPACITY,
   fetchObservatoryEnvelope as fetchEnvelope,
@@ -146,6 +148,22 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     }
   },
   setProdesBiome: (prodesBiome) => set({ prodesBiome }),
+  biomeScope: DEFAULT_BIOME_SCOPE,
+  biomeFilterId: null,
+  selectedBiomeId: null,
+  biomePickMode: false,
+  setBiomeScope: (biomeScope) =>
+    set((s) => ({
+      biomeScope,
+      biomeFilterId: isBiomeIdForScope(biomeScope, s.biomeFilterId) ? s.biomeFilterId : null,
+      selectedBiomeId: isBiomeIdForScope(biomeScope, s.selectedBiomeId) ? s.selectedBiomeId : null,
+      layerMeta: s.hasLoaded.BIOMES_MAP
+        ? { ...s.layerMeta, BIOMES_MAP: buildBiomesMeta(biomeScope) }
+        : s.layerMeta,
+    })),
+  setBiomeFilterId: (biomeFilterId) => set({ biomeFilterId }),
+  setSelectedBiomeId: (selectedBiomeId) => set({ selectedBiomeId }),
+  setBiomePickMode: (biomePickMode) => set({ biomePickMode }),
   loadCurrentsData: async () => {
     if (get().currentsLoading) return;
     set({ currentsLoading: true });
@@ -212,6 +230,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         activeLayers: activeLayers.filter((id) => id !== layerId),
         selectedEntity: layerId === "NASA_EONET" && isEonetSelection(state.selectedEntity) ? null : state.selectedEntity,
         marineDebrisPickMode: layerId === "MARINE_DEBRIS" ? false : state.marineDebrisPickMode,
+        biomePickMode: layerId === "BIOMES_MAP" ? false : state.biomePickMode,
       }));
     }
   },
@@ -333,6 +352,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           set({ inpeDeforestation: data });
           applyMeta("INPE_DEFORESTATION", body.meta);
         } else throw new Error("Resposta INPE TerraBrasilis inválida");
+      } else if (layerId === "BIOMES_MAP") {
+        applyMeta("BIOMES_MAP", buildBiomesMeta(get().biomeScope));
       } else if (layerId === "NASA_EONET") {
         const body = await fetchEnvelope("/api/observatory/eonet");
         if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
@@ -383,14 +404,9 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
           latest.currentsMeta.source === "live" || latest.layerMeta.GLOBAL_WINDS.source === "live";
         applyMeta("MARINE_DEBRIS", {
           source: liveDriven ? "computed" : "fallback",
-          provider: liveDriven
-            ? "NOAA Marine Debris · Eriksen–Lebreton + Modelo Lagrangiano (D27)"
-            : "NOAA Marine Debris · Eriksen–Lebreton + Climatologia Lagrangiana",
+          provider: "NOAA · Eriksen–Lebreton (D27)",
           fetchedAt: new Date().toISOString(),
           stale: false,
-          reason: liveDriven
-            ? "Giros observados (NOAA/Eriksen–Lebreton) acoplados a correntes e ventos ao vivo (D27)."
-            : "Giros observados (NOAA/Eriksen–Lebreton) com advecção climatológica de referência.",
         });
       } else if (layerId === "MARITIME_ROUTES") {
         // A malha de corredores é fixa (referência local), com ou sem a amostra AIS ao vivo.
@@ -470,5 +486,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       marineDebrisPickMode: false,
       marineDebrisReleasePoint: null,
       selectedGyreId: null,
+      biomeFilterId: null,
+      selectedBiomeId: null,
+      biomePickMode: false,
     }),
 }));

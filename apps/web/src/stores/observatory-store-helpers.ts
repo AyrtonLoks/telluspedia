@@ -38,6 +38,7 @@ import type {
   ProdesBiomeId,
   TerraBrasilisPayload,
 } from "@/lib/inpe-types";
+import type { BiomeId, BiomeScope } from "@/lib/biomes-types";
 
 export interface FirmsWindow {
   days: FirmsWindowDays;
@@ -56,6 +57,7 @@ export const ALL_OBSERVATORY_LAYERS: readonly ObservatoryLayer[] = [
   "GLOBAL_WINDS",
   "MARINE_DEBRIS",
   "INPE_DEFORESTATION",
+  "BIOMES_MAP",
 ];
 
 export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
@@ -69,6 +71,7 @@ export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
   GLOBAL_WINDS: 0.85,
   MARINE_DEBRIS: 0.9,
   INPE_DEFORESTATION: 0.9,
+  BIOMES_MAP: 0.72,
 };
 
 export function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
@@ -80,6 +83,15 @@ export function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
 
 export function isEonetSelection(entity: ObservatoryEntity | null): boolean {
   return entity?.type === "EONET" || entity?.type === "EONET_CLUSTER";
+}
+
+export function buildBiomesMeta(scope: BiomeScope): ObservatoryMeta {
+  return {
+    source: "computed",
+    provider: scope === "brazil" ? "IBGE Biomas 2019" : "WWF / RESOLVE 2017",
+    fetchedAt: new Date().toISOString(),
+    stale: false,
+  };
 }
 
 export async function fetchObservatoryEnvelope(url: string) {
@@ -175,6 +187,15 @@ export interface ObservatoryState {
   prodesBiome: ProdesBiomeId;
   setFireSource: (source: FireSourceProvider) => void;
   setProdesBiome: (biome: ProdesBiomeId) => void;
+  /** Mapa dos Biomas Global 14 WWF/RESOLVE + Brasil 6 IBGE (D31). */
+  biomeScope: BiomeScope;
+  biomeFilterId: BiomeId | null;
+  selectedBiomeId: BiomeId | null;
+  biomePickMode: boolean;
+  setBiomeScope: (scope: BiomeScope) => void;
+  setBiomeFilterId: (id: BiomeId | null) => void;
+  setSelectedBiomeId: (id: BiomeId | null) => void;
+  setBiomePickMode: (enabled: boolean) => void;
 
   isLoading: Record<ObservatoryLayer, boolean>;
   hasLoaded: Record<ObservatoryLayer, boolean>;
