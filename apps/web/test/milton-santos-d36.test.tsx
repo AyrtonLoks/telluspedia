@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { geoArea } from "d3-geo";
 import { getPublishedDossier } from "@/lib/dossiers-catalog";
 import { findMilestoneById } from "@/lib/milestones";
 import { entities } from "@/lib/tellus-bridge/catalog";
@@ -18,6 +19,7 @@ import {
   isFourBrazilsDataset,
   pickFourBrazilsAt,
   rasterizeFourBrazilsToCanvas,
+  rasterizeHorizontalitiesToCanvas,
   rasterizeMtciToCanvas,
   type FourBrazilsDataset,
 } from "@/lib/four-brazils-data";
@@ -127,6 +129,15 @@ test("D36: Os Quatro Brasis (Santos & Silveira, 2001) + IBGE — geometria, pick
   assert.ok(VERTICALITY_HUBS.length >= 8);
   assert.ok(VERTICALITY_CORRIDORS.length >= 10);
 
+  // Regressão d3-geo winding order: nenhum polígono pode preencher o complemento esférico (~12,5 sr)!
+  for (const feat of [...ds.fourBrazils.features, ...ds.ibgeRegions.features]) {
+    const areaSr = geoArea(feat);
+    assert.ok(
+      areaSr > 0.005 && areaSr < 0.2,
+      `Área esférica inválida em ${feat.properties.scope}/${feat.id}: ${areaSr.toFixed(4)} sr`
+    );
+  }
+
   // Checa classificação crítica (incluindo Palmas/TO no Centro-Oeste de Milton Santos!)
   assert.equal(pickFourBrazilsAt(-23.55, -46.63, ds), "CONCENTRADA"); // São Paulo
   assert.equal(pickFourBrazilsAt(-30.03, -51.23, ds), "CONCENTRADA"); // Porto Alegre (Sul fundido à Concentrada)
@@ -144,6 +155,9 @@ test("D36: Os Quatro Brasis (Santos & Silveira, 2001) + IBGE — geometria, pick
     128
   );
   assert.equal(renderedRegions, 4);
+
+  const renderedHoriz = rasterizeHorizontalitiesToCanvas(makeMockCanvasCtx(), 256, 128);
+  assert.ok(renderedHoriz >= 50, "Horizontalidades deve rasterizar os domínios de contiguidade");
 });
 
 test("D36: busca ⌘K, sincronia de URL (?lente=) e CriticalGeoHud SSR bilíngue funcionam sem erros", () => {

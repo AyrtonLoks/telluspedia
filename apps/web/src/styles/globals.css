@@ -67,6 +67,13 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Mantém viewport travada apenas nas rotas com o Globo 3D / Mapa 2D fullscreen;
+ * páginas de leitura e catálogo (/dossies/*, /studies, /telluslab) rolam normalmente. */
+body:has([data-map-shell]) {
   overflow: hidden;
   user-select: none;
 }

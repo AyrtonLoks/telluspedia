@@ -11,6 +11,7 @@ import { NUMERIC_TO_ISO } from "@/lib/country-data";
 import { createEquirectangularProjection } from "@/lib/choropleth-texture";
 import {
   FOUR_BRAZILS_REGIONS,
+  HORIZONTALITY_COLOR_BY_ISO,
   type MtciDataset,
 } from "@/lib/critical-geo-catalog";
 import {
@@ -222,6 +223,47 @@ export function rasterizeMtciToCanvas(
     ctx.beginPath();
     pathGen(feature as GeoPermissibleObjects);
     ctx.fill();
+    ctx.restore();
+    rendered++;
+  }
+
+  return rendered;
+}
+
+/**
+ * Rasteriza os domínios de contiguidade territorial (Horizontalidades — Santos, 1996)
+ * sobre a malha mundial Natural Earth 1:110m (oceanos 100% transparentes).
+ */
+export function rasterizeHorizontalitiesToCanvas(
+  ctx: CanvasRenderingContext2D,
+  width: number = MTCI_TEXTURE_WIDTH,
+  height: number = MTCI_TEXTURE_HEIGHT
+): number {
+  ctx.clearRect(0, 0, width, height);
+  const projection = createEquirectangularProjection(width, height);
+  const pathGen = geoPath(projection, ctx);
+  const features = getWorldCountryFeatures();
+
+  let rendered = 0;
+  ctx.lineJoin = "round";
+
+  for (const feature of features) {
+    const numericId = String(feature.id ?? "").padStart(3, "0");
+    const iso = NUMERIC_TO_ISO[numericId];
+    if (!iso) continue;
+    const fillHex = HORIZONTALITY_COLOR_BY_ISO[iso];
+    if (!fillHex) continue;
+
+    ctx.save();
+    ctx.globalAlpha = 0.72;
+    ctx.fillStyle = fillHex;
+    ctx.beginPath();
+    pathGen(feature as GeoPermissibleObjects);
+    ctx.fill();
+    ctx.globalAlpha = 0.55;
+    ctx.strokeStyle = "#F8FAFC";
+    ctx.lineWidth = 0.65;
+    ctx.stroke();
     ctx.restore();
     rendered++;
   }

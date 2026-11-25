@@ -371,3 +371,57 @@ export const VERTICALITY_CORRIDORS: ReadonlyArray<readonly [string, string]> = [
   ["jnb", "sin"],
   ["sao", "jnb"],
 ];
+
+export interface HorizontalityZone {
+  id: string;
+  namePt: string;
+  nameEn: string;
+  hex: string;
+  isos: readonly string[];
+}
+
+/**
+ * Domínios de contiguidade territorial (Horizontalidades — Santos, 1996): grandes blocos
+ * de vizinhança geográfica, bacias compartilhadas e cooperação regional contígua.
+ */
+export const HORIZONTALITY_ZONES: readonly HorizontalityZone[] = [
+  {
+    id: "south-america",
+    namePt: "Contiguidade Sul-Americana (Mercosul / Bacia Amazônica / Andes)",
+    nameEn: "South American Contiguity (Mercosur / Amazon Basin / Andes)",
+    hex: "#38B27A",
+    isos: ["BRA", "ARG", "URY", "PRY", "BOL", "CHL", "PER", "ECU", "COL", "VEN", "GUY", "SUR"],
+  },
+  {
+    id: "central-north-america",
+    namePt: "Contiguidade Mesoamericana & Norte-Americana",
+    nameEn: "Mesoamerican & North American Contiguity",
+    hex: "#D9943B",
+    isos: ["MEX", "GTM", "HND", "SLV", "NIC", "CRI", "PAN", "BLZ", "USA", "CAN"],
+  },
+  {
+    id: "europe",
+    namePt: "Contiguidade Europeia (Espaço Contíguo de Fronteiras)",
+    nameEn: "European Territorial Contiguity",
+    hex: "#5AA9B8",
+    isos: ["PRT", "ESP", "FRA", "DEU", "ITA", "BEL", "NLD", "CHE", "AUT", "POL", "CZE", "HUN", "ROU", "GRC", "SWE", "NOR", "FIN", "DNK"],
+  },
+  {
+    id: "africa-contiguous",
+    namePt: "Contiguidade Africana (SADC / CEDEAO / África Oriental)",
+    nameEn: "African Regional Contiguity (SADC / ECOWAS / East Africa)",
+    hex: "#D97757",
+    isos: ["AGO", "MOZ", "ZAF", "NAM", "BWA", "ZWE", "ZMB", "TZA", "KEN", "ETH", "NGA", "GHA", "SEN", "GNB", "MAR", "DZA", "EGY"],
+  },
+  {
+    id: "asean-asia",
+    namePt: "Contiguidade Sul & Sudeste Asiático (ASEAN / Subcontinente)",
+    nameEn: "South & Southeast Asian Contiguity (ASEAN / Subcontinent)",
+    hex: "#84B552",
+    isos: ["IDN", "MYS", "THA", "VNM", "KHM", "LAO", "MMR", "PHL", "TLS", "IND", "BGD", "NPL", "LKA", "PAK"],
+  },
+];
+
+export const HORIZONTALITY_COLOR_BY_ISO: Readonly<Record<string, string>> = Object.fromEntries(
+  HORIZONTALITY_ZONES.flatMap((zone) => zone.isos.map((iso) => [iso, zone.hex]))
+);

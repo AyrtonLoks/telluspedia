@@ -164,6 +164,7 @@ const MIGRATED = [
   "src/components/map2d/FlatMapCanvas.tsx",
   "src/components/map2d/ProjectionSelectorHud.tsx",
   "src/components/critical-geo/CriticalGeoHud.tsx",
+  "src/components/critical-geo/VerticalitiesHudSection.tsx",
   "src/components/dossiers/MiltonSantosDossierView.tsx",
   "src/components/dossiers/MiltonSantosCitations.tsx",
   "src/components/pwa/PwaLifecycle.tsx",

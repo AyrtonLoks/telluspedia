@@ -19,6 +19,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const topojson = require("../node_modules/topojson-client");
 const whichPolygon = require("../node_modules/which-polygon");
+const { geoArea } = require("../node_modules/d3-geo");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WEB_DIR = path.resolve(__dirname, "..");
@@ -86,8 +87,9 @@ function closeRing(points) {
       cleaned.push([first[0], first[1]]);
     }
   }
-  // GeoJSON exterior ring: counterclockwise (signedArea > 0 in lon/lat)
-  if (signedArea(cleaned) < 0) {
+  // d3-geo usa convenção esférica horária (clockwise em lon/lat: signedArea < 0) para o interior
+  // de polígonos pequenos; anéis anti-horários preenchem o complemento (o resto do planeta!).
+  if (signedArea(cleaned) > 0) {
     cleaned.reverse();
   }
   return cleaned;
@@ -413,6 +415,18 @@ const dataset = {
     features: [ibgeNorte, ibgeNordeste, ibgeCentroOeste, ibgeSudeste, ibgeSul],
   },
 };
+
+// Validação esférica d3-geo: garante que nenhum polígono está invertido (preenchendo o planeta inteiro!)
+for (const group of [dataset.fourBrazils.features, dataset.ibgeRegions.features]) {
+  for (const feat of group) {
+    const areaSr = geoArea(feat);
+    if (!(areaSr > 0.005 && areaSr < 0.2)) {
+      throw new Error(
+        `Área esférica inválida em ${feat.properties.scope}/${feat.id}: ${areaSr.toFixed(4)} sr (winding order invertida?)`
+      );
+    }
+  }
+}
 
 // Validação rigorosa de todas as 27 capitais brasileiras contra which-polygon!
 const queryFour = whichPolygon(dataset.fourBrazils);

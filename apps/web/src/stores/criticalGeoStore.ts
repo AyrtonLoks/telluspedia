@@ -4,6 +4,7 @@ import {
   isFourBrazilsRegionId,
   type CriticalGeoLensId,
   type FourBrazilsRegionId,
+  type VerticalityFocusMode,
 } from "@/lib/critical-geo-ids";
 
 export const DEFAULT_CRITICAL_GEO_OPACITY = 0.8;
@@ -12,6 +13,7 @@ interface CriticalGeoState {
   activeLens: CriticalGeoLensId | null;
   selectedRegionId: FourBrazilsRegionId | null;
   hoveredRegionId: FourBrazilsRegionId | null;
+  verticalityMode: VerticalityFocusMode;
   showIbgeComparison: boolean;
   opacity: number;
 
@@ -20,6 +22,7 @@ interface CriticalGeoState {
   clearLens: () => void;
   setSelectedRegion: (regionId: FourBrazilsRegionId | null) => void;
   setHoveredRegion: (regionId: FourBrazilsRegionId | null) => void;
+  setVerticalityMode: (mode: VerticalityFocusMode) => void;
   toggleIbgeComparison: () => void;
   setShowIbgeComparison: (show: boolean) => void;
   setOpacity: (opacity: number) => void;
@@ -30,6 +33,7 @@ export const useCriticalGeoStore = create<CriticalGeoState>((set) => ({
   activeLens: null,
   selectedRegionId: null,
   hoveredRegionId: null,
+  verticalityMode: "both",
   showIbgeComparison: false,
   opacity: DEFAULT_CRITICAL_GEO_OPACITY,
 
@@ -66,6 +70,8 @@ export const useCriticalGeoStore = create<CriticalGeoState>((set) => ({
       hoveredRegionId: isFourBrazilsRegionId(regionId) ? regionId : null,
     }),
 
+  setVerticalityMode: (verticalityMode) => set({ verticalityMode }),
+
   toggleIbgeComparison: () =>
     set((state) => ({ showIbgeComparison: !state.showIbgeComparison })),
 
@@ -84,6 +90,7 @@ export const useCriticalGeoStore = create<CriticalGeoState>((set) => ({
       activeLens: null,
       selectedRegionId: null,
       hoveredRegionId: null,
+      verticalityMode: "both",
       showIbgeComparison: false,
       opacity: DEFAULT_CRITICAL_GEO_OPACITY,
     }),

@@ -93,6 +93,7 @@ export function useFlatMapData(
   const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
   const criticalGeoOpacity = useCriticalGeoStore((s) => s.opacity);
   const selectedFourBrazilsRegion = useCriticalGeoStore((s) => s.selectedRegionId);
+  const verticalityMode = useCriticalGeoStore((s) => s.verticalityMode);
   const showIbgeComparison = useCriticalGeoStore((s) => s.showIbgeComparison);
   const [fourBrazilsData, setFourBrazilsData] = useState<FourBrazilsDataset | null>(() =>
     getFourBrazilsDatasetSync()
@@ -329,6 +330,7 @@ export function useFlatMapData(
       mtciDataset: activeCriticalLens === "MTCI" ? buildMtciDataset() : null,
       fourBrazilsDataset: activeCriticalLens === "FOUR_BRAZILS" ? fourBrazilsData : null,
       selectedRegionId: selectedFourBrazilsRegion,
+      verticalityMode,
       showIbgeComparison,
     };
   }, [
@@ -338,6 +340,7 @@ export function useFlatMapData(
     criticalGeoOpacity,
     fourBrazilsData,
     selectedFourBrazilsRegion,
+    verticalityMode,
     showIbgeComparison,
   ]);
 

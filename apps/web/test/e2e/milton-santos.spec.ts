@@ -14,14 +14,22 @@ test.describe("D36: Geografia Crítica & Legado de Milton Santos", () => {
   test("renderiza /dossies/milton-santos com citações e ativa as 3 lentes espaciais no globo 3D e 2D sem erros", async ({
     page,
   }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(150_000);
     const { pageErrors, consoleErrors } = attachErrorCollectors(page);
 
-    // 1. Dossiê dedicado /dossies/milton-santos (Centenário 1926–2026 + citações ABNT/APA/BibTeX)
+    // 1. Dossiê dedicado /dossies/milton-santos (Centenário 1926–2026 + scroll real + citações ABNT/APA/BibTeX)
     await page.goto("/dossies/milton-santos");
     await expect(page.getByTestId("milton-santos-dossier")).toBeVisible({ timeout: 25_000 });
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/Milton Santos/i);
     await expect(page.getByTestId("milton-santos-dossier")).toContainText("Centenário 1926–2026");
+
+    // Garante que páginas de dossiê/estudos rolam normalmente (sem overflow: hidden travando o body)
+    const scrolledY = await page.evaluate(() => {
+      window.scrollTo(0, 400);
+      return window.scrollY;
+    });
+    expect(scrolledY).toBeGreaterThan(100);
+    await page.evaluate(() => window.scrollTo(0, 0));
 
     // Alterna aba de citação para BibTeX
     await page.getByTestId("milton-cite-tab-bibtex").click();
@@ -49,6 +57,17 @@ test.describe("D36: Geografia Crítica & Legado de Milton Santos", () => {
 
     await page.getByTestId("critical-geo-tab-VERTICALITIES").click();
     await expect(page.getByTestId("critical-geo-verticalities-panel")).toBeVisible();
+
+    // Testa alternância interativa Horizontalidades <-> Verticalidades <-> Ambos
+    await page.getByTestId("verticalities-mode-horizontalities").click();
+    await expect(page.getByTestId("verticalities-mode-horizontalities")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByTestId("horizontalities-zones-legend")).toBeVisible();
+
+    await page.getByTestId("verticalities-mode-verticalities").click();
+    await expect(page.getByTestId("verticalities-mode-verticalities")).toHaveAttribute("aria-pressed", "true");
+
+    await page.getByTestId("verticalities-mode-both").click();
+    await expect(page.getByTestId("verticalities-mode-both")).toHaveAttribute("aria-pressed", "true");
 
     // Verifica modo 2D e tradução EN
     await page.getByTestId("map-mode-2d").click();

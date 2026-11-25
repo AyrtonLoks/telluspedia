@@ -11,6 +11,14 @@ export const CRITICAL_GEO_LENS_IDS = [
 
 export type CriticalGeoLensId = (typeof CRITICAL_GEO_LENS_IDS)[number];
 
+export const VERTICALITY_FOCUS_MODES = [
+  "verticalities",
+  "horizontalities",
+  "both",
+] as const;
+
+export type VerticalityFocusMode = (typeof VERTICALITY_FOCUS_MODES)[number];
+
 export const FOUR_BRAZILS_REGION_IDS = [
   "CONCENTRADA",
   "CENTRO_OESTE",

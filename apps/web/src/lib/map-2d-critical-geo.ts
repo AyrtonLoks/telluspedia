@@ -6,6 +6,7 @@
 import { geoPath, type GeoPermissibleObjects, type GeoProjection } from "d3-geo";
 import {
   FOUR_BRAZILS_REGIONS,
+  HORIZONTALITY_COLOR_BY_ISO,
   VERTICALITY_CORRIDORS,
   VERTICALITY_HUBS,
   type MtciDataset,
@@ -14,6 +15,7 @@ import {
   isFourBrazilsRegionId,
   type CriticalGeoLensId,
   type FourBrazilsRegionId,
+  type VerticalityFocusMode,
 } from "@/lib/critical-geo-ids";
 import type { FourBrazilsDataset } from "@/lib/four-brazils-data";
 import type { CountryProperties } from "@/lib/historical-topology";
@@ -25,6 +27,7 @@ export interface FlatMapCriticalGeoState {
   mtciDataset: MtciDataset | null;
   fourBrazilsDataset: FourBrazilsDataset | null;
   selectedRegionId: FourBrazilsRegionId | null;
+  verticalityMode: VerticalityFocusMode;
   showIbgeComparison: boolean;
 }
 
@@ -97,40 +100,64 @@ export function renderCriticalGeo2dLayer(
   }
 
   if (state.lens === "VERTICALITIES") {
-    const hubById = new Map(VERTICALITY_HUBS.map((h) => [h.id, h]));
-    ctx.save();
-    ctx.strokeStyle = "#38BDF8";
-    ctx.globalAlpha = Math.min(1, state.opacity + 0.08);
-    ctx.lineWidth = 1.5;
+    const showHoriz = state.verticalityMode === "horizontalities" || state.verticalityMode === "both";
+    const showVert = state.verticalityMode === "verticalities" || state.verticalityMode === "both";
 
-    for (const [fromId, toId] of VERTICALITY_CORRIDORS) {
-      const a = hubById.get(fromId);
-      const b = hubById.get(toId);
-      if (!a || !b) continue;
-      const line: GeoJSON.LineString = {
-        type: "LineString",
-        coordinates: [
-          [a.lng, a.lat],
-          [b.lng, b.lat],
-        ],
-      };
-      ctx.beginPath();
-      path(line as GeoPermissibleObjects);
-      ctx.stroke();
+    if (showHoriz) {
+      ctx.save();
+      for (const feature of countryFeatures) {
+        const iso = resolveTopologyFeatureIso(
+          { ...feature.properties, id: feature.id ?? feature.properties?.id },
+          null
+        );
+        if (!iso) continue;
+        const fillHex = HORIZONTALITY_COLOR_BY_ISO[iso];
+        if (!fillHex) continue;
+        ctx.globalAlpha = state.opacity * 0.68;
+        ctx.fillStyle = fillHex;
+        ctx.beginPath();
+        path(feature as GeoPermissibleObjects);
+        ctx.fill();
+      }
+      ctx.restore();
     }
 
-    ctx.fillStyle = "#7BE3F6";
-    ctx.strokeStyle = "#0B1120";
-    ctx.lineWidth = 1.2;
-    ctx.globalAlpha = 0.96;
-    for (const hub of VERTICALITY_HUBS) {
-      const pt = projection([hub.lng, hub.lat]);
-      if (!pt || !Number.isFinite(pt[0]) || !Number.isFinite(pt[1])) continue;
-      ctx.beginPath();
-      ctx.arc(pt[0], pt[1], 4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+    if (showVert) {
+      const hubById = new Map(VERTICALITY_HUBS.map((h) => [h.id, h]));
+      ctx.save();
+      ctx.strokeStyle = "#38BDF8";
+      ctx.globalAlpha = Math.min(1, state.opacity + 0.08);
+      ctx.lineWidth = 1.5;
+
+      for (const [fromId, toId] of VERTICALITY_CORRIDORS) {
+        const a = hubById.get(fromId);
+        const b = hubById.get(toId);
+        if (!a || !b) continue;
+        const line: GeoJSON.LineString = {
+          type: "LineString",
+          coordinates: [
+            [a.lng, a.lat],
+            [b.lng, b.lat],
+          ],
+        };
+        ctx.beginPath();
+        path(line as GeoPermissibleObjects);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#7BE3F6";
+      ctx.strokeStyle = "#0B1120";
+      ctx.lineWidth = 1.2;
+      ctx.globalAlpha = 0.96;
+      for (const hub of VERTICALITY_HUBS) {
+        const pt = projection([hub.lng, hub.lat]);
+        if (!pt || !Number.isFinite(pt[0]) || !Number.isFinite(pt[1])) continue;
+        ctx.beginPath();
+        ctx.arc(pt[0], pt[1], 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
     }
-    ctx.restore();
   }
 }

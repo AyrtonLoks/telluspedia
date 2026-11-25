@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import Link from "next/link";
-import { BookOpen, Compass, ExternalLink, Layers, Plane, Satellite, Ship, X } from "lucide-react";
+import { BookOpen, Compass, ExternalLink, Layers, X } from "lucide-react";
 import {
   buildMtciDataset,
   CRITICAL_GEO_LENS_LIST,
@@ -10,8 +10,8 @@ import {
   FOUR_BRAZILS_LIST,
   FOUR_BRAZILS_REGIONS,
   MTCI_PALETTE,
-  VERTICALITY_HUBS,
 } from "@/lib/critical-geo-catalog";
+import { VerticalitiesHudSection } from "./VerticalitiesHudSection";
 import { buildPaletteGradientCss, CHOROPLETH_MISSING_SWATCH_CSS } from "@/lib/choropleth";
 import { WORLD_COUNTRIES_CATALOG } from "@/lib/country-data";
 import { formatCountryName } from "@/lib/i18n/format";
@@ -40,6 +40,7 @@ export const CriticalGeoHud: React.FC = () => {
 
   const storeActiveLens = useCriticalGeoStore((s) => s.activeLens);
   const storeSelectedRegionId = useCriticalGeoStore((s) => s.selectedRegionId);
+  const storeVerticalityMode = useCriticalGeoStore((s) => s.verticalityMode);
   const storeShowIbgeComparison = useCriticalGeoStore((s) => s.showIbgeComparison);
   const storeOpacity = useCriticalGeoStore((s) => s.opacity);
   const activeLens =
@@ -48,6 +49,10 @@ export const CriticalGeoHud: React.FC = () => {
     typeof window === "undefined"
       ? useCriticalGeoStore.getState().selectedRegionId
       : storeSelectedRegionId;
+  const verticalityMode =
+    typeof window === "undefined"
+      ? useCriticalGeoStore.getState().verticalityMode
+      : storeVerticalityMode;
   const showIbgeComparison =
     typeof window === "undefined"
       ? useCriticalGeoStore.getState().showIbgeComparison
@@ -57,6 +62,7 @@ export const CriticalGeoHud: React.FC = () => {
   const setLens = useCriticalGeoStore((s) => s.setLens);
   const clearLens = useCriticalGeoStore((s) => s.clearLens);
   const setSelectedRegion = useCriticalGeoStore((s) => s.setSelectedRegion);
+  const setVerticalityMode = useCriticalGeoStore((s) => s.setVerticalityMode);
   const setShowIbgeComparison = useCriticalGeoStore((s) => s.setShowIbgeComparison);
   const setOpacity = useCriticalGeoStore((s) => s.setOpacity);
 
@@ -103,12 +109,12 @@ export const CriticalGeoHud: React.FC = () => {
   return (
     <div
       data-testid="critical-geo-hud"
-      className="pointer-events-none fixed bottom-[calc(var(--timeline-height)+1rem)] left-3 z-20 flex max-w-[min(calc(100vw-1.5rem),24rem)] flex-col gap-2 xl:left-6"
+      className="pointer-events-none fixed left-3 top-[var(--map-annotation-top)] z-20 flex max-w-[min(calc(100vw-1.5rem),23.5rem)] flex-col gap-2 xl:left-6"
     >
       <Panel
         role="region"
         aria-label={t("criticalGeo.hudAria", "Lente de Geografia Crítica — Milton Santos")}
-        className="pointer-events-auto flex max-h-[min(66vh,32rem)] flex-col overflow-hidden shadow-e2"
+        className="pointer-events-auto flex max-h-[var(--map-overlay-height)] flex-col overflow-hidden shadow-e2"
       >
         {/* Cabeçalho */}
         <div className="flex items-start justify-between gap-2 border-b border-line px-3.5 py-2.5">
@@ -250,77 +256,15 @@ export const CriticalGeoHud: React.FC = () => {
 
           {/* Lente 2: Horizontalidades vs. Verticalidades */}
           {activeLens === "VERTICALITIES" && (
-            <div className="space-y-2.5" data-testid="critical-geo-verticalities-panel">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-card border border-accent/40 bg-accent/10 p-2.5">
-                  <div className="text-label font-semibold text-accent">
-                    {t("criticalGeo.upperCircuit", "Verticalidades")}
-                  </div>
-                  <p className="mt-1 leading-relaxed text-fg-secondary">
-                    {t(
-                      "criticalGeo.upperCircuitDesc",
-                      "Circuito superior: finanças globais, aviação, rotas marítimas e redes de informação que conectam nós distantes."
-                    )}
-                  </p>
-                </div>
-                <div className="rounded-card border border-line bg-surface-raised p-2.5">
-                  <div className="text-label font-semibold text-fg">
-                    {t("criticalGeo.lowerCircuit", "Horizontalidades")}
-                  </div>
-                  <p className="mt-1 leading-relaxed text-fg-secondary">
-                    {t(
-                      "criticalGeo.lowerCircuitDesc",
-                      "Circuito inferior: contiguidade territorial, trabalho local, solidariedade cotidiana e território usado."
-                    )}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <span className="text-caption font-medium text-fg">
-                  {t("criticalGeo.crossWithFlows", "Cruzar ao vivo com fluxos reais do Observatório:")}
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {(
-                    [
-                      { id: "FLIGHTS_OPENSKY", labelPt: "Aviação", labelEn: "Aviation", icon: Plane, count: flightsCount },
-                      { id: "MARITIME_ROUTES", labelPt: "Marítimo AIS", labelEn: "AIS Maritime", icon: Ship, count: vesselsCount },
-                      { id: "ISS_SATELLITES", labelPt: "Satélites", labelEn: "Satellites", icon: Satellite, count: satellitesCount },
-                    ] as const
-                  ).map((item) => {
-                    const active = activeObsLayers.includes(item.id);
-                    const Icon = item.icon;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        aria-pressed={active}
-                        data-testid={`verticalities-cross-${item.id}`}
-                        onClick={() => toggleObservatoryCrossLayer(item.id)}
-                        className={cn(
-                          "inline-flex items-center gap-1.5 rounded-control border px-2.5 py-1 text-caption font-medium transition-colors duration-fast ease-out",
-                          active
-                            ? "border-accent/50 bg-accent/15 text-accent"
-                            : "border-line bg-surface-raised text-fg-secondary hover:bg-surface-hover hover:text-fg"
-                        )}
-                      >
-                        <Icon aria-hidden="true" className="h-3.5 w-3.5" />
-                        <span>{isEn ? item.labelEn : item.labelPt}</span>
-                        {active && item.count > 0 && (
-                          <span className="font-mono tabular-nums">({item.count})</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="rounded-card border border-line bg-surface-sunken/80 p-2.5 text-fg-muted">
-                {t("criticalGeo.hubsCountPrefix", "Eixos destacados entre")}{" "}
-                <span className="font-mono tabular-nums text-fg">{VERTICALITY_HUBS.length}</span>{" "}
-                {t("criticalGeo.hubsCountSuffix", "metrópoles de comando global (Nova Iorque, Londres, Frankfurt, Tóquio, Xangai, Singapura, São Paulo e Joanesburgo).")}
-              </div>
-            </div>
+            <VerticalitiesHudSection
+              verticalityMode={verticalityMode}
+              onSelectMode={setVerticalityMode}
+              activeObsLayers={activeObsLayers}
+              onToggleObsLayer={toggleObservatoryCrossLayer}
+              flightsCount={flightsCount}
+              vesselsCount={vesselsCount}
+              satellitesCount={satellitesCount}
+            />
           )}
 
           {/* Lente 3: Os Quatro Brasis */}

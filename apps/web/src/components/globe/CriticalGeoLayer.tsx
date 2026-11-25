@@ -13,9 +13,8 @@ import {
   FOUR_BRAZILS_TEXTURE_WIDTH,
   getFourBrazilsDatasetSync,
   loadFourBrazilsDataset,
-  MTCI_TEXTURE_HEIGHT,
-  MTCI_TEXTURE_WIDTH,
   rasterizeFourBrazilsToCanvas,
+  rasterizeHorizontalitiesToCanvas,
   rasterizeMtciToCanvas,
   type FourBrazilsDataset,
 } from "@/lib/four-brazils-data";
@@ -88,6 +87,7 @@ function buildVerticalityArcGeometry(): THREE.BufferGeometry {
 export function CriticalGeoLayer() {
   const activeLens = useCriticalGeoStore((s) => s.activeLens);
   const selectedRegionId = useCriticalGeoStore((s) => s.selectedRegionId);
+  const verticalityMode = useCriticalGeoStore((s) => s.verticalityMode);
   const showIbgeComparison = useCriticalGeoStore((s) => s.showIbgeComparison);
   const opacity = useCriticalGeoStore((s) => s.opacity);
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
@@ -115,15 +115,34 @@ export function CriticalGeoLayer() {
     };
   }, [activeLens]);
 
+  const showHorizontalities =
+    !isCosmicMode &&
+    activeLens === "VERTICALITIES" &&
+    (verticalityMode === "horizontalities" || verticalityMode === "both");
   const isRasterLens =
-    !isCosmicMode && (activeLens === "MTCI" || (activeLens === "FOUR_BRAZILS" && fourBrazilsData !== null));
-  const isVerticalities = !isCosmicMode && activeLens === "VERTICALITIES";
+    !isCosmicMode &&
+    (activeLens === "MTCI" ||
+      activeLens === "VERTICALITIES" ||
+      (activeLens === "FOUR_BRAZILS" && fourBrazilsData !== null));
+  const isVerticalities =
+    !isCosmicMode &&
+    activeLens === "VERTICALITIES" &&
+    (verticalityMode === "verticalities" || verticalityMode === "both");
 
   const rasterRadius = activeLens === "FOUR_BRAZILS" ? FOUR_BRAZILS_SPHERE_RADIUS : MTCI_SPHERE_RADIUS;
+  const rasterVisible =
+    activeLens === "MTCI" || activeLens === "FOUR_BRAZILS" || showHorizontalities;
 
   const sphereGeometry = useMemo(
-    () => (isRasterLens ? new THREE.SphereGeometry(rasterRadius, 128, 64) : null),
-    [isRasterLens, rasterRadius]
+    () =>
+      isRasterLens
+        ? new THREE.SphereGeometry(
+            rasterRadius,
+            activeLens === "FOUR_BRAZILS" ? 128 : 96,
+            activeLens === "FOUR_BRAZILS" ? 64 : 48
+          )
+        : null,
+    [isRasterLens, rasterRadius, activeLens]
   );
 
   const sphereMaterial = useMemo(() => {
@@ -162,13 +181,13 @@ export function CriticalGeoLayer() {
     };
   }, [isRasterLens]);
 
-  // Rasteriza MTCI ou Quatro Brasis na CanvasTexture reutilizada
+  // Rasteriza MTCI, Horizontalidades ou Quatro Brasis na CanvasTexture reutilizada
   useEffect(() => {
-    if (!isRasterLens || !sphereMaterial || typeof document === "undefined") return;
+    if (!isRasterLens || !rasterVisible || !sphereMaterial || typeof document === "undefined") return;
     if (!canvasResource.current) {
       const canvas = document.createElement("canvas");
-      canvas.width = activeLens === "FOUR_BRAZILS" ? FOUR_BRAZILS_TEXTURE_WIDTH : MTCI_TEXTURE_WIDTH;
-      canvas.height = activeLens === "FOUR_BRAZILS" ? FOUR_BRAZILS_TEXTURE_HEIGHT : MTCI_TEXTURE_HEIGHT;
+      canvas.width = activeLens === "FOUR_BRAZILS" ? FOUR_BRAZILS_TEXTURE_WIDTH : 1024;
+      canvas.height = activeLens === "FOUR_BRAZILS" ? FOUR_BRAZILS_TEXTURE_HEIGHT : 512;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
@@ -185,6 +204,8 @@ export function CriticalGeoLayer() {
     const { canvas, ctx, texture } = canvasResource.current;
     if (activeLens === "MTCI") {
       rasterizeMtciToCanvas(ctx, buildMtciDataset(), canvas.width, canvas.height);
+    } else if (showHorizontalities) {
+      rasterizeHorizontalitiesToCanvas(ctx, canvas.width, canvas.height);
     } else if (activeLens === "FOUR_BRAZILS" && fourBrazilsData) {
       rasterizeFourBrazilsToCanvas(
         ctx,
@@ -202,7 +223,9 @@ export function CriticalGeoLayer() {
     invalidate();
   }, [
     isRasterLens,
+    rasterVisible,
     activeLens,
+    showHorizontalities,
     fourBrazilsData,
     selectedRegionId,
     showIbgeComparison,
@@ -282,6 +305,7 @@ export function CriticalGeoLayer() {
       {isRasterLens && sphereGeometry && sphereMaterial && (
         <mesh
           name={`critical-geo-${activeLens.toLowerCase()}`}
+          visible={rasterVisible}
           geometry={sphereGeometry}
           material={sphereMaterial}
           renderOrder={1}
