@@ -10,6 +10,7 @@ import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useChoroplethStore } from "@/stores/choroplethStore";
+import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { panelButtonAction, useRightDock } from "@/components/layout/useRightDock";
@@ -65,12 +66,14 @@ export const TopNavBar: React.FC = () => {
     toggleCosmicMode();
   };
   const activeChoropleth = useStoreSnapshot(useChoroplethStore, (s) => s.activeIndicator);
+  const activeCriticalLens = useStoreSnapshot(useCriticalGeoStore, (s) => s.activeLens);
   const isChoroplethSelectorOpen = useStoreSnapshot(useChoroplethStore, (s) => s.isSelectorOpen);
   const toggleChoroplethSelector = useChoroplethStore((s) => s.toggleSelector);
 
   const handleResetGlobe = () => {
     resetGlobeView();
     useChoroplethStore.getState().resetChoropleth();
+    useCriticalGeoStore.getState().resetCriticalGeo();
     useStudyStore.getState().resetStudy();
     if (typeof window !== "undefined" && window.location.pathname.startsWith("/study/")) {
       window.history.replaceState(null, "", "/");
@@ -157,13 +160,13 @@ export const TopNavBar: React.FC = () => {
           onMouseEnter={preloadChoroplethHud}
           onFocus={preloadChoroplethHud}
           data-testid="top-nav-choropleth-button"
-          aria-pressed={isChoroplethSelectorOpen || activeChoropleth !== null}
-          className={navItemClasses(isChoroplethSelectorOpen || activeChoropleth !== null)}
+          aria-pressed={isChoroplethSelectorOpen || activeChoropleth !== null || activeCriticalLens !== null}
+          className={navItemClasses(isChoroplethSelectorOpen || activeChoropleth !== null || activeCriticalLens !== null)}
           title={t("nav.thematicTitle", "Mapa temático coroplético (colorir os 177 países por indicador real)")}
         >
           <Layers aria-hidden="true" className="h-4 w-4" />
           <span className="hidden xl:inline">{t("nav.thematic", "Temático")}</span>
-          {activeChoropleth !== null && (
+          {(activeChoropleth !== null || activeCriticalLens !== null) && (
             <span className="absolute right-1 top-1 flex h-2 w-2" aria-hidden="true">
               <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
             </span>

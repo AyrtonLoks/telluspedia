@@ -102,8 +102,9 @@ import { APOLLO11_PHASES, CAPE_CANAVERAL_COORDS, TRANQUILITY_BASE_COORDS } from 
 describe("D12b: migração sem perda para cenas", () => {
   const before = JSON.parse(fs.readFileSync(path.join(__dirname, "fixtures/pre-d12b-events.json"), "utf-8"));
 
-  test("os 28 marcos globais originais e os 17 dos países seguem idênticos após D24 e T48", () => {
-    // D24 acrescentou Marco Polo e Vasco da Gama; T48 acrescentou 7 marcos globais curados (2022–2026).
+  test("os 28 marcos globais originais e os 17 dos países seguem idênticos após D24, T48 e D36", () => {
+    // D24 acrescentou Marco Polo e Vasco da Gama; T48 acrescentou 7 marcos globais curados (2022–2026);
+    // D36 acrescentou o Prêmio Vautrin Lud a Milton Santos (1994).
     const D24_NEW = ["polo-1271", "gama-1497"];
     const T48_NEW = [
       "glo-2022-ukr",
@@ -114,7 +115,8 @@ describe("D12b: migração sem perda para cenas", () => {
       "glo-2025-cop30",
       "glo-2026-milton",
     ];
-    const ADDED = [...D24_NEW, ...T48_NEW];
+    const D36_NEW = ["bra-1994-milton-santos"];
+    const ADDED = [...D24_NEW, ...T48_NEW, ...D36_NEW];
     assert.equal(GLOBAL_MILESTONES.length, 28 + ADDED.length);
     assert.deepStrictEqual(ADDED.filter((id) => GLOBAL_MILESTONES.some((m) => m.id === id)), ADDED);
     const previous = GLOBAL_MILESTONES.filter((m) => !ADDED.includes(m.id));
@@ -155,10 +157,10 @@ describe("D12b: migração sem perda para cenas", () => {
     assert.doesNotMatch(catalog, /from "zod"|import \{[^}]*\} from "\.\/schema"/, "zod fora do bundle do cliente");
   });
 
-  test("catálogo: 54 cenas publicadas (47 + 7 marcos T48), todas com fonte, ids únicos, ordem cronológica dos globais", () => {
-    assert.equal(ALL_SCENES.length, 54);
+  test("catálogo: 55 cenas publicadas (47 + 7 marcos T48 + 1 marco D36), todas com fonte, ids únicos, ordem cronológica dos globais", () => {
+    assert.equal(ALL_SCENES.length, 55);
     assert.ok(ALL_SCENES.every((s) => s.sources.length > 0 && s.sources[0].label.length > 1));
-    assert.equal(new Set(ALL_SCENES.map((s) => s.id)).size, 54);
+    assert.equal(new Set(ALL_SCENES.map((s) => s.id)).size, 55);
     const years = globalMilestones().map((m) => m.year);
     assert.deepEqual(years, [...years].sort((a, b) => a - b));
   });

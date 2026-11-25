@@ -20,6 +20,8 @@ import {
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { restoreContemporaryTimeline } from "@/stores/actions";
 import { useChoroplethStore } from "@/stores/choroplethStore";
+import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
+import type { CriticalGeoLensId } from "@/lib/critical-geo-ids";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
@@ -375,10 +377,27 @@ export const ChoroplethHud: React.FC = () => {
   const focusedEntry =
     dataset && focusedIso ? (dataset.entries[focusedIso] ?? null) : null;
 
+  const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
+  const setCriticalLens = useCriticalGeoStore((s) => s.setLens);
+  const clearCriticalLens = useCriticalGeoStore((s) => s.clearLens);
+  const flyTo = useGlobeStore((s) => s.flyTo);
+
   const handleSelectIndicator = (id: ChoroplethIndicatorId) => {
+    clearCriticalLens();
     setIndicator(id);
     if (isCosmicMode) exitToEarthView();
     if (!epoch.isContemporary) restoreContemporaryTimeline();
+    setSelectorOpen(false);
+  };
+
+  const handleSelectCriticalLens = (id: CriticalGeoLensId) => {
+    clearIndicator();
+    if (isCosmicMode) exitToEarthView();
+    if (!epoch.isContemporary) restoreContemporaryTimeline();
+    setCriticalLens(id);
+    if (id === "FOUR_BRAZILS") {
+      flyTo(-14.2, -51.9, 1.95);
+    }
     setSelectorOpen(false);
   };
 
@@ -393,11 +412,14 @@ export const ChoroplethHud: React.FC = () => {
         <div className="pointer-events-none fixed left-3 top-[var(--map-annotation-top)] z-30 xl:left-6">
           <ChoroplethSelectorView
             activeIndicator={activeIndicator}
+            activeCriticalLens={activeCriticalLens}
             opacity={opacity}
             isGlobeEligible={isGlobeEligible}
             onSelect={handleSelectIndicator}
+            onSelectCriticalLens={handleSelectCriticalLens}
             onClear={() => {
               clearIndicator();
+              clearCriticalLens();
               setSelectorOpen(false);
             }}
             onOpacityChange={setOpacity}

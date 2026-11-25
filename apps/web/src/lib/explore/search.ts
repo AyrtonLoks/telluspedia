@@ -14,6 +14,8 @@ import {
   isMapProjectionId,
 } from "@/lib/map-projections-types";
 import { useChoroplethStore } from "@/stores/choroplethStore";
+import { isCriticalGeoLensId } from "@/lib/critical-geo-ids";
+import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { ALL_COSMIC_LAYERS, COSMIC_LAYER_LABELS, useCosmicStore, type CosmicLayerId } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -134,6 +136,34 @@ const entries: SearchResult[] = [
   })),
   { id: "compare:", group: "command", title: "Abrir comparador", keywords: "comparar países" },
   { id: "route:/studies", group: "command", title: "Abrir Galeria de Estudos", detail: "/studies", keywords: "estudos públicos galeria forks snapshots" },
+  {
+    id: "route:/dossies/milton-santos",
+    group: "command",
+    title: "Dossiê: Milton Santos — Geografia Crítica (1926–2026)",
+    detail: "/dossies/milton-santos",
+    keywords: "milton santos geografia critica vautrin lud centenario territorio usado natureza do espaco outra globalizacao",
+  },
+  {
+    id: "lens:MTCI",
+    group: "command",
+    title: "Lente Milton Santos: Meio Técnico-Científico-Informacional",
+    detail: "Geografia Crítica",
+    keywords: "milton santos mtci meio tecnico cientifico informacional espacos luminosos opacos geografia critica",
+  },
+  {
+    id: "lens:VERTICALITIES",
+    group: "command",
+    title: "Lente Milton Santos: Horizontalidades vs. Verticalidades",
+    detail: "Geografia Crítica",
+    keywords: "milton santos verticalidades horizontalidades circuito superior inferior fluxos globais geografia critica",
+  },
+  {
+    id: "lens:FOUR_BRAZILS",
+    group: "command",
+    title: "Mapa Milton Santos: Os Quatro Brasis (2001)",
+    detail: "Geografia Crítica · Brasil",
+    keywords: "milton santos quatro brasis 4 brasis regiao concentrada centro oeste nordeste amazonia silveira ibge",
+  },
   { id: "map:2d", group: "command", title: "Alternar para Mapa 2D (Projeções)", detail: "2D", keywords: "mapa plano 2d projecao cartografica equal earth mercator robinson azimutal" },
   { id: "map:3d", group: "command", title: "Alternar para Globo 3D", detail: "3D", keywords: "globo 3d esfera planeta" },
   ...MAP_PROJECTION_IDS.map((id) => ({
@@ -346,6 +376,15 @@ export function runSearchResult(result: SearchResult) {
         showEarth();
         globe.setProjectionId(value);
         globe.setViewMode("2d");
+      } else if (result.id.startsWith("lens:") && isCriticalGeoLensId(value)) {
+        if (!getEpochState().isContemporary) restoreContemporaryTimeline();
+        showEarth();
+        useChoroplethStore.getState().clearIndicator();
+        useCriticalGeoStore.getState().setLens(value);
+        if (value === "FOUR_BRAZILS") {
+          selectCountry("BRA");
+          globe.flyTo(-14.2, -51.9, 1.95);
+        }
       } else {
         if (value) comparator.setSelectedIsos(value.split(","));
         comparator.openComparator();

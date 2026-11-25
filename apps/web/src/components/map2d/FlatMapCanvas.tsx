@@ -148,6 +148,7 @@ export const FlatMapCanvas: React.FC = () => {
       choroplethOpacity: data.choroplethOpacity,
       biomes: data.biomesRenderData,
       observatory: isContemporary2d ? observatory : null,
+      criticalGeo: data.criticalGeoRenderData,
       azimuthalCenter: data.azimuthalCenter,
     });
   }, [size, projection, projectionId, data, observatory, isContemporary2d, showGraticule, zoom]);

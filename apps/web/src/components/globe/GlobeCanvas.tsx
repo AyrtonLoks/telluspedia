@@ -47,6 +47,7 @@ import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
 
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
 import { useI18n } from "@/lib/i18n/useT";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -79,6 +80,10 @@ const SpeciesLayer = lazy(() =>
 );
 const SpeciesHudOverlay = lazy(() =>
   import("@/components/observatory/SpeciesHudOverlay").then((m) => ({ default: m.SpeciesHudOverlay }))
+);
+// Lentes de Geografia Crítica — Legado de Milton Santos (D36) só baixam quando ativadas.
+const CriticalGeoLayer = lazy(() =>
+  import("./CriticalGeoLayer").then((m) => ({ default: m.CriticalGeoLayer }))
 );
 
 /**
@@ -175,6 +180,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
   const isContemporary = epoch.isContemporary;
 
   const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
+  const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const cosmicScaleMode = useCosmicStore((s) => s.scaleMode);
@@ -322,6 +328,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {isContemporary && activeObservatoryLayers.includes("SPECIES_MAP") && (
               <Suspense fallback={null}>
                 <SpeciesLayer />
+              </Suspense>
+            )}
+            {isContemporary && activeCriticalLens !== null && (
+              <Suspense fallback={null}>
+                <CriticalGeoLayer />
               </Suspense>
             )}
           </EarthOrientationGroup>

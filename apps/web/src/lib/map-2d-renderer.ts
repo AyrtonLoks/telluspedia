@@ -29,6 +29,10 @@ import {
   type Observatory2dHitTarget,
   type Observatory2dRenderState,
 } from "@/lib/map-2d-observatory";
+import {
+  renderCriticalGeo2dLayer,
+  type FlatMapCriticalGeoState,
+} from "@/lib/map-2d-critical-geo";
 import { getTerritorialStatusKindForGeometry } from "@/lib/territorial-status";
 
 type GeoFeature = GeoJSON.Feature<GeoJSON.Geometry, CountryProperties>;
@@ -195,6 +199,7 @@ export interface Render2dMapParams {
     opacity: number;
   } | null;
   observatory?: Observatory2dRenderState | null;
+  criticalGeo?: FlatMapCriticalGeoState | null;
   azimuthalCenter?: readonly [number, number] | null;
 }
 
@@ -217,6 +222,7 @@ export function render2dMapFrame(params: Render2dMapParams): Observatory2dHitTar
     choroplethOpacity,
     biomes,
     observatory,
+    criticalGeo,
     azimuthalCenter,
   } = params;
 
@@ -443,6 +449,11 @@ export function render2dMapFrame(params: Render2dMapParams): Observatory2dHitTar
     observatory && !isHistorical && observatory.activeLayers.length > 0
       ? renderObservatory2dLayers(ctx, width, height, projection, projectionId, observatory)
       : [];
+
+  // 8c. Lentes de Geografia Crítica — Legado de Milton Santos (D36)
+  if (criticalGeo && !isHistorical) {
+    renderCriticalGeo2dLayer(ctx, projection, cached.collection.features, criticalGeo);
+  }
 
   ctx.restore(); // Fim do clip na esfera
 

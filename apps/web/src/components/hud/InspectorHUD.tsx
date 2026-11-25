@@ -334,6 +334,19 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
           <StudyContext entityId="figure:dom-pedro-ii" />
         </div>
       )}
+      {currentCountry.isoCode === "BRA" &&
+        (selectedMilestoneId === "bra-1994-milton-santos" ||
+          selectedMilestoneId === "glo-2026-milton") && (
+          <div>
+            <Link
+              className="text-label text-accent hover:text-accent-hover hover:underline"
+              href="/dossies/milton-santos"
+            >
+              Milton Santos — {t("criticalGeo.brand", "Geografia Crítica · Milton Santos")}
+            </Link>
+            <StudyContext entityId="figure:milton-santos" />
+          </div>
+        )}
 
       {/* Action Buttons */}
       <div className="mt-4 flex items-center gap-2 border-t border-line pt-3">

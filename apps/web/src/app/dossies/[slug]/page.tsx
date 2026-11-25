@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLdScript } from "@/components/seo/JsonLdScript";
 import { StudyContext } from "@/components/tellus-bridge/StudyContext";
+import { MiltonSantosDossierView } from "@/components/dossiers/MiltonSantosDossierView";
 import { ServerLocaleToggleButton } from "@/components/nav/LocaleToggleButton";
 import { getPublishedDossier, type PublishedDossier } from "@/lib/dossiers-catalog";
 import { DOSSIER_INTRODUCTIONS_EN, EN_TELLUSLAB_MESSAGES } from "@/lib/i18n/en-telluslab";
@@ -104,6 +105,7 @@ export default async function DossierPage({
         </div>
         <h1 className="font-serif text-display font-semibold text-fg">{dossier.title}</h1>
         <p className="font-serif text-body leading-relaxed text-fg-secondary">{dossier.introduction}</p>
+        {dossier.slug === "milton-santos" && <MiltonSantosDossierView locale={locale} />}
         <StudyContext entityId={dossier.entityId} />
       </article>
     </main>

@@ -36,6 +36,8 @@ export const DOSSIER_INTRODUCTIONS: Readonly<Record<string, string>> = {
     "Nos Principia e na Óptica, Isaac Newton unificou a mecânica terrestre e a gravitação celeste por meio do cálculo diferencial e integral. Investigue como as leis do movimento e as equações diferenciais ordinárias transformaram a previsão astronômica e a engenharia moderna.",
   "albert-einstein":
     "Dos artigos de 1905 sobre o efeito fotoelétrico e a relatividade especial à formulação da gravitação relativística, Albert Einstein redefiniu espaço, tempo, energia e radiação. Compare os postulados de invariância com os fundamentos experimentais da física quântica e nuclear.",
+  "milton-santos":
+    "Geógrafo brasileiro laureado com o Prêmio Vautrin Lud (1994), Milton Santos (1926–2001) construiu uma teoria crítica do espaço geográfico centrada no território usado, no meio técnico-científico-informacional, nas verticalidades e horizontalidades e na regionalização dos Quatro Brasis.",
 };
 
 export function getPublishedDossier(slug: string): PublishedDossier | null {

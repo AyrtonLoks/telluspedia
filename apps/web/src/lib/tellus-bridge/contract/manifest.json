@@ -1477,6 +1477,27 @@
       ]
     },
     {
+      "entityId": "figure:milton-santos",
+      "kind": "figure",
+      "title": "Milton Santos — Geografia Crítica (1926–2026)",
+      "target": "/dossies/milton-santos",
+      "nodeIds": [
+        "DOM-HUM:6.4",
+        "DOM-HUM:6.5",
+        "DOM-HUM:6.2",
+        "DOM-HUM:5.4",
+        "DOM-HUM:7.4",
+        "DOM-ECON:2.3",
+        "DOM-ECON:2.4"
+      ],
+      "bookIds": [
+        "BIB-HUM-41",
+        "BIB-HUM-42",
+        "BIB-HUM-43",
+        "BIB-HUM-44"
+      ]
+    },
+    {
       "entityId": "era:PRUSSIA_1870",
       "kind": "era",
       "title": "Guerra Franco-Prussiana e Unificação Alemã (1870–1871)",

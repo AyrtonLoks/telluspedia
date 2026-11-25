@@ -18,6 +18,7 @@ import { WebGLErrorBoundary } from "@/components/globe/WebGLErrorBoundary";
 import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "@/lib/explore/view-camera";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useChoroplethStore } from "@/stores/choroplethStore";
+import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useGraphicsQualityStore } from "@/stores/graphicsQualityStore";
@@ -105,6 +106,10 @@ const ChoroplethHud = dynamic(
   () => import("@/components/choropleth/ChoroplethHud").then((m) => m.ChoroplethHud),
   { ssr: false }
 );
+const CriticalGeoHud = dynamic(
+  () => import("@/components/critical-geo/CriticalGeoHud").then((m) => m.CriticalGeoHud),
+  { ssr: false }
+);
 const GraphicsQualityPanel = dynamic(
   () => import("@/components/globe/GraphicsQualityPanel").then((m) => m.GraphicsQualityPanel),
   { ssr: false }
@@ -163,6 +168,7 @@ export function applyInitialGlobeState(initialState: InitialGlobeState): void {
     useGlobeStore.getState().setProjectionId(DEFAULT_MAP_PROJECTION);
     useComparatorStore.getState().closeComparator();
     useChoroplethStore.getState().restoreIndicator(null);
+    useCriticalGeoStore.getState().restoreLens(null);
     useStudyStore.getState().setCurrentStudyId(null);
   }
 
@@ -252,6 +258,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const isCitationModalOpen = useReaderStore((s) => s.isCitationModalOpen);
   const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
   const isChoroplethSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
+  const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
   const qualityPreset = useGraphicsQualityStore((s) => s.preset);
   const adaptiveDprScale = useGraphicsQualityStore((s) => s.adaptiveDprScale);
   const isQualityPanelOpen = useGraphicsQualityStore((s) => s.isPanelOpen);
@@ -484,6 +491,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
 
         {/* Seletor, legenda contínua e tooltip do modo coroplético (D22 — carregado sob demanda) */}
         {(activeChoropleth !== null || isChoroplethSelectorOpen) && <ChoroplethHud />}
+
+        {/* Lentes de Geografia Crítica — Legado de Milton Santos (D36 — carregado sob demanda) */}
+        {activeCriticalLens !== null && <CriticalGeoHud />}
 
         {/* Bottom Semantic Dynamic Timeline (50 Years Default) */}
         <TimelineBar />

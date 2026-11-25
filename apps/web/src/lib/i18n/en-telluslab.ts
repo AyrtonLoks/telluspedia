@@ -103,6 +103,7 @@ export const EN_TELLUSLAB_MESSAGES = {
   "telluslab.link.dossier:mercados-financas-corporativas": "Capital markets, corporate finance, derivatives & risk management",
   "telluslab.link.figure:isaac-newton": "Isaac Newton",
   "telluslab.link.figure:albert-einstein": "Albert Einstein",
+  "telluslab.link.figure:milton-santos": "Milton Santos — Critical Geography (1926–2026)",
 
   // Error boundaries (error.tsx & GlobalErrorView.tsx)
   "error.runtimeTag": "Runtime error",
@@ -150,4 +151,6 @@ export const DOSSIER_INTRODUCTIONS_EN: Readonly<Record<string, string>> = {
     "In the Principia and Opticks, Isaac Newton unified terrestrial mechanics and celestial gravitation through differential and integral calculus. Investigate how the laws of motion and ordinary differential equations transformed astronomical prediction and modern engineering.",
   "albert-einstein":
     "From the 1905 papers on the photoelectric effect and special relativity to relativistic gravitation, Albert Einstein redefined space, time, energy, and radiation. Compare invariance postulates with the experimental foundations of quantum and nuclear physics.",
+  "milton-santos":
+    "Brazilian geographer and 1994 Vautrin Lud Prize laureate, Milton Santos (1926–2001) developed a critical theory of geographic space centered on used territory, the technical-scientific-informational milieu, verticalities and horizontalities, and the Four Brazils regionalization.",
 };

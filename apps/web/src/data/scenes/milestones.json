@@ -1014,5 +1014,29 @@
         "label": "Al-Ahram Archives"
       }
     ]
+  },
+  {
+    "id": "bra-1994-milton-santos",
+    "title": "Prêmio Vautrin Lud a Milton Santos",
+    "summary": "O geógrafo brasileiro Milton Santos (1926–2001) recebe em Saint-Dié-des-Vosges o Prêmio Internacional de Geografia Vautrin Lud — o 'Nobel da Geografia' —, único latino-americano laureado na história.",
+    "category": "SCIENCE_CULTURE",
+    "date": {
+      "start": "1994-10-01",
+      "precision": "month"
+    },
+    "country": "BRA",
+    "countries": [
+      "BRA",
+      "FRA"
+    ],
+    "location": {
+      "lat": -23.5614,
+      "lng": -46.7308
+    },
+    "sources": [
+      {
+        "label": "Festival International de Géographie (Saint-Dié-des-Vosges) / FFLCH-USP"
+      }
+    ]
   }
 ]

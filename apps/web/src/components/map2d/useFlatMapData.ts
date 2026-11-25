@@ -40,6 +40,14 @@ import type { MapProjectionId } from "@/lib/map-projections-types";
 import { findMilestoneById } from "@/lib/milestones";
 import { selectCountry } from "@/stores/actions";
 import { useChoroplethStore } from "@/stores/choroplethStore";
+import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
+import { buildMtciDataset } from "@/lib/critical-geo-catalog";
+import {
+  getFourBrazilsDatasetSync,
+  loadFourBrazilsDataset,
+  type FourBrazilsDataset,
+} from "@/lib/four-brazils-data";
+import type { FlatMapCriticalGeoState } from "@/lib/map-2d-critical-geo";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
@@ -82,9 +90,32 @@ export function useFlatMapData(
   const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
   const choroplethYear = useChoroplethStore((s) => s.year);
   const choroplethOpacity = useChoroplethStore((s) => s.opacity);
+  const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
+  const criticalGeoOpacity = useCriticalGeoStore((s) => s.opacity);
+  const selectedFourBrazilsRegion = useCriticalGeoStore((s) => s.selectedRegionId);
+  const showIbgeComparison = useCriticalGeoStore((s) => s.showIbgeComparison);
+  const [fourBrazilsData, setFourBrazilsData] = useState<FourBrazilsDataset | null>(() =>
+    getFourBrazilsDatasetSync()
+  );
   const [timeseries, setTimeseries] = useState<WorldBankTimeseriesDataset | null>(() =>
     getWorldBankTimeseriesSync()
   );
+
+  useEffect(() => {
+    if (activeCriticalLens !== "FOUR_BRAZILS") return;
+    const sync = getFourBrazilsDatasetSync();
+    if (sync) {
+      setFourBrazilsData(sync);
+      return;
+    }
+    let alive = true;
+    void loadFourBrazilsDataset().then((loaded) => {
+      if (alive && loaded) setFourBrazilsData(loaded);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [activeCriticalLens]);
 
   const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
   const firmsByCountry = useObservatoryStore((s) => s.firmsByCountry);
@@ -290,6 +321,26 @@ export function useFlatMapData(
     biomeOpacity,
   ]);
 
+  const criticalGeoRenderData = useMemo<FlatMapCriticalGeoState | null>(() => {
+    if (!activeCriticalLens || isHistorical || isGeological) return null;
+    return {
+      lens: activeCriticalLens,
+      opacity: criticalGeoOpacity,
+      mtciDataset: activeCriticalLens === "MTCI" ? buildMtciDataset() : null,
+      fourBrazilsDataset: activeCriticalLens === "FOUR_BRAZILS" ? fourBrazilsData : null,
+      selectedRegionId: selectedFourBrazilsRegion,
+      showIbgeComparison,
+    };
+  }, [
+    activeCriticalLens,
+    isHistorical,
+    isGeological,
+    criticalGeoOpacity,
+    fourBrazilsData,
+    selectedFourBrazilsRegion,
+    showIbgeComparison,
+  ]);
+
   return {
     activeTopology,
     activeSpatialIndex,
@@ -301,6 +352,7 @@ export function useFlatMapData(
     choroplethOpacity,
     isBiomesActive,
     biomesRenderData,
+    criticalGeoRenderData,
     selectedCenter,
     azimuthalCenter,
     selectedSet,

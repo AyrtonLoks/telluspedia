@@ -14,6 +14,8 @@ import {
   isTemporalChoroplethIndicator,
 } from "@/lib/choropleth-ids";
 import { useChoroplethStore } from "@/stores/choroplethStore";
+import { isCriticalGeoLensId } from "@/lib/critical-geo-ids";
+import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "@/stores/cosmicStore";
 import { selectCountry } from "@/stores/actions";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -43,7 +45,7 @@ const layerIds: readonly ObservatoryLayer[] = [
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
   "camadas", "gibs", "bioma", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
-  "mapa", "proj", "coropletico", "coropleticoAno",
+  "mapa", "proj", "coropletico", "coropleticoAno", "lente",
 ];
 
 function numberIn(value: string | null, min: number, max: number) {
@@ -103,6 +105,10 @@ export function encodeView(view: ViewCamera) {
     if (choropleth.year !== null && isTemporalChoroplethIndicator(choropleth.activeIndicator)) {
       params.set("coropleticoAno", String(choropleth.year));
     }
+  }
+  const criticalGeo = useCriticalGeoStore.getState();
+  if (criticalGeo.activeLens && !cosmic.isCosmicMode) {
+    params.set("lente", criticalGeo.activeLens);
   }
   if (panel) params.set("painel", panel);
   if (comparator.isOpen) params.set("comparar", comparator.selectedIsos.join(","));
@@ -193,6 +199,13 @@ export function restoreView(search: string, view: ViewCamera) {
       !isCosmicMode && isChoroplethIndicatorId(coroParam) ? coroParam : null,
       coroYearParam
     );
+
+  const lensParam = params.get("lente");
+  const validLens = !isCosmicMode && isCriticalGeoLensId(lensParam) ? lensParam : null;
+  useCriticalGeoStore.getState().restoreLens(validLens);
+  if (validLens) {
+    useChoroplethStore.getState().clearIndicator();
+  }
 
   const camera = parseCameraOffset(params.get("camera"));
   view.offset = camera ?? DEFAULT_CAMERA_OFFSET;

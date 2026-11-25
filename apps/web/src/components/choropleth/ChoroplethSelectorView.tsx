@@ -1,12 +1,17 @@
 "use client";
 
 import React from "react";
-import { Check, Layers, X } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, Check, Compass, Layers, X } from "lucide-react";
 import {
   buildPaletteGradientCss,
   CHOROPLETH_INDICATOR_LIST,
   type ChoroplethIndicatorId,
 } from "@/lib/choropleth";
+import {
+  CRITICAL_GEO_LENS_IDS,
+  type CriticalGeoLensId,
+} from "@/lib/critical-geo-ids";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Panel } from "@/components/ui/Panel";
@@ -33,11 +38,43 @@ function indUnit(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
   return fallback;
 }
 
+const CRITICAL_LENS_ITEMS: ReadonlyArray<{
+  id: CriticalGeoLensId;
+  labelPt: string;
+  labelEn: string;
+  descPt: string;
+  descEn: string;
+}> = [
+  {
+    id: "MTCI",
+    labelPt: "Meio Técnico-Científico-Informacional",
+    labelEn: "Technical-Scientific-Informational Milieu",
+    descPt: "Espaços luminosos vs. opacos (dados reais WDI).",
+    descEn: "Luminous vs. opaque spaces (real WDI data).",
+  },
+  {
+    id: "VERTICALITIES",
+    labelPt: "Horizontalidades vs. Verticalidades",
+    labelEn: "Horizontalities vs. Verticalities",
+    descPt: "Fluxos globais de comando e circuito superior/inferior.",
+    descEn: "Global command flows & upper/lower urban circuits.",
+  },
+  {
+    id: "FOUR_BRAZILS",
+    labelPt: "Os Quatro Brasis (Santos & Silveira, 2001)",
+    labelEn: "The Four Brazils (Santos & Silveira, 2001)",
+    descPt: "Regionalização crítica comparada às 5 regiões do IBGE.",
+    descEn: "Critical regionalization compared to IBGE's 5 regions.",
+  },
+];
+
 export interface ChoroplethSelectorViewProps {
   activeIndicator: ChoroplethIndicatorId | null;
+  activeCriticalLens?: CriticalGeoLensId | null;
   opacity: number;
   isGlobeEligible: boolean;
   onSelect: (id: ChoroplethIndicatorId) => void;
+  onSelectCriticalLens?: (id: CriticalGeoLensId) => void;
   onClear: () => void;
   onOpacityChange: (opacity: number) => void;
   onReturnToContemporaryEarth: () => void;
@@ -46,15 +83,18 @@ export interface ChoroplethSelectorViewProps {
 
 export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
   activeIndicator,
+  activeCriticalLens = null,
   opacity,
   isGlobeEligible,
   onSelect,
+  onSelectCriticalLens,
   onClear,
   onOpacityChange,
   onReturnToContemporaryEarth,
   onClose,
 }) => {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
+  const isEn = locale === "en";
   return (
     <Panel
       role="dialog"
@@ -143,6 +183,54 @@ export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
             );
           })}
         </div>
+
+        {onSelectCriticalLens && (
+          <div className="mt-1 space-y-1.5 border-t border-line pt-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 text-caption font-semibold text-fg">
+                <Compass aria-hidden="true" className="h-3.5 w-3.5 text-accent" />
+                <span>{t("criticalGeo.brand", "Geografia Crítica · Milton Santos")}</span>
+              </div>
+              <Link
+                href="/dossies/milton-santos"
+                className="inline-flex items-center gap-1 text-caption text-accent hover:text-accent-hover hover:underline"
+              >
+                <BookOpen aria-hidden="true" className="h-3 w-3" />
+                <span>{t("criticalGeo.dossierShort", "Dossiê")}</span>
+              </Link>
+            </div>
+            <div className="flex flex-col gap-1.5" role="group" aria-label={t("criticalGeo.brand", "Geografia Crítica · Milton Santos")}>
+              {CRITICAL_LENS_ITEMS.filter((item) => CRITICAL_GEO_LENS_IDS.includes(item.id)).map((item) => {
+                const isSelected = activeCriticalLens === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-pressed={isSelected}
+                    data-testid={`critical-geo-option-${item.id}`}
+                    onClick={() => onSelectCriticalLens(item.id)}
+                    className={cn(
+                      "flex flex-col gap-0.5 rounded-card border px-3 py-2 text-left transition-colors duration-fast ease-out",
+                      isSelected
+                        ? "border-accent/60 bg-accent/10 text-fg"
+                        : "border-line bg-surface-raised/60 text-fg-secondary hover:border-line-strong hover:bg-surface-hover hover:text-fg"
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-label font-medium text-fg">
+                        {isEn ? item.labelEn : item.labelPt}
+                      </span>
+                      {isSelected && <Check aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-accent" />}
+                    </div>
+                    <p className="text-caption text-fg-muted">
+                      {isEn ? item.descEn : item.descPt}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {activeIndicator !== null && (
           <div className="mt-1 flex flex-col gap-2 border-t border-line pt-2.5">

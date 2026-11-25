@@ -248,7 +248,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
 | D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | DONE | ayrton | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | DONE | ayrton | — | G-PAIS, G-CONTEUDO |
-| D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | IN_PROGRESS | antigravity | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
+| D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | REVIEW | antigravity | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | TODO | — | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
 | D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | TODO | — | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS |
 | D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
@@ -2774,7 +2774,7 @@ Hoje apenas **6 países** (`BRA`, `DEU`, `USA`, `JPN`, `ZAF`, `EGY`) possuem dos
 
 ### D36 · Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d36-milton-santos · **Worktree:** ../telluspedia-wt/antigravity-d36
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d36-milton-santos · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Conteúdo/UX · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL
 
 **Contexto / problema**
@@ -2789,15 +2789,16 @@ A obra do geógrafo brasileiro **Milton Santos** (1926–2001, Prêmio Vautrin L
 3. Integrar busca `⌘K`, timeline histórica (centenário de Milton Santos em **2026**!) e interface 100% D14 bilíngue (`pt-BR`/`en`).
 
 **Critérios de aceite**
-- [ ] Dossiê `/dossies/milton-santos` e marco na timeline (incluindo referência ao centenário 1926–2026) publicados em `pt-BR` e `en` com citações acadêmicas completas.
-- [ ] Lentes espaciais (*Meio Técnico-Científico-Informacional*, *Verticalidades/Horizontalidades* e mapa regional *Os Quatro Brasis*) renderizam no globo com rigor bibliográfico e zero valores sintéticos.
-- [ ] `bundle-budget.test.ts` `< 160 KiB` e testes de integridade do dossiê/geometria passando.
+- [x] Dossiê `/dossies/milton-santos` e marco na timeline (incluindo referência ao centenário 1926–2026) publicados em `pt-BR` e `en` com citações acadêmicas completas.
+- [x] Lentes espaciais (*Meio Técnico-Científico-Informacional*, *Verticalidades/Horizontalidades* e mapa regional *Os Quatro Brasis*) renderizam no globo com rigor bibliográfico e zero valores sintéticos.
+- [x] `bundle-budget.test.ts` `< 160 KiB` e testes de integridade do dossiê/geometria passando.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
 - 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`f03d07f`) com grupos livres (`G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL`).
+- 2026-11-25 · antigravity · REVIEW · Implementado o legado de Geografia Crítica de Milton Santos (`figure:milton-santos`, bilíngue `pt-BR`/`en`, D14): (1) Dossiê dedicado `/dossies/milton-santos` (`MiltonSantosDossierView.tsx`, `MiltonSantosCitations.tsx`, `milton-santos-dossier.ts`) com selo do Centenário 1926–2026, linha do tempo intelectual (1926–2001 + 2026), obras fundamentais com citações copiáveis e download `.bib` em ABNT NBR 6023 / APA 7 / MLA 9 / BibTeX, atalhos diretos para as 3 lentes no globo e vínculo TellusLab (`manifest.json`, `dossiers-catalog.ts`, `en-telluslab.ts`). (2) 3 Lentes Analíticas Espaciais sob demanda em 3D WebGL (`CriticalGeoLayer.tsx` com `dispose()` RN21) e Mapa 2D (`map-2d-critical-geo.ts`, `useFlatMapData.ts`, `map-2d-renderer.ts`) + HUD analítico D14 (`CriticalGeoHud.tsx`, `criticalGeoStore.ts`, `critical-geo-catalog.ts`): *Meio Técnico-Científico-Informacional* (estritamente sobre dados reais WDI `NY.GDP.PCAP.CD` e `SP.DYN.LE00.IN`, sem valores sintéticos — T03), *Horizontalidades vs. Verticalidades* (eixos geodésicos de comando global + cruzamento ao vivo com OpenSky, AIS e Satélites) e *Os Quatro Brasis* (Santos & Silveira, 2001 — `public/data/four-brazils.json` gerado de Natural Earth 1:50m por `scripts/build-four-brazils.mjs` com 27/27 capitais validadas incluindo Palmas/TO no Centro-Oeste dos 4 Brasis e Norte no IBGE, picking `< 0,2 ms` via `which-polygon` e toggle comparativo das 5 regiões IBGE). (3) Integração ao seletor Temático (`ChoroplethSelectorView.tsx`, `ChoroplethHud.tsx`, `TopNavBar.tsx`), timeline (marco `bra-1994-milton-santos` Prêmio Vautrin Lud + vínculo ao `glo-2026-milton` Centenário em `InspectorHUD.tsx`), busca `⌘K` (`search.ts`), URL `?lente=` (`view-url.ts`, `ExplorerUrlSync.tsx`) e `en-panels-study.ts`. Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` mantido em **161 kB**, 0 bytes adicionados), `bundle-budget.test.ts` (6/6), `design-system.test.tsx`, `tellus-bridge.test.tsx`, `tw-merge-table.test.ts`, `milton-santos-d36.test.tsx`, suíte completa `pnpm test` (`857/857`, 0 falhas) e Playwright Chromium WebGL E2E (`milton-santos.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros de console).
 
 ---
 
