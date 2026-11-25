@@ -15,7 +15,16 @@ export type BrazilianBiomeId =
   | "pantanal"
   | "pampa";
 
-export type ProdesBiomeId = "amazonia" | "cerrado";
+export type ProdesBiomeId = BrazilianBiomeId;
+
+export const PRODES_BIOME_IDS: readonly ProdesBiomeId[] = [
+  "amazonia",
+  "cerrado",
+  "caatinga",
+  "mata_atlantica",
+  "pampa",
+  "pantanal",
+];
 
 export const DEFAULT_FIRE_SOURCE: FireSourceProvider = "firms";
 export const DEFAULT_PRODES_BIOME: ProdesBiomeId = "amazonia";

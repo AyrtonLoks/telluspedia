@@ -34,6 +34,7 @@ export const BiomesLayerControls: React.FC = () => {
   const storeScope = useObservatoryStore((s) => s.biomeScope);
   const storeFilterId = useObservatoryStore((s) => s.biomeFilterId);
   const storeSelectedId = useObservatoryStore((s) => s.selectedBiomeId);
+  const storeHoveredId = useObservatoryStore((s) => s.hoveredBiomeId);
   const storePickMode = useObservatoryStore((s) => s.biomePickMode);
   const storeActiveLayers = useObservatoryStore((s) => s.activeLayers);
   const storeFireSource = useObservatoryStore((s) => s.fireSource);
@@ -42,6 +43,7 @@ export const BiomesLayerControls: React.FC = () => {
   const setBiomeScope = useObservatoryStore((s) => s.setBiomeScope);
   const setBiomeFilterId = useObservatoryStore((s) => s.setBiomeFilterId);
   const setSelectedBiomeId = useObservatoryStore((s) => s.setSelectedBiomeId);
+  const setSelectedEntity = useObservatoryStore((s) => s.setSelectedEntity);
   const setBiomePickMode = useObservatoryStore((s) => s.setBiomePickMode);
   const setLayerActive = useObservatoryStore((s) => s.setLayerActive);
   const setFireSource = useObservatoryStore((s) => s.setFireSource);
@@ -52,6 +54,7 @@ export const BiomesLayerControls: React.FC = () => {
   const scope = ssr?.biomeScope ?? storeScope;
   const filterId = ssr ? ssr.biomeFilterId : storeFilterId;
   const selectedId = ssr ? ssr.selectedBiomeId : storeSelectedId;
+  const hoveredId = ssr ? ssr.hoveredBiomeId : storeHoveredId;
   const pickMode = ssr ? ssr.biomePickMode : storePickMode;
   const activeLayers = ssr ? ssr.activeLayers : storeActiveLayers;
   const fireSource = ssr ? ssr.fireSource : storeFireSource;
@@ -59,8 +62,12 @@ export const BiomesLayerControls: React.FC = () => {
 
   const biomes = getBiomesForScope(scope);
   const citation = BIOME_SCOPE_CITATIONS[scope];
+  // Prioridade fluida para leitura da ficha: hover ao vivo -> bioma selecionado -> filtro ativo -> 1º bioma
   const activeBiome =
-    getBiomeById(selectedId) ?? getBiomeById(filterId) ?? biomes[0];
+    getBiomeById(hoveredId) ??
+    getBiomeById(selectedId) ??
+    getBiomeById(filterId) ??
+    biomes[0];
 
   const handleSelectScope = (next: BiomeScope) => {
     setBiomeScope(next);
@@ -69,14 +76,26 @@ export const BiomesLayerControls: React.FC = () => {
     }
   };
 
+  /**
+   * Seleção / deseleção estritamente determinística (sem estado duplo entre "Todos" e chips):
+   * - Clicar "Todos" limpa o filtro e a seleção.
+   * - Clicar um bioma inativo ativa filtro + abre a ficha flutuante + voa até o bioma.
+   * - Clicar novamente o bioma já filtrado volta limpamente para "Todos".
+   */
   const handleSelectBiome = (id: BiomeId | null) => {
-    if (id === null || filterId === id) {
+    if (id === null) {
       setBiomeFilterId(null);
-      if (id === null) setSelectedBiomeId(null);
+      setSelectedBiomeId(null);
+      return;
+    }
+    if (filterId === id) {
+      setBiomeFilterId(null);
+      setSelectedBiomeId(null);
       return;
     }
     setBiomeFilterId(id);
     setSelectedBiomeId(id);
+    setSelectedEntity(null);
     const target = getBiomeById(id);
     if (target) {
       flyTo(target.centerLat, target.centerLng, target.zoomAltitude);
@@ -142,14 +161,14 @@ export const BiomesLayerControls: React.FC = () => {
       </div>
 
       {/* Modo de inspeção direta no globo 3D */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="space-y-1">
         <button
           type="button"
           data-testid="biomes-pick-mode"
           aria-pressed={pickMode}
           onClick={() => setBiomePickMode(!pickMode)}
           className={cn(
-            "inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-control border px-2.5 text-caption font-medium transition-colors duration-fast ease-out",
+            "inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-control border px-2.5 text-caption font-medium transition-colors duration-fast ease-out",
             pickMode
               ? "border-accent/50 bg-accent/15 text-accent"
               : "border-line bg-surface text-fg-secondary hover:bg-surface-hover/60 hover:text-fg"
@@ -162,9 +181,15 @@ export const BiomesLayerControls: React.FC = () => {
               : t("obs.biomes.pickIdle", "Inspecionar bioma no globo")}
           </span>
         </button>
+        <p className="text-caption text-fg-muted">
+          {t(
+            "obs.biomes.hoverHint",
+            "Passe o cursor no globo para identificar qualquer bioma ou clique para abrir a ficha flutuante."
+          )}
+        </p>
       </div>
 
-      {/* Legenda interativa e filtro por bioma */}
+      {/* Legenda interativa e filtro exclusivo por bioma */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-caption text-fg-secondary">
           <span className="inline-flex items-center gap-1 font-medium text-fg">
@@ -172,8 +197,7 @@ export const BiomesLayerControls: React.FC = () => {
             {t("obs.biomes.legendTitle", "Legenda e filtro")}
           </span>
           <span className="font-mono tabular-nums text-fg-muted">
-            {biomes.length}{" "}
-            {t("obs.biomes.biomesUnit", "biomas")}
+            {biomes.length} {t("obs.biomes.biomesUnit", "biomas")}
           </span>
         </div>
 
@@ -198,20 +222,20 @@ export const BiomesLayerControls: React.FC = () => {
           </button>
 
           {biomes.map((entry) => {
-            const isActive = filterId === entry.id || selectedId === entry.id;
+            const isFiltered = filterId === entry.id;
             const label = locale === "en" ? entry.nameEn : entry.namePt;
             return (
               <button
                 key={entry.id}
                 type="button"
                 data-testid={`biome-chip-${entry.id}`}
-                aria-pressed={filterId === entry.id}
+                aria-pressed={isFiltered}
                 onClick={() => handleSelectBiome(entry.id)}
                 title={label}
                 className={cn(
                   "inline-flex max-w-full items-center gap-1.5 rounded-control border px-2 py-1 text-left text-caption transition-colors duration-fast ease-out",
-                  isActive
-                    ? "border-accent/50 bg-accent/15 font-medium text-fg"
+                  isFiltered
+                    ? "border-accent/50 bg-accent/15 font-medium text-accent"
                     : "border-line bg-surface-raised/60 text-fg-secondary hover:text-fg"
                 )}
               >
@@ -227,7 +251,7 @@ export const BiomesLayerControls: React.FC = () => {
         </div>
       </div>
 
-      {/* Ficha ecológica bilíngue do bioma selecionado (RN02) */}
+      {/* Ficha ecológica bilíngue sincronizada com hover / clique / filtro */}
       <div
         data-testid="biome-ecological-card"
         className="space-y-2 rounded-card border border-line bg-surface p-2.5"
@@ -255,6 +279,18 @@ export const BiomesLayerControls: React.FC = () => {
               </p>
             </div>
           </div>
+          {selectedId !== activeBiome.id && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedBiomeId(activeBiome.id);
+                setSelectedEntity(null);
+              }}
+              className="shrink-0 rounded-control border border-line px-2 py-0.5 text-caption text-accent transition-colors duration-fast ease-out hover:border-accent/40 hover:bg-accent/10"
+            >
+              {t("obs.biomes.openCard", "Fixar")}
+            </button>
+          )}
         </div>
 
         <dl className="space-y-1.5 text-caption">
@@ -305,7 +341,7 @@ export const BiomesLayerControls: React.FC = () => {
         </div>
       </div>
 
-      {/* Cruzamento ambiental em 1 clique: INPE BDQueimadas, PRODES e NASA GIBS NDVI */}
+      {/* Cruzamento ambiental em 1 clique: INPE BDQueimadas, PRODES (6 biomas) e NASA GIBS NDVI */}
       <div data-testid="biomes-cross-layers" className="space-y-1.5">
         <p className="text-caption font-medium text-fg-secondary">
           {t("obs.biomes.crossLayers", "Cruzar com camadas ambientais")}

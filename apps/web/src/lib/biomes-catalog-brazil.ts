@@ -80,6 +80,7 @@ export const BRAZIL_BIOMES: readonly BiomeEntry<BrazilBiomeId>[] = [
     threatsEn: "Severe historic fragmentation (~70% of Brazil's population lives within the biome) and urban sprawl.",
     sourceLabel: IBGE_BIOMES_SOURCE_LABEL,
     sourceUrl: IBGE_BIOMES_SOURCE_URL,
+    inpeBiomeId: "mata_atlantica",
   },
   {
     id: "BR_CAATINGA",
@@ -103,6 +104,7 @@ export const BRAZIL_BIOMES: readonly BiomeEntry<BrazilBiomeId>[] = [
     threatsEn: "Desertification hotspots, unsustainable fuelwood/charcoal extraction, and overgrazing.",
     sourceLabel: IBGE_BIOMES_SOURCE_LABEL,
     sourceUrl: IBGE_BIOMES_SOURCE_URL,
+    inpeBiomeId: "caatinga",
   },
   {
     id: "BR_PAMPA",
@@ -126,6 +128,7 @@ export const BRAZIL_BIOMES: readonly BiomeEntry<BrazilBiomeId>[] = [
     threatsEn: "Rapid conversion of native grasslands to row crops and exotic forestry, plus sandification.",
     sourceLabel: IBGE_BIOMES_SOURCE_LABEL,
     sourceUrl: IBGE_BIOMES_SOURCE_URL,
+    inpeBiomeId: "pampa",
   },
   {
     id: "BR_PANTANAL",
@@ -149,5 +152,6 @@ export const BRAZIL_BIOMES: readonly BiomeEntry<BrazilBiomeId>[] = [
     threatsEn: "Extreme wildfires during prolonged droughts, upland siltation, and hydrological disruption.",
     sourceLabel: IBGE_BIOMES_SOURCE_LABEL,
     sourceUrl: IBGE_BIOMES_SOURCE_URL,
+    inpeBiomeId: "pantanal",
   },
 ];

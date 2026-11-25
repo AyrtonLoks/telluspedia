@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ExternalLink, Trees, TrendingDown, TrendingUp } from "lucide-react";
+import { ExternalLink, Flame, Trees, TrendingDown, TrendingUp } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import {
@@ -12,16 +12,14 @@ import {
   PRODES_MONITORING_REGIONS,
   computeProdesYoYChange,
 } from "@/lib/inpe-data";
-import type { ProdesBiomeId } from "@/lib/inpe-types";
+import { PRODES_BIOME_IDS, type ProdesBiomeId } from "@/lib/inpe-types";
 import { cn } from "@/components/ui/cn";
 import { useI18n } from "@/lib/i18n/useT";
 import { formatNumber } from "@/lib/i18n/format";
 
-const PRODES_BIOMES: readonly ProdesBiomeId[] = ["amazonia", "cerrado"];
-
 /**
- * Painel analítico D14 do INPE TerraBrasilis (PRODES 2015–2025 + alertas DETER — D30).
- * Carregado sob demanda via `next/dynamic` dentro de `ObservatoryPanel`.
+ * Painel analítico D14 do INPE TerraBrasilis (PRODES BiomasBR nos 6 Biomas Brasileiros +
+ * mapa de calor espacial + alertas DETER — D30/D31).
  */
 export const InpeDeforestationControls: React.FC = () => {
   const { locale, t } = useI18n();
@@ -36,18 +34,20 @@ export const InpeDeforestationControls: React.FC = () => {
   const payload = ssr ? ssr.inpeDeforestation : storePayload;
 
   const series = payload?.prodes[biome] ?? INPE_PRODES_SERIES[biome];
+  const firstYear = series[0].year;
   const latest = series[series.length - 1];
   const peak = series.reduce((best, cur) => (cur.km2 > best.km2 ? cur : best), series[0]);
   const maxKm2 = Math.max(1, peak.km2);
   const yoy = computeProdesYoYChange(series);
+  const region = PRODES_MONITORING_REGIONS[biome];
   const biomeAlerts = (payload?.deterAlerts ?? []).filter((a) => a.biome === biome);
   const biomeAlertArea =
     Math.round(biomeAlerts.reduce((acc, a) => acc + a.areaKm2, 0) * 100) / 100;
 
   const handleSelectBiome = (next: ProdesBiomeId) => {
     setProdesBiome(next);
-    const region = PRODES_MONITORING_REGIONS[next];
-    flyTo(region.centerLat, region.centerLng, 2.05);
+    const target = PRODES_MONITORING_REGIONS[next];
+    flyTo(target.centerLat, target.centerLng, target.zoomAltitude);
   };
 
   const prodesUrl = payload?.prodesSourceUrls[biome] ?? INPE_PRODES_SOURCE_URLS[biome];
@@ -56,14 +56,14 @@ export const InpeDeforestationControls: React.FC = () => {
 
   return (
     <div data-testid="inpe-deforestation-controls" className="space-y-3">
-      {/* Seletor de bioma monitorado pelo PRODES/DETER */}
+      {/* Seletor dos 6 Biomas Brasileiros monitorados pelo PRODES BiomasBR */}
       <div
         role="group"
         aria-label={t("obs.inpe.biomeAria", "Bioma monitorado pelo INPE")}
-        className="grid grid-cols-2 gap-1 rounded-control border border-line bg-surface p-0.5"
+        className="grid grid-cols-2 gap-1 rounded-control border border-line bg-surface p-1"
       >
-        {PRODES_BIOMES.map((id) => {
-          const region = PRODES_MONITORING_REGIONS[id];
+        {PRODES_BIOME_IDS.map((id) => {
+          const item = PRODES_MONITORING_REGIONS[id];
           const active = biome === id;
           return (
             <button
@@ -73,19 +73,19 @@ export const InpeDeforestationControls: React.FC = () => {
               aria-pressed={active}
               onClick={() => handleSelectBiome(id)}
               className={cn(
-                "h-7 rounded-control px-2 text-caption font-medium transition-colors duration-fast ease-out",
+                "h-7 truncate rounded-control px-2 text-caption font-medium transition-colors duration-fast ease-out",
                 active
                   ? "bg-accent/15 text-accent"
                   : "text-fg-secondary hover:bg-surface-hover/60 hover:text-fg"
               )}
             >
-              {locale === "en" ? region.nameEn : region.namePt}
+              {locale === "en" ? item.nameEn : item.namePt}
             </button>
           );
         })}
       </div>
 
-      {/* Cartões de leitura rápida PRODES (dados oficiais consolidados 2015–2025) */}
+      {/* Cartões de leitura rápida PRODES (série oficial consolidada do bioma selecionado) */}
       <div className="grid grid-cols-2 gap-2">
         <div className="rounded-card border border-line bg-surface p-2">
           <span className="block text-caption text-fg-muted">
@@ -113,7 +113,7 @@ export const InpeDeforestationControls: React.FC = () => {
 
         <div className="rounded-card border border-line bg-surface p-2">
           <span className="block text-caption text-fg-muted">
-            {t("obs.inpe.peakYear", "Pico (2015–2025)")}
+            {t("obs.inpe.peakYear", "Pico")} ({firstYear}–{latest.year})
           </span>
           <span className="mt-0.5 block font-mono text-label font-semibold tabular-nums text-fg">
             {formatNumber(peak.km2, locale)} km²
@@ -124,14 +124,16 @@ export const InpeDeforestationControls: React.FC = () => {
         </div>
       </div>
 
-      {/* Série histórica anual oficial PRODES (barras CSS puras — zero peso extra no bundle) */}
+      {/* Série histórica anual oficial PRODES */}
       <div className="space-y-1.5" data-testid="prodes-chart">
         <div className="flex items-center justify-between text-caption text-fg-secondary">
           <span className="inline-flex items-center gap-1 font-medium text-fg">
             <Trees aria-hidden="true" className="h-3.5 w-3.5 text-warning" />
             {t("obs.inpe.prodesSeries", "Série oficial PRODES (km²/ano)")}
           </span>
-          <span className="font-mono tabular-nums text-fg-muted">2015–2025</span>
+          <span className="font-mono tabular-nums text-fg-muted">
+            {firstYear}–{latest.year}
+          </span>
         </div>
 
         <div className="flex h-24 items-end gap-1 rounded-card border border-line bg-surface px-2 pb-1.5 pt-2">
@@ -161,7 +163,39 @@ export const InpeDeforestationControls: React.FC = () => {
         </div>
       </div>
 
-      {/* Bloco de alertas DETER recentes (T03/T05 honesto: nunca exibe dados sintéticos) */}
+      {/* Legenda do mapa de calor espacial (focos críticos PRODES + alertas DETER) */}
+      <div
+        data-testid="inpe-heatmap-legend"
+        className="space-y-1.5 rounded-card border border-line bg-surface p-2 text-caption"
+      >
+        <div className="flex items-center justify-between text-fg">
+          <span className="inline-flex items-center gap-1 font-medium">
+            <Flame aria-hidden="true" className="h-3.5 w-3.5 text-danger" />
+            {t("obs.inpe.heatmapTitle", "Mapa de calor de desmatamento")}
+          </span>
+          <span className="text-fg-muted">
+            {t("obs.inpe.heatmapUnit", "PRODES + DETER")}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-fg-muted">{t("obs.inpe.heatLow", "Baixa")}</span>
+          <div className="grid h-2 flex-1 grid-cols-4 overflow-hidden rounded-full">
+            <span className="bg-warning/35" />
+            <span className="bg-warning/75" />
+            <span className="bg-layer-fires/85" />
+            <span className="bg-danger" />
+          </div>
+          <span className="text-fg-muted">{t("obs.inpe.heatCritical", "Crítica")}</span>
+        </div>
+        <p className="text-fg-secondary">
+          {t(
+            "obs.inpe.heatmapNote",
+            "Concentra polos municipais críticos do PRODES BiomasBR nos 6 biomas e sobrepõe alertas DETER ao vivo quando o WFS do INPE responde."
+          )}
+        </p>
+      </div>
+
+      {/* Bloco de alertas DETER recentes (T03/T05 honesto) */}
       <div
         data-testid="inpe-deter-status"
         className="rounded-card border border-line bg-surface p-2 text-caption text-fg-secondary"
@@ -169,7 +203,14 @@ export const InpeDeforestationControls: React.FC = () => {
         <p className="font-medium text-fg">
           {t("obs.inpe.deterTitle", "Alertas DETER (últimos 30 dias)")}
         </p>
-        {payload?.deterAvailable ? (
+        {!region.hasDeterSystem ? (
+          <p className="mt-0.5 text-fg-secondary">
+            {t(
+              "obs.inpe.deterBiomeNoDaily",
+              "Monitoramento oficial deste bioma feito pelo PRODES BiomasBR anual (DETER diário opera na Amazônia, Cerrado e Pantanal)."
+            )}
+          </p>
+        ) : payload?.deterAvailable ? (
           <p className="mt-0.5 font-mono tabular-nums text-fg-secondary">
             {formatNumber(biomeAlerts.length, locale)}{" "}
             {t("obs.inpe.alertsCount", "alertas no bioma")} ·{" "}
@@ -179,7 +220,7 @@ export const InpeDeforestationControls: React.FC = () => {
           <p className="mt-0.5 text-warning">
             {t(
               "obs.inpe.deterUnavailable",
-              "WFS do INPE TerraBrasilis DETER indisponível no momento; exibindo apenas a série oficial PRODES (sem alertas sintéticos)."
+              "WFS do INPE TerraBrasilis DETER indisponível no momento; exibindo o mapa de calor dos polos críticos PRODES e a série histórica oficial."
             )}
           </p>
         )}

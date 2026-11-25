@@ -36,7 +36,6 @@ export function BiomesLayer() {
   const opacity = useObservatoryStore((s) => s.layerOpacity.BIOMES_MAP ?? 0.72);
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const invalidate = useThree((state) => state.invalidate);
-  const gl = useThree((state) => state.gl);
 
   const [topology, setTopology] = useState<BiomeTopology | null>(() =>
     getBiomeTopologySync(biomeScope)
@@ -77,7 +76,7 @@ export function BiomesLayer() {
   } | null>(null);
 
   const geometry = useMemo(
-    () => (shouldRender ? new THREE.SphereGeometry(BIOMES_SPHERE_RADIUS, 96, 48) : null),
+    () => (shouldRender ? new THREE.SphereGeometry(BIOMES_SPHERE_RADIUS, 64, 32) : null),
     [shouldRender]
   );
 
@@ -140,9 +139,9 @@ export function BiomesLayer() {
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.ClampToEdgeWrapping;
-      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      texture.generateMipmaps = false;
+      texture.minFilter = THREE.LinearFilter;
       texture.magFilter = THREE.LinearFilter;
-      texture.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
       canvasResource.current = { canvas, ctx, texture };
     }
 
@@ -162,7 +161,7 @@ export function BiomesLayer() {
       material.needsUpdate = true;
     }
     invalidate();
-  }, [shouldRender, topology, biomeScope, biomeFilterId, selectedBiomeId, material, gl, invalidate]);
+  }, [shouldRender, topology, biomeScope, biomeFilterId, selectedBiomeId, material, invalidate]);
 
   useEffect(() => {
     if (!material) return;

@@ -191,10 +191,12 @@ export interface ObservatoryState {
   biomeScope: BiomeScope;
   biomeFilterId: BiomeId | null;
   selectedBiomeId: BiomeId | null;
+  hoveredBiomeId: BiomeId | null;
   biomePickMode: boolean;
   setBiomeScope: (scope: BiomeScope) => void;
   setBiomeFilterId: (id: BiomeId | null) => void;
   setSelectedBiomeId: (id: BiomeId | null) => void;
+  setHoveredBiomeId: (id: BiomeId | null) => void;
   setBiomePickMode: (enabled: boolean) => void;
 
   isLoading: Record<ObservatoryLayer, boolean>;

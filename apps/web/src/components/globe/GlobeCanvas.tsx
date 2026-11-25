@@ -70,6 +70,9 @@ const InpeDeforestationLayer = lazy(() =>
 const BiomesLayer = lazy(() =>
   import("./BiomesLayer").then((m) => ({ default: m.BiomesLayer }))
 );
+const BiomeHudOverlay = lazy(() =>
+  import("@/components/observatory/BiomeHudOverlay").then((m) => ({ default: m.BiomeHudOverlay }))
+);
 
 /**
  * Primary directional sunlight synchronized with EarthSphere and OrbitingMoon via
@@ -386,6 +389,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
 
       {/* Floating Planetary Observatory Telemetry HUD Overlay */}
       {isContemporary && <ObservatoryTelemetryHUD />}
+      {isContemporary && !isCosmicMode && activeObservatoryLayers.includes("BIOMES_MAP") && (
+        <Suspense fallback={null}>
+          <BiomeHudOverlay />
+        </Suspense>
+      )}
     </div>
   );
 };

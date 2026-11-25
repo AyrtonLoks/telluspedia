@@ -200,19 +200,24 @@ const LAYER_OPTIONS: LayerOption[] = [
     id: "INPE_DEFORESTATION",
     name: "Desmatamento INPE (DETER / PRODES)",
     source: "INPE / MCTI · TerraBrasilis",
-    description: "Série anual oficial PRODES (2015–2025) e alertas DETER na Amazônia Legal e no Cerrado.",
+    description: "Mapa de calor de desmatamento e séries oficiais PRODES BiomasBR nos 6 Biomas Brasileiros + alertas DETER.",
     icon: Trees,
     tone: "layer-fires",
     badgeText: (s, locale, t) => {
-      const biomeLabel =
-        s.prodesBiome === "cerrado"
-          ? "Cerrado"
-          : t("obs.inpe.amazonShort", "Amazônia");
+      const biomeNames: Record<string, string> = {
+        amazonia: t("obs.inpe.amazonShort", "Amazônia"),
+        cerrado: "Cerrado",
+        caatinga: "Caatinga",
+        mata_atlantica: locale === "en" ? "Atlantic Forest" : "Mata Atlântica",
+        pampa: "Pampa",
+        pantanal: "Pantanal",
+      };
+      const biomeLabel = biomeNames[s.prodesBiome] ?? "Amazônia";
       const alertsCount = s.inpeDeforestation?.deterAlerts.length ?? 0;
       if (s.inpeDeforestation?.deterAvailable && alertsCount > 0) {
         return `${biomeLabel} · ${formatNumber(alertsCount, locale)} ${t("obs.inpe.alertsShort", "alertas")}`;
       }
-      return `${biomeLabel} · PRODES 2025`;
+      return `${biomeLabel} · PRODES`;
     },
   },
   {

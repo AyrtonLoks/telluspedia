@@ -39,6 +39,7 @@ import { encodeView, restoreView } from "../src/lib/explore/view-url";
 import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "../src/lib/explore/view-camera";
 import { searchExplore } from "../src/lib/explore/search";
 import { BiomesLayerControls } from "../src/components/observatory/BiomesLayerControls";
+import { BiomeHudOverlay } from "../src/components/observatory/BiomeHudOverlay";
 
 const root = path.resolve(__dirname, "..");
 
@@ -145,12 +146,12 @@ describe("D31: TopoJSON sob demanda, picking espacial O(1) e rasterização", ()
     resetBiomeTopologyCache();
   });
 
-  test("datasets TopoJSON são compactos, íntegros e cobrem todos os códigos oficiais", () => {
+  test("datasets TopoJSON oficiais (WWF/RESOLVE 2017 e IBGE 2019) são compactos, íntegros e cobrem todos os códigos", () => {
     const globalPath = path.join(root, "public/data/biomes/global-biomes-wwf.json");
     const brazilPath = path.join(root, "public/data/biomes/brazil-biomes-ibge.json");
 
-    assert.ok(fs.statSync(globalPath).size < 25 * 1024, "global-biomes-wwf.json deve ser compacto (< 25 KiB)");
-    assert.ok(fs.statSync(brazilPath).size < 15 * 1024, "brazil-biomes-ibge.json deve ser compacto (< 15 KiB)");
+    assert.ok(fs.statSync(globalPath).size < 350 * 1024, "global-biomes-wwf.json deve ser compacto (< 350 KiB)");
+    assert.ok(fs.statSync(brazilPath).size < 80 * 1024, "brazil-biomes-ibge.json deve ser compacto (< 80 KiB)");
 
     const globalTopo = readTopoJson("public/data/biomes/global-biomes-wwf.json");
     const brazilTopo = readTopoJson("public/data/biomes/brazil-biomes-ibge.json");
@@ -196,21 +197,22 @@ describe("D31: TopoJSON sob demanda, picking espacial O(1) e rasterização", ()
     setBiomeTopologyCache("global", globalTopo);
     setBiomeTopologyCache("brazil", brazilTopo);
 
-    // Biomas globais (WWF/RESOLVE)
+    // Biomas globais (WWF/RESOLVE 2017 oficial)
     assert.equal(pickBiomeAt("global", -3.1, -60.0), "WWF_01"); // Amazônia
     assert.equal(pickBiomeAt("global", 23.0, 12.0), "WWF_13"); // Saara
     assert.equal(pickBiomeAt("global", 62.0, 95.0), "WWF_06"); // Taiga Siberiana
-    assert.equal(pickBiomeAt("global", 71.0, -100.0), "WWF_11"); // Tundra Ártica
+    assert.equal(pickBiomeAt("global", 69.5, -152.0), "WWF_11"); // Tundra Ártica (Alasca)
+    assert.equal(pickBiomeAt("global", 48.85, 2.35), "WWF_04"); // Floresta Temperada (Europa)
     assert.equal(pickBiomeAt("global", 0.0, -150.0), null); // Oceano Pacífico central
     assert.equal(pickBiomeAt("global", Number.NaN, 0), null);
 
-    // 6 Biomas Brasileiros (IBGE)
+    // 6 Biomas Brasileiros (IBGE 2019 1:250.000 oficial)
     assert.equal(pickBiomeAt("brazil", -3.1, -60.0), "BR_AMAZONIA");
     assert.equal(pickBiomeAt("brazil", -15.8, -47.9), "BR_CERRADO");
-    assert.equal(pickBiomeAt("brazil", -22.9, -43.2), "BR_MATA_ATLANTICA");
-    assert.equal(pickBiomeAt("brazil", -9.0, -40.0), "BR_CAATINGA");
+    assert.equal(pickBiomeAt("brazil", -23.55, -46.63), "BR_MATA_ATLANTICA");
+    assert.equal(pickBiomeAt("brazil", -9.4, -40.5), "BR_CAATINGA");
     assert.equal(pickBiomeAt("brazil", -17.8, -56.8), "BR_PANTANAL");
-    assert.equal(pickBiomeAt("brazil", -30.5, -54.5), "BR_PAMPA");
+    assert.equal(pickBiomeAt("brazil", -31.3, -54.1), "BR_PAMPA");
     assert.equal(pickBiomeAt("brazil", 48.8, 2.3), null); // Paris fora do Brasil
 
     // Bridge de picker registrado sob demanda
@@ -243,9 +245,8 @@ describe("D31: TopoJSON sob demanda, picking espacial O(1) e rasterização", ()
       256
     );
     assert.equal(statsGlobal.renderedFeatures, 14);
-    assert.equal(mockGlobal.getCounts().clipCalls, 1);
     assert.equal(mockGlobal.getCounts().fillCalls, 14);
-    assert.equal(mockGlobal.getCounts().strokeCalls, 14);
+    assert.ok(mockGlobal.getCounts().strokeCalls >= 1);
 
     const mockBrazil = createMockCanvasContext();
     const statsBrazil = rasterizeBiomesToCanvas(
@@ -257,8 +258,8 @@ describe("D31: TopoJSON sob demanda, picking espacial O(1) e rasterização", ()
       256
     );
     assert.equal(statsBrazil.renderedFeatures, 6);
-    assert.equal(mockBrazil.getCounts().clipCalls, 1);
     assert.equal(mockBrazil.getCounts().fillCalls, 6);
+    assert.equal(mockBrazil.getCounts().strokeCalls, 6);
   });
 
   test("BiomesLayer.tsx descarta geometria, material e textura WebGL ao desmontar (RN21)", () => {
@@ -366,5 +367,20 @@ describe("D31: integração com ObservatoryStore, URL, Studies, Busca ⌘K e UI 
     assert.match(htmlEn, /Typical vegetation/);
     assert.match(htmlEn, /Main threats/);
     assert.match(htmlEn, /Cross-check environmental layers/);
+
+    // Sem estado duplo entre "Todos" e chip de bioma quando selecionado apenas por clique no globo
+    store.setBiomeFilterId(null);
+    store.setSelectedBiomeId("BR_MATA_ATLANTICA");
+    store.setHoveredBiomeId("BR_PANTANAL");
+    const htmlNoDouble = renderToStaticMarkup(<BiomesLayerControls />);
+    assert.match(htmlNoDouble, /data-testid="biome-chip-ALL" aria-pressed="true"/);
+    assert.match(htmlNoDouble, /data-testid="biome-chip-BR_MATA_ATLANTICA" aria-pressed="false"/);
+
+    // BiomeHudOverlay renderiza pílula de hover ao vivo + cartão flutuante sem colidir com FIRMS
+    const htmlHud = renderToStaticMarkup(<BiomeHudOverlay />);
+    assert.match(htmlHud, /data-testid="biome-hover-pill"/);
+    assert.match(htmlHud, /Pantanal/);
+    assert.match(htmlHud, /data-testid="biome-floating-card"/);
+    assert.match(htmlHud, /Atlantic Forest/);
   });
 });

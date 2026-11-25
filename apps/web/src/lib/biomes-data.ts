@@ -1,7 +1,7 @@
 import * as topojson from "topojson-client";
 import whichPolygon from "which-polygon";
 import { geoPath, type GeoPermissibleObjects } from "d3-geo";
-import { createEquirectangularProjection, getChoroplethFeatures } from "./choropleth-texture";
+import { createEquirectangularProjection } from "./choropleth-texture";
 import { BIOMES_BY_ID } from "./biomes-catalog";
 import { isBiomeIdForScope, type BiomeId, type BiomeScope } from "./biomes-types";
 
@@ -36,7 +36,6 @@ export type BiomeSpatialIndex = (point: [number, number]) => BiomeFeaturePropert
 const topologyCache = new Map<BiomeScope, BiomeTopology>();
 const inFlightCache = new Map<BiomeScope, Promise<BiomeTopology | null>>();
 const spatialIndexCache = new Map<BiomeScope, BiomeSpatialIndex>();
-const landMaskCache = new Map<string, Path2D | null>();
 
 export function isBiomeTopology(data: unknown): data is BiomeTopology {
   if (typeof data !== "object" || data === null) return false;
@@ -135,48 +134,6 @@ export function pickBiomeAt(
   return isBiomeIdForScope(scope, rawId) ? rawId : null;
 }
 
-/**
- * Constroi (e memoriza) a máscara de terra do Natural Earth 1:110m (ou do Brasil `BRA` no escopo Brasil),
- * garantindo costas precisas e oceanos 100% transparentes na textura equiretangular.
- */
-function buildLandClipPath(
-  scope: BiomeScope,
-  width: number,
-  height: number
-): Path2D | null {
-  if (typeof Path2D === "undefined") return null;
-  const key = `${scope}:${width}x${height}`;
-  if (landMaskCache.has(key)) return landMaskCache.get(key) ?? null;
-
-  const projection = createEquirectangularProjection(width, height);
-  const path = new Path2D();
-  const pathGen = geoPath(projection, path as unknown as CanvasRenderingContext2D);
-  const features = getChoroplethFeatures();
-
-  for (const record of features) {
-    if (scope === "brazil" && record.iso !== "BRA") continue;
-    pathGen(record.feature);
-  }
-  landMaskCache.set(key, path);
-  return path;
-}
-
-function drawLandClipFallback(
-  ctx: CanvasRenderingContext2D,
-  scope: BiomeScope,
-  width: number,
-  height: number
-): void {
-  const projection = createEquirectangularProjection(width, height);
-  const pathGen = geoPath(projection, ctx);
-  ctx.beginPath();
-  for (const record of getChoroplethFeatures()) {
-    if (scope === "brazil" && record.iso !== "BRA") continue;
-    pathGen(record.feature);
-  }
-  ctx.clip();
-}
-
 export interface BiomeRasterizeOptions {
   filterBiomeId?: BiomeId | null;
   selectedBiomeId?: BiomeId | null;
@@ -189,8 +146,9 @@ export interface BiomeRasterizeStats {
 }
 
 /**
- * Rasteriza os biomas em um canvas 2D equiretangular offscreen recortado pelas costas do Natural Earth.
- * Oceanos permanecem 100% transparentes; biomas fora do filtro são atenuados para foco analítico.
+ * Rasteriza os biomas oficiais (WWF/RESOLVE 2017 ou IBGE 2019 1:250.000) em um canvas 2D
+ * equiretangular offscreen. Os polígonos oficiais já respeitam as costas reais (oceanos 100%
+ * transparentes); biomas fora do filtro são atenuados para foco analítico.
  */
 export function rasterizeBiomesToCanvas(
   ctx: CanvasRenderingContext2D,
@@ -204,14 +162,6 @@ export function rasterizeBiomesToCanvas(
   const { filterBiomeId = null, selectedBiomeId = null } = options;
 
   ctx.clearRect(0, 0, width, height);
-  ctx.save();
-
-  const clipPath = buildLandClipPath(scope, width, height);
-  if (clipPath) {
-    ctx.clip(clipPath);
-  } else {
-    drawLandClipFallback(ctx, scope, width, height);
-  }
 
   const projection = createEquirectangularProjection(width, height);
   const pathGen = geoPath(projection, ctx);
@@ -230,23 +180,28 @@ export function rasterizeBiomesToCanvas(
     const isSelected = selectedBiomeId === rawId;
 
     ctx.save();
-    ctx.globalAlpha = isFilteredMatch ? 0.9 : 0.14;
+    ctx.globalAlpha = isFilteredMatch ? 0.88 : 0.14;
     ctx.fillStyle = entry.hex;
     ctx.beginPath();
     pathGen(feature as GeoPermissibleObjects);
     ctx.fill();
 
-    // Contorno sutil separando biomas adjacentes; reforçado quando selecionado ou filtrado.
-    ctx.globalAlpha = isSelected ? 1 : isFilteredMatch ? 0.55 : 0.15;
-    ctx.strokeStyle = isSelected ? "#F8FAFC" : "#0B1120";
-    ctx.lineWidth = isSelected ? 2.4 : 0.85;
-    ctx.stroke();
+    // Contorno sutil separando biomas adjacentes; reforçado quando selecionado.
+    if (isSelected || scope === "brazil") {
+      ctx.globalAlpha = isSelected ? 0.95 : isFilteredMatch ? 0.55 : 0.16;
+      ctx.strokeStyle = isSelected ? "#F8FAFC" : "#0B1120";
+      ctx.lineWidth = isSelected ? (scope === "brazil" ? 2.2 : 1.5) : 0.85;
+      ctx.stroke();
+    } else if (isFilteredMatch) {
+      ctx.globalAlpha = 0.25;
+      ctx.strokeStyle = "#0B1120";
+      ctx.lineWidth = 0.4;
+      ctx.stroke();
+    }
     ctx.restore();
 
     renderedFeatures++;
   }
-
-  ctx.restore();
 
   const t1 = typeof performance !== "undefined" ? performance.now() : Date.now();
   return {

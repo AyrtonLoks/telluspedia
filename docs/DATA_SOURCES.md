@@ -50,8 +50,8 @@ A seção 4 é o **mapeamento de discovery**: lista as fontes avaliadas para cad
 | Global Fishing Watch, MarineCadastre, OpenSeaMap | Planejado | O tráfego marítimo usa AIS Stream e uma malha fixa de rotas |
 | Wikipedia REST API, GDELT, Crossref/OpenAlex/Citoid | Planejado (Ciclo 3) | `D38` (GDELT) e `D35` (expansão editorial curada) |
 | OpenHistoricalMap, Clio-Infra/Euratlas, CShapes 2.0, PeriodO | Planejado (Ciclo 3) | Fronteiras históricas próprias (`1870–1969`), expansão `1500`/`1815` em `D43` |
-| INPE BDQueimadas & TerraBrasilis (DETER/PRODES) | **Em uso** | `/api/observatory/inpe-fires` (biomas BR) e `/api/observatory/inpe-deforestation` (PRODES 2015–2025 + DETER WFS, `D30`) |
-| WWF / RESOLVE Ecoregions 2017 & IBGE Biomas (2019) | **Em uso** | Camada `BIOMES_MAP` (`D31`): `public/data/biomes/{global-biomes-wwf,brazil-biomes-ibge}.json` carregados sob demanda (14 biomas globais + 6 biomas brasileiros) |
+| INPE BDQueimadas & TerraBrasilis (DETER/PRODES) | **Em uso** | `/api/observatory/inpe-fires` (biomas BR) e `/api/observatory/inpe-deforestation` (PRODES BiomasBR nos 6 biomas brasileiros + mapa de calor espacial + DETER WFS, `D30`/`D31`) |
+| WWF / RESOLVE Ecoregions 2017 & IBGE Biomas (2019, 1:250.000) | **Em uso** | Camada `BIOMES_MAP` (`D31`): `public/data/biomes/{global-biomes-wwf,brazil-biomes-ibge}.json` gerados dos shapefiles oficiais (`Ecoregions2017.zip` CC BY 4.0 e `Biomas_250mil.zip` IBGE) carregados sob demanda |
 | GBIF & IUCN Red List | Planejado (Ciclo 3) | `D32` (Mapa de Espécies Animais & Biodiversidade) |
 | USGS Earthquake Hazards, PB2002, TeleGeography, Open-Meteo Air Quality | Planejado (Ciclo 3) | `D39` (Sismologia/tectônica) e `D40` (Cabos submarinos e PM2.5/AQI) |
 

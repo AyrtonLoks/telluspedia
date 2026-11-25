@@ -1,16 +1,27 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
-import { PRODES_MONITORING_REGIONS } from "@/lib/inpe-data";
-import type { ProdesBiomeId } from "@/lib/inpe-types";
+import { useCosmicStore } from "@/stores/cosmicStore";
+import {
+  getBiomeTopologySync,
+  loadBiomeTopology,
+  type BiomeTopology,
+} from "@/lib/biomes-data";
+import {
+  DEFORESTATION_HEATMAP_HEIGHT,
+  DEFORESTATION_HEATMAP_WIDTH,
+  PRODES_CRITICAL_HUBS,
+  rasterizeDeforestationHeatmap,
+} from "@/lib/inpe-heatmap";
 
-const REGION_RADIUS = 1.0065;
+const HEATMAP_SPHERE_RADIUS = 1.0038;
 const ALERT_RADIUS = 1.0085;
 const DEG2RAD = Math.PI / 180;
+const ignoreRaycast = () => null;
 
 /** Projeção esférica paramétrica não-espelhada (AGENTS.md §1). */
 function sphericalPoint(lat: number, lng: number, radius: number, out: [number, number, number]) {
@@ -22,27 +33,6 @@ function sphericalPoint(lat: number, lng: number, radius: number, out: [number, 
   out[2] = radius * sinPhi * Math.sin(theta);
 }
 
-function buildOutlineGeometry(outline: readonly (readonly [number, number])[]): THREE.BufferGeometry {
-  const coords: number[] = [];
-  const a: [number, number, number] = [0, 0, 0];
-  const b: [number, number, number] = [0, 0, 0];
-  for (let i = 1; i < outline.length; i++) {
-    const [lat0, lng0] = outline[i - 1];
-    const [lat1, lng1] = outline[i];
-    // Subdivide em 4 passos para aderir perfeitamente à curvatura da esfera
-    for (let s = 0; s < 4; s++) {
-      const t0 = s / 4;
-      const t1 = (s + 1) / 4;
-      sphericalPoint(lat0 + (lat1 - lat0) * t0, lng0 + (lng1 - lng0) * t0, REGION_RADIUS, a);
-      sphericalPoint(lat0 + (lat1 - lat0) * t1, lng0 + (lng1 - lng0) * t1, REGION_RADIUS, b);
-      coords.push(a[0], a[1], a[2], b[0], b[1], b[2]);
-    }
-  }
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(coords, 3));
-  return geometry;
-}
-
 const ALERT_VERTEX_SHADER = /* glsl */ `
   attribute float aSize;
   attribute float aSeverity;
@@ -51,7 +41,7 @@ const ALERT_VERTEX_SHADER = /* glsl */ `
   void main() {
     vSeverity = clamp(aSeverity, 0.0, 1.0);
     vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = clamp(aSize * (2.8 / max(0.8, -mvPos.z)), 3.0, 14.0);
+    gl_PointSize = clamp(aSize * (2.6 / max(0.8, -mvPos.z)), 3.0, 13.0);
     gl_Position = projectionMatrix * mvPos;
   }
 `;
@@ -65,7 +55,7 @@ const ALERT_FRAGMENT_SHADER = /* glsl */ `
     float dist = length(gl_PointCoord - vec2(0.5));
     if (dist > 0.5) discard;
     float core = smoothstep(0.5, 0.08, dist);
-    vec3 col = mix(vec3(0.96, 0.62, 0.04), vec3(0.94, 0.27, 0.27), vSeverity);
+    vec3 col = mix(vec3(0.98, 0.58, 0.08), vec3(0.99, 0.25, 0.25), vSeverity);
     float alpha = core * uOpacity * (0.72 + 0.28 * uPulse);
     if (alpha < 0.01) discard;
     gl_FragColor = vec4(col, alpha);
@@ -73,60 +63,98 @@ const ALERT_FRAGMENT_SHADER = /* glsl */ `
 `;
 
 /**
- * Camada 3D espacial de monitoramento INPE TerraBrasilis (D30 / RN17):
- * - Contornos de monitoramento PRODES/DETER (Amazônia Legal e Cerrado).
- * - Alertas DETER ativos (quando retornados pelo WFS oficial do INPE), com `dispose()` completo.
+ * Camada 3D de desmatamento INPE TerraBrasilis (D30/D31 — 6 Biomas Brasileiros):
+ * - Mapa de calor térmico GPU (CanvasTexture equiretangular recortado pelos biomas reais IBGE)
+ *   combinando zonas críticas municipais PRODES + alertas DETER ao vivo.
+ * - Focos pulsantes 3D dos polos críticos PRODES e alertas DETER, com `dispose()` rigoroso (RN21).
  */
 export const InpeDeforestationLayer: React.FC = () => {
   const { invalidate } = useThree();
   const isThrottled = useGlobeStore((s) => s.isThrottled);
+  const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const opacity = useObservatoryStore((s) => s.layerOpacity.INPE_DEFORESTATION ?? 0.9);
   const prodesBiome = useObservatoryStore((s) => s.prodesBiome);
   const payload = useObservatoryStore((s) => s.inpeDeforestation);
 
-  const regionGeometries = useMemo<Record<ProdesBiomeId, THREE.BufferGeometry>>(
-    () => ({
-      amazonia: buildOutlineGeometry(PRODES_MONITORING_REGIONS.amazonia.outline),
-      cerrado: buildOutlineGeometry(PRODES_MONITORING_REGIONS.cerrado.outline),
-    }),
-    []
+  const [biomeTopology, setBiomeTopology] = useState<BiomeTopology | null>(() =>
+    getBiomeTopologySync("brazil")
   );
 
-  const regionMaterials = useMemo<Record<ProdesBiomeId, THREE.LineBasicMaterial>>(
-    () => ({
-      amazonia: new THREE.LineBasicMaterial({
-        color: PRODES_MONITORING_REGIONS.amazonia.hex,
-        transparent: true,
-        opacity,
-        depthWrite: false,
-      }),
-      cerrado: new THREE.LineBasicMaterial({
-        color: PRODES_MONITORING_REGIONS.cerrado.hex,
-        transparent: true,
-        opacity,
-        depthWrite: false,
-      }),
-    }),
+  // Carrega sob demanda o polígono oficial dos 6 biomas IBGE para recorte e contorno exatos.
+  useEffect(() => {
+    const cached = getBiomeTopologySync("brazil");
+    if (cached) {
+      setBiomeTopology(cached);
+      return;
+    }
+    let alive = true;
+    void loadBiomeTopology("brazil").then((loaded) => {
+      if (alive && loaded) setBiomeTopology(loaded);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const shouldRender = !isCosmicMode;
+
+  const canvasResource = useRef<{
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+    texture: THREE.CanvasTexture;
+  } | null>(null);
+
+  const heatmapGeometry = useMemo(
+    () => (shouldRender ? new THREE.SphereGeometry(HEATMAP_SPHERE_RADIUS, 64, 32) : null),
+    [shouldRender]
+  );
+
+  const heatmapMaterial = useMemo(() => {
+    if (!shouldRender) return null;
+    return new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1,
+      toneMapped: false,
+    });
+    // Opacidade sincronizada no efeito dedicado abaixo sem recriar o material.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  }, [shouldRender]);
 
-  const alertsGeometry = useMemo(() => {
-    const alerts = payload?.deterAlerts ?? [];
-    if (alerts.length === 0) return null;
-    const positions = new Float32Array(alerts.length * 3);
-    const sizes = new Float32Array(alerts.length);
-    const severities = new Float32Array(alerts.length);
+  // Pontos pulsantes 3D: alertas DETER ao vivo + polos críticos municipais PRODES do bioma em foco
+  const hotspotsGeometry = useMemo(() => {
+    const deterAlerts = payload?.deterAlerts ?? [];
+    const focusHubs = PRODES_CRITICAL_HUBS.filter((h) => h.biome === prodesBiome);
+    const totalCount = deterAlerts.length + focusHubs.length;
+    if (totalCount === 0) return null;
+
+    const positions = new Float32Array(totalCount * 3);
+    const sizes = new Float32Array(totalCount);
+    const severities = new Float32Array(totalCount);
     const pt: [number, number, number] = [0, 0, 0];
+    let idx = 0;
 
-    for (let i = 0; i < alerts.length; i++) {
-      const a = alerts[i];
-      sphericalPoint(a.lat, a.lng, ALERT_RADIUS, pt);
-      positions[i * 3] = pt[0];
-      positions[i * 3 + 1] = pt[1];
-      positions[i * 3 + 2] = pt[2];
-      sizes[i] = 3.5 + Math.min(7.5, Math.sqrt(Math.max(0.05, a.areaKm2)) * 4.5);
-      severities[i] = Math.min(1, a.areaKm2 / 1.5);
+    for (const hub of focusHubs) {
+      sphericalPoint(hub.lat, hub.lng, ALERT_RADIUS, pt);
+      positions[idx * 3] = pt[0];
+      positions[idx * 3 + 1] = pt[1];
+      positions[idx * 3 + 2] = pt[2];
+      sizes[idx] = 4.2 + hub.intensity * 5.2;
+      severities[idx] = hub.intensity;
+      idx++;
+    }
+
+    for (const alert of deterAlerts) {
+      sphericalPoint(alert.lat, alert.lng, ALERT_RADIUS, pt);
+      positions[idx * 3] = pt[0];
+      positions[idx * 3 + 1] = pt[1];
+      positions[idx * 3 + 2] = pt[2];
+      sizes[idx] = 3.8 + Math.min(7.5, Math.sqrt(Math.max(0.05, alert.areaKm2)) * 4.5);
+      severities[idx] = Math.min(1, 0.35 + alert.areaKm2 / 1.5);
+      idx++;
     }
 
     const geom = new THREE.BufferGeometry();
@@ -134,9 +162,9 @@ export const InpeDeforestationLayer: React.FC = () => {
     geom.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
     geom.setAttribute("aSeverity", new THREE.BufferAttribute(severities, 1));
     return geom;
-  }, [payload]);
+  }, [payload, prodesBiome]);
 
-  const alertsMaterial = useMemo(
+  const hotspotsMaterial = useMemo(
     () =>
       new THREE.ShaderMaterial({
         vertexShader: ALERT_VERTEX_SHADER,
@@ -153,54 +181,97 @@ export const InpeDeforestationLayer: React.FC = () => {
     []
   );
 
-  useEffect(() => {
-    return () => {
-      regionGeometries.amazonia.dispose();
-      regionGeometries.cerrado.dispose();
-      regionMaterials.amazonia.dispose();
-      regionMaterials.cerrado.dispose();
-      alertsMaterial.dispose();
-    };
-  }, [regionGeometries, regionMaterials, alertsMaterial]);
+  // Descarte rigoroso de recursos WebGL (RN21)
+  useEffect(() => () => { heatmapGeometry?.dispose(); }, [heatmapGeometry]);
+  useEffect(() => () => { heatmapMaterial?.dispose(); }, [heatmapMaterial]);
+  useEffect(() => () => { hotspotsGeometry?.dispose(); }, [hotspotsGeometry]);
+  useEffect(() => () => { hotspotsMaterial.dispose(); }, [hotspotsMaterial]);
 
   useEffect(() => {
+    if (!shouldRender && canvasResource.current) {
+      canvasResource.current.texture.dispose();
+      canvasResource.current = null;
+      return;
+    }
     return () => {
-      alertsGeometry?.dispose();
+      if (canvasResource.current) {
+        canvasResource.current.texture.dispose();
+        canvasResource.current = null;
+      }
     };
-  }, [alertsGeometry]);
+  }, [shouldRender]);
 
+  // Rasteriza o mapa de calor no CanvasTexture reutilizado
   useEffect(() => {
-    regionMaterials.amazonia.opacity = opacity * (prodesBiome === "amazonia" ? 0.92 : 0.36);
-    regionMaterials.cerrado.opacity = opacity * (prodesBiome === "cerrado" ? 0.92 : 0.36);
-    alertsMaterial.uniforms.uOpacity.value = opacity;
+    if (!shouldRender || !heatmapMaterial || typeof document === "undefined") return;
+
+    if (!canvasResource.current) {
+      const canvas = document.createElement("canvas");
+      canvas.width = DEFORESTATION_HEATMAP_WIDTH;
+      canvas.height = DEFORESTATION_HEATMAP_HEIGHT;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.generateMipmaps = false;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      canvasResource.current = { canvas, ctx, texture };
+    }
+
+    const { ctx, texture } = canvasResource.current;
+    rasterizeDeforestationHeatmap(
+      ctx,
+      {
+        activeBiome: prodesBiome,
+        deterAlerts: payload?.deterAlerts ?? [],
+        biomeTopology,
+      },
+      DEFORESTATION_HEATMAP_WIDTH,
+      DEFORESTATION_HEATMAP_HEIGHT
+    );
+    texture.needsUpdate = true;
+
+    if (heatmapMaterial.map !== texture) {
+      heatmapMaterial.map = texture;
+      heatmapMaterial.needsUpdate = true;
+    }
     invalidate();
-  }, [opacity, prodesBiome, regionMaterials, alertsMaterial, invalidate]);
+  }, [shouldRender, prodesBiome, payload, biomeTopology, heatmapMaterial, invalidate]);
+
+  useEffect(() => {
+    if (heatmapMaterial) heatmapMaterial.opacity = opacity;
+    hotspotsMaterial.uniforms.uOpacity.value = opacity;
+    invalidate();
+  }, [opacity, heatmapMaterial, hotspotsMaterial, invalidate]);
 
   const pulseClock = useRef(0);
   useFrame((_, delta) => {
-    if (isThrottled || !alertsGeometry) return;
+    if (isThrottled || !hotspotsGeometry) return;
     pulseClock.current += Math.min(delta, 0.05);
-    alertsMaterial.uniforms.uPulse.value = 0.5 + 0.5 * Math.sin(pulseClock.current * 2.8);
+    hotspotsMaterial.uniforms.uPulse.value = 0.5 + 0.5 * Math.sin(pulseClock.current * 2.4);
   });
+
+  if (!shouldRender) return null;
 
   return (
     <group>
-      <lineSegments
-        geometry={regionGeometries.amazonia}
-        material={regionMaterials.amazonia}
-        frustumCulled={false}
-        renderOrder={5}
-      />
-      <lineSegments
-        geometry={regionGeometries.cerrado}
-        material={regionMaterials.cerrado}
-        frustumCulled={false}
-        renderOrder={5}
-      />
-      {alertsGeometry && (
+      {heatmapGeometry && heatmapMaterial && (
+        <mesh
+          name="inpe-deforestation-heatmap"
+          geometry={heatmapGeometry}
+          material={heatmapMaterial}
+          renderOrder={3}
+          raycast={ignoreRaycast}
+        />
+      )}
+      {hotspotsGeometry && (
         <points
-          geometry={alertsGeometry}
-          material={alertsMaterial}
+          geometry={hotspotsGeometry}
+          material={hotspotsMaterial}
           frustumCulled={false}
           renderOrder={7}
         />

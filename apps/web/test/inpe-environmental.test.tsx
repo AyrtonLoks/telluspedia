@@ -19,6 +19,8 @@ import {
   parseInpeBdQueimadasCsv,
   parseTerraBrasilisDeterGeoJson,
 } from "../src/lib/inpe-data";
+import { PRODES_BIOME_IDS } from "../src/lib/inpe-types";
+import { PRODES_CRITICAL_HUBS, rasterizeDeforestationHeatmap } from "../src/lib/inpe-heatmap";
 import {
   createInpeBdQueimadasSource,
   createInpeTerraBrasilisSource,
@@ -113,10 +115,42 @@ describe("D30 · Dados Ambientais & INPE (BDQueimadas + TerraBrasilis DETER/PROD
 
     assert.equal(INPE_PRODES_SERIES.amazonia.length, 11);
     assert.equal(INPE_PRODES_SERIES.cerrado.length, 11);
+    for (const biome of PRODES_BIOME_IDS) {
+      assert.ok(INPE_PRODES_SERIES[biome].length >= 6, `série PRODES para ${biome} deve ter ≥ 6 anos`);
+      assert.ok(
+        PRODES_CRITICAL_HUBS.some((h) => h.biome === biome),
+        `mapa de calor deve cobrir polos críticos PRODES em ${biome}`
+      );
+    }
     assert.equal(INPE_PRODES_SERIES.amazonia[0].year, 2015);
     assert.equal(INPE_PRODES_SERIES.amazonia[10].year, 2025);
     const amzYoY = computeProdesYoYChange(INPE_PRODES_SERIES.amazonia);
     assert.ok(amzYoY !== null && amzYoY < 0, "variação 2024 → 2025 na Amazônia deve refletir queda oficial");
+
+    // Rasterizador do mapa de calor de desmatamento nos 6 biomas
+    const noop = () => {};
+    const mockCtx = {
+      clearRect: noop,
+      save: noop,
+      restore: noop,
+      beginPath: noop,
+      closePath: noop,
+      moveTo: noop,
+      lineTo: noop,
+      arc: noop,
+      clip: noop,
+      fill: noop,
+      stroke: noop,
+      createRadialGradient: () => ({ addColorStop: noop }),
+    } as unknown as CanvasRenderingContext2D;
+    const stats = rasterizeDeforestationHeatmap(
+      mockCtx,
+      { activeBiome: "pantanal", deterAlerts: alerts, biomeTopology: null },
+      512,
+      256
+    );
+    assert.equal(stats.renderedKernels, PRODES_CRITICAL_HUBS.length);
+    assert.equal(stats.liveAlertKernels, 1);
   });
 
   test("3. Fontes T05 do INPE cumprem live, cache, stale e fallback honesto (zero dados fabricados)", async (t) => {
@@ -204,7 +238,11 @@ describe("D30 · Dados Ambientais & INPE (BDQueimadas + TerraBrasilis DETER/PROD
       const ptProdes = renderToStaticMarkup(React.createElement(InpeDeforestationControls));
       assert.match(ptProdes, /data-testid="inpe-deforestation-controls"/);
       assert.match(ptProdes, /data-testid="prodes-chart"/);
-      assert.match(ptProdes, /Amazônia Legal/);
+      assert.match(ptProdes, /data-testid="inpe-heatmap-legend"/);
+      assert.match(ptProdes, /data-testid="inpe-biome-caatinga"/);
+      assert.match(ptProdes, /data-testid="inpe-biome-mata_atlantica"/);
+      assert.match(ptProdes, /data-testid="inpe-biome-pampa"/);
+      assert.match(ptProdes, /data-testid="inpe-biome-pantanal"/);
       assert.match(ptProdes, /INPE \/ MCTI/);
 
       useLocaleStore.setState({ locale: "en", enMessages: EN_MESSAGES });
@@ -213,7 +251,8 @@ describe("D30 · Dados Ambientais & INPE (BDQueimadas + TerraBrasilis DETER/PROD
       assert.match(enFires, /Atlantic Forest/);
 
       const enProdes = renderToStaticMarkup(React.createElement(InpeDeforestationControls));
-      assert.match(enProdes, /Legal Amazon/);
+      assert.match(enProdes, /Atlantic Forest/);
+      assert.match(enProdes, /Deforestation heatmap/);
       assert.match(enProdes, /Official PRODES series/);
       assert.match(enProdes, /DETER alerts \(last 30 days\)/);
     } finally {
@@ -230,9 +269,11 @@ describe("D30 · Dados Ambientais & INPE (BDQueimadas + TerraBrasilis DETER/PROD
       path.join(webRoot, "src/components/globe/InpeDeforestationLayer.tsx"),
       "utf8"
     );
-    assert.match(layerSrc, /regionGeometries\.amazonia\.dispose\(\)/);
-    assert.match(layerSrc, /alertsGeometry\?\.dispose\(\)/);
-    assert.match(layerSrc, /alertsMaterial\.dispose\(\)/);
+    assert.match(layerSrc, /heatmapGeometry\?\.dispose\(\)/);
+    assert.match(layerSrc, /heatmapMaterial\?\.dispose\(\)/);
+    assert.match(layerSrc, /canvasResource\.current\.texture\.dispose\(\)/);
+    assert.match(layerSrc, /hotspotsGeometry\?\.dispose\(\)/);
+    assert.match(layerSrc, /hotspotsMaterial\.dispose\(\)/);
     assert.match(layerSrc, /if \(isThrottled/);
 
     const validStudy = studyInput.safeParse({

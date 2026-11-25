@@ -24,8 +24,12 @@ export const INPE_TERRABRASILIS_PORTAL_URL = "https://terrabrasilis.dpi.inpe.br/
 export const INPE_PRODES_SOURCE_URLS: Record<ProdesBiomeId, string> = {
   amazonia: "https://terrabrasilis.dpi.inpe.br/app/dashboard/deforestation/biomes/legal_amazon/rates",
   cerrado: "https://terrabrasilis.dpi.inpe.br/app/dashboard/deforestation/biomes/cerrado/rates",
+  caatinga: "https://terrabrasilis.dpi.inpe.br/app/dashboard/deforestation/biomes/caatinga/increments",
+  mata_atlantica: "https://terrabrasilis.dpi.inpe.br/app/dashboard/deforestation/biomes/mata_atlantica/increments",
+  pampa: "https://terrabrasilis.dpi.inpe.br/app/dashboard/deforestation/biomes/pampa/increments",
+  pantanal: "https://terrabrasilis.dpi.inpe.br/app/dashboard/deforestation/biomes/pantanal/increments",
 };
-export const INPE_PRODES_CITATION = "INPE / MCTI · Programa PRODES & DETER / TerraBrasilis (2015–2025)";
+export const INPE_PRODES_CITATION = "INPE / MCTI · Programa PRODES BiomasBR & DETER / TerraBrasilis (6 Biomas)";
 
 export interface BrazilianBiomeMeta {
   id: BrazilianBiomeId;
@@ -77,9 +81,44 @@ export const INPE_PRODES_SERIES: Record<ProdesBiomeId, readonly ProdesAnnualRate
     { year: 2024, km2: 8174, status: "consolidated" },
     { year: 2025, km2: 7235, status: "estimated" },
   ],
+  caatinga: [
+    { year: 2019, km2: 1978, status: "consolidated" },
+    { year: 2020, km2: 2152, status: "consolidated" },
+    { year: 2021, km2: 2348, status: "consolidated" },
+    { year: 2022, km2: 2796, status: "consolidated" },
+    { year: 2023, km2: 3170, status: "consolidated" },
+    { year: 2024, km2: 3484, status: "consolidated" },
+  ],
+  mata_atlantica: [
+    { year: 2019, km2: 1067, status: "consolidated" },
+    { year: 2020, km2: 791, status: "consolidated" },
+    { year: 2021, km2: 927, status: "consolidated" },
+    { year: 2022, km2: 1033, status: "consolidated" },
+    { year: 2023, km2: 765, status: "consolidated" },
+    { year: 2024, km2: 475, status: "consolidated" },
+  ],
+  pampa: [
+    { year: 2019, km2: 1027, status: "consolidated" },
+    { year: 2020, km2: 888, status: "consolidated" },
+    { year: 2021, km2: 1526, status: "consolidated" },
+    { year: 2022, km2: 945, status: "consolidated" },
+    { year: 2023, km2: 655, status: "consolidated" },
+    { year: 2024, km2: 523, status: "consolidated" },
+  ],
+  pantanal: [
+    { year: 2017, km2: 711, status: "consolidated" },
+    { year: 2018, km2: 498, status: "consolidated" },
+    { year: 2019, km2: 514, status: "consolidated" },
+    { year: 2020, km2: 678, status: "consolidated" },
+    { year: 2021, km2: 825, status: "consolidated" },
+    { year: 2022, km2: 789, status: "consolidated" },
+    { year: 2023, km2: 723, status: "consolidated" },
+    { year: 2024, km2: 842, status: "consolidated" },
+    { year: 2025, km2: 291, status: "consolidated" },
+  ],
 };
 
-/** Polígonos simplificados de referência visual das áreas monitoradas pelo PRODES/DETER no globo 3D. */
+/** Metadados espaciais oficiais dos 6 Biomas Brasileiros monitorados pelo PRODES BiomasBR (INPE). */
 export const PRODES_MONITORING_REGIONS: Record<
   ProdesBiomeId,
   {
@@ -87,53 +126,73 @@ export const PRODES_MONITORING_REGIONS: Record<
     nameEn: string;
     centerLat: number;
     centerLng: number;
-    /** Contorno aproximado [lat, lng][] para visualização espacial no globo 3D. */
-    outline: readonly (readonly [number, number])[];
+    zoomAltitude: number;
+    /** ID correspondente no TopoJSON oficial IBGE (`brazil-biomes-ibge.json`). */
+    ibgeBiomeId: string;
+    /** Se possui sistema DETER diário em operação oficial no TerraBrasilis. */
+    hasDeterSystem: boolean;
     hex: string;
   }
 > = {
   amazonia: {
-    namePt: "Amazônia Legal",
-    nameEn: "Legal Amazon",
+    namePt: "Amazônia",
+    nameEn: "Amazon",
     centerLat: -5.5,
     centerLng: -60.0,
+    zoomAltitude: 2.0,
+    ibgeBiomeId: "BR_AMAZONIA",
+    hasDeterSystem: true,
     hex: "#f97316",
-    outline: [
-      [4.5, -60.5],
-      [2.0, -50.8],
-      [-1.0, -45.5],
-      [-5.5, -44.5],
-      [-10.5, -47.5],
-      [-15.5, -52.0],
-      [-16.5, -59.5],
-      [-13.5, -62.0],
-      [-11.0, -69.5],
-      [-7.5, -73.8],
-      [-1.5, -70.0],
-      [1.8, -67.0],
-      [4.5, -60.5],
-    ],
   },
   cerrado: {
     namePt: "Cerrado",
     nameEn: "Cerrado",
     centerLat: -13.5,
     centerLng: -47.5,
+    zoomAltitude: 2.0,
+    ibgeBiomeId: "BR_CERRADO",
+    hasDeterSystem: true,
     hex: "#eab308",
-    outline: [
-      [-3.5, -44.0],
-      [-5.5, -41.5],
-      [-11.0, -44.5],
-      [-15.5, -43.5],
-      [-21.5, -46.5],
-      [-23.5, -50.0],
-      [-21.5, -55.0],
-      [-17.5, -55.5],
-      [-13.0, -56.0],
-      [-10.0, -50.5],
-      [-5.5, -47.5],
-      [-3.5, -44.0],
-    ],
+  },
+  caatinga: {
+    namePt: "Caatinga",
+    nameEn: "Caatinga",
+    centerLat: -9.0,
+    centerLng: -40.0,
+    zoomAltitude: 1.95,
+    ibgeBiomeId: "BR_CAATINGA",
+    hasDeterSystem: false,
+    hex: "#ef4444",
+  },
+  mata_atlantica: {
+    namePt: "Mata Atlântica",
+    nameEn: "Atlantic Forest",
+    centerLat: -21.0,
+    centerLng: -45.5,
+    zoomAltitude: 1.95,
+    ibgeBiomeId: "BR_MATA_ATLANTICA",
+    hasDeterSystem: false,
+    hex: "#f43f5e",
+  },
+  pampa: {
+    namePt: "Pampa",
+    nameEn: "Pampa",
+    centerLat: -30.5,
+    centerLng: -54.5,
+    zoomAltitude: 1.9,
+    ibgeBiomeId: "BR_PAMPA",
+    hasDeterSystem: false,
+    hex: "#fb923c",
+  },
+  pantanal: {
+    namePt: "Pantanal",
+    nameEn: "Pantanal",
+    centerLat: -17.8,
+    centerLng: -56.8,
+    zoomAltitude: 1.9,
+    ibgeBiomeId: "BR_PANTANAL",
+    hasDeterSystem: true,
+    hex: "#f59e0b",
   },
 };
 

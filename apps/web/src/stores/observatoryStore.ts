@@ -151,18 +151,21 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   biomeScope: DEFAULT_BIOME_SCOPE,
   biomeFilterId: null,
   selectedBiomeId: null,
+  hoveredBiomeId: null,
   biomePickMode: false,
   setBiomeScope: (biomeScope) =>
     set((s) => ({
       biomeScope,
       biomeFilterId: isBiomeIdForScope(biomeScope, s.biomeFilterId) ? s.biomeFilterId : null,
       selectedBiomeId: isBiomeIdForScope(biomeScope, s.selectedBiomeId) ? s.selectedBiomeId : null,
+      hoveredBiomeId: null,
       layerMeta: s.hasLoaded.BIOMES_MAP
         ? { ...s.layerMeta, BIOMES_MAP: buildBiomesMeta(biomeScope) }
         : s.layerMeta,
     })),
   setBiomeFilterId: (biomeFilterId) => set({ biomeFilterId }),
   setSelectedBiomeId: (selectedBiomeId) => set({ selectedBiomeId }),
+  setHoveredBiomeId: (hoveredBiomeId) => set({ hoveredBiomeId }),
   setBiomePickMode: (biomePickMode) => set({ biomePickMode }),
   loadCurrentsData: async () => {
     if (get().currentsLoading) return;
@@ -231,6 +234,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         selectedEntity: layerId === "NASA_EONET" && isEonetSelection(state.selectedEntity) ? null : state.selectedEntity,
         marineDebrisPickMode: layerId === "MARINE_DEBRIS" ? false : state.marineDebrisPickMode,
         biomePickMode: layerId === "BIOMES_MAP" ? false : state.biomePickMode,
+        hoveredBiomeId: layerId === "BIOMES_MAP" ? null : state.hoveredBiomeId,
+        selectedBiomeId: layerId === "BIOMES_MAP" ? null : state.selectedBiomeId,
       }));
     }
   },
@@ -488,6 +493,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       selectedGyreId: null,
       biomeFilterId: null,
       selectedBiomeId: null,
+      hoveredBiomeId: null,
       biomePickMode: false,
     }),
 }));

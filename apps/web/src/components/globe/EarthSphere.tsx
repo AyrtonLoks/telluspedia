@@ -355,6 +355,13 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
     if (!e.point || !activeSpatialIndex) return;
 
     const { lat, lng } = vector3ToLatLng(e.object.worldToLocal(e.point.clone()));
+    const obsHover = useObservatoryStore.getState();
+    if (obsHover.activeLayers.includes("BIOMES_MAP")) {
+      const hoveredBiome = pickLoadedBiomeAt(obsHover.biomeScope, lat, lng);
+      if (hoveredBiome !== obsHover.hoveredBiomeId) {
+        obsHover.setHoveredBiomeId(hoveredBiome);
+      }
+    }
     const feature = activeSpatialIndex([lng, lat]);
     const iso = resolveIsoFromFeature(feature);
 
@@ -364,6 +371,10 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
   const handlePointerOut = () => {
     if (useCosmicStore.getState().isCosmicMode) {
       useCosmicStore.getState().setHoveredBody(null);
+    }
+    const obsState = useObservatoryStore.getState();
+    if (obsState.hoveredBiomeId !== null) {
+      obsState.setHoveredBiomeId(null);
     }
     setHoveredIso(null);
   };
@@ -404,7 +415,10 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
       const hitBiome = pickLoadedBiomeAt(obsState.biomeScope, lat, lng);
       if (obsState.biomePickMode) {
         obsState.setSelectedBiomeId(hitBiome);
-        if (hitBiome) return;
+        if (hitBiome) {
+          obsState.setSelectedEntity(null);
+          return;
+        }
       } else if (hitBiome) {
         obsState.setSelectedBiomeId(hitBiome);
       }
