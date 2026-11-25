@@ -245,8 +245,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
 | D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | DONE | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
 | D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | DONE | ayrton | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
-| D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | REVIEW | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
-| D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | TODO | — | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
+| D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
+| D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | TODO | — | — | G-PAIS, G-CONTEUDO |
 | D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | TODO | — | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | TODO | — | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
@@ -2688,7 +2688,7 @@ A regra `RN13.7` (*Biologia e Saúde Pública*) e o `DATA_SOURCES.md` listam **G
 
 ### D33 · Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d33-2d-observatory · **Worktree:** —
+- **Status:** DONE · **Responsável:** ayrton · **Branch:** task/d33-2d-observatory · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/UX · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS
 
 **Contexto / problema**
@@ -2712,12 +2712,13 @@ Embora o Globo 3D seja a experiência principal sem distorção cartográfica, u
 - 2026-11-25 · antigravity · REVIEW · Implementado Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): tipos ultraleves `map-projections-types.ts`, motor de 4 projeções (`Equal Earth`, `Mercator` recortada em ±82°, `Natural Earth`, `Azimutal Equidistante` com foco opcional no país selecionado) e picking exato em `map-projections.ts`, renderizador Canvas 2D high-DPI `map-2d-renderer.ts` com gratícula `geoGraticule10`, Coroplético (com hachura explícita de dado indisponível), Fronteiras Históricas, Biomas (WWF 14 / IBGE 6), fronteiras disputadas/autônomas (RN07) e upgrade automático `1:50m` no zoom, hook `useFlatMapData.ts`, `FlatMapCanvas.tsx` (carregado sob demanda via `next/dynamic`) e seletor D14 bilíngue `ProjectionSelectorHud.tsx` com notas didáticas de área/forma/direção. Alternância `3D ↔ 2D` discreta em `GlobeExperienceShell.tsx` pausando o loop WebGL 3D (`isThrottled` / `frameloop="demand"`, RN22), persistência em URL (`mapa=2d&proj=...` em `view-url.ts`), busca ⌘K (`search.ts`) e Estudos imutáveis (`prisma/schema.prisma`, migration `20261125120000_add_study_map_projection`, `study-schema.ts`, `StudyShareModal.tsx`, `ForkStudyBanner.tsx`). Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` 163 kB / `bundle-budget` 6/6 `< 160 KiB` gzip), `pnpm test` (`838/838`) e Playwright Chromium E2E (`map-2d-projections.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros).
 - 2026-11-25 · ayrton · IN_PROGRESS · Revisão: no Modo 2D apenas o Mapa dos Biomas renderizava no canvas; as demais 10 camadas do Observatório (FIRMS/INPE, EONET, ISS/Satélites, Voos, Marítimo/AIS, GIBS, Ventos/Correntes, Lixo Marítimo, Desmatamento INPE, Espécies GBIF/IUCN) e seus HUDs de telemetria precisam funcionar nativamente no Modo 2D. Reaberta em `../telluspedia-wt/antigravity-d33b`.
 - 2026-11-25 · antigravity · REVIEW · Implementado suporte nativo no Modo 2D para todas as 11 camadas do Observatório Planetário em qualquer uma das 4 projeções (`map-2d-observatory-fields.ts`, `map-2d-observatory.ts`, `useFlatMapObservatory.ts`, `map-2d-renderer.ts` e `FlatMapCanvas.tsx`): reprojeção inversa de imagens NASA GIBS, vetores de Ventos/Correntes (`winds`/`currents`/`both`), 5 Giros de Lixo Marítimo + lançamento Lagrangiano RK2 no clique 2D, mapa de calor térmico INPE DETER/PRODES + contorno IBGE, rotas marítimas e embarcações AIS, queimadas FIRMS/BDQueimadas, eventos EONET, voos OpenSky orientados, ISS + ground track + satélites SGP4 e espécies GBIF/IUCN com anel focal. Adicionado picking prioritário de entidades e montagem dos overlays flutuantes (`ObservatoryTelemetryHUD`, `BiomeHudOverlay`, `SpeciesHudOverlay`) no Modo 2D sem duplicação no DOM (`GlobeCanvas.tsx`). Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` 163 kB / `bundle-budget` 6/6 `< 160 KiB` gzip), `pnpm test` (`839/839`) e Chromium E2E (`map-2d-projections.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros).
+- 2026-11-25 · ayrton · DONE · Aprovada pelo Ayrton.
 
 ---
 
 ### D34 · Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d34-animated-choropleth · **Worktree:** ../telluspedia-wt/antigravity-d34
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS
 
 **Contexto / problema**
@@ -2737,6 +2738,7 @@ O dataset `public/data/worldbank-timeseries.json` já armazena séries reais anu
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`1c77092`) com grupos livres (`G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS`).
 
 ---
 
