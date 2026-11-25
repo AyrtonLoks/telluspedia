@@ -19,7 +19,8 @@ export type ObservatoryLayer =
   | "GLOBAL_WINDS"
   | "MARINE_DEBRIS"
   | "INPE_DEFORESTATION"
-  | "BIOMES_MAP";
+  | "BIOMES_MAP"
+  | "SPECIES_MAP";
 
 export interface FirmsHotspot {
   id: string;

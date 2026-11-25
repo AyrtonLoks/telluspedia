@@ -20,6 +20,7 @@ import {
   Waves,
   Trees,
   Leaf,
+  PawPrint,
 } from "lucide-react";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { DataSourceBadge } from "./DataSourceBadge";
@@ -72,6 +73,14 @@ const InpeDeforestationControls = dynamic(
 // Controles do Mapa dos Biomas (Global 14 WWF + Brasil 6 IBGE — D31) só baixam quando a camada é aberta.
 const BiomesLayerControls = dynamic(
   () => import("./BiomesLayerControls").then((m) => m.BiomesLayerControls),
+  {
+    ssr: false,
+    loading: () => <div className="h-24" aria-hidden="true" />,
+  }
+);
+// Controles do Mapa de Espécies & Biodiversidade (GBIF + IUCN — D32) só baixam quando a camada é aberta.
+const SpeciesLayerControls = dynamic(
+  () => import("./SpeciesLayerControls").then((m) => m.SpeciesLayerControls),
   {
     ssr: false,
     loading: () => <div className="h-24" aria-hidden="true" />,
@@ -231,6 +240,15 @@ const LAYER_OPTIONS: LayerOption[] = [
       s.biomeScope === "brazil"
         ? t("obs.biomes.badgeBrazil", "Brasil · 6 IBGE")
         : t("obs.biomes.badgeGlobal", "Global · 14 WWF"),
+  },
+  {
+    id: "SPECIES_MAP",
+    name: "Espécies & Biodiversidade (GBIF / IUCN)",
+    source: "GBIF API v1 · IUCN Red List",
+    description: "Fauna emblemática e ameaçada (CR–LC) por bioma e país com ocorrências georreferenciadas reais do GBIF.",
+    icon: PawPrint,
+    tone: "accent",
+    badgeText: (_s, _locale, t) => t("obs.species.badgeSummary", "28 espécies · IUCN + GBIF"),
   },
 ];
 
@@ -432,6 +450,7 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                   {layer.id === "MARINE_DEBRIS" && <MarineDebrisControls />}
                   {layer.id === "INPE_DEFORESTATION" && <InpeDeforestationControls />}
                   {layer.id === "BIOMES_MAP" && <BiomesLayerControls />}
+                  {layer.id === "SPECIES_MAP" && <SpeciesLayerControls />}
                   {layer.id === "MARITIME_ROUTES" && isContemporary && <MaritimeLayerControls />}
                   {layer.id === "NASA_FIRMS" && (
                     <>

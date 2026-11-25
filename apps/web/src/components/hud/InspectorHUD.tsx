@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { StudyContext } from "@/components/tellus-bridge/StudyContext";
 import React, { useMemo } from "react";
 import {
@@ -35,6 +36,11 @@ import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
 import { useI18n } from "@/lib/i18n/useT";
 import { formatCountryName } from "@/lib/i18n/format";
+
+const CountryFaunaSection = dynamic(
+  () => import("./CountryFaunaSection").then((m) => m.CountryFaunaSection),
+  { ssr: false }
+);
 
 export interface InspectorHUDProps {
   selectedIso?: string | null;
@@ -312,6 +318,10 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         milestones={currentCountry.milestones}
         countryName={currentCountry.nameCommon}
       />
+
+      {!currentCountry.isHistoricalEntity && (
+        <CountryFaunaSection isoCode={currentCountry.isoCode} />
+      )}
 
       <StudyContext entityId={`country:${currentCountry.isoCode}`} />
       {currentCountry.isoCode === "BRA" && selectedMilestoneId === "bra-1889" && (

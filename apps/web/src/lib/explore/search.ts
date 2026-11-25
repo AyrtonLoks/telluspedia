@@ -38,6 +38,10 @@ const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywo
     title: "Mapa dos Biomas (Global & Brasil)",
     keywords: "biomas ecologia WWF RESOLVE IBGE Amazônia Cerrado Mata Atlântica Caatinga Pampa Pantanal tundra taiga savana deserto manguezal",
   },
+  SPECIES_MAP: {
+    title: "Espécies Animais & Biodiversidade (GBIF / IUCN)",
+    keywords: "espécies animais fauna biodiversidade GBIF IUCN Red List extinção onça arara lobo-guará mico-leão peixe-boi panda tigre elefante baleia urso-polar",
+  },
 };
 
 const presets: Record<TimelinePreset, string> = {

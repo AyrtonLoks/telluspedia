@@ -58,6 +58,7 @@ export const ALL_OBSERVATORY_LAYERS: readonly ObservatoryLayer[] = [
   "MARINE_DEBRIS",
   "INPE_DEFORESTATION",
   "BIOMES_MAP",
+  "SPECIES_MAP",
 ];
 
 export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
@@ -72,6 +73,7 @@ export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
   MARINE_DEBRIS: 0.9,
   INPE_DEFORESTATION: 0.9,
   BIOMES_MAP: 0.72,
+  SPECIES_MAP: 0.95,
 };
 
 export function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
@@ -89,6 +91,15 @@ export function buildBiomesMeta(scope: BiomeScope): ObservatoryMeta {
   return {
     source: "computed",
     provider: scope === "brazil" ? "IBGE Biomas 2019" : "WWF / RESOLVE 2017",
+    fetchedAt: new Date().toISOString(),
+    stale: false,
+  };
+}
+
+export function buildSpeciesMeta(): ObservatoryMeta {
+  return {
+    source: "computed",
+    provider: "GBIF API v1 · IUCN Red List",
     fetchedAt: new Date().toISOString(),
     stale: false,
   };

@@ -52,7 +52,7 @@ A seção 4 é o **mapeamento de discovery**: lista as fontes avaliadas para cad
 | OpenHistoricalMap, Clio-Infra/Euratlas, CShapes 2.0, PeriodO | Planejado (Ciclo 3) | Fronteiras históricas próprias (`1870–1969`), expansão `1500`/`1815` em `D43` |
 | INPE BDQueimadas & TerraBrasilis (DETER/PRODES) | **Em uso** | `/api/observatory/inpe-fires` (biomas BR) e `/api/observatory/inpe-deforestation` (PRODES BiomasBR nos 6 biomas brasileiros + mapa de calor espacial + DETER WFS, `D30`/`D31`) |
 | WWF / RESOLVE Ecoregions 2017 & IBGE Biomas (2019, 1:250.000) | **Em uso** | Camada `BIOMES_MAP` (`D31`): `public/data/biomes/{global-biomes-wwf,brazil-biomes-ibge}.json` gerados dos shapefiles oficiais (`Ecoregions2017.zip` CC BY 4.0 e `Biomas_250mil.zip` IBGE) carregados sob demanda |
-| GBIF & IUCN Red List | Planejado (Ciclo 3) | `D32` (Mapa de Espécies Animais & Biodiversidade) |
+| GBIF & IUCN Red List | **Em uso** | `/api/observatory/species` (proxy GBIF Occurrence API v1 sob contrato T05 + catálogo curado de 28 espécies emblemáticas/ameaçadas com categorias IUCN `CR`–`LC` integradas aos biomas `D31` e painel do país, `D32`) |
 | USGS Earthquake Hazards, PB2002, TeleGeography, Open-Meteo Air Quality | Planejado (Ciclo 3) | `D39` (Sismologia/tectônica) e `D40` (Cabos submarinos e PM2.5/AQI) |
 
 ---

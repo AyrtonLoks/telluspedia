@@ -73,6 +73,13 @@ const BiomesLayer = lazy(() =>
 const BiomeHudOverlay = lazy(() =>
   import("@/components/observatory/BiomeHudOverlay").then((m) => ({ default: m.BiomeHudOverlay }))
 );
+// Mapa de Espécies Animais & Biodiversidade GBIF + IUCN (D32) só baixa quando a camada é ligada.
+const SpeciesLayer = lazy(() =>
+  import("./SpeciesLayer").then((m) => ({ default: m.SpeciesLayer }))
+);
+const SpeciesHudOverlay = lazy(() =>
+  import("@/components/observatory/SpeciesHudOverlay").then((m) => ({ default: m.SpeciesHudOverlay }))
+);
 
 /**
  * Primary directional sunlight synchronized with EarthSphere and OrbitingMoon via
@@ -311,6 +318,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
                 <BiomesLayer />
               </Suspense>
             )}
+            {isContemporary && activeObservatoryLayers.includes("SPECIES_MAP") && (
+              <Suspense fallback={null}>
+                <SpeciesLayer />
+              </Suspense>
+            )}
           </EarthOrientationGroup>
         </group>
       </Canvas>
@@ -392,6 +404,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
       {isContemporary && !isCosmicMode && activeObservatoryLayers.includes("BIOMES_MAP") && (
         <Suspense fallback={null}>
           <BiomeHudOverlay />
+        </Suspense>
+      )}
+      {isContemporary && !isCosmicMode && activeObservatoryLayers.includes("SPECIES_MAP") && (
+        <Suspense fallback={null}>
+          <SpeciesHudOverlay />
         </Suspense>
       )}
     </div>

@@ -30,6 +30,7 @@ const layerIds: readonly ObservatoryLayer[] = [
   "MARINE_DEBRIS",
   "INPE_DEFORESTATION",
   "BIOMES_MAP",
+  "SPECIES_MAP",
 ];
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",

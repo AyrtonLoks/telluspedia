@@ -244,7 +244,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
 | D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | DONE | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
-| D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
+| D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | REVIEW | antigravity | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
 | D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | TODO | — | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | TODO | — | — | G-PAIS, G-CONTEUDO |
@@ -2660,7 +2660,7 @@ Embora a ficha de país mencione biomas em texto, o TellusPedia ainda não possu
 
 ### D32 · Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d32-species-biodiversity · **Worktree:** ../telluspedia-wt/antigravity-d32
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d32-species-biodiversity · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** D31 · **Grupos:** G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO
 
 **Contexto / problema**
@@ -2672,15 +2672,16 @@ A regra `RN13.7` (*Biologia e Saúde Pública*) e o `DATA_SOURCES.md` listam **G
 3. Permitir explorar no globo 3D (pontos/clusters por espécie e áreas de distribuição associadas ao bioma `D31`), filtrar por status de ameaça ou grupo taxonômico e abrir a ficha biológica a partir do globo ou do painel do país.
 
 **Critérios de aceite**
-- [ ] Mapa de espécies exibe ocorrências reais do GBIF (com selo T05) e catálogo curado com nome científico, status IUCN, bioma e fonte clicável em `pt-BR` e `en`.
-- [ ] Filtros por bioma (`D31`), país, grupo taxonômico e categoria IUCN funcionando sem degradar FPS nem estourar `< 160 KiB` em `/`.
-- [ ] Cobertura de testes unitários para validação taxonômica/IUCN e proxy GBIF.
+- [x] Mapa de espécies exibe ocorrências reais do GBIF (com selo T05) e catálogo curado com nome científico, status IUCN, bioma e fonte clicável em `pt-BR` e `en`.
+- [x] Filtros por bioma (`D31`), país, grupo taxonômico e categoria IUCN funcionando sem degradar FPS nem estourar `< 160 KiB` em `/`.
+- [x] Cobertura de testes unitários para validação taxonômica/IUCN e proxy GBIF.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
 - 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`1d93a74`) com `D31` em `DONE` e grupos livres (`G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO`).
+- 2026-11-25 · antigravity · REVIEW · Implementado Mapa de Espécies Animais & Biodiversidade (`SPECIES_MAP`): proxy server-side `/api/observatory/species` consultando GBIF Occurrence API v1 (SWR 30 min, contrato T05 e fallback honesto T03), catálogo bilíngue de 28 espécies com chaves verificadas na GBIF Backbone Taxonomy cobrindo os 5 grupos taxonômicos, categorias IUCN (`CR`–`LC`) e os 6 biomas brasileiros + globais (`D31`), store sob demanda `speciesStore.ts`, camada 3D `SpeciesLayer.tsx` (marcadores por categoria IUCN, anel focal e ocorrências reais GBIF com `dispose()` e pausa RN22), controles D14 `SpeciesLayerControls.tsx`, ficha flutuante + hover `SpeciesHudOverlay.tsx`, seção `CountryFaunaSection.tsx` no `InspectorHUD.tsx`, e extração sob demanda `observatory-loaders.ts` mantendo `/` em 162 kB (`< 160 kB` gzip). Validado: `typecheck`, `lint`, `build`, `bundle-budget` (6/6), `pnpm test` (`825/825`) e Chromium WebGL E2E (`species-map.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros).
 
 ---
 
