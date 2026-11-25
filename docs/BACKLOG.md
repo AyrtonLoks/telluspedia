@@ -243,8 +243,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | DONE | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
-| D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | REVIEW | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
-| D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | TODO | — | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
+| D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | DONE | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
+| D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
 | D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | TODO | — | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | TODO | — | — | G-PAIS, G-CONTEUDO |
@@ -2631,7 +2631,7 @@ O `DATA_SOURCES.md` e o `ROADMAP.md` original previam integração direta com o 
 
 ### D31 · Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d31-biomes-ux-and-real-geodata · **Worktree:** —
+- **Status:** DONE · **Responsável:** antigravity · **Branch:** task/d31-biomes-ux-and-real-geodata · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS
 
 **Contexto / problema**
@@ -2654,12 +2654,13 @@ Embora a ficha de país mencione biomas em texto, o TellusPedia ainda não possu
 - 2026-11-24 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`3b1b1a0`) com grupos livres (`G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS`).
 - 2026-11-24 · antigravity · REVIEW · Implementado Mapa dos Biomas `BIOMES_MAP` (`public/data/biomes/{global-biomes-wwf,brazil-biomes-ibge}.json` gerados por `build-biomes-topojson.mjs`, `biomes-types.ts`, `biomes-catalog-{global,brazil}.ts`, `biomes-data.ts`, `BiomesLayer.tsx` O(1) GPU com máscara costeira Natural Earth + `dispose()`, `BiomesLayerControls.tsx` D14 bilíngue com ficha ecológica e cruzamentos INPE BDQueimadas / PRODES / NASA GIBS NDVI, picking no `EarthSphere.tsx`, persistência em `view-url.ts` / `study-schema.ts` / `search.ts`). Validado: `build` (`/` 163 kB / `< 160 kB` gzip, `bundle-budget` 6/6), `typecheck`, `lint`, testes unitários (`biomes-map.test.tsx` 10/10, `design-system.test.tsx` e suíte completa) e Playwright Chromium WebGL E2E (`biomes-map.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros).
 - 2026-11-25 · antigravity · REVIEW · Correções pós-revisão do Ayrton: (1) substituídos os polígonos esquemáticos pelos shapefiles oficiais reais do IBGE 2019 (1:250.000, `Biomas_250mil.zip`, 59,1 KiB) e WWF/RESOLVE Ecoregions 2017 (`Ecoregions2017.zip`, CC BY 4.0, 290,9 KiB) via `build-biomes-from-shapefiles.py` com winding esférico validado (`badWinding: []`); (2) expandido INPE PRODES BiomasBR para todos os 6 biomas brasileiros (`amazonia`, `cerrado`, `caatinga`, `mata_atlantica`, `pampa`, `pantanal`); (3) adicionado mapa de calor térmico GPU de desmatamento (`inpe-heatmap.ts` + `InpeDeforestationLayer.tsx`) combinando polos críticos municipais PRODES nos 6 biomas + alertas DETER ao vivo + contorno IBGE oficial; (4) corrigido bug de seleção/deseleção dupla nos chips de biomas (`Todos` vs chip ativo); (5) adicionado `BiomeHudOverlay.tsx` flutuante D14 (pílula ao vivo no hover + cartão ecológico flutuante com ações rápidas). Validado: `build` (`/` 163 kB / `bundle-budget` 6/6), `typecheck`, `lint`, `pnpm test` (`817/817`) e Chromium WebGL E2E (`biomes-map.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros).
+- 2026-11-25 · ayrton · DONE · Aprovada após correção de tesselação (`1d93a74`).
 
 ---
 
 ### D32 · Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d32-species-biodiversity · **Worktree:** ../telluspedia-wt/antigravity-d32
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** D31 · **Grupos:** G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO
 
 **Contexto / problema**
@@ -2679,6 +2680,7 @@ A regra `RN13.7` (*Biologia e Saúde Pública*) e o `DATA_SOURCES.md` listam **G
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
+- 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`1d93a74`) com `D31` em `DONE` e grupos livres (`G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO`).
 
 ---
 
