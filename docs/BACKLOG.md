@@ -248,8 +248,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
 | D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | DONE | ayrton | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | DONE | ayrton | — | G-PAIS, G-CONTEUDO |
-| D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | REVIEW | antigravity | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
-| D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | TODO | — | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
+| D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | DONE | ayrton | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
+| D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | IN_PROGRESS | antigravity | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
 | D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | TODO | — | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS |
 | D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | TODO | — | — | G-OBS, G-GLOBO, G-ESTUDOS |
@@ -2774,7 +2774,7 @@ Hoje apenas **6 países** (`BRA`, `DEU`, `USA`, `JPN`, `ZAF`, `EGY`) possuem dos
 
 ### D36 · Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d36-milton-santos · **Worktree:** —
+- **Status:** DONE · **Responsável:** ayrton · **Branch:** task/d36-milton-santos · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Conteúdo/UX · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL
 
 **Contexto / problema**
@@ -2800,12 +2800,13 @@ A obra do geógrafo brasileiro **Milton Santos** (1926–2001, Prêmio Vautrin L
 - 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`f03d07f`) com grupos livres (`G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL`).
 - 2026-11-25 · antigravity · REVIEW · Implementado o legado de Geografia Crítica de Milton Santos (`figure:milton-santos`, bilíngue `pt-BR`/`en`, D14): (1) Dossiê dedicado `/dossies/milton-santos` (`MiltonSantosDossierView.tsx`, `MiltonSantosCitations.tsx`, `milton-santos-dossier.ts`) com selo do Centenário 1926–2026, linha do tempo intelectual (1926–2001 + 2026), obras fundamentais com citações copiáveis e download `.bib` em ABNT NBR 6023 / APA 7 / MLA 9 / BibTeX, atalhos diretos para as 3 lentes no globo e vínculo TellusLab (`manifest.json`, `dossiers-catalog.ts`, `en-telluslab.ts`). (2) 3 Lentes Analíticas Espaciais sob demanda em 3D WebGL (`CriticalGeoLayer.tsx` com `dispose()` RN21) e Mapa 2D (`map-2d-critical-geo.ts`, `useFlatMapData.ts`, `map-2d-renderer.ts`) + HUD analítico D14 (`CriticalGeoHud.tsx`, `criticalGeoStore.ts`, `critical-geo-catalog.ts`): *Meio Técnico-Científico-Informacional* (estritamente sobre dados reais WDI `NY.GDP.PCAP.CD` e `SP.DYN.LE00.IN`, sem valores sintéticos — T03), *Horizontalidades vs. Verticalidades* (eixos geodésicos de comando global + cruzamento ao vivo com OpenSky, AIS e Satélites) e *Os Quatro Brasis* (Santos & Silveira, 2001 — `public/data/four-brazils.json` gerado de Natural Earth 1:50m por `scripts/build-four-brazils.mjs` com 27/27 capitais validadas incluindo Palmas/TO no Centro-Oeste dos 4 Brasis e Norte no IBGE, picking `< 0,2 ms` via `which-polygon` e toggle comparativo das 5 regiões IBGE). (3) Integração ao seletor Temático (`ChoroplethSelectorView.tsx`, `ChoroplethHud.tsx`, `TopNavBar.tsx`), timeline (marco `bra-1994-milton-santos` Prêmio Vautrin Lud + vínculo ao `glo-2026-milton` Centenário em `InspectorHUD.tsx`), busca `⌘K` (`search.ts`), URL `?lente=` (`view-url.ts`, `ExplorerUrlSync.tsx`) e `en-panels-study.ts`. Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` mantido em **161 kB**, 0 bytes adicionados), `bundle-budget.test.ts` (6/6), `design-system.test.tsx`, `tellus-bridge.test.tsx`, `tw-merge-table.test.ts`, `milton-santos-d36.test.tsx`, suíte completa `pnpm test` (`857/857`, 0 falhas) e Playwright Chromium WebGL E2E (`milton-santos.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros de console).
 - 2026-11-25 · antigravity · REVIEW · Correções pós-inspeção visual do Ayrton: (1) liberado scroll vertical e seleção de texto em `/dossies/*`, `/studies` e `/telluslab` (`globals.css`: `overflow: hidden` restrito a `body:has([data-map-shell])`); (2) corrigida orientação horária (`d3-geo` clockwise winding) de `public/data/four-brazils.json` com asserção de área esférica (`0.005 < geoArea < 0.2 sr`) em `build-four-brazils.mjs` e `milton-santos-d36.test.tsx` (eliminando o preenchimento invertido do planeta) + reposicionado `CriticalGeoHud` em `top-[var(--map-annotation-top)]` sem sobrepor a `TopNavBar`; (3) tornada interativa a alternância **Verticalidades / Horizontalidades / Ambos em tensão** (`VerticalitiesHudSection.tsx` extraído mantendo ≤ 520 linhas, `CriticalGeoLayer.tsx`, `map-2d-critical-geo.ts`, `critical-geo-catalog.ts`) com rasterização dos domínios de contiguidade territorial e camadas territoriais do Observatório. Revalidado: `typecheck`, `lint`, `build` (`/` em 161 kB), `texture-budget` + `bundle-budget` + `milton-santos-d36` + `design-system` + `tw-merge-table` (`129/129`) e Playwright Chromium E2E (`milton-santos.spec.ts` com verificação de scroll real e alternância Horizontalidades ↔ Verticalidades).
+- 2026-11-25 · ayrton · DONE · Aprovada pelo Ayrton após validação visual do dossiê, 4 Brasis e modo interativo Horizontalidades.
 
 ---
 
 ### D37 · Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d37-studio-tools · **Worktree:** ../telluspedia-wt/antigravity-d37
 - **Prioridade:** P1 · **Área:** Produto/UX · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL
 
 **Contexto / problema**
@@ -2825,6 +2826,7 @@ Pesquisadores, professores e estudantes conseguem comparar indicadores e salvar 
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`c522c7d`) com grupos livres (`G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL`).
 
 ---
 
