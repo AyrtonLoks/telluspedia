@@ -93,10 +93,13 @@ export const StudyShareModal: React.FC = () => {
       : (storeCosmicLayers || []);
 
   const storeChoroplethIndicator = useChoroplethStore((s) => s.activeIndicator);
+  const storeChoroplethYear = useChoroplethStore((s) => s.year);
   const activeChoroplethIndicator =
     typeof window === "undefined"
       ? (useChoroplethStore.getState().activeIndicator ?? null)
       : storeChoroplethIndicator;
+  const activeChoroplethYear =
+    typeof window === "undefined" ? useChoroplethStore.getState().year : storeChoroplethYear;
 
   const storeGibsProduct = useObservatoryStore((s) => s.gibsProduct);
   const storeGibsShown = useObservatoryStore((s) => s.gibs);
@@ -168,6 +171,7 @@ export const StudyShareModal: React.FC = () => {
       focusedCelestialBody: focusedBodyId,
       activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
       choroplethIndicator: effectiveChoroplethIndicator,
+      choroplethYear: effectiveChoroplethIndicator ? activeChoroplethYear : null,
       ...gibsSnapshot,
       ...map2dSnapshot,
     };
@@ -368,7 +372,8 @@ export const StudyShareModal: React.FC = () => {
               <div className="flex-1">
                 <div className="font-semibold text-fg">{t("study.badge.choroplethTitle", "Mapa Temático Coroplético Capturado")}</div>
                 <div className="text-caption text-accent">
-                  {t(`choropleth.ind.${choroplethMeta.id}.label`, choroplethMeta.label)} ({choroplethMeta.sourcePrimary}) — {t("study.badge.choroplethRestored", "restaurado automaticamente ao abrir o link.")}
+                  {t(`choropleth.ind.${choroplethMeta.id}.label`, choroplethMeta.label)}
+                  {activeChoroplethYear !== null ? ` · ${activeChoroplethYear}` : ""} ({choroplethMeta.sourcePrimary}) — {t("study.badge.choroplethRestored", "restaurado automaticamente ao abrir o link.")}
                 </div>
               </div>
             </div>

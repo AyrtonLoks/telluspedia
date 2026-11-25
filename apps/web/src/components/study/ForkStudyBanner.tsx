@@ -135,7 +135,9 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                   data-testid="study-choropleth-indicator"
                   className="inline-flex items-center gap-1 rounded-control border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-caption text-accent"
                 >
-                  {t("fork.mapPrefix", "Mapa:")} {t(`choropleth.ind.${choroplethMeta.id}.short`, choroplethMeta.shortLabel)}
+                  {t("fork.mapPrefix", "Mapa:")}{" "}
+                  {t(`choropleth.ind.${choroplethMeta.id}.short`, choroplethMeta.shortLabel)}
+                  {typeof study?.choroplethYear === "number" ? ` · ${study.choroplethYear}` : ""}
                 </span>
               )}
 

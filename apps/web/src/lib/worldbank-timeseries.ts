@@ -94,6 +94,15 @@ export async function loadWorldBankTimeseries(): Promise<WorldBankTimeseriesData
   return inflightTimeseries;
 }
 
+export function getWorldBankTimeseriesSync(): WorldBankTimeseriesDataset | null {
+  return cachedTimeseries;
+}
+
+export function setWorldBankTimeseriesForTest(dataset: WorldBankTimeseriesDataset | null): void {
+  cachedTimeseries = dataset;
+  inflightTimeseries = null;
+}
+
 export function resetTimeseriesCacheForTest(): void {
   cachedTimeseries = null;
   inflightTimeseries = null;

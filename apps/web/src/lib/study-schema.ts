@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { CHOROPLETH_INDICATOR_IDS } from "./choropleth";
+import {
+  CHOROPLETH_INDICATOR_IDS,
+  CHOROPLETH_MAX_YEAR,
+  CHOROPLETH_MIN_YEAR,
+  isTemporalChoroplethIndicator,
+} from "./choropleth";
 import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "./historical-entities";
 import { HISTORICAL_ROUTES } from "./historical-routes";
 import { PILOT_COUNTRIES, WORLD_COUNTRIES_CATALOG } from "./country-data";
@@ -41,6 +46,7 @@ const route = z.string().trim().pipe(z.enum(Object.keys(HISTORICAL_ROUTES)));
 const body = z.enum([...VALID_CELESTIAL_BODIES]);
 const cosmicLayer = z.enum(ALL_COSMIC_LAYERS);
 const choroplethIndicator = z.enum(CHOROPLETH_INDICATOR_IDS);
+const choroplethYear = z.number().int().min(CHOROPLETH_MIN_YEAR).max(CHOROPLETH_MAX_YEAR);
 const observatoryLayer = z.enum([
   "NASA_FIRMS",
   "NASA_EONET",
@@ -85,6 +91,7 @@ export const studyInput = z.object({
   isApollo11Active: z.boolean().nullish(),
   isCosmicMode: z.boolean().nullish(),
   choroplethIndicator: choroplethIndicator.nullish(),
+  choroplethYear: choroplethYear.nullish(),
   gibsProduct: gibsProduct.nullish(),
   gibsMonth: gibsMonth.nullish(),
   mapViewMode: mapViewMode.nullish(),
@@ -143,6 +150,14 @@ export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
         : DEFAULT_MAP_PROJECTION
       : null;
 
+  const resolvedChoroplethIndicator = valid(choroplethIndicator, input.choroplethIndicator) ?? null;
+  const resolvedChoroplethYear =
+    !isCosmicMode &&
+    resolvedChoroplethIndicator &&
+    isTemporalChoroplethIndicator(resolvedChoroplethIndicator)
+      ? (valid(choroplethYear, input.choroplethYear) ?? null)
+      : null;
+
   return {
     parentId: valid(slug, input.parentId) ?? null,
     title: input.title || "Estudo Planetário",
@@ -159,7 +174,8 @@ export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
     isCosmicMode,
     focusedCelestialBody: valid(body, input.focusedCelestialBody) ?? null,
     activeCosmicLayers: knownItems(cosmicLayer, input.activeCosmicLayers),
-    choroplethIndicator: valid(choroplethIndicator, input.choroplethIndicator) ?? null,
+    choroplethIndicator: resolvedChoroplethIndicator,
+    choroplethYear: resolvedChoroplethYear,
     ...gibs,
     mapViewMode: resolvedMapViewMode,
     mapProjection: resolvedMapProjection,

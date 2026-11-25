@@ -155,7 +155,10 @@ export function buildStudyAcademicMarkdown(
   }
   if (study.choroplethIndicator && isChoroplethIndicatorId(study.choroplethIndicator)) {
     const meta = CHOROPLETH_INDICATORS[study.choroplethIndicator];
-    lines.push(`- **Camada coroplética:** ${meta.label} (\`${meta.id}\` · ${meta.sourcePrimary})`);
+    const yearSuffix = typeof study.choroplethYear === "number" ? ` · ${study.choroplethYear}` : "";
+    lines.push(
+      `- **Camada coroplética:** ${meta.label}${yearSuffix} (\`${meta.id}\` · ${meta.sourcePrimary})`
+    );
   }
   if (isGibsProductId(study.gibsProduct)) {
     const product = GIBS_PRODUCTS[study.gibsProduct];

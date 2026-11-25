@@ -1,25 +1,32 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
-import { Check, ExternalLink, Layers, SlidersHorizontal, X } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ExternalLink, Layers, SlidersHorizontal, X } from "lucide-react";
 import { buildChoroplethDataset } from "@/lib/choropleth-dataset";
 import {
   buildPaletteGradientCss,
   CHOROPLETH_FIRMS_ZERO_COLOR,
-  CHOROPLETH_INDICATOR_LIST,
   CHOROPLETH_MISSING_SWATCH_CSS,
+  isTemporalChoroplethIndicator,
   type ChoroplethCountryEntry,
   type ChoroplethDataset,
   type ChoroplethIndicatorId,
 } from "@/lib/choropleth";
+import {
+  getWorldBankTimeseriesSync,
+  loadWorldBankTimeseries,
+  type WorldBankTimeseriesDataset,
+} from "@/lib/worldbank-timeseries";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { restoreContemporaryTimeline } from "@/stores/actions";
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useTimelineStore } from "@/stores/timelineStore";
+import { ChoroplethSelectorView, type ChoroplethSelectorViewProps } from "./ChoroplethSelectorView";
+import { ChoroplethTimelineControls } from "./ChoroplethTimelineControls";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Panel } from "@/components/ui/Panel";
 import { cn } from "@/components/ui/cn";
@@ -28,23 +35,16 @@ import { formatCountryName } from "@/lib/i18n/format";
 import { useI18n, type TranslateFn } from "@/lib/i18n/useT";
 import type { EnMessageKey } from "@/lib/i18n/en";
 
+export { ChoroplethSelectorView, type ChoroplethSelectorViewProps };
+
 function indLabel(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
   return t(`choropleth.ind.${id}.label` as EnMessageKey, fallback);
 }
 function indShort(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
   return t(`choropleth.ind.${id}.short` as EnMessageKey, fallback);
 }
-function indDesc(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
-  return t(`choropleth.ind.${id}.desc` as EnMessageKey, fallback);
-}
 function indScale(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
   return t(`choropleth.ind.${id}.scale` as EnMessageKey, fallback);
-}
-function indUnit(t: TranslateFn, id: ChoroplethIndicatorId, fallback: string) {
-  if (id === "SP.DYN.LE00.IN" || id === "SP.POP.TOTL" || id === "NASA_FIRMS") {
-    return t(`choropleth.ind.${id}.unit` as EnMessageKey, fallback);
-  }
-  return fallback;
 }
 
 export interface ChoroplethTooltipViewProps {
@@ -135,6 +135,7 @@ export const ChoroplethTooltipView: React.FC<ChoroplethTooltipViewProps> = ({
 export interface ChoroplethLegendViewProps {
   dataset: ChoroplethDataset;
   isLoadingFirms?: boolean;
+  temporalControls?: React.ReactNode;
   onOpenSelector: () => void;
   onClose: () => void;
 }
@@ -142,6 +143,7 @@ export interface ChoroplethLegendViewProps {
 export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
   dataset,
   isLoadingFirms = false,
+  temporalControls,
   onOpenSelector,
   onClose,
 }) => {
@@ -219,6 +221,8 @@ export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
         )}
       </div>
 
+      {temporalControls}
+
       {/* Swatches explícitos (Dado indisponível nunca é confundido com zero) + Fonte primária RN02 */}
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-line pt-2 text-caption text-fg-muted">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -260,156 +264,20 @@ export const ChoroplethLegendView: React.FC<ChoroplethLegendViewProps> = ({
   );
 };
 
-export interface ChoroplethSelectorViewProps {
-  activeIndicator: ChoroplethIndicatorId | null;
-  opacity: number;
-  isGlobeEligible: boolean;
-  onSelect: (id: ChoroplethIndicatorId) => void;
-  onClear: () => void;
-  onOpacityChange: (opacity: number) => void;
-  onReturnToContemporaryEarth: () => void;
-  onClose: () => void;
-}
-
-export const ChoroplethSelectorView: React.FC<ChoroplethSelectorViewProps> = ({
-  activeIndicator,
-  opacity,
-  isGlobeEligible,
-  onSelect,
-  onClear,
-  onOpacityChange,
-  onReturnToContemporaryEarth,
-  onClose,
-}) => {
-  const { t } = useI18n();
-  return (
-    <Panel
-      role="dialog"
-      aria-label={t("choropleth.selectorAria", "Seletor de mapa temático coroplético")}
-      data-testid="choropleth-selector"
-      className="pointer-events-auto flex max-h-[var(--map-overlay-height)] w-[min(calc(100vw-1.5rem),22rem)] flex-col overflow-hidden shadow-e2"
-    >
-      <div className="flex items-start justify-between gap-2 border-b border-line px-3.5 py-2.5">
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-            <Layers aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
-            <h2 className="text-label font-semibold text-fg">
-              {t("choropleth.selectorTitle", "Mapa temático coroplético")}
-            </h2>
-          </div>
-          <p className="text-caption text-fg-muted">
-            {t("choropleth.selectorSubtitle", "Colore os 177 países no globo por indicador real.")}
-          </p>
-        </div>
-        <IconButton
-          size="sm"
-          label={t("choropleth.closeSelector", "Fechar seletor de mapa temático")}
-          icon={<X />}
-          onClick={onClose}
-        />
-      </div>
-
-      <div className="flex flex-col gap-2 overflow-y-auto p-3">
-        {!isGlobeEligible && (
-          <div className="flex flex-col gap-2 rounded-card border border-warning/40 bg-warning/10 p-2.5 text-caption text-fg-secondary">
-            <span>
-              {t(
-                "choropleth.geoWarning",
-                "A camada coroplética é exibida na Terra contemporânea. Volte ao mapa atual para visualizar o preenchimento."
-              )}
-            </span>
-            <div>
-              <Button size="sm" variant="secondary" onClick={onReturnToContemporaryEarth}>
-                {t("choropleth.returnEarth", "Voltar à Terra contemporânea")}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-1.5" role="radiogroup" aria-label={t("choropleth.indicatorsAria", "Indicadores coropléticos")}>
-          {CHOROPLETH_INDICATOR_LIST.map((item) => {
-            const isSelected = activeIndicator === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                data-testid={`choropleth-option-${item.id}`}
-                onClick={() => onSelect(item.id)}
-                className={cn(
-                  "flex flex-col gap-1.5 rounded-card border px-3 py-2 text-left transition-colors duration-fast ease-out",
-                  isSelected
-                    ? "border-accent/60 bg-accent/10 text-fg"
-                    : "border-line bg-surface-raised/60 text-fg-secondary hover:border-line-strong hover:bg-surface-hover hover:text-fg"
-                )}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-label font-medium text-fg">
-                    {indLabel(t, item.id, item.label)}
-                  </span>
-                  <span className="flex shrink-0 items-center gap-1 text-caption text-fg-muted">
-                    {isSelected && <Check aria-hidden="true" className="h-3.5 w-3.5 text-accent" />}
-                    <span>{indUnit(t, item.id, item.unit)}</span>
-                  </span>
-                </div>
-                <p className="text-caption text-fg-muted">{indDesc(t, item.id, item.description)}</p>
-                <div className="flex items-center justify-between gap-2">
-                  <span
-                    aria-hidden="true"
-                    className="h-1.5 flex-1 rounded-full border border-line"
-                    style={{ backgroundImage: buildPaletteGradientCss(item.palette) }}
-                  />
-                  <span className="shrink-0 text-caption text-fg-muted">{item.sourcePrimary}</span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {activeIndicator !== null && (
-          <div className="mt-1 flex flex-col gap-2 border-t border-line pt-2.5">
-            <div className="flex items-center justify-between gap-2 text-caption">
-              <label htmlFor="choropleth-opacity-range" className="text-fg-secondary">
-                {t("choropleth.opacity", "Opacidade da camada")}
-              </label>
-              <span className="font-mono text-fg tabular-nums">
-                {Math.round(opacity * 100)}%
-              </span>
-            </div>
-            <input
-              id="choropleth-opacity-range"
-              type="range"
-              min={40}
-              max={100}
-              step={5}
-              value={Math.round(opacity * 100)}
-              onChange={(event) => onOpacityChange(Number(event.target.value) / 100)}
-              className="h-1.5 w-full cursor-pointer accent-accent"
-            />
-            <Button
-              size="sm"
-              variant="ghost"
-              data-testid="choropleth-clear-button"
-              onClick={onClear}
-              className="w-full justify-center text-fg-secondary hover:text-fg"
-            >
-              {t("choropleth.disable", "Desativar mapa temático")}
-            </Button>
-          </div>
-        )}
-      </div>
-    </Panel>
-  );
-};
-
 export const ChoroplethHud: React.FC = () => {
   const { t } = useI18n();
   const activeIndicator = useChoroplethStore((s) => s.activeIndicator);
+  const choroplethYear = useChoroplethStore((s) => s.year);
+  const isPlaying = useChoroplethStore((s) => s.isPlaying);
+  const syncTimeline = useChoroplethStore((s) => s.syncTimeline);
   const opacity = useChoroplethStore((s) => s.opacity);
   const isSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
   const setIndicator = useChoroplethStore((s) => s.setIndicator);
   const clearIndicator = useChoroplethStore((s) => s.clearIndicator);
+  const setYear = useChoroplethStore((s) => s.setYear);
+  const togglePlaying = useChoroplethStore((s) => s.togglePlaying);
+  const stepYear = useChoroplethStore((s) => s.stepYear);
+  const setSyncTimeline = useChoroplethStore((s) => s.setSyncTimeline);
   const setOpacity = useChoroplethStore((s) => s.setOpacity);
   const setSelectorOpen = useChoroplethStore((s) => s.setSelectorOpen);
 
@@ -422,7 +290,61 @@ export const ChoroplethHud: React.FC = () => {
   const loadLayerData = useObservatoryStore((s) => s.loadLayerData);
   const epoch = useEpochState();
 
+  const [timeseries, setTimeseries] = useState<WorldBankTimeseriesDataset | null>(() =>
+    getWorldBankTimeseriesSync()
+  );
+  const [isLoadingTimeseries, setIsLoadingTimeseries] = useState(false);
+  const [hasTimeseriesError, setHasTimeseriesError] = useState(false);
+
   const isGlobeEligible = epoch.isContemporary && !isCosmicMode;
+  const isTemporalIndicator = isTemporalChoroplethIndicator(activeIndicator);
+
+  const ensureTimeseriesLoaded = useCallback(() => {
+    if (timeseries || isLoadingTimeseries) return;
+    const cached = getWorldBankTimeseriesSync();
+    if (cached) {
+      setTimeseries(cached);
+      return;
+    }
+    setIsLoadingTimeseries(true);
+    setHasTimeseriesError(false);
+    void loadWorldBankTimeseries()
+      .then((loaded) => setTimeseries(loaded))
+      .catch(() => setHasTimeseriesError(true))
+      .finally(() => setIsLoadingTimeseries(false));
+  }, [timeseries, isLoadingTimeseries]);
+
+  useEffect(() => {
+    if ((choroplethYear !== null || isPlaying) && isTemporalIndicator) {
+      ensureTimeseriesLoaded();
+    }
+  }, [choroplethYear, isPlaying, isTemporalIndicator, ensureTimeseriesLoaded]);
+
+  // Reprodução animada suave 1990 → 2024 (D34)
+  useEffect(() => {
+    if (!isPlaying || !isTemporalIndicator || !timeseries) return;
+    const timer = setInterval(() => stepYear(), 450);
+    return () => clearInterval(timer);
+  }, [isPlaying, isTemporalIndicator, timeseries, stepYear]);
+
+  // Sincronização opcional com a Linha do Tempo (D34)
+  useEffect(() => {
+    if (!syncTimeline || choroplethYear === null || !isTemporalIndicator) return;
+    const tl = useTimelineStore.getState();
+    const needsRange = tl.startYear > choroplethYear || tl.endYear < choroplethYear;
+    if (tl.selectedYear !== choroplethYear || needsRange || tl.geologicalMa !== null) {
+      useTimelineStore.setState({
+        geologicalMa: null,
+        selectedYear: choroplethYear,
+        ...(needsRange
+          ? {
+              startYear: Math.min(tl.startYear, 1990),
+              endYear: Math.max(tl.endYear, 2024),
+            }
+          : {}),
+      });
+    }
+  }, [syncTimeline, choroplethYear, isTemporalIndicator]);
 
   useEffect(() => {
     if (!isSelectorOpen) return;
@@ -444,9 +366,10 @@ export const ChoroplethHud: React.FC = () => {
     if (!activeIndicator) return null;
     return buildChoroplethDataset(
       activeIndicator,
-      activeIndicator === "NASA_FIRMS" ? firmsByCountry : undefined
+      activeIndicator === "NASA_FIRMS" ? firmsByCountry : undefined,
+      { year: choroplethYear, timeseries }
     );
-  }, [activeIndicator, firmsByCountry]);
+  }, [activeIndicator, firmsByCountry, choroplethYear, timeseries]);
 
   const focusedIso = hoveredIso ?? selectedIso;
   const focusedEntry =
@@ -498,6 +421,27 @@ export const ChoroplethHud: React.FC = () => {
           <ChoroplethLegendView
             dataset={dataset}
             isLoadingFirms={isFirmsLoading}
+            temporalControls={
+              isTemporalIndicator ? (
+                <ChoroplethTimelineControls
+                  year={choroplethYear}
+                  isPlaying={isPlaying}
+                  isLoadingTimeseries={isLoadingTimeseries}
+                  hasTimeseriesError={hasTimeseriesError}
+                  syncTimeline={syncTimeline}
+                  onYearChange={(nextYear) => {
+                    if (isPlaying) togglePlaying();
+                    setYear(nextYear);
+                  }}
+                  onTogglePlay={() => {
+                    ensureTimeseriesLoaded();
+                    togglePlaying();
+                  }}
+                  onToggleSyncTimeline={() => setSyncTimeline(!syncTimeline)}
+                  onPreloadTimeseries={ensureTimeseriesLoaded}
+                />
+              ) : undefined
+            }
             onOpenSelector={() => setSelectorOpen(true)}
             onClose={clearIndicator}
           />

@@ -135,7 +135,11 @@ describe("T25 · Orçamento de bundle inicial e carregamento sob demanda", () =>
       // T35: dossiês/indicadores, entidades históricas e SGP4 ficam fora do carregamento inicial.
       assert.doesNotMatch(text, /twoline2satrec/, `Chunk inicial ${relChunk} não deve conter satellite.js`);
       assert.doesNotMatch(text, /Reino da Prússia/, `Chunk inicial ${relChunk} não deve conter as entidades históricas`);
-      assert.doesNotMatch(text, /EN\.GHG\.CO2\.PC\.CE\.AR5/, `Chunk inicial ${relChunk} não deve conter os indicadores do Banco Mundial`);
+      assert.doesNotMatch(
+        text,
+        /worldBankLastUpdated/,
+        `Chunk inicial ${relChunk} não deve conter os datasets de indicadores/séries do Banco Mundial`
+      );
       assert.doesNotMatch(text, /leaguesNavigated/, `Chunk inicial ${relChunk} não deve conter a cena completa de Magalhães`);
       assert.doesNotMatch(text, /Fagradalsfjall/, `Chunk inicial ${relChunk} não deve conter os dados locais do Observatório`);
       assert.doesNotMatch(text, /touch-pinch-zoom/, `Chunk inicial ${relChunk} não deve conter a configuração do tailwind-merge`);

@@ -27,6 +27,8 @@ export interface StudyRecord {
   focusedCelestialBody?: string | null;
   activeCosmicLayers?: string[];
   choroplethIndicator?: string | null;
+  /** Ano explícito (1990–2024) do Coroplético Temporal Animado (D34). */
+  choroplethYear?: number | null;
   /** Camada NASA GIBS (D25): produto e mês congelados no snapshot. */
   gibsProduct?: string | null;
   gibsMonth?: string | null;
@@ -84,6 +86,7 @@ Este estudo examina as repercussões da bipolaridade EUA-URSS nas instituições
   focusedCelestialBody: null,
   activeCosmicLayers: [],
   choroplethIndicator: null,
+  choroplethYear: null,
   gibsProduct: null,
   gibsMonth: null,
   mapViewMode: null,

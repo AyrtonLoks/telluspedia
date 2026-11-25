@@ -246,7 +246,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | DONE | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
 | D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | DONE | ayrton | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
-| D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
+| D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | REVIEW | antigravity | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | TODO | — | — | G-PAIS, G-CONTEUDO |
 | D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | TODO | — | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | TODO | — | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
@@ -2718,7 +2718,7 @@ Embora o Globo 3D seja a experiência principal sem distorção cartográfica, u
 
 ### D34 · Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d34-animated-choropleth · **Worktree:** ../telluspedia-wt/antigravity-d34
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d34-animated-choropleth · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS
 
 **Contexto / problema**
@@ -2730,15 +2730,16 @@ O dataset `public/data/worldbank-timeseries.json` já armazena séries reais anu
 3. Permitir sincronizar o ano selecionado com a Timeline e serializar `choroplethYear` em URL (`D18`) e Estudos imutáveis (`/study/[slug]`, com migration Prisma compatível).
 
 **Critérios de aceite**
-- [ ] 7 indicadores do Banco Mundial (+ `NASA_FIRMS`) disponíveis no Coroplético em `pt-BR` e `en`.
-- [ ] Slider e reprodução animada 1990 → 2024 atualizam a coloração dos 177 países suavemente sem recriar geometrias nem vazar memória GPU (`dispose()`).
-- [ ] Lacunas reais (`null`) são exibidas como "Sem dado" no tooltip e na legenda; First Load JS de `/` permanece `< 160 KiB`.
+- [x] 7 indicadores do Banco Mundial (+ `NASA_FIRMS`) disponíveis no Coroplético em `pt-BR` e `en`.
+- [x] Slider e reprodução animada 1990 → 2024 atualizam a coloração dos 177 países suavemente sem recriar geometrias nem vazar memória GPU (`dispose()`).
+- [x] Lacunas reais (`null`) são exibidas como "Sem dado" no tooltip e na legenda; First Load JS de `/` permanece `< 160 KiB`.
 
 **Como verificar**: `pnpm db:generate && pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts` + inspeção visual no Chromium WebGL.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`1c77092`) com grupos livres (`G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS`).
+- 2026-11-25 · antigravity · REVIEW · Implementado Coroplético Temporal Animado (1990–2024) e os 2 novos indicadores reais do Banco Mundial (`EN.GHG.CO2.PC.CE.AR5` — Emissões de CO₂ per capita e `EG.FEC.RNEW.ZS` — Energia renovável %): atualizados `choropleth-ids.ts`, `choropleth.ts` (paletas perceptualmente uniformes e escalas `log1p`/`linear`), `choropleth-dataset.ts` (`computeFixedTemporalDomain` travando o domínio global 1990–2024 com cache por ano e `null` explícito nunca interpolado), `choroplethStore.ts` (`year`, `isPlaying`, `syncTimeline`, `stepYear`), `ChoroplethTimelineControls.tsx` D14 bilíngue (Play/Pause, slider 1990–2024, reset "Atual" e sincronia opcional com a Timeline), extração de `ChoroplethSelectorView.tsx`, atualização sem realocação GPU em `ChoroplethOverlay.tsx` (3D) e `useFlatMapData.ts` (2D), persistência em URL (`coropletico` + `coropleticoAno` em `view-url.ts` e `ExplorerUrlSync.tsx`), Estudos imutáveis (`prisma/schema.prisma`, migration `20261125140000_add_study_choropleth_year`, `study-schema.ts`, `StudyShareModal.tsx`, `ForkStudyBanner.tsx`, `study-export.ts`), e carregamento sob demanda de `ExplorerUrlSync`/`SceneLinkSync` em `GlobeExperienceShell.tsx` reduzindo `/` para **161 kB** (`< 160 KiB` gzip). Validado: `prisma generate`, `typecheck` (0 erros), `lint` (0 erros), `build`, `bundle-budget` (6/6), `pnpm test` (`843/843`) e Playwright Chromium WebGL E2E (`choropleth-temporal.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, 0 erros).
 
 ---
 

@@ -7,6 +7,13 @@ import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { encodeGibsView, readGibsView } from "@/lib/gibs-view";
 import { DEFAULT_BIOME_SCOPE, encodeBiomesView, readBiomesView } from "@/lib/biomes-types";
 import { DEFAULT_MAP_PROJECTION, readMapView } from "@/lib/map-projections-types";
+import {
+  CHOROPLETH_MAX_YEAR,
+  CHOROPLETH_MIN_YEAR,
+  isChoroplethIndicatorId,
+  isTemporalChoroplethIndicator,
+} from "@/lib/choropleth-ids";
+import { useChoroplethStore } from "@/stores/choroplethStore";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "@/stores/cosmicStore";
 import { selectCountry } from "@/stores/actions";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -36,7 +43,7 @@ const layerIds: readonly ObservatoryLayer[] = [
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
   "camadas", "gibs", "bioma", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
-  "mapa", "proj",
+  "mapa", "proj", "coropletico", "coropleticoAno",
 ];
 
 function numberIn(value: string | null, min: number, max: number) {
@@ -90,6 +97,13 @@ export function encodeView(view: ViewCamera) {
     params.set("bioma", encodeBiomesView(observatory.biomeScope, observatory.biomeFilterId));
   }
   if (observatory.isPanelOpen) params.set("observatorio", "1");
+  const choropleth = useChoroplethStore.getState();
+  if (choropleth.activeIndicator && !cosmic.isCosmicMode) {
+    params.set("coropletico", choropleth.activeIndicator);
+    if (choropleth.year !== null && isTemporalChoroplethIndicator(choropleth.activeIndicator)) {
+      params.set("coropleticoAno", String(choropleth.year));
+    }
+  }
   if (panel) params.set("painel", panel);
   if (comparator.isOpen) params.set("comparar", comparator.selectedIsos.join(","));
   if (view.offset.some((value, axis) => value !== DEFAULT_CAMERA_OFFSET[axis])) {
@@ -166,6 +180,19 @@ export function restoreView(search: string, view: ViewCamera) {
   const mapView = readMapView(params.get("mapa"), params.get("proj"));
   useGlobeStore.getState().setProjectionId(mapView.projectionId);
   useGlobeStore.getState().setViewMode(isCosmicMode ? "3d" : mapView.viewMode);
+
+  const coroParam = params.get("coropletico");
+  const coroYearParam = numberIn(
+    params.get("coropleticoAno"),
+    CHOROPLETH_MIN_YEAR,
+    CHOROPLETH_MAX_YEAR
+  );
+  useChoroplethStore
+    .getState()
+    .restoreIndicator(
+      !isCosmicMode && isChoroplethIndicatorId(coroParam) ? coroParam : null,
+      coroYearParam
+    );
 
   const camera = parseCameraOffset(params.get("camera"));
   view.offset = camera ?? DEFAULT_CAMERA_OFFSET;

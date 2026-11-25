@@ -14,8 +14,6 @@ import { usePresence, useLastDefined } from "@/components/ui/motion";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
 import { restoreStudySnapshot, selectCountry } from "@/stores/actions";
-import { SceneLinkSync } from "@/components/scenes/SceneLinkSync";
-import { ExplorerUrlSync } from "@/components/explore/ExplorerUrlSync";
 import { WebGLErrorBoundary } from "@/components/globe/WebGLErrorBoundary";
 import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "@/lib/explore/view-camera";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -51,6 +49,14 @@ const GlobeCanvas = dynamic(
 );
 
 // Painéis, modais e overlays fechados por padrão são carregados sob demanda (T25)
+const SceneLinkSync = dynamic(
+  () => import("@/components/scenes/SceneLinkSync").then((m) => m.SceneLinkSync),
+  { ssr: false }
+);
+const ExplorerUrlSync = dynamic(
+  () => import("@/components/explore/ExplorerUrlSync").then((m) => m.ExplorerUrlSync),
+  { ssr: false }
+);
 const EntityLaunch = dynamic(
   () => import("@/components/tellus-bridge/EntityLaunch").then((m) => m.EntityLaunch),
   { ssr: false }
@@ -162,7 +168,9 @@ export function applyInitialGlobeState(initialState: InitialGlobeState): void {
 
   if (initialState.kind === "study") {
     restoreStudySnapshot(initialState.study);
-    useChoroplethStore.getState().restoreIndicator(initialState.study.choroplethIndicator);
+    useChoroplethStore
+      .getState()
+      .restoreIndicator(initialState.study.choroplethIndicator, initialState.study.choroplethYear);
     return;
   }
 

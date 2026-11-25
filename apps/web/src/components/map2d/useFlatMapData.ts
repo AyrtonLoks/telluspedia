@@ -2,6 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { buildChoroplethDataset } from "@/lib/choropleth-dataset";
+import { isTemporalChoroplethIndicator } from "@/lib/choropleth-ids";
+import {
+  getWorldBankTimeseriesSync,
+  loadWorldBankTimeseries,
+  type WorldBankTimeseriesDataset,
+} from "@/lib/worldbank-timeseries";
 import {
   getBiomeTopologySync,
   loadBiomeTopology,
@@ -74,7 +80,11 @@ export function useFlatMapData(
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
 
   const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
+  const choroplethYear = useChoroplethStore((s) => s.year);
   const choroplethOpacity = useChoroplethStore((s) => s.opacity);
+  const [timeseries, setTimeseries] = useState<WorldBankTimeseriesDataset | null>(() =>
+    getWorldBankTimeseriesSync()
+  );
 
   const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
   const firmsByCountry = useObservatoryStore((s) => s.firmsByCountry);
@@ -181,13 +191,39 @@ export function useFlatMapData(
     return getContemporarySpatialIndexForLod(zoom >= 2.2 && highResTopology ? "50m" : "110m");
   }, [isHistorical, era.id, historicalTopology, zoom, highResTopology]);
 
+  useEffect(() => {
+    if (
+      isHistorical ||
+      isGeological ||
+      choroplethYear === null ||
+      !isTemporalChoroplethIndicator(activeChoropleth)
+    ) {
+      return;
+    }
+    const cached = getWorldBankTimeseriesSync();
+    if (cached) {
+      setTimeseries(cached);
+      return;
+    }
+    let alive = true;
+    void loadWorldBankTimeseries()
+      .then((loaded) => {
+        if (alive) setTimeseries(loaded);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [isHistorical, isGeological, choroplethYear, activeChoropleth]);
+
   const choroplethDataset = useMemo(() => {
     if (!activeChoropleth || isHistorical || isGeological) return null;
     return buildChoroplethDataset(
       activeChoropleth,
-      activeChoropleth === "NASA_FIRMS" ? firmsByCountry : undefined
+      activeChoropleth === "NASA_FIRMS" ? firmsByCountry : undefined,
+      { year: choroplethYear, timeseries }
     );
-  }, [activeChoropleth, isHistorical, isGeological, firmsByCountry]);
+  }, [activeChoropleth, isHistorical, isGeological, firmsByCountry, choroplethYear, timeseries]);
 
   const selectedCenter = useMemo<{ label: string; center: readonly [number, number] } | null>(() => {
     if (!selectedIso) return null;

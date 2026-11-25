@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { encodeView, mergeView, restoreView } from "@/lib/explore/view-url";
 import type { ViewCamera } from "@/lib/explore/view-camera";
+import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -69,6 +70,11 @@ export function ExplorerUrlSync({ view, immutable }: { view: ViewCamera; immutab
       }),
       useLayoutStore.subscribe(sync),
       useComparatorStore.subscribe(sync),
+      useChoroplethStore.subscribe((state, previous) => {
+        if (state.activeIndicator !== previous.activeIndicator || state.year !== previous.year) {
+          sync();
+        }
+      }),
     ];
 
     const url = new URL(window.location.href);

@@ -103,6 +103,8 @@ const MIGRATED = [
   "src/components/nav/TopNavBar.tsx",
   "src/components/nav/LocaleToggleButton.tsx",
   "src/components/choropleth/ChoroplethHud.tsx",
+  "src/components/choropleth/ChoroplethSelectorView.tsx",
+  "src/components/choropleth/ChoroplethTimelineControls.tsx",
   "src/components/observatory/ObservatoryPanel.tsx",
   "src/components/observatory/DataSourceBadge.tsx",
   "src/components/observatory/ObservatoryTelemetryHUD.tsx",

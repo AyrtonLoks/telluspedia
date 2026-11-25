@@ -1,9 +1,11 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { buildChoroplethDataset } from "../src/lib/choropleth-dataset";
+import { buildChoroplethDataset, computeFixedTemporalDomain } from "../src/lib/choropleth-dataset";
 import {
   CHOROPLETH_FIRMS_ZERO_COLOR,
   CHOROPLETH_INDICATOR_IDS,
@@ -24,9 +26,15 @@ import {
   ChoroplethSelectorView,
   ChoroplethTooltipView,
 } from "../src/components/choropleth/ChoroplethHud";
+import { ChoroplethTimelineControls } from "../src/components/choropleth/ChoroplethTimelineControls";
 import { TopNavBar } from "../src/components/nav/TopNavBar";
 import { applyInitialGlobeState } from "../src/components/shell/GlobeExperienceShell";
 import { useChoroplethStore } from "../src/stores/choroplethStore";
+import { useLocaleStore } from "../src/stores/localeStore";
+import { EN_MESSAGES } from "../src/lib/i18n/en";
+import { encodeView, restoreView } from "../src/lib/explore/view-url";
+import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "../src/lib/explore/view-camera";
+import type { WorldBankTimeseriesDataset } from "../src/lib/worldbank-timeseries";
 import { sanitizeStudy, studyInput } from "../src/lib/study-schema";
 import { forkStudyRecord, type StudyRecord } from "../src/lib/studies-store";
 import { buildStudyAcademicMarkdown } from "../src/lib/study-export";
@@ -67,13 +75,15 @@ function createMockCanvasContext() {
 }
 
 describe("D22 · Modo Coroplético no Globo 3D", () => {
-  test("1. Define os 6 indicadores reais com escalas, paletas perceptualmente uniformes e fontes RN02", () => {
+  test("1. Define os 8 indicadores reais (7 Banco Mundial + NASA_FIRMS) com escalas, paletas perceptualmente uniformes e fontes RN02", () => {
     assert.deepEqual([...CHOROPLETH_INDICATOR_IDS], [
       "NY.GDP.MKTP.CD",
       "NY.GDP.PCAP.CD",
       "SP.POP.TOTL",
       "SP.DYN.LE00.IN",
       "MS.MIL.XPND.GD.ZS",
+      "EN.GHG.CO2.PC.CE.AR5",
+      "EG.FEC.RNEW.ZS",
       "NASA_FIRMS",
     ]);
 
@@ -297,6 +307,133 @@ describe("D22 · Modo Coroplético no Globo 3D", () => {
       useChoroplethStore.getState().activeIndicator,
       gdpResult.id.slice("choropleth:".length)
     );
+    useChoroplethStore.getState().resetChoropleth();
+  });
+
+  test("9. D34 · Novos indicadores CO₂ per capita e Energia Renovável % operam com dados reais e escala fixa 1990–2024 sem interpolar lacunas", () => {
+    const co2Latest = buildChoroplethDataset("EN.GHG.CO2.PC.CE.AR5");
+    assert.ok(co2Latest.availableCount >= 160, "CO₂ per capita deve cobrir >= 160 países");
+    assert.equal(co2Latest.entries.BRA.available, true);
+    assert.equal(co2Latest.entries.ATA.available, false);
+    assert.equal(co2Latest.entries.ATA.value, null);
+
+    const renLatest = buildChoroplethDataset("EG.FEC.RNEW.ZS");
+    assert.ok(renLatest.availableCount >= 160, "Energia renovável % deve cobrir >= 160 países");
+    assert.equal(renLatest.entries.BRA.available, true);
+    assert.equal(renLatest.entries.ATA.available, false);
+
+    // Carrega o dataset real de séries históricas 1990–2024 do disco (nunca importado no bundle)
+    const tsPath = path.resolve(__dirname, "../public/data/worldbank-timeseries.json");
+    const timeseries = JSON.parse(fs.readFileSync(tsPath, "utf-8")) as WorldBankTimeseriesDataset;
+
+    const domain = computeFixedTemporalDomain("EN.GHG.CO2.PC.CE.AR5", timeseries);
+    assert.ok(domain && domain.max > domain.min);
+
+    const ds1990 = buildChoroplethDataset("EN.GHG.CO2.PC.CE.AR5", undefined, {
+      year: 1990,
+      timeseries,
+    });
+    const ds2020 = buildChoroplethDataset("EN.GHG.CO2.PC.CE.AR5", undefined, {
+      year: 2020,
+      timeseries,
+    });
+    assert.equal(ds1990.activeYear, 1990);
+    assert.equal(ds2020.activeYear, 2020);
+    assert.equal(ds1990.isFixedTemporalScale, true);
+    // Escala global fixa entre anos garante comparação visual honesta
+    assert.equal(ds1990.min, ds2020.min);
+    assert.equal(ds1990.max, ds2020.max);
+    assert.equal(ds1990.entries.BRA.year, 1990);
+    assert.equal(ds2020.entries.BRA.year, 2020);
+
+    // Lacuna oficial real (null em 1990 ou Antártida) nunca é interpolada
+    assert.equal(ds1990.entries.ATA.available, false);
+    assert.equal(ds1990.entries.ATA.value, null);
+    assert.equal(ds1990.entries.ATA.color, CHOROPLETH_MISSING_COLOR);
+  });
+
+  test("10. D34 · Store temporal (Play/Pause/stepYear), URL, Estudos (choroplethYear) e controles D14 em pt-BR e en", () => {
+    const store = useChoroplethStore.getState();
+    store.resetChoropleth();
+    store.setIndicator("EG.FEC.RNEW.ZS");
+    store.togglePlaying();
+    assert.equal(useChoroplethStore.getState().isPlaying, true);
+    assert.equal(useChoroplethStore.getState().year, 1990);
+    store.stepYear();
+    assert.equal(useChoroplethStore.getState().year, 1991);
+    store.setYear(2024);
+    store.stepYear();
+    assert.equal(useChoroplethStore.getState().isPlaying, false);
+
+    // Serialização em URL compartilhável (D18 + D34)
+    const view: ViewCamera = { offset: [...DEFAULT_CAMERA_OFFSET], restore: null, onChange: null };
+    useChoroplethStore.getState().setYear(2008);
+    const encoded = encodeView(view);
+    assert.match(encoded, /coropletico=EG\.FEC\.RNEW\.ZS/);
+    assert.match(encoded, /coropleticoAno=2008/);
+
+    useChoroplethStore.getState().resetChoropleth();
+    restoreView(`?visao=1&${encoded}`, view);
+    assert.equal(useChoroplethStore.getState().activeIndicator, "EG.FEC.RNEW.ZS");
+    assert.equal(useChoroplethStore.getState().year, 2008);
+
+    // Persistência em Estudos com choroplethYear
+    const parsed = studyInput.safeParse({
+      title: "Transição Energética 2008",
+      choroplethIndicator: "EG.FEC.RNEW.ZS",
+      choroplethYear: 2008,
+    });
+    assert.equal(parsed.success, true);
+
+    const sanitized = sanitizeStudy({
+      title: "Transição Energética 2008",
+      choroplethIndicator: "EG.FEC.RNEW.ZS",
+      choroplethYear: 2008,
+    });
+    assert.equal(sanitized.choroplethYear, 2008);
+
+    // Para NASA_FIRMS, choroplethYear deve ser descartado (null)
+    const firmsSanitized = sanitizeStudy({
+      title: "Queimadas",
+      choroplethIndicator: "NASA_FIRMS",
+      choroplethYear: 2008,
+    });
+    assert.equal(firmsSanitized.choroplethYear, null);
+
+    // Renderização D14 dos controles temporais em pt-BR e en
+    useLocaleStore.setState({ locale: "pt-BR", enMessages: null });
+    const ptHtml = renderToStaticMarkup(
+      <ChoroplethTimelineControls
+        year={2008}
+        isPlaying={false}
+        isLoadingTimeseries={false}
+        hasTimeseriesError={false}
+        syncTimeline={true}
+        onYearChange={() => {}}
+        onTogglePlay={() => {}}
+        onToggleSyncTimeline={() => {}}
+      />
+    );
+    assert.match(ptHtml, /2008/);
+    assert.match(ptHtml, /Escala fixa 1990–2024/);
+
+    useLocaleStore.setState({ locale: "en", enMessages: EN_MESSAGES });
+    const enHtml = renderToStaticMarkup(
+      <ChoroplethTimelineControls
+        year={null}
+        isPlaying={false}
+        isLoadingTimeseries={false}
+        hasTimeseriesError={false}
+        syncTimeline={false}
+        onYearChange={() => {}}
+        onTogglePlay={() => {}}
+        onToggleSyncTimeline={() => {}}
+      />
+    );
+    assert.match(enHtml, /Latest/);
+    assert.match(enHtml, /animate 1990–2024/);
+
+    useLocaleStore.setState({ locale: "pt-BR", enMessages: null });
     useChoroplethStore.getState().resetChoropleth();
   });
 });

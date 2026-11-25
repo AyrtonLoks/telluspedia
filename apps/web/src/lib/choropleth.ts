@@ -1,7 +1,22 @@
 import { getSourceUrl } from "@/lib/source-urls";
-import { CHOROPLETH_INDICATOR_IDS, isChoroplethIndicatorId, type ChoroplethIndicatorId } from "@/lib/choropleth-ids";
+import {
+  CHOROPLETH_INDICATOR_IDS,
+  CHOROPLETH_MAX_YEAR,
+  CHOROPLETH_MIN_YEAR,
+  clampChoroplethYear,
+  isChoroplethIndicatorId,
+  isTemporalChoroplethIndicator,
+  type ChoroplethIndicatorId,
+} from "@/lib/choropleth-ids";
 
-export { CHOROPLETH_INDICATOR_IDS, isChoroplethIndicatorId };
+export {
+  CHOROPLETH_INDICATOR_IDS,
+  CHOROPLETH_MAX_YEAR,
+  CHOROPLETH_MIN_YEAR,
+  clampChoroplethYear,
+  isChoroplethIndicatorId,
+  isTemporalChoroplethIndicator,
+};
 export type { ChoroplethIndicatorId };
 
 export type ChoroplethScaleType = "log" | "linear" | "sqrt" | "log1p";
@@ -55,6 +70,10 @@ export interface ChoroplethDataset {
   ticks: ChoroplethLegendTick[];
   /** true quando a fonte dinâmica (ex.: FIRMS) ainda não entregou contagem por país. */
   isSourceUnavailable: boolean;
+  /** Ano explícito da série temporal (1990–2024) ou `null` no snapshot mais recente (D34). */
+  activeYear?: number | null;
+  /** true quando `min`/`max` estão travados no domínio global 1990–2024 para comparação honesta. */
+  isFixedTemporalScale?: boolean;
 }
 
 /** Cor neutra reservada a "Dado indisponível" — distinta de todas as rampas de dados. */
@@ -73,6 +92,8 @@ const PALETTE_VIRIDIS = ["#221a53", "#2b5882", "#20908d", "#6ece58", "#f4e04d"] 
 const PALETTE_PLASMA = ["#271258", "#7c1f82", "#c94662", "#f38c3c", "#f9df6b"] as const;
 const PALETTE_TEAL_GOLD = ["#162d52", "#23648a", "#3a9f96", "#95cc77", "#f5e384"] as const;
 const PALETTE_MAGMA = ["#241447", "#732069", "#c23d58", "#ec7d49", "#f8d387"] as const;
+const PALETTE_CARBON = ["#1c2f45", "#355e6e", "#9b8d4c", "#db7536", "#f5cb5c"] as const;
+const PALETTE_RENEWABLE = ["#26223b", "#24546b", "#1e8b7a", "#5ec06b", "#d3ea6f"] as const;
 const PALETTE_THERMAL = ["#3a153a", "#932346", "#d8502e", "#f39426", "#fce26a"] as const;
 
 function formatUsdCompact(v: number): string {
@@ -187,6 +208,37 @@ export const CHOROPLETH_INDICATORS: Record<ChoroplethIndicatorId, ChoroplethIndi
     formatValue: (v) =>
       `${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% do PIB`,
     formatTick: (v) => `${v.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`,
+  },
+  "EN.GHG.CO2.PC.CE.AR5": {
+    id: "EN.GHG.CO2.PC.CE.AR5",
+    label: "Emissões de CO₂ per capita",
+    shortLabel: "CO₂ / hab.",
+    unit: "t CO₂e / hab.",
+    scale: "log1p",
+    scaleLabel: "Escala logarítmica",
+    palette: PALETTE_CARBON,
+    sourcePrimary: "Banco Mundial (WDI / EDGAR)",
+    sourceUrl: getSourceUrl("Banco Mundial", "EN.GHG.CO2.PC.CE.AR5"),
+    description: "Emissões anuais de dióxido de carbono por habitante (t CO₂e).",
+    formatValue: (v) =>
+      `${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} t CO₂e`,
+    formatTick: (v) =>
+      `${v.toLocaleString("pt-BR", { maximumFractionDigits: v < 1 ? 1 : 0 })} t`,
+  },
+  "EG.FEC.RNEW.ZS": {
+    id: "EG.FEC.RNEW.ZS",
+    label: "Energia renovável (%)",
+    shortLabel: "Renováveis",
+    unit: "% da matriz",
+    scale: "linear",
+    scaleLabel: "Escala linear",
+    palette: PALETTE_RENEWABLE,
+    sourcePrimary: "Banco Mundial (WDI / IEA)",
+    sourceUrl: getSourceUrl("Banco Mundial", "EG.FEC.RNEW.ZS"),
+    description: "Participação de fontes renováveis no consumo final de energia (%).",
+    formatValue: (v) =>
+      `${v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`,
+    formatTick: (v) => `${v.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}%`,
   },
   NASA_FIRMS: {
     id: "NASA_FIRMS",

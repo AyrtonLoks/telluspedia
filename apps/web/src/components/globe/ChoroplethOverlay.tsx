@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
 import { buildChoroplethDataset } from "@/lib/choropleth-dataset";
+import { isTemporalChoroplethIndicator } from "@/lib/choropleth-ids";
+import {
+  getWorldBankTimeseriesSync,
+  loadWorldBankTimeseries,
+  type WorldBankTimeseriesDataset,
+} from "@/lib/worldbank-timeseries";
 import {
   CHOROPLETH_TEXTURE_HEIGHT,
   CHOROPLETH_TEXTURE_WIDTH,
@@ -31,6 +37,7 @@ interface ChoroplethOverlayProps {
  */
 export function ChoroplethOverlay({ visible }: ChoroplethOverlayProps) {
   const activeIndicator = useChoroplethStore((s) => s.activeIndicator);
+  const choroplethYear = useChoroplethStore((s) => s.year);
   const opacity = useChoroplethStore((s) => s.opacity);
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const firmsByCountry = useObservatoryStore((s) => s.firmsByCountry);
@@ -38,8 +45,32 @@ export function ChoroplethOverlay({ visible }: ChoroplethOverlayProps) {
   const loadLayerData = useObservatoryStore((s) => s.loadLayerData);
   const invalidate = useThree((state) => state.invalidate);
   const gl = useThree((state) => state.gl);
+  const [timeseries, setTimeseries] = useState<WorldBankTimeseriesDataset | null>(() =>
+    getWorldBankTimeseriesSync()
+  );
 
   const shouldRender = visible && !isCosmicMode && activeIndicator !== null;
+
+  // Carrega séries reais 1990–2024 sob demanda apenas quando o modo temporal é ativado (D34)
+  useEffect(() => {
+    if (!shouldRender || choroplethYear === null || !isTemporalChoroplethIndicator(activeIndicator)) {
+      return;
+    }
+    const cached = getWorldBankTimeseriesSync();
+    if (cached) {
+      setTimeseries(cached);
+      return;
+    }
+    let alive = true;
+    void loadWorldBankTimeseries()
+      .then((loaded) => {
+        if (alive) setTimeseries(loaded);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [shouldRender, choroplethYear, activeIndicator]);
 
   // Dispara carga real das contagens FIRMS por país ao selecionar Queimadas 24h
   useEffect(() => {
@@ -53,9 +84,10 @@ export function ChoroplethOverlay({ visible }: ChoroplethOverlayProps) {
     if (!shouldRender || !activeIndicator) return null;
     return buildChoroplethDataset(
       activeIndicator,
-      activeIndicator === "NASA_FIRMS" ? firmsByCountry : undefined
+      activeIndicator === "NASA_FIRMS" ? firmsByCountry : undefined,
+      { year: choroplethYear, timeseries }
     );
-  }, [shouldRender, activeIndicator, firmsByCountry]);
+  }, [shouldRender, activeIndicator, firmsByCountry, choroplethYear, timeseries]);
 
   const canvasResource = useRef<{
     canvas: HTMLCanvasElement;
