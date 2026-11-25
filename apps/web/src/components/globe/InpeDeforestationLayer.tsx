@@ -18,7 +18,11 @@ import {
   rasterizeDeforestationHeatmap,
 } from "@/lib/inpe-heatmap";
 
-const HEATMAP_SPHERE_RADIUS = 1.0038;
+/**
+ * Raio 1.0032 com tesselação 128×64: acima de BiomesLayer (1.0022) e abaixo de CountryBorders (1.004),
+ * garantindo zero intersecção triangular com o globo base.
+ */
+const HEATMAP_SPHERE_RADIUS = 1.0032;
 const ALERT_RADIUS = 1.0085;
 const DEG2RAD = Math.PI / 180;
 const ignoreRaycast = () => null;
@@ -105,7 +109,7 @@ export const InpeDeforestationLayer: React.FC = () => {
   } | null>(null);
 
   const heatmapGeometry = useMemo(
-    () => (shouldRender ? new THREE.SphereGeometry(HEATMAP_SPHERE_RADIUS, 64, 32) : null),
+    () => (shouldRender ? new THREE.SphereGeometry(HEATMAP_SPHERE_RADIUS, 128, 64) : null),
     [shouldRender]
   );
 

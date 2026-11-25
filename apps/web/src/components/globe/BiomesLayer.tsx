@@ -19,10 +19,11 @@ import { useCosmicStore } from "@/stores/cosmicStore";
 const ignoreRaycast = () => null;
 
 /**
- * Raio 1.0013: imediatamente acima da camada coroplética (1.0011) e abaixo das fronteiras (1.0015),
- * preservando bordas geopolíticas nítidas e oceanos 100% transparentes.
+ * Raio 1.0022 com tesselação 128×64 (igual ao EarthSphere/GibsLayer): garante que o ponto médio
+ * de toda corda triangular fique em ~1.0019 (estritamente acima da Terra 1.000 e do GIBS 1.0015,
+ * sem intersecção/triângulos vazados) e abaixo de CountryBorders (1.004) e CloudLayer (1.006).
  */
-const BIOMES_SPHERE_RADIUS = 1.0013;
+const BIOMES_SPHERE_RADIUS = 1.0022;
 
 /**
  * Camada 3D do Mapa dos Biomas (Global 14 WWF/RESOLVE + Brasil 6 IBGE — D31).
@@ -76,7 +77,7 @@ export function BiomesLayer() {
   } | null>(null);
 
   const geometry = useMemo(
-    () => (shouldRender ? new THREE.SphereGeometry(BIOMES_SPHERE_RADIUS, 64, 32) : null),
+    () => (shouldRender ? new THREE.SphereGeometry(BIOMES_SPHERE_RADIUS, 128, 64) : null),
     [shouldRender]
   );
 
