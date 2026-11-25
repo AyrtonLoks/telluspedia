@@ -26,14 +26,37 @@ export function createAisFeed(openSocket = () => new WebSocket(STREAM_URL)) {
     let ready: () => void = () => {};
     startup = new Promise<void>((resolve) => { ready = resolve; });
     const startupTimer = setTimeout(ready, INITIAL_WAIT_MS);
-    const openTimer = setTimeout(() => stream.close(), OPEN_TIMEOUT_MS);
+    let closed = false;
     function finishStartup() {
       clearTimeout(startupTimer);
       ready();
     }
+    function closeStream(scheduleBackoff: boolean) {
+      if (closed) return;
+      closed = true;
+      clearTimeout(openTimer);
+      finishStartup();
+      if (socket === stream) {
+        socket = null;
+        if (scheduleBackoff) {
+          reconnectAt = Date.now() + Math.min(60_000, 2500 * 2 ** retries) + Math.random() * 1000;
+          retries = Math.min(6, retries + 1);
+        }
+      }
+      // Guarda contra reentrância: no WebSocket do Node/undici, `close()` em CONNECTING (0)
+      // dispara `"error"` sincronamente antes de encerrar o handshake.
+      if (stream.readyState === 0 || stream.readyState === 1) {
+        try {
+          stream.close();
+        } catch {
+          // Ignora erro se o socket já estiver em encerramento.
+        }
+      }
+    }
+    const openTimer = setTimeout(() => closeStream(true), OPEN_TIMEOUT_MS);
 
     stream.addEventListener("open", () => {
-      if (socket !== stream) return;
+      if (socket !== stream || closed) return;
       clearTimeout(openTimer);
       try {
         stream.send(JSON.stringify({
@@ -42,11 +65,11 @@ export function createAisFeed(openSocket = () => new WebSocket(STREAM_URL)) {
           FilterMessageTypes: AIS_MESSAGE_TYPES,
         }));
       } catch {
-        stream.close();
+        closeStream(true);
       }
     });
     stream.addEventListener("message", (event) => {
-      if (socket !== stream) return;
+      if (socket !== stream || closed) return;
       const raw = event.data;
       if (typeof raw !== "string" && !(raw instanceof ArrayBuffer)) return;
       const body = typeof raw === "string" ? raw : decoder.decode(raw);
@@ -54,7 +77,7 @@ export function createAisFeed(openSocket = () => new WebSocket(STREAM_URL)) {
         const frame = JSON.parse(body);
         if (frame?.MessageType === "SubscriptionConfirmation") retries = 0;
         if (frame?.error) {
-          stream.close();
+          closeStream(true);
           return;
         }
         fleet.ingest(frame, Date.now());
@@ -62,15 +85,8 @@ export function createAisFeed(openSocket = () => new WebSocket(STREAM_URL)) {
         // Malformed frames have no effect on the last valid report.
       }
     });
-    stream.addEventListener("error", () => stream.close());
-    stream.addEventListener("close", () => {
-      clearTimeout(openTimer);
-      finishStartup();
-      if (socket !== stream) return;
-      socket = null;
-      reconnectAt = Date.now() + Math.min(60_000, 2500 * 2 ** retries) + Math.random() * 1000;
-      retries = Math.min(6, retries + 1);
-    });
+    stream.addEventListener("error", () => closeStream(true));
+    stream.addEventListener("close", () => closeStream(true));
   }
 
   async function snapshot(apiKey: string): Promise<AisSnapshot> {
@@ -79,7 +95,13 @@ export function createAisFeed(openSocket = () => new WebSocket(STREAM_URL)) {
     idleTimer = setTimeout(() => {
       const idleSocket = socket;
       socket = null;
-      idleSocket?.close();
+      if (idleSocket && (idleSocket.readyState === 0 || idleSocket.readyState === 1)) {
+        try {
+          idleSocket.close();
+        } catch {
+          // Ignora falha ao fechar socket ocioso.
+        }
+      }
     }, IDLE_TIMEOUT_MS);
     idleTimer.unref?.();
 

@@ -116,3 +116,24 @@ test("AIS movement filter uses measured speed and excludes unknown readings", ()
   assert.equal(vesselIsMoving({ speedKnots: 0.9 }), false);
   assert.equal(vesselIsMoving({ speedKnots: 1 }), true);
 });
+
+test("AIS WebSocket error/close handler prevents synchronous re-entrant stack overflow (undici CONNECTING close)", async () => {
+  const socket = new EventTarget() as WebSocket;
+  let closeCalls = 0;
+  Object.defineProperty(socket, "readyState", { value: 0, writable: true });
+  socket.close = () => {
+    closeCalls++;
+    // Reproduz o comportamento real do WebSocket do Node/undici ao fechar em CONNECTING:
+    // dispara "error" sincronamente antes de mudar readyState / disparar "close".
+    socket.dispatchEvent(new Event("error"));
+    (socket as { readyState: number }).readyState = 3;
+    socket.dispatchEvent(new Event("close"));
+  };
+
+  const feed = createAisFeed(() => socket);
+  const pending = feed.snapshot("TEST_KEY");
+  socket.dispatchEvent(new Event("error"));
+
+  await assert.rejects(pending, /Fluxo AIS indisponível/);
+  assert.equal(closeCalls, 1, "close() deve ser chamado no máximo uma vez mesmo com evento error reentrante");
+});
