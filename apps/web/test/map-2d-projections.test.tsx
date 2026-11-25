@@ -39,6 +39,16 @@ import { sanitizeStudy, studyInput } from "../src/lib/study-schema";
 import { restoreStudySnapshot, selectCountry } from "../src/stores/actions";
 import { findSearchResult, runSearchResult, searchExplore } from "../src/lib/explore/search";
 import { ProjectionSelectorHud } from "../src/components/map2d/ProjectionSelectorHud";
+import {
+  pickObservatory2dHit,
+  renderObservatory2dLayers,
+  type Observatory2dRenderState,
+} from "../src/lib/map-2d-observatory";
+import { initialLocalMeta } from "../src/lib/observatory-source";
+import { perLayer, DEFAULT_LAYER_OPACITY } from "../src/stores/observatory-store-helpers";
+import { SPECIES_CATALOG } from "../src/lib/species-catalog";
+import { buildClimatologyWindField } from "../src/lib/winds-data";
+import { buildClimatologyCurrentsGrid } from "../src/lib/currents-data";
 
 function resetAllStores() {
   useGlobeStore.getState().resetView();
@@ -354,5 +364,116 @@ describe("D33: Alternância 3D ↔ 2D, pausa RN22, URL, Busca ⌘K e Estudos", (
     assert.match(enHtml, /Azimuthal Equidistant/);
     assert.match(enHtml, /Graticule/);
     assert.match(enHtml, /Center: Brazil/);
+  });
+
+  test("renderObservatory2dLayers projeta e cria alvos clicáveis para todas as camadas do Observatório", () => {
+    const ops: string[] = [];
+    const mockCtx = {
+      save: () => ops.push("save"),
+      restore: () => ops.push("restore"),
+      beginPath: () => ops.push("beginPath"),
+      closePath: () => {},
+      moveTo: () => {},
+      lineTo: () => {},
+      arc: () => ops.push("arc"),
+      fill: () => ops.push("fill"),
+      stroke: () => ops.push("stroke"),
+      translate: () => {},
+      rotate: () => {},
+      setLineDash: () => {},
+      fillText: () => {},
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+      globalAlpha: 1,
+      fillStyle: "",
+      strokeStyle: "",
+      lineWidth: 1,
+      lineCap: "butt",
+      font: "",
+    } as unknown as CanvasRenderingContext2D;
+
+    const proj = createMapProjection("equal-earth", 1280, 760);
+    const state: Observatory2dRenderState = {
+      activeLayers: [
+        "NASA_FIRMS",
+        "NASA_EONET",
+        "ISS_SATELLITES",
+        "FLIGHTS_OPENSKY",
+        "MARITIME_ROUTES",
+        "GLOBAL_WINDS",
+        "MARINE_DEBRIS",
+        "INPE_DEFORESTATION",
+        "SPECIES_MAP",
+      ],
+      layerOpacity: { ...DEFAULT_LAYER_OPACITY },
+      layerMeta: perLayer(initialLocalMeta),
+      gibsPixels: null,
+      firmsHotspots: [
+        { id: "f1", lat: -10, lng: -55, brightness: 340, frp: 45, confidence: "high", satellite: "VIIRS", acqDate: "2026-11-25" },
+      ],
+      eonetEvents: [
+        { id: "e1", title: "Etna", category: "volcanoes", lat: 37.75, lng: 14.99, date: "2026-11-25", sources: [] },
+      ],
+      eonetCategory: "all",
+      issTelemetry: {
+        latitude: 12,
+        longitude: -30,
+        altitudeKm: 420,
+        velocityKmh: 27600,
+        visibility: "daylight",
+        timestamp: Date.now(),
+        orbitInclinationDeg: 51.6,
+        groundTrack: [{ lat: 10, lng: -35 }, { lat: 12, lng: -30 }, { lat: 14, lng: -25 }],
+      },
+      showIssGroundTrack: true,
+      satelliteSnapshots: [],
+      aircraftFleet: [
+        { icao24: "abc", callsign: "GLO123", originCountry: "Brazil", lat: -23.5, lng: -46.6, altitudeMeters: 10000, velocityMs: 240, headingDeg: 45 },
+      ],
+      maritimeRoutes: [
+        { id: "r1", name: "Suez", category: "CANAL", coordinates: [[30, 32], [31, 32.5]] },
+      ],
+      aisVessels: [
+        { id: "v1", mmsi: "123456789", region: "route-santos", kind: "cargo", lat: -24, lng: -46, speedKnots: 12, courseDeg: 180, headingDeg: 180, observedAt: Date.now() },
+      ],
+      vesselsMovingOnly: false,
+      flowMode: "both",
+      winds: buildClimatologyWindField(),
+      windAltitude: "surface",
+      currents: buildClimatologyCurrentsGrid(),
+      selectedGyreId: null,
+      driftSimulation: null,
+      prodesBiome: "amazonia",
+      deterAlerts: [],
+      brazilBiomesTopology: null,
+      speciesEntries: SPECIES_CATALOG.slice(0, 5),
+      selectedSpeciesId: SPECIES_CATALOG[0].id,
+      hoveredSpeciesId: null,
+      selectedSpeciesOccurrences: [
+        {
+          id: "occ-1",
+          lat: -3.1,
+          lng: -60.0,
+          year: 2024,
+          countryCode: "BR",
+          locality: "Manaus",
+          basisOfRecord: "HUMAN_OBSERVATION",
+          gbifUrl: "https://www.gbif.org/occurrence/1",
+        },
+      ],
+    };
+
+    const hits = renderObservatory2dLayers(mockCtx, 1280, 760, proj, "equal-earth", state);
+    assert.ok(hits.some((h) => h.kind === "SPECIES"), "Deve gerar alvo clicável de Espécie");
+    assert.ok(hits.some((h) => h.kind === "GYRE"), "Deve gerar alvos clicáveis dos 5 Giros Oceânicos");
+    assert.ok(hits.some((h) => h.kind === "ENTITY" && h.entity.type === "ISS"), "Deve gerar alvo da ISS");
+    assert.ok(hits.some((h) => h.kind === "ENTITY" && h.entity.type === "FIRMS"), "Deve gerar alvo FIRMS");
+    assert.ok(hits.some((h) => h.kind === "ENTITY" && h.entity.type === "EONET"), "Deve gerar alvo EONET");
+    assert.ok(hits.some((h) => h.kind === "ENTITY" && h.entity.type === "AIRCRAFT"), "Deve gerar alvo de Voo");
+    assert.ok(hits.some((h) => h.kind === "ENTITY" && h.entity.type === "VESSEL"), "Deve gerar alvo AIS");
+
+    const issHit = hits.find((h) => h.kind === "ENTITY" && h.entity.type === "ISS")!;
+    const picked = pickObservatory2dHit(hits, issHit.x + 2, issHit.y - 1);
+    assert.equal(picked?.kind, "ENTITY");
+    assert.ok(ops.length > 50, "Deve desenhar primitivas no canvas 2D");
   });
 });

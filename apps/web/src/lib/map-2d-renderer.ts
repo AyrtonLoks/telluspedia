@@ -22,6 +22,13 @@ import {
   WORLD_GRATICULE,
   WORLD_SPHERE_OBJECT,
 } from "@/lib/map-projections";
+import type { MapProjectionId } from "@/lib/map-projections-types";
+import {
+  renderGibs2dLayer,
+  renderObservatory2dLayers,
+  type Observatory2dHitTarget,
+  type Observatory2dRenderState,
+} from "@/lib/map-2d-observatory";
 import { getTerritorialStatusKindForGeometry } from "@/lib/territorial-status";
 
 type GeoFeature = GeoJSON.Feature<GeoJSON.Geometry, CountryProperties>;
@@ -168,6 +175,7 @@ export interface Render2dMapParams {
   width: number;
   height: number;
   projection: GeoProjection;
+  projectionId: MapProjectionId;
   topology: CountryTopology;
   isHistorical: boolean;
   effectiveYear: number | null;
@@ -186,15 +194,17 @@ export interface Render2dMapParams {
     hoveredBiomeId: BiomeId | null;
     opacity: number;
   } | null;
+  observatory?: Observatory2dRenderState | null;
   azimuthalCenter?: readonly [number, number] | null;
 }
 
-export function render2dMapFrame(params: Render2dMapParams): void {
+export function render2dMapFrame(params: Render2dMapParams): Observatory2dHitTarget[] {
   const {
     ctx,
     width,
     height,
     projection,
+    projectionId,
     topology,
     isHistorical,
     effectiveYear,
@@ -206,6 +216,7 @@ export function render2dMapFrame(params: Render2dMapParams): void {
     choroplethDataset,
     choroplethOpacity,
     biomes,
+    observatory,
     azimuthalCenter,
   } = params;
 
@@ -272,6 +283,24 @@ export function render2dMapFrame(params: Render2dMapParams): void {
       ctx.fillStyle = isHistorical ? MAP_PALETTE.landHistorical : MAP_PALETTE.landContemporary;
       ctx.fill();
     }
+  }
+
+  // 4b. Imagem de satélite NASA GIBS (reprojetada sob as fronteiras para manter linhas costeiras nítidas)
+  if (
+    observatory &&
+    !isHistorical &&
+    observatory.activeLayers.includes("NASA_GIBS") &&
+    observatory.gibsPixels
+  ) {
+    renderGibs2dLayer(
+      ctx,
+      width,
+      height,
+      projection,
+      projectionId,
+      observatory.gibsPixels,
+      observatory.layerOpacity.NASA_GIBS ?? 0.85
+    );
   }
 
   // 5. Camada oficial de Biomas (WWF 14 / IBGE 6) quando ativa no Observatório
@@ -409,6 +438,12 @@ export function render2dMapFrame(params: Render2dMapParams): void {
     }
   }
 
+  // 8b. Camadas vetoriais e pontuais do Observatório Planetário (D33 + todas as 11 camadas)
+  const hitTargets =
+    observatory && !isHistorical && observatory.activeLayers.length > 0
+      ? renderObservatory2dLayers(ctx, width, height, projection, projectionId, observatory)
+      : [];
+
   ctx.restore(); // Fim do clip na esfera
 
   // 9. Contorno externo da esfera projetada
@@ -419,4 +454,5 @@ export function render2dMapFrame(params: Render2dMapParams): void {
   ctx.stroke();
 
   ctx.restore();
+  return hitTargets;
 }

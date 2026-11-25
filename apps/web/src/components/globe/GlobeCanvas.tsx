@@ -163,6 +163,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
     };
   }, []);
   const isThrottled = useGlobeStore((s) => s.isThrottled);
+  const is2dMode = useGlobeStore((s) => s.viewMode === "2d");
   const { t } = useI18n();
   const selectedYear = useTimelineStore((s) => s.selectedYear);
   // Época ativa: fonte única (T12). Cenas só por seleção explícita, nunca pelo ano.
@@ -399,14 +400,14 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
         </div>
       )}
 
-      {/* Floating Planetary Observatory Telemetry HUD Overlay */}
-      {isContemporary && <ObservatoryTelemetryHUD />}
-      {isContemporary && !isCosmicMode && activeObservatoryLayers.includes("BIOMES_MAP") && (
+      {/* Floating Planetary Observatory Telemetry HUD Overlay (montado no FlatMapCanvas em 2D) */}
+      {isContemporary && !is2dMode && <ObservatoryTelemetryHUD />}
+      {isContemporary && !is2dMode && !isCosmicMode && activeObservatoryLayers.includes("BIOMES_MAP") && (
         <Suspense fallback={null}>
           <BiomeHudOverlay />
         </Suspense>
       )}
-      {isContemporary && !isCosmicMode && activeObservatoryLayers.includes("SPECIES_MAP") && (
+      {isContemporary && !is2dMode && !isCosmicMode && activeObservatoryLayers.includes("SPECIES_MAP") && (
         <Suspense fallback={null}>
           <SpeciesHudOverlay />
         </Suspense>

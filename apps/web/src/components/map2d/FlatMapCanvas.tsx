@@ -9,6 +9,10 @@ import { formatCountryName } from "@/lib/i18n/format";
 import { useI18n } from "@/lib/i18n/useT";
 import { render2dMapFrame } from "@/lib/map-2d-renderer";
 import {
+  pickObservatory2dHit,
+  type Observatory2dHitTarget,
+} from "@/lib/map-2d-observatory";
+import {
   clamp2dZoom,
   createMapProjection,
   MAX_2D_ZOOM,
@@ -19,14 +23,26 @@ import {
 import { selectCountry } from "@/stores/actions";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useSpeciesStore } from "@/stores/speciesStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { Button } from "@/components/ui/Button";
 import { Panel } from "@/components/ui/Panel";
 import { ProjectionSelectorHud } from "./ProjectionSelectorHud";
 import { useFlatMapData } from "./useFlatMapData";
+import { useFlatMapObservatory } from "./useFlatMapObservatory";
 
+const ObservatoryTelemetryHUD = lazy(() =>
+  import("@/components/observatory/ObservatoryTelemetryHUD").then((m) => ({
+    default: m.ObservatoryTelemetryHUD,
+  }))
+);
 const BiomeHudOverlay = lazy(() =>
   import("@/components/observatory/BiomeHudOverlay").then((m) => ({ default: m.BiomeHudOverlay }))
+);
+const SpeciesHudOverlay = lazy(() =>
+  import("@/components/observatory/SpeciesHudOverlay").then((m) => ({
+    default: m.SpeciesHudOverlay,
+  }))
 );
 
 const DRAG_THRESHOLD_PX = 5;
@@ -66,6 +82,10 @@ export const FlatMapCanvas: React.FC = () => {
   const setHoveredIso = useGlobeStore((s) => s.setHoveredIso);
 
   const data = useFlatMapData(projectionId, zoom, azimuthalFollowSelected, locale);
+  const isContemporary2d = !data.isHistorical && !data.isGeological;
+  const observatory = useFlatMapObservatory(isContemporary2d);
+  const hitTargetsRef = useRef<Observatory2dHitTarget[]>([]);
+  const isSpeciesActive = observatory.activeLayers.includes("SPECIES_MAP");
 
   // Dimensões responsivas do container 2D
   useEffect(() => {
@@ -110,11 +130,12 @@ export const FlatMapCanvas: React.FC = () => {
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    render2dMapFrame({
+    hitTargetsRef.current = render2dMapFrame({
       ctx,
       width: size.width,
       height: size.height,
       projection,
+      projectionId,
       topology: data.activeTopology,
       isHistorical: data.isHistorical,
       effectiveYear: data.effectiveYear,
@@ -126,9 +147,10 @@ export const FlatMapCanvas: React.FC = () => {
       choroplethDataset: data.choroplethDataset,
       choroplethOpacity: data.choroplethOpacity,
       biomes: data.biomesRenderData,
+      observatory: isContemporary2d ? observatory : null,
       azimuthalCenter: data.azimuthalCenter,
     });
-  }, [size, projection, data, showGraticule, zoom]);
+  }, [size, projection, projectionId, data, observatory, isContemporary2d, showGraticule, zoom]);
 
   const handleSelectProjection = useCallback(
     (nextId: MapProjectionId) => {
@@ -209,6 +231,14 @@ export const FlatMapCanvas: React.FC = () => {
 
     const pos = getLocalCoords(event.clientX, event.clientY);
     if (!pos) return;
+    if (isSpeciesActive) {
+      const hit = pickObservatory2dHit(hitTargetsRef.current, pos.x, pos.y);
+      const nextHoveredSpecies = hit?.kind === "SPECIES" ? hit.speciesId : null;
+      const spStore = useSpeciesStore.getState();
+      if (spStore.hoveredSpeciesId !== nextHoveredSpecies) {
+        spStore.setHoveredSpeciesId(nextHoveredSpecies);
+      }
+    }
     const picked = pickCountryAt2dPoint(
       projection,
       projectionId,
@@ -262,6 +292,35 @@ export const FlatMapCanvas: React.FC = () => {
       data.effectiveYear
     );
 
+    if (isContemporary2d && picked) {
+      const obs = useObservatoryStore.getState();
+      if (obs.marineDebrisPickMode && obs.activeLayers.includes("MARINE_DEBRIS")) {
+        obs.setMarineDebrisReleasePoint({
+          lat: Number(picked.lat.toFixed(2)),
+          lng: Number(picked.lng.toFixed(2)),
+        });
+        return;
+      }
+    }
+
+    if (isContemporary2d) {
+      const hit = pickObservatory2dHit(hitTargetsRef.current, pos.x, pos.y);
+      if (hit) {
+        const obs = useObservatoryStore.getState();
+        if (hit.kind === "SPECIES") {
+          useSpeciesStore.getState().selectSpecies(hit.speciesId);
+          obs.setSelectedEntity(null);
+          return;
+        }
+        if (hit.kind === "GYRE") {
+          obs.setSelectedGyreId(hit.gyreId);
+          return;
+        }
+        obs.setSelectedEntity(hit.entity);
+        return;
+      }
+    }
+
     if (data.biomesRenderData && picked) {
       const obs = useObservatoryStore.getState();
       const hitBiome = pickBiomeAt(
@@ -288,6 +347,7 @@ export const FlatMapCanvas: React.FC = () => {
       selectCountry(null);
       setHoveredIso(null);
       useTimelineStore.getState().selectMilestone(null);
+      useObservatoryStore.getState().setSelectedEntity(null);
     }
   };
 
@@ -298,6 +358,8 @@ export const FlatMapCanvas: React.FC = () => {
     setHoverPointer(null);
     const obs = useObservatoryStore.getState();
     if (obs.hoveredBiomeId !== null) obs.setHoveredBiomeId(null);
+    const sp = useSpeciesStore.getState();
+    if (sp.hoveredSpeciesId !== null) sp.setHoveredSpeciesId(null);
   };
 
   const handleWheel = (event: React.WheelEvent<HTMLCanvasElement>) => {
@@ -421,9 +483,19 @@ export const FlatMapCanvas: React.FC = () => {
         </div>
       )}
 
-      {!data.isHistorical && !data.isGeological && data.isBiomesActive && (
+      {isContemporary2d && (
+        <Suspense fallback={null}>
+          <ObservatoryTelemetryHUD />
+        </Suspense>
+      )}
+      {isContemporary2d && data.isBiomesActive && (
         <Suspense fallback={null}>
           <BiomeHudOverlay />
+        </Suspense>
+      )}
+      {isContemporary2d && isSpeciesActive && (
+        <Suspense fallback={null}>
+          <SpeciesHudOverlay />
         </Suspense>
       )}
     </div>

@@ -106,6 +106,19 @@ test.describe("D33: Modo 2D & Projeções Cartográficas Comparativas (d3-geo)",
     await expect(page.getByTestId("flat-map-viewport")).toHaveAttribute("data-projection", "mercator");
     await expect(rightDock).toContainText("Groenlândia");
 
+    // 9. Ativa múltiplas camadas do Observatório diretamente no Modo 2D (Queimadas, Ventos, Lixo Marítimo e Espécies)
+    await page.getByTestId("top-nav-observatory-button").click();
+    await expect(page.getByTestId("observatory-panel")).toBeVisible({ timeout: 15_000 });
+    await page.getByTestId("layer-toggle-NASA_FIRMS").click();
+    await page.getByTestId("layer-toggle-GLOBAL_WINDS").click();
+    await page.getByTestId("layer-toggle-MARINE_DEBRIS").click();
+    await page.getByTestId("layer-toggle-SPECIES_MAP").click();
+    await page.getByTestId("layer-options-toggle-SPECIES_MAP").click();
+    await expect(page.getByTestId("species-layer-controls")).toBeVisible({ timeout: 15_000 });
+    await page.getByTestId("species-item-panthera-onca").click();
+    await expect(page.getByTestId("species-floating-card")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId("species-floating-card")).toContainText("Panthera onca");
+
     expect(pageErrors, `Page errors: ${pageErrors.join("; ")}`).toEqual([]);
     expect(consoleErrors, `Console errors: ${consoleErrors.join("; ")}`).toEqual([]);
   });
