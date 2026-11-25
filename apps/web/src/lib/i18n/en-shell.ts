@@ -21,6 +21,9 @@ export const EN_SHELL_MESSAGES = {
   "nav.searchAria": "Search TellusPedia",
   "nav.share": "Share",
   "nav.resetView": "Reset Earth view",
+  "nav.mapModeAria": "Switch between 3D globe and 2D map",
+  "nav.mapMode3dTitle": "Interactive 3D globe with zero cartographic distortion",
+  "nav.mapMode2dTitle": "2D map with comparative cartographic projections (Equal Earth, Mercator, Natural Earth, Azimuthal)",
 
   // Seletor de idioma (D28a)
   "locale.switchToEn": "Switch language to English",
@@ -38,6 +41,29 @@ export const EN_SHELL_MESSAGES = {
   "map.webglLost": "WebGL graphics context paused — trying to restore…",
   "map.webglReload": "Reload 3D",
   "map.webglRestored": "WebGL graphics context restored.",
+
+  // Modo 2D & Projeções Cartográficas (D33)
+  "map2d.regionAria": "Interactive 2D cartographic map",
+  "map2d.instructions": "Drag to pan the 2D map, use mouse wheel or plus/minus to zoom, zero to fit the world, and click any country to inspect.",
+  "map2d.projectionsAria": "2D cartographic projections",
+  "map2d.graticule": "Graticule",
+  "map2d.graticuleTitle": "Show or hide meridian and parallel graticule",
+  "map2d.zoomGroupAria": "2D map zoom controls",
+  "map2d.zoomOut": "Zoom out 2D map",
+  "map2d.zoomIn": "Zoom in 2D map",
+  "map2d.resetZoom": "Fit full world map",
+  "map2d.infoToggleTitle": "Show didactic note for active cartographic projection",
+  "map2d.aboutProjection": "Properties",
+  "map2d.didacticAria": "Cartographic projection properties",
+  "map2d.closeInfo": "Collapse projection properties",
+  "map2d.preservesLabel": "Preserves:",
+  "map2d.distortsLabel": "Distorts:",
+  "map2d.centeredOn": "Center:",
+  "map2d.centeredOrigin": "Center: Equator / Prime Meridian (0°, 0°)",
+  "map2d.resetCenter": "Reset to 0°, 0°",
+  "map2d.centerOnSelected": "Center on country",
+  "map2d.geoNotice": "Paleogeographic continental drift is rendered on the 3D Globe.",
+  "map2d.switchTo3d": "View in 3D",
 
   // Qualidade gráfica (T39)
   "quality.title": "Graphics quality",

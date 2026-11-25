@@ -6,6 +6,11 @@ import { PILOT_COUNTRIES, WORLD_COUNTRIES_CATALOG } from "./country-data";
 import { TIMELINE_MAX_YEAR, TIMELINE_MIN_YEAR, VALID_CELESTIAL_BODIES } from "./cosmos-validation";
 import type { ObservatoryLayer } from "./observatory-data";
 import { GIBS_PRODUCT_IDS, isGibsMonthFor, isGibsProductId } from "./gibs";
+import {
+  DEFAULT_MAP_PROJECTION,
+  MAP_PROJECTION_IDS,
+  isMapProjectionId,
+} from "./map-projections-types";
 import { normalizeStudyEpoch, MAX_STUDY_GEOLOGICAL_MA } from "./study-epoch";
 import { ALL_COSMIC_LAYERS } from "../stores/cosmicStore";
 import { MAX_CAMERA_ALTITUDE, MIN_CAMERA_ALTITUDE } from "../stores/globeStore";
@@ -51,6 +56,8 @@ const observatoryLayer = z.enum([
 ] satisfies ObservatoryLayer[]);
 const gibsProduct = z.enum(GIBS_PRODUCT_IDS);
 const gibsMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
+const mapViewMode = z.enum(["3d", "2d"]);
+const mapProjection = z.enum(MAP_PROJECTION_IDS);
 const year = z.number().int().min(TIMELINE_MIN_YEAR).max(TIMELINE_MAX_YEAR);
 const latitude = z.number().min(-90).max(90);
 const longitude = z.number().min(-180).max(180);
@@ -80,6 +87,8 @@ export const studyInput = z.object({
   choroplethIndicator: choroplethIndicator.nullish(),
   gibsProduct: gibsProduct.nullish(),
   gibsMonth: gibsMonth.nullish(),
+  mapViewMode: mapViewMode.nullish(),
+  mapProjection: mapProjection.nullish(),
 }).refine(
   ({ timelineStartYear, timelineEndYear }) =>
     timelineStartYear === undefined || timelineEndYear === undefined || timelineStartYear <= timelineEndYear,
@@ -125,6 +134,15 @@ export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
     gibsMonth: product && isGibsMonthFor(product, input.gibsMonth) ? input.gibsMonth : null,
   };
 
+  const isCosmicMode = Boolean(input.isCosmicMode);
+  const resolvedMapViewMode = !isCosmicMode && input.mapViewMode === "2d" ? "2d" : null;
+  const resolvedMapProjection =
+    resolvedMapViewMode === "2d"
+      ? isMapProjectionId(input.mapProjection)
+        ? input.mapProjection
+        : DEFAULT_MAP_PROJECTION
+      : null;
+
   return {
     parentId: valid(slug, input.parentId) ?? null,
     title: input.title || "Estudo Planetário",
@@ -138,10 +156,12 @@ export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
     selectedCountryIsos: knownItems(country, input.selectedCountryIsos),
     activeCategories: knownItems(category, input.activeCategories),
     ...epoch,
-    isCosmicMode: Boolean(input.isCosmicMode),
+    isCosmicMode,
     focusedCelestialBody: valid(body, input.focusedCelestialBody) ?? null,
     activeCosmicLayers: knownItems(cosmicLayer, input.activeCosmicLayers),
     choroplethIndicator: valid(choroplethIndicator, input.choroplethIndicator) ?? null,
     ...gibs,
+    mapViewMode: resolvedMapViewMode,
+    mapProjection: resolvedMapProjection,
   };
 }

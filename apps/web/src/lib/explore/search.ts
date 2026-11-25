@@ -8,6 +8,11 @@ import { GIBS_PRODUCT_IDS, GIBS_PRODUCTS, isGibsProductId } from "@/lib/gibs";
 import { getEpochState } from "@/lib/epoch/useEpochState";
 import { applyTimelinePreset, restoreContemporaryTimeline, selectCountry } from "@/stores/actions";
 import { CHOROPLETH_INDICATOR_LIST, type ChoroplethIndicatorId } from "@/lib/choropleth";
+import {
+  MAP_PROJECTION_IDS,
+  MAP_PROJECTION_SHORT_LABELS,
+  isMapProjectionId,
+} from "@/lib/map-projections-types";
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { ALL_COSMIC_LAYERS, COSMIC_LAYER_LABELS, useCosmicStore, type CosmicLayerId } from "@/stores/cosmicStore";
@@ -129,6 +134,15 @@ const entries: SearchResult[] = [
   })),
   { id: "compare:", group: "command", title: "Abrir comparador", keywords: "comparar países" },
   { id: "route:/studies", group: "command", title: "Abrir Galeria de Estudos", detail: "/studies", keywords: "estudos públicos galeria forks snapshots" },
+  { id: "map:2d", group: "command", title: "Alternar para Mapa 2D (Projeções)", detail: "2D", keywords: "mapa plano 2d projecao cartografica equal earth mercator robinson azimutal" },
+  { id: "map:3d", group: "command", title: "Alternar para Globo 3D", detail: "3D", keywords: "globo 3d esfera planeta" },
+  ...MAP_PROJECTION_IDS.map((id) => ({
+    id: `proj:${id}`,
+    group: "command" as const,
+    title: `Projeção 2D: ${MAP_PROJECTION_SHORT_LABELS[id]}`,
+    detail: "Mapa 2D",
+    keywords: `projecao mapa 2d plano cartografia robinson distorcao ${id}`,
+  })),
   { id: `year:${CURRENT_YEAR}`, group: "command", title: `Ir para ${CURRENT_YEAR}`, keywords: "época presente ano hoje atual" },
 ];
 
@@ -322,6 +336,16 @@ export function runSearchResult(result: SearchResult) {
       if (result.id.startsWith("year:")) {
         showEarth();
         showYear(Number(value));
+      } else if (result.id === "map:2d") {
+        showEarth();
+        globe.setViewMode("2d");
+      } else if (result.id === "map:3d") {
+        showEarth();
+        globe.setViewMode("3d");
+      } else if (result.id.startsWith("proj:") && isMapProjectionId(value)) {
+        showEarth();
+        globe.setProjectionId(value);
+        globe.setViewMode("2d");
       } else {
         if (value) comparator.setSelectedIsos(value.split(","));
         comparator.openComparator();

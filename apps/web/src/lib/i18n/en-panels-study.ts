@@ -214,6 +214,8 @@ export const EN_PANEL_STUDY_MESSAGES = {
   "study.badge.choroplethRestored": "automatically restored when opening the link.",
   "study.badge.gibsTitle": "Satellite Imagery Captured",
   "study.badge.gibsRestored": "restored when opening the link.",
+  "study.badge.map2dTitle": "2D Map & Projection Captured",
+  "study.badge.map2dRestored": "automatically restored when opening the link.",
   "study.badge.cosmicTitle": "Active Cosmic / Solar System Study",
   "study.badge.orbitalFocus": "Orbital Focus",
   "study.badge.heliocentricOverview": "Heliocentric Panoramic View",

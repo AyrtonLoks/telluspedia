@@ -1,5 +1,13 @@
 import { create } from "zustand";
 import type { BordersLodLevel } from "@/lib/borders-lod";
+import {
+  DEFAULT_MAP_PROJECTION,
+  DEFAULT_MAP_VIEW_MODE,
+  isMapProjectionId,
+  isMapViewMode,
+  type MapProjectionId,
+  type MapViewMode,
+} from "@/lib/map-projections-types";
 
 export const MIN_CAMERA_ALTITUDE = 1.5;
 export const MAX_CAMERA_ALTITUDE = 6.0;
@@ -14,6 +22,8 @@ interface GlobeState {
   flyToTrigger: number;
   isReaderOpen: boolean;
   isThrottled: boolean;
+  viewMode: MapViewMode;
+  projectionId: MapProjectionId;
   bordersLod: BordersLodLevel;
   highResBordersReady: boolean;
 
@@ -22,6 +32,9 @@ interface GlobeState {
   flyTo: (lat: number, lng: number, altitude?: number) => void;
   setCameraPosition: (lat: number, lng: number, altitude?: number) => void;
   setReaderOpen: (isOpen: boolean) => void;
+  setViewMode: (mode: MapViewMode) => void;
+  toggleViewMode: () => void;
+  setProjectionId: (id: MapProjectionId) => void;
   setBordersLod: (lod: BordersLodLevel) => void;
   setHighResBordersReady: (ready: boolean) => void;
   resetView: () => void;
@@ -61,6 +74,8 @@ export const useGlobeStore = create<GlobeState>((set) => ({
   flyToTrigger: 0,
   isReaderOpen: false,
   isThrottled: false,
+  viewMode: DEFAULT_MAP_VIEW_MODE,
+  projectionId: DEFAULT_MAP_PROJECTION,
   bordersLod: "110m",
   highResBordersReady: false,
 
@@ -85,9 +100,37 @@ export const useGlobeStore = create<GlobeState>((set) => ({
     }),
 
   setReaderOpen: (isOpen) =>
-    set({
+    set((state) => ({
       isReaderOpen: isOpen,
-      isThrottled: isOpen,
+      isThrottled: isOpen || state.viewMode === "2d",
+    })),
+
+  setViewMode: (mode) =>
+    set((state) => {
+      const safeMode = isMapViewMode(mode) ? mode : DEFAULT_MAP_VIEW_MODE;
+      const nextThrottled = state.isReaderOpen || safeMode === "2d";
+      if (state.viewMode === safeMode && state.isThrottled === nextThrottled) return state;
+      return {
+        viewMode: safeMode,
+        isThrottled: nextThrottled,
+        hoveredIso: null,
+      };
+    }),
+
+  toggleViewMode: () =>
+    set((state) => {
+      const nextMode: MapViewMode = state.viewMode === "2d" ? "3d" : "2d";
+      return {
+        viewMode: nextMode,
+        isThrottled: state.isReaderOpen || nextMode === "2d",
+        hoveredIso: null,
+      };
+    }),
+
+  setProjectionId: (id) =>
+    set((state) => {
+      const safeId = isMapProjectionId(id) ? id : DEFAULT_MAP_PROJECTION;
+      return state.projectionId === safeId ? state : { projectionId: safeId };
     }),
 
   setBordersLod: (lod) =>
@@ -106,5 +149,7 @@ export const useGlobeStore = create<GlobeState>((set) => ({
       flyToTrigger: state.flyToTrigger + 1,
       isReaderOpen: false,
       isThrottled: false,
+      viewMode: DEFAULT_MAP_VIEW_MODE,
+      projectionId: DEFAULT_MAP_PROJECTION,
     })),
 }));

@@ -2,6 +2,7 @@ import { sceneHasTrajectoryKind, sceneOpenedBy } from "@/lib/scenes/catalog";
 import { HISTORICAL_ERAS } from "@/lib/historical-eras";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { readGibsView } from "@/lib/gibs-view";
+import { DEFAULT_MAP_PROJECTION, isMapProjectionId } from "@/lib/map-projections-types";
 import type { CelestialBodyId } from "@/lib/astronomy-planets";
 import type { StudyRecord } from "@/lib/studies-store";
 import { normalizeStudyEpoch } from "@/lib/study-epoch";
@@ -171,8 +172,14 @@ export function restoreStudySnapshot(study: StudySnapshot) {
   const countries = study.selectedCountryIsos ?? [];
   selectCountry(countries[0] ?? null);
   useComparatorStore.getState().setSelectedIsos(countries);
+  const globe = useGlobeStore.getState();
+  const is2dStudy = !study.isCosmicMode && study.mapViewMode === "2d";
+  globe.setProjectionId(
+    isMapProjectionId(study.mapProjection) ? study.mapProjection : DEFAULT_MAP_PROJECTION
+  );
+  globe.setViewMode(is2dStudy ? "2d" : "3d");
   if (study.cameraLat !== undefined && study.cameraLng !== undefined) {
-    useGlobeStore.getState().flyTo(study.cameraLat, study.cameraLng, study.cameraAltitude ?? 2.2);
+    globe.flyTo(study.cameraLat, study.cameraLng, study.cameraAltitude ?? 2.2);
   }
 }
 

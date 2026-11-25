@@ -14,6 +14,7 @@ let readerModePromise: Promise<unknown> | null = null;
 let citationModalPromise: Promise<unknown> | null = null;
 let choroplethHudPromise: Promise<unknown> | null = null;
 let graphicsQualityPromise: Promise<unknown> | null = null;
+let flatMapCanvasPromise: Promise<unknown> | null = null;
 
 export function preloadRightDock(): void {
   if (!rightDockPromise) {
@@ -78,6 +79,14 @@ export function preloadGraphicsQualityPanel(): void {
   if (!graphicsQualityPromise) {
     graphicsQualityPromise = import("@/components/globe/GraphicsQualityPanel").catch(() => {
       graphicsQualityPromise = null;
+    });
+  }
+}
+
+export function preloadFlatMapCanvas(): void {
+  if (!flatMapCanvasPromise) {
+    flatMapCanvasPromise = import("@/components/map2d/FlatMapCanvas").catch(() => {
+      flatMapCanvasPromise = null;
     });
   }
 }

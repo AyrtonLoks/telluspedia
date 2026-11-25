@@ -18,6 +18,10 @@ import { useCosmicStore } from "@/stores/cosmicStore";
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { CHOROPLETH_INDICATORS } from "@/lib/choropleth";
 import { GIBS_PRODUCTS, formatGibsMonth } from "@/lib/gibs";
+import {
+  MAP_PROJECTION_SHORT_LABELS,
+  MAP_PROJECTION_SHORT_LABELS_EN,
+} from "@/lib/map-projections-types";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/lib/i18n/useT";
@@ -40,6 +44,8 @@ export const StudyShareModal: React.FC = () => {
   const cameraLat = useGlobeStore((s) => s.cameraLat);
   const cameraLng = useGlobeStore((s) => s.cameraLng);
   const cameraAltitude = useGlobeStore((s) => s.cameraAltitude);
+  const mapViewMode = useGlobeStore((s) => s.viewMode);
+  const mapProjection = useGlobeStore((s) => s.projectionId);
 
   const storeStartYear = useTimelineStore((s) => s.startYear);
   const storeEndYear = useTimelineStore((s) => s.endYear);
@@ -126,6 +132,14 @@ export const StudyShareModal: React.FC = () => {
   const gibsSnapshot = gibsOn
     ? { gibsProduct, gibsMonth: gibsShown?.product === gibsProduct ? gibsShown.month : null }
     : { gibsProduct: null, gibsMonth: null };
+  const is2dSnapshot = !isCosmicMode && mapViewMode === "2d";
+  const map2dSnapshot = is2dSnapshot
+    ? { mapViewMode: "2d" as const, mapProjection }
+    : { mapViewMode: null, mapProjection: null };
+  const projectionShortLabel =
+    locale === "en"
+      ? MAP_PROJECTION_SHORT_LABELS_EN[mapProjection]
+      : MAP_PROJECTION_SHORT_LABELS[mapProjection];
 
   const handleGenerateLink = async () => {
     setLoading(true);
@@ -155,6 +169,7 @@ export const StudyShareModal: React.FC = () => {
       activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
       choroplethIndicator: effectiveChoroplethIndicator,
       ...gibsSnapshot,
+      ...map2dSnapshot,
     };
 
     try {
@@ -370,6 +385,21 @@ export const StudyShareModal: React.FC = () => {
                 <div className="text-caption text-fg-secondary">
                   {t(`obs.gibs.${gibsProduct}.name`, GIBS_PRODUCTS[gibsProduct].name)}
                   {gibsSnapshot.gibsMonth ? ` · ${formatGibsMonth(gibsSnapshot.gibsMonth, locale)}` : ""} (NASA GIBS) — {t("study.badge.gibsRestored", "restaurada ao abrir o link.")}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {is2dSnapshot && (
+            <div
+              data-testid="modal-map2d-badge"
+              className="flex items-center gap-2.5 rounded-card border border-accent/40 bg-accent/10 p-3 text-label"
+            >
+              <span aria-hidden="true" className="select-none text-title">🧭</span>
+              <div className="flex-1">
+                <div className="font-semibold text-fg">{t("study.badge.map2dTitle", "Mapa 2D & Projeção Capturada")}</div>
+                <div className="text-caption text-accent">
+                  {projectionShortLabel} — {t("study.badge.map2dRestored", "restaurada automaticamente ao abrir o link.")}
                 </div>
               </div>
             </div>

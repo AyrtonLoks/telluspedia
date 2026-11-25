@@ -3,7 +3,7 @@
 import React, { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { Gauge } from "lucide-react";
+import { Gauge, Globe, Map as MapIcon } from "lucide-react";
 import { TopNavBar } from "@/components/nav/TopNavBar";
 import { TimelineBar } from "@/components/timeline/TimelineBar";
 import { useShellObstruction } from "@/components/layout/useShellObstruction";
@@ -28,8 +28,10 @@ import { useI18n } from "@/lib/i18n/useT";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { useStudyStore } from "@/stores/studyStore";
-import { preloadGraphicsQualityPanel } from "@/lib/panel-preload";
+import { preloadFlatMapCanvas, preloadGraphicsQualityPanel } from "@/lib/panel-preload";
 import { getQualityProfile } from "@/lib/webgl-quality";
+import { useStoreSnapshot } from "@/lib/use-hydrated";
+import { DEFAULT_MAP_PROJECTION, DEFAULT_MAP_VIEW_MODE } from "@/lib/map-projections-types";
 import { cn } from "@/components/ui/cn";
 
 // Load 3D WebGL Canvas client-side only (disables SSR for R3F / Three.js)
@@ -101,6 +103,20 @@ const GraphicsQualityPanel = dynamic(
   () => import("@/components/globe/GraphicsQualityPanel").then((m) => m.GraphicsQualityPanel),
   { ssr: false }
 );
+const FlatMapCanvas = dynamic(
+  () => import("@/components/map2d/FlatMapCanvas").then((m) => m.FlatMapCanvas),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="absolute inset-0 z-10 flex items-center justify-center bg-bg text-accent font-mono text-caption">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-7 w-7 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+          <span>Carregando projeção cartográfica 2D…</span>
+        </div>
+      </div>
+    ),
+  }
+);
 
 function EntityLaunchGate() {
   const searchParams = useSearchParams();
@@ -137,6 +153,8 @@ export function applyInitialGlobeState(initialState: InitialGlobeState): void {
     // Evita vazamento de estado de stores Zustand entre requisições SSR consecutivas
     // no mesmo processo Node (ex.: `/pais/GRL` seguido de `/`, que causaria erro React #418).
     selectCountry(null);
+    useGlobeStore.getState().setViewMode(DEFAULT_MAP_VIEW_MODE);
+    useGlobeStore.getState().setProjectionId(DEFAULT_MAP_PROJECTION);
     useComparatorStore.getState().closeComparator();
     useChoroplethStore.getState().restoreIndicator(null);
     useStudyStore.getState().setCurrentStudyId(null);
@@ -216,6 +234,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const isReaderOpen = useGlobeStore((s) => s.isReaderOpen);
   const selectedIso = useGlobeStore((s) => s.selectedIso);
+  const viewMode = useStoreSnapshot(useGlobeStore, (s) => s.viewMode);
+  const setViewMode = useGlobeStore((s) => s.setViewMode);
+  const is2dMode = viewMode === "2d" && !isCosmicMode;
   const isComparatorOpen = useComparatorStore((s) => s.isOpen);
   const isShareModalOpen = useStudyStore((s) => s.isShareModalOpen);
   const currentStudyId = useStudyStore((s) => s.currentStudyId);
@@ -319,17 +340,69 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
           <EntityLaunchGate />
         </Suspense>
 
-        <WebGLErrorBoundary>
-          <GlobeCanvas viewCamera={viewCamera} />
-        </WebGLErrorBoundary>
+        <div
+          aria-hidden={is2dMode}
+          className={cn("absolute inset-0", is2dMode && "pointer-events-none invisible")}
+        >
+          <WebGLErrorBoundary>
+            <GlobeCanvas viewCamera={viewCamera} />
+          </WebGLErrorBoundary>
+        </div>
 
-        {/* Utilitários discretos no canto superior direito: Idioma (D28a) + Qualidade WebGL (T39) */}
+        {/* Modo 2D & Projeções Cartográficas Comparativas (D33 — carregado sob demanda) */}
+        {is2dMode && <FlatMapCanvas />}
+
+        {/* Utilitários discretos no canto superior direito: 3D/2D (D33) + Idioma (D28a) + Qualidade WebGL (T39) */}
         <div
           className={cn(
             "fixed right-3 top-[var(--map-tools-top)] z-20 flex items-center gap-1.5 lg:top-3 xl:right-6 xl:top-4",
             dockPresence.mounted && "lg:right-[27.5rem]"
           )}
         >
+          <div
+            role="group"
+            aria-label={t("nav.mapModeAria", "Alternar visualização 3D e 2D")}
+            data-testid="map-mode-toggle"
+            className="inline-flex h-9 items-center rounded-panel border border-line bg-surface/86 p-0.5 shadow-e1 backdrop-blur-md"
+          >
+            <button
+              type="button"
+              data-testid="map-mode-3d"
+              aria-pressed={!is2dMode}
+              onClick={() => setViewMode("3d")}
+              title={t("nav.mapMode3dTitle", "Globo 3D interativo sem distorção cartográfica")}
+              className={cn(
+                "inline-flex h-7 items-center gap-1 rounded-control px-2 font-mono text-caption font-medium transition-colors duration-fast ease-out",
+                !is2dMode
+                  ? "bg-accent/15 text-accent"
+                  : "text-fg-secondary hover:bg-surface-hover hover:text-fg"
+              )}
+            >
+              <Globe aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+              <span>3D</span>
+            </button>
+            <button
+              type="button"
+              data-testid="map-mode-2d"
+              aria-pressed={is2dMode}
+              onClick={() => {
+                if (isCosmicMode) useCosmicStore.getState().exitToEarthView();
+                setViewMode("2d");
+              }}
+              onMouseEnter={preloadFlatMapCanvas}
+              onFocus={preloadFlatMapCanvas}
+              title={t("nav.mapMode2dTitle", "Mapa 2D com projeções cartográficas comparativas (Equal Earth, Mercator, Natural Earth, Azimutal)")}
+              className={cn(
+                "inline-flex h-7 items-center gap-1 rounded-control px-2 font-mono text-caption font-medium transition-colors duration-fast ease-out",
+                is2dMode
+                  ? "bg-accent/15 text-accent"
+                  : "text-fg-secondary hover:bg-surface-hover hover:text-fg"
+              )}
+            >
+              <MapIcon aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+              <span>2D</span>
+            </button>
+          </div>
           <button
             type="button"
             data-testid="locale-switcher"

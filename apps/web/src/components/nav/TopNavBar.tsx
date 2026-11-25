@@ -10,6 +10,7 @@ import { useStudyStore } from "@/stores/studyStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useChoroplethStore } from "@/stores/choroplethStore";
+import { useGlobeStore } from "@/stores/globeStore";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { panelButtonAction, useRightDock } from "@/components/layout/useRightDock";
 import { useOpenExploreSearch } from "@/components/explore/SearchProvider";
@@ -57,6 +58,12 @@ export const TopNavBar: React.FC = () => {
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const toggleCosmicMode = useCosmicStore((s) => s.toggleCosmicMode);
+  const handleToggleCosmicMode = () => {
+    if (!isCosmicMode && useGlobeStore.getState().viewMode === "2d") {
+      useGlobeStore.getState().setViewMode("3d");
+    }
+    toggleCosmicMode();
+  };
   const activeChoropleth = useStoreSnapshot(useChoroplethStore, (s) => s.activeIndicator);
   const isChoroplethSelectorOpen = useStoreSnapshot(useChoroplethStore, (s) => s.isSelectorOpen);
   const toggleChoroplethSelector = useChoroplethStore((s) => s.toggleSelector);
@@ -106,7 +113,7 @@ export const TopNavBar: React.FC = () => {
 
         <button
           type="button"
-          onClick={toggleCosmicMode}
+          onClick={handleToggleCosmicMode}
           onMouseEnter={() => { preloadCosmicHud(); preloadRightDock(); }}
           onFocus={() => { preloadCosmicHud(); preloadRightDock(); }}
           aria-label={isCosmicMode ? t("nav.solarSystem", "Sistema Solar") : t("nav.cosmos", "Cosmos")}

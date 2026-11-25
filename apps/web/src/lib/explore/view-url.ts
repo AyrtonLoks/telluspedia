@@ -6,6 +6,7 @@ import { HISTORICAL_ENTITY_IDS } from "@/lib/historical-eras";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { encodeGibsView, readGibsView } from "@/lib/gibs-view";
 import { DEFAULT_BIOME_SCOPE, encodeBiomesView, readBiomesView } from "@/lib/biomes-types";
+import { DEFAULT_MAP_PROJECTION, readMapView } from "@/lib/map-projections-types";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "@/stores/cosmicStore";
 import { selectCountry } from "@/stores/actions";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -35,6 +36,7 @@ const layerIds: readonly ObservatoryLayer[] = [
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
   "camadas", "gibs", "bioma", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
+  "mapa", "proj",
 ];
 
 function numberIn(value: string | null, min: number, max: number) {
@@ -54,9 +56,16 @@ export function encodeView(view: ViewCamera) {
   const observatory = useObservatoryStore.getState();
   const comparator = useComparatorStore.getState();
   const params = new URLSearchParams();
-  const iso = useGlobeStore.getState().selectedIso;
+  const globe = useGlobeStore.getState();
+  const iso = globe.selectedIso;
   const panel = useLayoutStore.getState().activeRightPanel;
   if (iso) params.set("pais", iso);
+  if (globe.viewMode === "2d" && !cosmic.isCosmicMode) {
+    params.set("mapa", "2d");
+    if (globe.projectionId !== DEFAULT_MAP_PROJECTION) {
+      params.set("proj", globe.projectionId);
+    }
+  }
   if (timeline.selectedYear !== null) params.set("ano", String(timeline.selectedYear));
   if (timeline.geologicalMa !== null) params.set("ma", String(timeline.geologicalMa));
   if (timeline.startYear !== DEFAULT_TIMELINE_START_YEAR || timeline.endYear !== DEFAULT_TIMELINE_END_YEAR) {
@@ -154,6 +163,10 @@ export function restoreView(search: string, view: ViewCamera) {
     selectedIsos: [...new Set(params.get("comparar")?.split(",") ?? [])]
       .filter((code) => COUNTRY_ISO_CODES.has(code)).slice(0, 4),
   });
+  const mapView = readMapView(params.get("mapa"), params.get("proj"));
+  useGlobeStore.getState().setProjectionId(mapView.projectionId);
+  useGlobeStore.getState().setViewMode(isCosmicMode ? "3d" : mapView.viewMode);
+
   const camera = parseCameraOffset(params.get("camera"));
   view.offset = camera ?? DEFAULT_CAMERA_OFFSET;
   view.restore = camera ?? (isCosmicMode || focus ? null : DEFAULT_CAMERA_OFFSET);

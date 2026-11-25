@@ -30,6 +30,9 @@ export interface StudyRecord {
   /** Camada NASA GIBS (D25): produto e mês congelados no snapshot. */
   gibsProduct?: string | null;
   gibsMonth?: string | null;
+  /** Modo 2D & projeção cartográfica (D33) congelados no snapshot. */
+  mapViewMode?: string | null;
+  mapProjection?: string | null;
   createdAt: string;
 }
 
@@ -83,6 +86,8 @@ Este estudo examina as repercussões da bipolaridade EUA-URSS nas instituições
   choroplethIndicator: null,
   gibsProduct: null,
   gibsMonth: null,
+  mapViewMode: null,
+  mapProjection: null,
   createdAt: new Date("2026-10-19T00:00:00Z").toISOString(),
 });
 

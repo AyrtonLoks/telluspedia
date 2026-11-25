@@ -19,6 +19,12 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { StudyExportActions } from "@/components/study/StudyExportActions";
 import { CHOROPLETH_INDICATORS, isChoroplethIndicatorId } from "@/lib/choropleth";
+import {
+  DEFAULT_MAP_PROJECTION,
+  MAP_PROJECTION_SHORT_LABELS,
+  MAP_PROJECTION_SHORT_LABELS_EN,
+  isMapProjectionId,
+} from "@/lib/map-projections-types";
 import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useI18n } from "@/lib/i18n/useT";
@@ -45,7 +51,7 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
   onDismiss,
   onNavigate,
 }) => {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
   const [forking, setForking] = useState<boolean>(false);
   const [forkSuccess, setForkSuccess] = useState<boolean>(false);
   const [showForks, setShowForks] = useState<boolean>(false);
@@ -61,6 +67,12 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
   const choroplethMeta =
     study?.choroplethIndicator && isChoroplethIndicatorId(study.choroplethIndicator)
       ? CHOROPLETH_INDICATORS[study.choroplethIndicator]
+      : null;
+  const study2dProjectionLabel =
+    study?.mapViewMode === "2d" && !study.isCosmicMode
+      ? (locale === "en" ? MAP_PROJECTION_SHORT_LABELS_EN : MAP_PROJECTION_SHORT_LABELS)[
+          isMapProjectionId(study.mapProjection) ? study.mapProjection : DEFAULT_MAP_PROJECTION
+        ]
       : null;
 
   const handleOpenComparator = () => {
@@ -124,6 +136,15 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                   className="inline-flex items-center gap-1 rounded-control border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-caption text-accent"
                 >
                   {t("fork.mapPrefix", "Mapa:")} {t(`choropleth.ind.${choroplethMeta.id}.short`, choroplethMeta.shortLabel)}
+                </span>
+              )}
+
+              {study2dProjectionLabel && (
+                <span
+                  data-testid="study-map2d-projection"
+                  className="inline-flex items-center gap-1 rounded-control border border-line-strong bg-surface-raised px-1.5 py-0.5 font-mono text-caption text-fg-secondary"
+                >
+                  2D · {study2dProjectionLabel}
                 </span>
               )}
 

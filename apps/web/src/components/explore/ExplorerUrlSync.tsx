@@ -50,7 +50,13 @@ export function ExplorerUrlSync({ view, immutable }: { view: ViewCamera; immutab
     window.addEventListener("popstate", onPopState);
     view.onChange = sync;
     const subscriptions = [
-      useGlobeStore.subscribe((state, previous) => { if (state.selectedIso !== previous.selectedIso) sync(); }),
+      useGlobeStore.subscribe((state, previous) => {
+        if (
+          state.selectedIso !== previous.selectedIso ||
+          state.viewMode !== previous.viewMode ||
+          state.projectionId !== previous.projectionId
+        ) sync();
+      }),
       useTimelineStore.subscribe(sync),
       useCosmicStore.subscribe(sync),
       useObservatoryStore.subscribe((state, previous) => {

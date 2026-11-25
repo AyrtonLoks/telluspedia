@@ -134,6 +134,8 @@ model Study {
   choroplethIndicator     String?  @db.VarChar(64)
   gibsProduct             String?  @db.VarChar(16)
   gibsMonth               String?  @db.VarChar(7)
+  mapViewMode             String?  @db.VarChar(8)
+  mapProjection           String?  @db.VarChar(24)
   createdAt               DateTime @default(now())
 
   parent                  Study?   @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)
