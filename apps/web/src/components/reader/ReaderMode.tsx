@@ -4,6 +4,13 @@ import React from "react";
 import { ArrowLeft } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
 import { getCountryData } from "@/lib/country-data";
+import { hasEditorialProfile, RN13_CORE_DIMENSIONS } from "@/lib/editorial-registry";
+import {
+  buildLocalizedDossierSections,
+  getEditorialProfileSync,
+  loadEditorialProfile,
+  type EditorialCountryRecord,
+} from "@/lib/editorial-loader";
 import { ReaderTableOfContents } from "./ReaderTableOfContents";
 import { ReaderContent } from "./ReaderContent";
 import { useReaderStore } from "@/stores/readerStore";
@@ -22,6 +29,11 @@ export const ReaderMode: React.FC = () => {
   const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
 
   const [flagError, setFlagError] = React.useState(false);
+  const [editorialState, setEditorialState] = React.useState<{
+    iso: string;
+    record: EditorialCountryRecord | null;
+  } | null>(null);
+  const [isLoadingEditorial, setIsLoadingEditorial] = React.useState(false);
   const prevIsoRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
@@ -29,9 +41,48 @@ export const ReaderMode: React.FC = () => {
   }, [selectedIso]);
 
   React.useEffect(() => {
+    if (!isReaderOpen || !selectedIso || !hasEditorialProfile(selectedIso)) {
+      setIsLoadingEditorial(false);
+      return;
+    }
+
+    const syncRecord = getEditorialProfileSync(selectedIso);
+    if (syncRecord) {
+      setEditorialState({ iso: selectedIso, record: syncRecord });
+      setIsLoadingEditorial(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoadingEditorial(true);
+    loadEditorialProfile(selectedIso)
+      .then((record) => {
+        if (!cancelled) {
+          setEditorialState({ iso: selectedIso, record });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setEditorialState({ iso: selectedIso, record: null });
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoadingEditorial(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isReaderOpen, selectedIso]);
+
+  React.useEffect(() => {
     if (selectedIso && prevIsoRef.current !== selectedIso) {
       const c = getCountryData(selectedIso);
-      const hasGeography = c?.dossierSections?.some((s) => s.dimension === "GEOGRAPHY");
+      const hasGeography =
+        Boolean(c?.dossierSections?.some((s) => s.dimension === "GEOGRAPHY")) ||
+        hasEditorialProfile(selectedIso);
       if (hasGeography) {
         if (prevIsoRef.current) resetActiveDimension();
       } else if (c?.dossierSections && c.dossierSections.length > 0) {
@@ -47,11 +98,34 @@ export const ReaderMode: React.FC = () => {
     }
   }, [selectedIso, resetActiveDimension, setActiveDimension]);
 
-  // Fechado, o Dialog não renderiza nada; manter montado deixa a saída animar (D17).
-  if (!selectedIso) return null;
+  const baseCountry = selectedIso ? getCountryData(selectedIso) : null;
+  const activeEditorial = React.useMemo(() => {
+    if (!selectedIso) return null;
+    if (editorialState?.iso === selectedIso) return editorialState.record;
+    return getEditorialProfileSync(selectedIso);
+  }, [selectedIso, editorialState]);
 
-  const country = getCountryData(selectedIso);
-  if (!country) return null;
+  const country = React.useMemo(() => {
+    if (!baseCountry) return null;
+    const localizedSections = buildLocalizedDossierSections(baseCountry, activeEditorial, locale);
+    return localizedSections === baseCountry.dossierSections
+      ? baseCountry
+      : { ...baseCountry, dossierSections: localizedSections };
+  }, [baseCountry, activeEditorial, locale]);
+
+  const availableDimensions = React.useMemo(() => {
+    const dims = new Set<string>();
+    if (country) {
+      for (const sec of country.dossierSections) dims.add(sec.dimension);
+    }
+    if (selectedIso && hasEditorialProfile(selectedIso)) {
+      for (const dim of RN13_CORE_DIMENSIONS) dims.add(dim);
+    }
+    return dims;
+  }, [country, selectedIso]);
+
+  // Fechado, o Dialog não renderiza nada; manter montado deixa a saída animar (D17).
+  if (!selectedIso || !country) return null;
   const displayName = formatCountryName(country.iso2, country.nameCommon, locale);
 
   return (
@@ -87,8 +161,8 @@ export const ReaderMode: React.FC = () => {
 
         {/* Content Body: Sidebar TOC + Main Academic Reader */}
         <div className="flex min-h-0 flex-1 gap-6 overflow-hidden">
-          <ReaderTableOfContents />
-          <ReaderContent country={country} />
+          <ReaderTableOfContents availableDimensions={availableDimensions} />
+          <ReaderContent country={country} isLoadingEditorial={isLoadingEditorial} />
         </div>
       </DialogContent>
     </Dialog>

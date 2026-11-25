@@ -247,7 +247,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | DONE | ayrton | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
 | D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | DONE | ayrton | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
-| D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | IN_PROGRESS | antigravity | — | G-PAIS, G-CONTEUDO |
+| D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | REVIEW | antigravity | — | G-PAIS, G-CONTEUDO |
 | D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | TODO | — | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | TODO | — | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
 | D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | TODO | — | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS |
@@ -2746,7 +2746,7 @@ O dataset `public/data/worldbank-timeseries.json` já armazena séries reais anu
 
 ### D35 · Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d35-editorial-profiles · **Worktree:** ../telluspedia-wt/antigravity-d35
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d35-editorial-profiles · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-PAIS, G-CONTEUDO
 
 **Contexto / problema**
@@ -2758,15 +2758,16 @@ Hoje apenas **6 países** (`BRA`, `DEU`, `USA`, `JPN`, `ZAF`, `EGY`) possuem dos
 3. Cobrir as dimensões `RN13` (Geografia/Biomas, Estado/Política, Economia, História/Marcos, Personalidades, Cultura/UNESCO e Saúde Pública), mantendo rigor contra dados inventados (`T03`) e o *HTML5 Phrasing Content Invariant*.
 
 **Critérios de aceite**
-- [ ] Ao menos 26 países totais (6 pilotos + ≥ 20 novos) com perfil editorial completo em `pt-BR` e `en` no Reader Mode, com citações verificadas.
-- [ ] Carregamento 100% sob demanda (`bundle-budget.test.ts` `< 160 KiB`) e respeito ao teto de 600 linhas (`T36`).
-- [ ] Testes de integridade verificando presença de fontes primárias, datas de referência e ausência de `<div>` em `<p>`.
+- [x] Ao menos 26 países totais (6 pilotos + ≥ 20 novos) com perfil editorial completo em `pt-BR` e `en` no Reader Mode, com citações verificadas.
+- [x] Carregamento 100% sob demanda (`bundle-budget.test.ts` `< 160 KiB`) e respeito ao teto de 600 linhas (`T36`).
+- [x] Testes de integridade verificando presença de fontes primárias, datas de referência e ausência de `<div>` em `<p>`.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + `bundle-budget.test.ts`.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada no Ciclo 3 por solicitação do Ayrton.
 - 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`2090ceb`) com grupos livres (`G-PAIS, G-CONTEUDO`).
+- 2026-11-25 · antigravity · REVIEW · Entregue arquitetura sob demanda (`editorial-registry.ts` + `editorial-loader.ts` via `import()` dinâmico com cache em memória) e **5 pacotes editoriais bilíngues (`pt-BR`/`en`)** cobrindo **29 países × 7 dimensões `RN13`** (`GEOGRAPHY`, `GOVERNMENT_POLITICS`, `ECONOMY_SOCIAL`, `HISTORY`, `BIOGRAPHIES`, `CULTURE_HUMANITIES`, `BIOLOGY_HEALTH` = 203 verbetes auditados com `sourceUrl` HTTPS clicável e `referenceDate: "2026-11-25"`): 6 pilotos enriquecidos (`pilots.json`: `BRA`, `DEU`, `USA`, `JPN`, `ZAF`, `EGY`) + 23 novos países em G20 Ásia/Oriente Médio/Oceania (`g20-asia-oceania.json`: `CHN`, `IND`, `KOR`, `AUS`, `IDN`, `TUR`, `SAU`), G20 Europa/América do Norte (`g20-europe-northamerica.json`: `GBR`, `FRA`, `ITA`, `CAN`, `RUS`, `MEX`), Lusofonia/CPLP (`lusophony.json`: `PRT`, `AGO`, `MOZ`, `GNB`, `TLS` — `CPV` não integra o catálogo Natural Earth `1:110m`, substituído com transparência por `GNB` e `TLS` clicáveis no globo/2D) e América Latina (`latin-america.json`: `ARG`, `COL`, `CHL`, `PER`, `URY`). Integrado ao Reader (`ReaderMode.tsx`, `ReaderTableOfContents.tsx` com marcador sutil D14 de dimensões curadas, `ReaderContent.tsx` com `sourceUrl`, `referenceDate`, localização de notas e extração de `reader-country-links.ts` mantendo 502 linhas ≤ 520, `InspectorHUD.tsx` abrindo em `GEOGRAPHY` para países curados, `citation-types.ts` e `en-panels-study.ts`). Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` mantido em **161 kB**, 0 bytes adicionados), `bundle-budget.test.ts` (6/6), suíte de integridade `editorial-profiles.test.tsx` + regressões D14/tw-merge/picking (`150/150`) e Playwright Chromium E2E (`editorial-profiles.spec.ts` 2/2 em `desktop-1366` e `desktop-1920`, PT/EN, citação ABNT, 0 erros de console e 0 `<div>` em `<p>`).
 
 ---
 

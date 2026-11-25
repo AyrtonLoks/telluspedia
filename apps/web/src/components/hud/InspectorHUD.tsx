@@ -18,6 +18,7 @@ import { useTimelineStore } from "@/stores/timelineStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { getCountryData, findMilestoneById } from "@/lib/country-data";
+import { hasEditorialProfile } from "@/lib/editorial-registry";
 import { resolveEffectiveHistoricalYear } from "@/lib/historical-entities";
 import { getSourceUrl } from "@/lib/citations";
 import {
@@ -131,7 +132,10 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
   const isCompared = comparatorIsos.includes(currentCountry.isoCode);
 
   const handleDeepReading = () => {
-    if (currentCountry.dossierSections && currentCountry.dossierSections.length > 0) {
+    if (
+      (currentCountry.dossierSections && currentCountry.dossierSections.length > 0) ||
+      hasEditorialProfile(currentCountry.isoCode)
+    ) {
       resetActiveDimension();
     } else if (!currentCountry.isHistoricalEntity) {
       setActiveDimension("ANALYTICAL_PROFILE");

@@ -1,0 +1,452 @@
+{
+  "ARG": {
+    "isoCode": "ARG",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Dos Andes e Pampa à Patagônia Subantártica",
+        "titleEn": "From the Andes and Pampas to Sub-Antarctic Patagonia",
+        "contentPt": "Segunda maior nação da América do Sul em área territorial, a **Argentina** estende-se das selvas subtropicais de Misiones (Cataratas do Iguaçu) e do Chaco às férteis planícies do **Pampa**, à Cordilheira dos **Andes** (incluindo o Aconcágua, ponto culminante das Américas com 6.961 m) e às estepes e glaciares da **Patagônia** até a Terra do Fogo [1][3].",
+        "contentEn": "South America's second-largest nation by land area, **Argentina** stretches from the subtropical forests of Misiones (Iguazú Falls) and the Gran Chaco across the fertile **Pampas**, the **Andes** (including Aconcagua, highest peak in the Americas at 6,961 m), and **Patagonian** steppes and glaciers down to Tierra del Fuego [1][3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Argentina",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Argentina",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Federal Presidencialista, Mercosul e G20",
+        "titleEn": "Federal Presidential Republic, Mercosur, and G20",
+        "contentPt": "A **Argentina** organiza-se como **República Federal Presidencialista** composta por 23 províncias e a Cidade Autônoma de **Buenos Aires**, sob a Constituição Nacional (1853, reformada em 1994) [1].\n\nO Legislativo é bicameral (Câmara dos Deputados e Senado da Nação). O país é membro fundador do **Mercosul** e integra o G20 [1].",
+        "contentEn": "**Argentina** is a **Federal Presidential Republic** comprising 23 provinces and the Autonomous City of **Buenos Aires**, governed under the National Constitution (1853, reformed in 1994) [1].\n\nIts bicameral National Congress consists of the Chamber of Deputies and the Senate. Argentina is a founding member of **Mercosur** and a G20 economy [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Agroindústria Pampeana, Energia, Serviços e Ciclos Macroeconômicos",
+        "titleEn": "Pampean Agribusiness, Energy, Services, and Macroeconomic Cycles",
+        "contentPt": "Membro do G20, a **Argentina** destaca-se mundialmente nas exportações agroindustriais (soja, milho, trigo, carne bovina e vinhos andinos), na indústria automotiva, em serviços de software e nas reservas energéticas (formação Vaca Muerta) e de lítio no noroeste andino [1][2].\n\nSua trajetória recente reflete a busca recorrente por estabilidade inflacionária e equilíbrio externo, combinada a uma base educacional e científica consolidada [2].",
+        "contentEn": "A G20 member, **Argentina** is a major global exporter of agribusiness products (soybeans, maize, wheat, beef, and Andean wines), automotive goods, software services, unconventional hydrocarbons (Vaca Muerta), and Andean lithium [1][2].\n\nRecent economic history centers on addressing persistent inflation and external-debt cycles alongside an established scientific and university base [2].",
+        "primarySource": "Banco Mundial (WDI) / FMI",
+        "primarySourceEn": "World Bank (WDI) / IMF",
+        "sourceUrl": "https://data.worldbank.org/country/ARG",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Da Revolução de Maio (1810) à Democracia Constitucional",
+        "titleEn": "From the May Revolution (1810) to Constitutional Democracy",
+        "contentPt": "A **Revolução de Maio** de 1810 e o Congresso de Tucumán (1816) fundaram a independência argentina, liderada nas campanhas sul-americanas por José de San Martín [1]. No final do século XIX e início do XX, forte imigração europeia e a economia agroexportadora urbanizaram o Rio da Prata [1].\n\nO século XX combinou reformas trabalhistas, alternância de golpes militares — culminando na ditadura de 1976–1983 — e a consolidação ininterrupta da democracia a partir de 1983, com julgamento histórico das juntas militares [1].",
+        "contentEn": "The **May Revolution** of 1810 and the 1816 Congress of Tucumán established Argentine independence, supported across the Andes by José de San Martín [1]. Large-scale European immigration and agro-export growth rapidly urbanized the Río de la Plata in the late nineteenth and early twentieth centuries [1].\n\nThe twentieth century saw social and labor movements, recurring military coups culminating in the 1976–1983 dictatorship, and continuous democratic governance since 1983, marked by landmark human-rights trials [1].",
+        "primarySource": "UNESCO / ONU — Memória e Direitos Humanos",
+        "primarySourceEn": "UNESCO / United Nations — Memory and Human Rights",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Prêmios Nobel Científicos, Literatura e Música",
+        "titleEn": "Science Nobel Laureates, Literature, and Music",
+        "contentPt": "A **Argentina** possui a maior tradição de Prêmios Nobel em ciências da América Latina [1]:\n- **Bernardo Houssay (1887–1971)**, **Luis Federico Leloir (1906–1987)** e **César Milstein (1927–2002)**: laureados com o Nobel em Fisiologia/Medicina e Química (anticorpos monoclonais).\n- **Jorge Luis Borges (1899–1986)** e **Julio Cortázar (1914–1984)**: renovadores da narrativa literária mundial.\n- **Astor Piazzolla (1921–1992)**: compositor que revolucionou o tango contemporâneo.",
+        "contentEn": "**Argentina** holds Latin America's strongest tradition of science Nobel Prizes [1]:\n- **Bernardo Houssay (1887–1971)**, **Luis Federico Leloir (1906–1987)**, and **César Milstein (1927–2002)**: Nobel laureates in Medicine and Chemistry (including monoclonal antibodies).\n- **Jorge Luis Borges (1899–1986)** and **Julio Cortázar (1914–1984)**: transformative figures of world literature.\n- **Astor Piazzolla (1921–1992)**: composer who revolutionized contemporary tango.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Tango, Patrimônio UNESCO e Tradição Universitária Pública",
+        "titleEn": "Tango, UNESCO Heritage, and Public University Tradition",
+        "contentPt": "Reconhecida pela efervescência editorial, teatral e cinematográfica de Buenos Aires, a **Argentina** compartilha com o Uruguai o **Tango** (Patrimônio Imaterial da UNESCO) e possui tradição histórica de ensino superior público gratuito (Reforma Universitária de Córdoba, 1918) [1].\n\nEntre seus sítios UNESCO estão o Parque Nacional Los Glaciares, a Península Valdés, Quebrada de Humahuaca, Ischigualasto–Talampaya e o Parque Nacional do Iguaçu [1].",
+        "contentEn": "Renowned for Buenos Aires's publishing, theater, and cinema culture, **Argentina** shares **Tango** (UNESCO Intangible Heritage) with Uruguay and maintains a historic tradition of tuition-free public universities rooted in the 1918 Córdoba University Reform [1].\n\nUNESCO World Heritage sites include Los Glaciares National Park, Península Valdés, Quebrada de Humahuaca, Ischigualasto–Talampaya, and Iguazú National Park [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Argentina",
+        "primarySourceEn": "UNESCO — World Heritage in Argentina",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/ar",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Paleontologia Patagônica, Fauna Marinha e Sistema de Saúde",
+        "titleEn": "Patagonian Paleontology, Marine Wildlife, and Healthcare System",
+        "contentPt": "A Patagônia argentina é um dos maiores repositórios fósseis de dinossauros mesozoicos da Terra, enquanto a Península Valdés constitui berçário vital da **baleia-franca-austral**, de elefantes-marinhos e pinguins-de-magalhães [1].\n\nO sistema de saúde combina rede pública universal, obras sociais sindicais e setor privado, sustentando alta expectativa de vida no contexto sul-americano [1][2].",
+        "contentEn": "Argentine Patagonia ranks among the world's richest repositories of Mesozoic dinosaur fossils, while Península Valdés is a vital nursery for **southern right whales**, elephant seals, and Magellanic penguins [1].\n\nArgentina's healthcare system combines universal public hospitals, union-run social insurance (*obras sociales*), and private providers, supporting relatively high regional life expectancy [1][2].",
+        "primarySource": "OMS — Global Health Observatory / UNESCO",
+        "primarySourceEn": "WHO — Global Health Observatory / UNESCO",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "COL": {
+    "isoCode": "COL",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Dois Oceanos, Três Cordilheiras Andinas e Bacias do Orinoco e Amazonas",
+        "titleEn": "Two Oceans, Three Andean Cordilleras, and the Orinoco and Amazon Basins",
+        "contentPt": "Único país da América do Sul banhado simultaneamente pelo **Mar do Caribe (Atlântico)** e pelo **Oceano Pacífico**, a **Colômbia** divide-se geograficamente em três ramificações andinas (Ocidental, Central e Oriental), a planície caribenha, o Pacífico úmido (Chocó), os *Llanos* do Orinoco e a Amazônia colombiana [1][3].",
+        "contentEn": "The only South American country bordering both the **Caribbean Sea (Atlantic)** and the **Pacific Ocean**, **Colombia** spans three Andean ranges (Western, Central, and Eastern Cordilleras), Caribbean lowlands, the hyper-humid Pacific Chocó, the Orinoco *Llanos*, and the Colombian Amazon [1][3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Colômbia",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Colombia",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Unitária Descentralizada e Constituição de 1991",
+        "titleEn": "Decentralized Unitary Republic and the 1991 Constitution",
+        "contentPt": "Regida pela Constituição de 1991, a **Colômbia** é uma república presidencialista unitária e descentralizada em 32 departamentos e o Distrito Capital de **Bogotá**, com Congresso bicameral e Corte Constitucional ativa na tutela de direitos fundamentais e ambientais [1].\n\nO país integra a OCDE, a Comunidade Andina e a Aliança do Pacífico [1].",
+        "contentEn": "Governed under the 1991 Constitution, **Colombia** is a decentralized unitary presidential republic organized into 32 departments and the Capital District of **Bogotá**, with a bicameral Congress and an active Constitutional Court safeguarding fundamental and environmental rights [1].\n\nColombia is a member of the OECD, the Andean Community, and the Pacific Alliance [1].",
+        "primarySource": "OCDE / ONU — Perfis da Colômbia",
+        "primarySourceEn": "OECD / United Nations — Colombia Profiles",
+        "sourceUrl": "https://www.oecd.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Café de Altitude, Serviços Urbanos, Energia e Indústria",
+        "titleEn": "Highland Coffee, Urban Services, Energy, and Manufacturing",
+        "contentPt": "Quarta maior economia da América Latina, a **Colômbia** combina polos urbanos diversificados (Bogotá, Medellín, Cali, Barranquilla) em serviços, manufatura e tecnologia com exportações tradicionais de café arábica, flores, petróleo, carvão e esmeraldas [1][2].\n\nO país possui matriz elétrica predominantemente hidrelétrica e busca reduzir a informalidade laboral e a desigualdade territorial [2].",
+        "contentEn": "Latin America's fourth-largest economy, **Colombia** combines diversified urban centers (Bogotá, Medellín, Cali, Barranquilla) in services, manufacturing, and tech with exports of Arabica coffee, cut flowers, oil, coal, and emeralds [1][2].\n\nIts electricity grid is heavily hydropower-based, while public policy prioritizes reducing labor informality and territorial inequality [2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/COL",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Culturas Muísca e Tairona, Grã-Colômbia e Acordo de Paz de 2016",
+        "titleEn": "Muisca and Tairona Civilizations, Gran Colombia, and the 2016 Peace Accord",
+        "contentPt": "Habitada por civilizações pré-colombianas como os **Muísca**, **Tairona** e **Quimbaya** (notáveis pela ourivesaria), a região integrou o Vice-Reino de Nova Granada antes das campanhas de independência de 1810–1819 lideradas por Simón Bolívar e Francisco de Paula Santander [1].\n\nApós décadas de conflito armado interno na segunda metade do século XX, o Acordo de Paz de 2016 com as FARC-EP inaugurou mecanismos de justiça transicional e desenvolvimento rural [1].",
+        "contentEn": "Inhabited by pre-Columbian societies including the **Muisca**, **Tairona**, and **Quimbaya** (renowned for goldwork), the region formed the Viceroyalty of New Granada before the 1810–1819 independence campaigns led by Simón Bolívar and Francisco de Paula Santander [1].\n\nAfter decades of internal armed conflict in the late twentieth century, the 2016 Peace Agreement with the FARC-EP established transitional justice and rural reform institutions [1].",
+        "primarySource": "UNESCO / ONU — Missão de Verificação",
+        "primarySourceEn": "UNESCO / United Nations Verification Mission",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Literatura, Artes Visuais e Ciência Colombianas",
+        "titleEn": "Colombian Literature, Visual Arts, and Science",
+        "contentPt": "A **Colômbia** destaca-se na literatura, nas artes plásticas e na pesquisa científica [1]:\n- **Gabriel García Márquez (1927–2014)**: Prêmio Nobel de Literatura (1982), expoente do realismo mágico latino-americano.\n- **Fernando Botero (1932–2023)**: pintor e escultor de estética volumétrica reconhecida mundialmente.\n- **Rodolfo Llinás (n. 1934)**: neurocientista pioneiro no estudo da fisiologia cerebral.",
+        "contentEn": "**Colombia** is widely recognized in literature, visual arts, and science [1]:\n- **Gabriel García Márquez (1927–2014)**: 1982 Nobel laureate in Literature and defining voice of Latin American magical realism.\n- **Fernando Botero (1932–2023)**: painter and sculptor famed for monumental figurative forms.\n- **Rodolfo Llinás (b. 1934)**: pioneering neuroscientist in brain physiology.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Cartagena, Paisagem Cafeeira, Cumbia e Vallenato",
+        "titleEn": "Cartagena, Coffee Cultural Landscape, Cumbia, and Vallenato",
+        "contentPt": "A cultura colombiana reúne expressões andinas, caribenhas, afro-pacíficas e indígenas (com mais de sessenta línguas nativas vivas) [1].\n\nSeus sítios UNESCO incluem o Centro Histórico de **Cartagena das Índias**, a **Paisagem Cultural Cafeeira**, o Parque Arqueológico de San Agustín e o Parque Nacional de **Chiribiquete**, além do Carnaval de Barranquilla e da música marimba do Pacífico [1].",
+        "contentEn": "Colombian culture brings together Andean, Caribbean, Afro-Pacific, and Indigenous traditions (including more than sixty living Indigenous languages) [1].\n\nUNESCO World Heritage sites include **Cartagena de Indias**, the **Coffee Cultural Landscape**, San Agustín Archaeological Park, and **Chiribiquete National Park**, alongside Barranquilla Carnival and Pacific marimba music [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Colômbia",
+        "primarySourceEn": "UNESCO — World Heritage in Colombia",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/co",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Liderança Global em Aves, Páramos e Cobertura de Saúde",
+        "titleEn": "Global Avian Diversity, Páramos, and Health Coverage",
+        "contentPt": "A **Colômbia** é o país com maior número de espécies de aves registradas no planeta e abriga grande parte dos **páramos** andinos — ecossistemas de alta montanha vitais para o abastecimento hídrico —, além da Amazônia e da ilha de Malpelo [1].\n\nNa saúde pública, o país atingiu ampla cobertura populacional e avanço sustentado na expectativa de vida nas últimas três décadas [1][2].",
+        "contentEn": "**Colombia** records the world's highest number of bird species and holds a large share of high-altitude Andean **páramo** ecosystems crucial for water supply, alongside Amazonian forests and Malpelo Island [1].\n\nIn public health, Colombia expanded broad population insurance coverage and achieved steady gains in life expectancy over the past three decades [1][2].",
+        "primarySource": "OMS — Global Health Observatory / GBIF",
+        "primarySourceEn": "WHO — Global Health Observatory / GBIF",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "CHL": {
+    "isoCode": "CHL",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Do Deserto do Atacama aos Fiordes Patagônicos e Ilha de Páscoa",
+        "titleEn": "From the Atacama Desert to Patagonian Fjords and Rapa Nui",
+        "contentPt": "Estendendo-se por mais de 4.200 km no sentido norte-sul entre a Cordilheira dos **Andes** e o **Oceano Pacífico**, o **Chile** abriga o **Deserto do Atacama** (o deserto não polar mais árido da Terra), vales mediterrâneos centrais, florestas temperadas valdivianas, fiordes subantárticos e a ilha polinésia de **Rapa Nui** (Ilha de Páscoa) [1][3].",
+        "contentEn": "Stretching over 4,200 km north to south between the **Andes** and the **Pacific Ocean**, **Chile** spans the **Atacama Desert** (Earth's driest non-polar desert), central Mediterranean valleys, Valdivian temperate rainforests, sub-Antarctic fjords, and Polynesian **Rapa Nui** (Easter Island) [1][3].",
+        "primarySource": "ONU / USGS — Geografia do Chile",
+        "primarySourceEn": "United Nations / USGS — Geography of Chile",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 5,
+        "titlePt": "República Presidencialista, OCDE e Aliança do Pacífico",
+        "titleEn": "Presidential Republic, OECD, and Pacific Alliance",
+        "contentPt": "O **Chile** é uma república democrática unitária presidencialista dividida em 16 regiões, com Executivo sediado em **Santiago** e Congresso Nacional bicameral em **Valparaíso** [1].\n\nPrimeiro país sul-americano a ingressar na **OCDE** (2010), destaca-se por instituições fiscais e judiciais consolidadas e ampla rede de acordos comerciais transpacíficos [1].",
+        "contentEn": "**Chile** is a unitary presidential democratic republic divided into 16 regions, with the Executive seated in **Santiago** and the bicameral National Congress in **Valparaíso** [1].\n\nAs the first South American member of the **OECD** (2010), Chile maintains established fiscal and judicial institutions and an extensive network of trans-Pacific trade agreements [1].",
+        "primarySource": "OCDE / ONU — Perfis do Chile",
+        "primarySourceEn": "OECD / United Nations — Chile Profiles",
+        "sourceUrl": "https://www.oecd.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Cobre, Lítio, Energias Renováveis e Astronomia Mundial",
+        "titleEn": "Copper, Lithium, Renewable Energy, and World Astronomy",
+        "contentPt": "Maior produtor global de **cobre** e um dos líderes mundiais em **lítio** — minerais críticos para a eletrificação global —, o **Chile** exporta também frutas, vinhos, salmão e celulose, ao lado de um setor de serviços financeiros moderno [1][2].\n\nA altíssima irradiação solar do Atacama impulsiona a expansão acelerada de energia solar, eólica e hidrogênio verde, além de abrigar os maiores observatórios astronômicos ópticos e de rádio do planeta (ALMA, VLT, ELT) [1][2].",
+        "contentEn": "The world's top **copper** producer and a leading supplier of **lithium** — minerals critical to global electrification — **Chile** also exports fruit, wine, salmon, and pulp alongside modern financial services [1][2].\n\nExceptional solar irradiance in the Atacama drives rapid solar, wind, and green hydrogen growth while hosting Earth's premier astronomical observatories (ALMA, VLT, ELT) [1][2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/CHL",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Povos Mapuche e Andinos, República e Retorno à Democracia (1990)",
+        "titleEn": "Mapuche and Andean Peoples, Republic, and Democratic Return (1990)",
+        "contentPt": "Território ancestral dos povos **Mapuche**, Aimará, Atacamenho e Rapa Nui, o Chile conquistou sua independência da Espanha entre 1810 e 1818 sob Bernardo O'Higgins e José de San Martín [1].\n\nApós longa tradição republicana no século XX, o país sofreu o golpe militar de 1973 e a ditadura de Augusto Pinochet até o plebiscito de 1988 e a transição democrática de 1990 [1].",
+        "contentEn": "Ancestral homeland of the **Mapuche**, Aymara, Atacameño, and Rapa Nui peoples, Chile won independence from Spain between 1810 and 1818 under Bernardo O'Higgins and José de San Martín [1].\n\nFollowing a long constitutional tradition, the 1973 military coup inaugurated Augusto Pinochet's dictatorship until the 1988 plebiscite restored democratic rule in 1990 [1].",
+        "primarySource": "UNESCO / ONU",
+        "primarySourceEn": "UNESCO / United Nations",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Nobéis de Literatura, Ciência e Artes Chilenos",
+        "titleEn": "Chilean Nobel Laureates, Science, and Arts",
+        "contentPt": "A produção literária e científica do **Chile** tem forte projeção internacional [1]:\n- **Gabriela Mistral (1889–1957)**: primeira latino-americana laureada com o Prêmio Nobel de Literatura (1945).\n- **Pablo Neruda (1904–1973)**: poeta e diplomata laureado com o Nobel de Literatura (1971).\n- **Violeta Parra (1917–1967)**: compositora e pesquisadora do folclore sul-americano.\n- **María Teresa Ruiz (n. 1946)**: astrônoma pioneira na descoberta de anãs marrons.",
+        "contentEn": "**Chile's** literary and scientific voices resonate worldwide [1]:\n- **Gabriela Mistral (1889–1957)**: first Latin American awarded the Nobel Prize in Literature (1945).\n- **Pablo Neruda (1904–1973)**: poet and diplomat awarded the 1971 Nobel Prize in Literature.\n- **Violeta Parra (1917–1967)**: composer and ethnomusicologist of South American folk traditions.\n- **María Teresa Ruiz (b. 1946)**: astronomer who pioneered brown-dwarf discovery.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Rapa Nui, Valparaíso, Chiloé e Cultura Chinchorro",
+        "titleEn": "Rapa Nui, Valparaíso, Chiloé, and Chinchorro Heritage",
+        "contentPt": "Os sítios do Patrimônio Mundial da UNESCO no **Chile** ilustram a singularidade geográfica e cultural do país: o Parque Nacional de **Rapa Nui** (estátuas *moai*), o bairro histórico portuário de **Valparaíso**, as Igrejas de Madeira de **Chiloé**, o sistema viário andino *Qhapaq Ñan* e os assentamentos da cultura **Chinchorro** (as múmias artificiais mais antigas conhecidas) [1].",
+        "contentEn": "**Chile's** UNESCO World Heritage sites reflect extraordinary geographic and cultural breadth: **Rapa Nui** National Park (*moai* monoliths), the historic port quarter of **Valparaíso**, the Wooden Churches of **Chiloé**, the Andean *Qhapaq Ñan* road system, and **Chinchorro** mummification sites (the oldest known artificial mummies) [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no Chile",
+        "primarySourceEn": "UNESCO — World Heritage in Chile",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/cl",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Corrente de Humboldt, Endemismo e Alta Expectativa de Vida",
+        "titleEn": "Humboldt Current, Endemism, and High Life Expectancy",
+        "contentPt": "A fria **Corrente de Humboldt** fertiliza um dos ecossistemas marinhos mais produtivos do mundo ao longo da costa chilena, enquanto o isolamento entre Andes e Pacífico favorece alto endemismo vegetal nas florestas valdivianas e nas ilhas Juan Fernández [1].\n\nO Chile mantém uma das maiores expectativas de vida das Américas, com sólido programa de imunização e atenção primária [1][2].",
+        "contentEn": "The cold **Humboldt Current** sustains one of Earth's most productive marine ecosystems along Chile's coast, while isolation between the Andes and Pacific fosters high endemism in Valdivian forests and the Juan Fernández Islands [1].\n\nChile records one of the highest life expectancies in the Americas, backed by strong immunization and primary care systems [1][2].",
+        "primarySource": "OMS — Global Health Observatory / OCDE",
+        "primarySourceEn": "WHO — Global Health Observatory / OECD",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "PER": {
+    "isoCode": "PER",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Costa Árida do Pacífico, Andes Centrais e Amazônia Peruana",
+        "titleEn": "Arid Pacific Coast, Central Andes, and the Peruvian Amazon",
+        "contentPt": "O **Peru** organiza-se classicamente em três grandes regiões naturais: a estreita **Costa** desértica banhada pela Corrente de Humboldt, a **Serra** andina (com picos acima de 6.700 m, o Lago Titicaca e as nascentes do rio Amazonas) e a extensa **Selva** amazônica a leste, que cobre mais da metade do território [1][3].",
+        "contentEn": "**Peru** spans three classic geographic zones: a narrow desert **Coast** shaped by the Humboldt Current, the high **Andean Sierra** (featuring peaks over 6,700 m, Lake Titicaca, and Amazon River headwaters), and the vast eastern **Amazonian Selva** covering over half of the country [1][3].",
+        "primarySource": "ONU / Natural Earth — Geografia do Peru",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Peru",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 5,
+        "titlePt": "República Unitária Descentralizada e Integração Andina",
+        "titleEn": "Decentralized Unitary Republic and Andean Integration",
+        "contentPt": "O **Peru** é uma república presidencialista unitária e descentralizada em 25 regiões e a Província de **Lima**, regida pela Constituição de 1993 [1].\n\nSede da Secretaria-Geral da Comunidade Andina (CAN) e membro da Aliança do Pacífico e da APEC, o país atua como ponte comercial entre a América do Sul e a Ásia-Pacífico [1].",
+        "contentEn": "**Peru** is a decentralized unitary presidential republic organized into 25 regions and **Lima** Province under the 1993 Constitution [1].\n\nHosting the Andean Community (CAN) Secretariat and participating in the Pacific Alliance and APEC, Peru serves as a commercial bridge between South America and the Asia-Pacific [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Mineração Andina, Agroexportação, Pesca e Turismo Cultural",
+        "titleEn": "Andean Mining, Agro-Exports, Fisheries, and Cultural Tourism",
+        "contentPt": "A economia peruana figura entre as maiores produtoras mundiais de **cobre**, **zinco**, **prata** e **ouro**, complementada pela pesca da anchoveta (Corrente de Humboldt), agroexportação de alto valor (mirtilos, uvas, abacates, café, cacau) e turismo patrimonial [1][2].\n\nDisciplina monetária e amplas reservas convivem com o desafio estrutural de reduzir a informalidade econômica e ampliar serviços públicos nas áreas andinas e amazônicas [2].",
+        "contentEn": "Peru ranks among the world's top producers of **copper**, **zinc**, **silver**, and **gold**, complemented by Humboldt Current anchoveta fisheries, high-value agro-exports (blueberries, grapes, avocados, coffee, cacao), and heritage tourism [1][2].\n\nSound monetary management coexists with structural efforts to reduce labor informality and expand infrastructure in Andean and Amazonian regions [2].",
+        "primarySource": "Banco Mundial (WDI) / FMI",
+        "primarySourceEn": "World Bank (WDI) / IMF",
+        "sourceUrl": "https://data.worldbank.org/country/PER",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "De Caral e do Império Inca (Tawantinsuyu) à República",
+        "titleEn": "From Caral and the Inca Empire (Tawantinsuyu) to the Republic",
+        "contentPt": "Berço de civilização milenar nas Américas, o **Peru** abriga a Cidade Sagrada de **Caral** (c. 3000 a.C.) e culturas como Chavín, Paracas, Nazca, Moche, Wari e Chimú, culminando no **Império Inca (*Tawantinsuyu*)** sediado em Cusco [1].\n\nSede do Vice-Reino do Peru durante o período colonial espanhol, o país proclamou sua independência em 1821 (consolidada em Ayacucho em 1824) e construiu uma república pluricultural [1].",
+        "contentEn": "One of the world's primary cradles of civilization, **Peru** hosts the Sacred City of **Caral** (c. 3000 BCE) alongside Chavín, Paracas, Nazca, Moche, Wari, and Chimú societies, culminating in the **Inca Empire (*Tawantinsuyu*)** centered in Cusco [1].\n\nSeat of the Spanish Viceroyalty of Peru, the nation declared independence in 1821 (secured at Ayacucho in 1824) and evolved as a pluricultural republic [1].",
+        "primarySource": "UNESCO — Patrimônio Histórico do Peru",
+        "primarySourceEn": "UNESCO — Historical Heritage of Peru",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/pe",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Pensadores, Escritores e Cientistas Peruanos",
+        "titleEn": "Peruvian Thinkers, Writers, and Scientists",
+        "contentPt": "A cultura e o saber peruanos projetam nomes fundamentais nas letras e nas ciências sociais [1]:\n- **Inca Garcilaso de la Vega (1539–1616)**: cronista pioneiro da memória andina e mestiça.\n- **César Vallejo (1892–1938)** e **Mario Vargas Llosa (n. 1936)**: poetas e romancistas (Prêmio Nobel de Literatura de 2010).\n- **José Carlos Mariátegui (1894–1930)**: ensaísta influente no pensamento crítico latino-americano.\n- **María Reiche (1903–1998)**: matemática dedicada ao estudo e preservação das Linhas de Nazca.",
+        "contentEn": "Peruvian letters and scholarship shaped Latin American culture [1]:\n- **Inca Garcilaso de la Vega (1539–1616)**: pioneering chronicler of Andean and mestizo heritage.\n- **César Vallejo (1892–1938)** and **Mario Vargas Llosa (b. 1936)**: major modern poet and 2010 Nobel laureate in Literature.\n- **José Carlos Mariátegui (1894–1930)**: influential Latin American essayist and social thinker.\n- **María Reiche (1903–1998)**: mathematician who researched and safeguarded the Nazca Lines.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Machu Picchu, Línguas Quechua e Aimará e Gastronomia",
+        "titleEn": "Machu Picchu, Quechua and Aymara Languages, and Gastronomy",
+        "contentPt": "O espanhol convive como língua oficial com o **quechua**, o **aimará** e dezenas de línguas amazônicas [1].\n\nEntre os sítios UNESCO destacam-se **Machu Picchu**, **Cusco**, **Caral**, as **Linhas de Nazca**, **Chan Chan**, o centro histórico de **Lima** e o observatório solar de **Chankillo**, enquanto a gastronomia peruana (incluindo o ceviche, Patrimônio Imaterial da UNESCO) reflete a síntese andina, costeira, amazônica e migratória [1].",
+        "contentEn": "Spanish shares official status with **Quechua**, **Aymara**, and dozens of Amazonian languages [1].\n\nUNESCO World Heritage sites include **Machu Picchu**, **Cusco**, **Caral**, the **Nazca Lines**, **Chan Chan**, historic **Lima**, and the **Chankillo** solar observatory, while Peruvian gastronomy (including ceviche, UNESCO Intangible Heritage) reflects Andean, coastal, Amazonian, and immigrant fusion [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no Peru",
+        "primarySourceEn": "UNESCO — World Heritage in Peru",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/pe",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Agrobiodiversidade da Batata, Parque do Manu e Saúde Andina",
+        "titleEn": "Potato Agrobiodiversity, Manu Park, and Public Health",
+        "contentPt": "Centro de domesticação mundial da **batata** (milhares de variedades nativas), da quinoa e do milho andino, o **Peru** protege ecossistemas extraordinários nos parques nacionais de **Manu** e **Huascarán** (UNESCO), com florestas nubladas e fauna ameaçada como o urso-de-óculos [1].\n\nNa saúde pública, o país promove expansão de seguros públicos e monitoramento nutricional infantil em áreas rurais de altitude [1][2].",
+        "contentEn": "The global center of domestication of the **potato** (thousands of native varieties), quinoa, and Andean maize, **Peru** protects extraordinary habitats in **Manu** and **Huascarán** National Parks (UNESCO), sheltering cloud forests and Andean bears [1].\n\nPublic health initiatives focus on expanding public insurance and improving child nutrition across high-altitude and Amazonian communities [1][2].",
+        "primarySource": "FAO / OMS — Global Health Observatory",
+        "primarySourceEn": "FAO / WHO — Global Health Observatory",
+        "sourceUrl": "https://www.fao.org/",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "URY": {
+    "isoCode": "URY",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Campos do Pampa, Estuário do Prata e Costa Atlântica",
+        "titleEn": "Pampas Grasslands, Río de la Plata Estuary, and Atlantic Coast",
+        "contentPt": "Localizado entre o Brasil e a Argentina, o **Uruguai** caracteriza-se por relevo suavemente ondulado de campos naturais (**Pampa** / *cuchillas*), clima temperado úmido e extensa rede fluvial drenada pelos rios **Uruguai**, **Negro** e pelo estuário do **Rio da Prata** [1][3].",
+        "contentEn": "Situated between Brazil and Argentina, **Uruguay** is defined by gently rolling natural grasslands (**Pampas** / *cuchillas*), a humid temperate climate, and dense river systems draining into the **Uruguay** and **Negro** rivers and the **Río de la Plata** estuary [1][3].",
+        "primarySource": "ONU / Natural Earth — Geografia do Uruguai",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Uruguay",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Democracia Estável, Estado de Bem-Estar e Sede do Mercosul",
+        "titleEn": "Stable Democracy, Welfare State, and Mercosur Headquarters",
+        "contentPt": "O **Uruguai** é uma república presidencialista unitária com 19 departamentos, sede do governo em **Montevidéu** e Assembleia Geral bicameral, frequentemente apontada em índices internacionais entre as democracias mais consolidadas das Américas [1].\n\nA capital abriga a Secretaria Permanente do **Mercosul** e a sede da ALADI [1].",
+        "contentEn": "**Uruguay** is a unitary presidential republic of 19 departments governed from **Montevideo** with a bicameral General Assembly, consistently ranked among the most consolidated democracies in the Americas [1].\n\nMontevideo hosts the Permanent Secretariat of **Mercosur** and the headquarters of ALADI [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Matriz Elétrica Renovável, Agropecuária e Serviços Digitais",
+        "titleEn": "Renewable Electricity Grid, Agribusiness, and Digital Services",
+        "contentPt": "Com um dos maiores PIBs per capita e índices de desenvolvimento humano da América Latina, o **Uruguai** combina agropecuária rastreável (carne bovina, laticínios, soja, arroz e celulose), logística portuária e crescente exportação de **software** e serviços digitais [1][2].\n\nO país é referência global em transição energética, gerando quase a totalidade de sua eletricidade a partir de fontes renováveis (eólica, hídrica, biomassa e solar) [2].",
+        "contentEn": "With one of Latin America's highest GDP per capita and human development scores, **Uruguay** combines traceable agribusiness (beef, dairy, soybeans, rice, pulp), port logistics, and fast-growing **software** and digital-service exports [1][2].\n\nUruguay is a global leader in electricity decarbonization, generating nearly all of its power from wind, hydro, biomass, and solar energy [2].",
+        "primarySource": "Banco Mundial (WDI) / PNUD",
+        "primarySourceEn": "World Bank (WDI) / UNDP",
+        "sourceUrl": "https://data.worldbank.org/country/URY",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Da Banda Oriental e José Artigas às Reformas do Século XX",
+        "titleEn": "From the Banda Oriental and José Artigas to Twentieth-Century Reforms",
+        "contentPt": "Disputada durante o período colonial entre os impérios espanhol e português (Colônia do Sacramento), a **Banda Oriental** teve em **José Gervasio Artigas** o líder federalista de sua autonomia, alcançando independência consolidada na Constituição de 1830 [1].\n\nNo início do século XX, as reformas de José Batlle y Ordóñez criaram um dos primeiros Estados de bem-estar social modernos (jornada de 8 horas, educação laica e sufrágio feminino em 1927/1932); após o regime civil-militar (1973–1985), o país retomou estabilidade democrática exemplar [1].",
+        "contentEn": "Contested during colonial times between Spain and Portugal (Colonia del Sacramento), the **Banda Oriental** rallied behind **José Gervasio Artigas** before consolidating independence under the 1830 Constitution [1].\n\nEarly twentieth-century reforms under José Batlle y Ordóñez built one of the earliest modern welfare states (eight-hour workday, secular public education, and early women's suffrage); following military rule (1973–1985), Uruguay restored durable democratic governance [1].",
+        "primarySource": "UNESCO — Patrimônio Histórico do Uruguai",
+        "primarySourceEn": "UNESCO — Historical Heritage of Uruguay",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/uy",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Letras, Pensamento Crítico e Arquitetura Uruguaios",
+        "titleEn": "Uruguayan Literature, Critical Thought, and Architecture",
+        "contentPt": "O **Uruguai** construiu notável influência cultural na América Latina [1]:\n- **José Enrique Rodó (1871–1917)** e **Eduardo Galeano (1940–2015)**: ensaístas que marcaram o debate intelectual latino-americano.\n- **Juan Carlos Onetti (1909–1994)**, **Mario Benedetti** e **Ida Vitale (n. 1923)**: vozes maiores da narrativa e poesia hispânica (Prêmio Cervantes).\n- **Eladio Dieste (1917–2000)**: engenheiro e arquiteto pioneiro das estruturas em cerâmica armada.",
+        "contentEn": "**Uruguay** exercises outsized cultural influence across Latin America [1]:\n- **José Enrique Rodó (1871–1917)** and **Eduardo Galeano (1940–2015)**: essayists who shaped Latin American intellectual debate.\n- **Juan Carlos Onetti (1909–1994)**, **Mario Benedetti**, and **Ida Vitale (b. 1923)**: celebrated figures of Hispanic prose and poetry (Cervantes Prize).\n- **Eladio Dieste (1917–2000)**: structural engineer and architect famed for reinforced brickwork vaults.",
+        "primarySource": "UNESCO / Instituto Cervantes",
+        "primarySourceEn": "UNESCO / Cervantes Institute",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Candombe, Colônia do Sacramento e Inclusão Digital Educacional",
+        "titleEn": "Candombe, Colonia del Sacramento, and Educational Inclusion",
+        "contentPt": "O patrimônio imaterial uruguaio combina o **Candombe** afro-uruguaio e o **Tango** (ambos reconhecidos pela UNESCO), além da tradicional murga carnavalesca [1].\n\nSeus sítios do Patrimônio Mundial incluem o bairro histórico de **Colônia do Sacramento**, a Paisagem Industrial de **Fray Bentos** e a Igreja de Atlántida projetada por Eladio Dieste; na educação, o **Plan Ceibal** foi pioneiro na inclusão digital escolar universal [1].",
+        "contentEn": "Uruguay's intangible heritage encompasses Afro-Uruguayan **Candombe** drumming and **Tango** (both UNESCO-recognized), alongside Montevideo's satirical *murga* carnival [1].\n\nUNESCO World Heritage sites include historic **Colonia del Sacramento**, the **Fray Bentos** Industrial Landscape, and Eladio Dieste's Church of Atlántida; in education, **Plan Ceibal** pioneered universal digital access in public schools [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no Uruguai",
+        "primarySourceEn": "UNESCO — World Heritage in Uruguay",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/uy",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Sistema Nacional Integrado de Saúde e Campos Costeiros",
+        "titleEn": "Integrated National Health System and Coastal Grasslands",
+        "contentPt": "O **Sistema Nacional Integrado de Saúde (SNIS)** assegura cobertura universal e alta expectativa de vida, tendo o Uruguai se destacado internacionalmente nas políticas de controle do tabagismo referendadas pela OMS [1][2].\n\nNo plano ecológico, lagoas costeiras atlânticas, banhados do leste (Reserva da Biosfera Bañados del Este) e campos nativos protegem aves migratórias e fauna do Pampa [1].",
+        "contentEn": "Uruguay's **Integrated National Health System (SNIS)** underpins universal coverage and high life expectancy, alongside WHO-recognized leadership in tobacco-control public health policy [1][2].\n\nEcologically, Atlantic coastal lagoons, eastern wetlands (Bañados del Este Biosphere Reserve), and native grasslands shelter migratory birds and Pampas wildlife [1].",
+        "primarySource": "OMS — Global Health Observatory / UNESCO MAB",
+        "primarySourceEn": "WHO — Global Health Observatory / UNESCO MAB",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  }
+}

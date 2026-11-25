@@ -1,0 +1,542 @@
+{
+  "GBR": {
+    "isoCode": "GBR",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Ilhas Britânicas, Clima Oceânico Temperado e Litoral Recortado",
+        "titleEn": "The British Isles, Temperate Oceanic Climate, and Indented Coastline",
+        "contentPt": "O **Reino Unido** ocupa a ilha da Grã-Bretanha (Inglaterra, Escócia e País de Gales) e o nordeste da ilha da Irlanda (Irlanda do Norte), cercado pelo Oceano Atlântico, Mar do Norte, Mar da Irlanda e Canal da Mancha [1][3].\n\nA influência da Corrente do Atlântico Norte modera as temperaturas sob um clima oceânico temperado e úmido. O relevo alterna as Terras Altas escocesas (Ben Nevis, 1.345 m) e os montes Peninos com planícies agrícolas férteis no sudeste da Inglaterra [3].",
+        "contentEn": "The **United Kingdom** encompasses Great Britain (England, Scotland, and Wales) and Northern Ireland, bordered by the Atlantic Ocean, the North Sea, the Irish Sea, and the English Channel [1][3].\n\nModerated by the North Atlantic Current, the country has a temperate maritime climate. Its terrain ranges from the Scottish Highlands (Ben Nevis, 1,345 m) and the Pennines to lowland agricultural plains across southern and eastern England [3].",
+        "primarySource": "ONU / Natural Earth — Geografia do Reino Unido",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of the United Kingdom",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Monarquia Constitucional Parlamentarista e Sistema de Westminster",
+        "titleEn": "Constitutional Parliamentary Monarchy and the Westminster System",
+        "contentPt": "O **Reino Unido** é uma **Monarquia Constitucional Parlamentarista** unitária com devolução de poderes aos parlamentos e assembleias da Escócia, País de Gales e Irlanda do Norte [1].\n\nO Parlamento de Westminster (Câmara dos Comuns e Câmara dos Lordes) constitui a base histórica do parlamentarismo moderno. O país é membro permanente do Conselho de Segurança da ONU, do G7, do G20 e da OTAN, tendo formalizado sua saída da União Europeia (Brexit) em 2020 [1].",
+        "contentEn": "The **United Kingdom** is a unitary **Constitutional Parliamentary Monarchy** with devolved legislatures in Scotland, Wales, and Northern Ireland [1].\n\nThe Parliament at Westminster (House of Commons and House of Lords) shaped modern parliamentary democracy. The UK is a permanent member of the UN Security Council, G7, G20, and NATO, and formally withdrew from the European Union (Brexit) in 2020 [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Serviços Financeiros Globais, Ciência Aplicada e Transição Eólica Offshore",
+        "titleEn": "Global Financial Services, Applied Science, and Offshore Wind Transition",
+        "contentPt": "Sexta maior economia mundial em PIB nominal e membro do G7 e G20, o **Reino Unido** possui economia fortemente orientada a serviços financeiros e jurídicos (centrados em Londres), indústria farmacêutica, aeroespacial, pesquisa universitária e indústrias criativas [1][2].\n\nNa matriz elétrica, destacou-se na eliminação da geração a carvão e na expansão acelerada da energia eólica offshore no Mar do Norte [2].",
+        "contentEn": "Among the world's largest economies and a member of the G7 and G20, the **United Kingdom** has a service-led economy anchored by global finance and law in London, pharmaceuticals, aerospace engineering, higher education, and creative industries [1][2].\n\nIn energy transition, the UK phased out coal-fired power generation while expanding North Sea offshore wind capacity [2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/GBR",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Da Magna Carta e Revolução Industrial à Comunidade das Nações",
+        "titleEn": "From Magna Carta and the Industrial Revolution to the Modern Commonwealth",
+        "contentPt": "Marcos constitucionais como a **Magna Carta (1215)** e a Declaração de Direitos (1689) consolidaram limites ao poder régio, seguidos pelos Atos de União de 1707 e 1801 [1]. A partir do século XVIII, a **Revolução Industrial** britânica transformou a produção energética, têxtil, metalúrgica e ferroviária global [1].\n\nApós liderar a resistência aliada na Segunda Guerra Mundial, o país conduziu a descolonização de seu vasto império marítimo e instituiu o Estado de bem-estar social do pós-guerra [1].",
+        "contentEn": "Constitutional milestones such as **Magna Carta (1215)** and the Bill of Rights (1689) established parliamentary oversight, followed by the Acts of Union of 1707 and 1801 [1]. From the eighteenth century onward, Britain's **Industrial Revolution** reshaped global energy, manufacturing, and transport [1].\n\nAfter standing as a core Allied power in World War II, the UK oversaw postwar decolonization across Asia and Africa and established its modern welfare state [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Revolução Científica, Computação e Literatura Universal",
+        "titleEn": "Scientific Revolution, Computing, and World Literature",
+        "contentPt": "A ciência e as humanidades britânicas redefiniram paradigmas globais [1]:\n- **Isaac Newton (1643–1727)** e **Charles Darwin (1809–1882)**: fundamentos da física clássica e da teoria da evolução por seleção natural.\n- **Ada Lovelace (1815–1852)**, **Alan Turing (1912–1954)** e **Rosalind Franklin (1920–1958)**: pioneiros da computação teórica e da cristalografia da estrutura do DNA.\n- **William Shakespeare (1564–1616)** e **Jane Austen (1775–1817)**: referências centrais da dramaturgia e do romance em língua inglesa.",
+        "contentEn": "British science and letters transformed modern thought [1]:\n- **Isaac Newton (1643–1727)** and **Charles Darwin (1809–1882)**: foundations of classical mechanics and evolutionary biology.\n- **Ada Lovelace (1815–1852)**, **Alan Turing (1912–1954)**, and **Rosalind Franklin (1920–1958)**: pioneers of computing theory and X-ray diffraction of DNA.\n- **William Shakespeare (1564–1616)** and **Jane Austen (1775–1817)**: enduring pillars of English drama and fiction.",
+        "primarySource": "UNESCO / Royal Society",
+        "primarySourceEn": "UNESCO / Royal Society",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Universidades Centenárias, Museus Públicos e Patrimônio Mundial",
+        "titleEn": "Historic Universities, Public Museums, and World Heritage",
+        "contentPt": "A língua inglesa e instituições como a BBC, museus nacionais de acesso público e as universidades de Oxford, Cambridge e Edimburgo exercem amplo alcance cultural e científico [1].\n\nO país abriga mais de 30 sítios do Patrimônio Mundial da UNESCO, incluindo Stonehenge, a Torre de Londres, a Cidade Velha e Nova de Edimburgo, os Jardins Botânicos Reais de Kew e a Calçada dos Gigantes [1].",
+        "contentEn": "The English language, public institutions such as the BBC and national museums, and historic universities including Oxford, Cambridge, and Edinburgh anchor broad cultural and scientific reach [1].\n\nThe UK hosts over 30 UNESCO World Heritage sites, among them Stonehenge, the Tower of London, Edinburgh's Old and New Towns, Royal Botanic Gardens Kew, and the Giant's Causeway [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no Reino Unido",
+        "primarySourceEn": "UNESCO — World Heritage in the United Kingdom",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/gb",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Serviço Nacional de Saúde (NHS), Genômica e Conservação Costeira",
+        "titleEn": "National Health Service (NHS), Genomics, and Coastal Conservation",
+        "contentPt": "Criado em 1948, o **National Health Service (NHS)** é um dos modelos históricos de saúde pública universal financiada por tributos gerais, integrado a grandes polos de pesquisa biomédica e genômica populacional (como o UK Biobank) [1].\n\nNo plano ecológico, reservas costeiras, turfeiras escocesas e corredores de restauração marinha concentram esforços de conservação da avifauna atlântica e sequestro de carbono [1].",
+        "contentEn": "Founded in 1948, the **National Health Service (NHS)** is a landmark tax-funded universal healthcare system linked to major biomedical and population-genomics initiatives such as UK Biobank [1].\n\nEcologically, Scottish peatlands, chalk grasslands, and marine protected areas support seabird conservation and carbon-sink restoration [1].",
+        "primarySource": "OMS (WHO) — Perfil de Saúde do Reino Unido",
+        "primarySourceEn": "World Health Organization (WHO) — United Kingdom Health Profile",
+        "sourceUrl": "https://data.who.int/countries/826",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "FRA": {
+    "isoCode": "FRA",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Hexágono Europeu, Alpes, Pireneus e Territórios Ultramarinos",
+        "titleEn": "The European Hexagon, Alps, Pyrenees, and Overseas Territories",
+        "contentPt": "Maior país da União Europeia em área territorial, a **França** metropolitana possui frentes marítimas no Atlântico, Canal da Mancha e Mar Mediterrâneo, combinando as grandes bacias sedimentares do Sena, Loire e Ródano com cadeias montanhosas como os **Alpes** (Mont Blanc, 4.808 m) e os **Pireneus** [1][3].\n\nCom seus departamentos e territórios ultramarinos (incluindo a Guiana Francesa na América do Sul, Reunião e Polinésia Francesa), detém uma das maiores Zonas Econômicas Exclusivas marítimas do planeta [3].",
+        "contentEn": "The European Union's largest country by land area, metropolitan **France** fronts the Atlantic Ocean, the English Channel, and the Mediterranean Sea, pairing the Seine, Loire, and Rhône basins with the **Alps** (Mont Blanc, 4,808 m) and the **Pyrenees** [1][3].\n\nTogether with its overseas departments and territories across the Americas, Indian Ocean, and Pacific, France spans one of the world's largest Exclusive Economic Zones [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da França",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of France",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Quinta República Semipresidencialista e Integração Europeia",
+        "titleEn": "Fifth Republic Semi-Presidentialism and European Integration",
+        "contentPt": "Regida pela Constituição de 1958 (Quinta República), a **França** é uma **República Semipresidencialista** unitária e laica, na qual o Presidente da República eleito por sufrágio universal direto partilha o Executivo com o Primeiro-Ministro e o Parlamento bicameral (Assembleia Nacional e Senado) [1].\n\nÉ membro permanente do Conselho de Segurança da ONU, Estado fundador da União Europeia, e integrante do G7, G20 e da Organização Internacional da Francofonia [1].",
+        "contentEn": "Governed under the 1958 Constitution of the Fifth Republic, **France** is a secular unitary **Semi-Presidential Republic** in which a directly elected President shares executive authority with a Prime Minister accountable to the National Assembly alongside the Senate [1].\n\nFrance is a permanent UN Security Council member, a founding member of the European Union, and a member of the G7, G20, and Francophonie [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Indústria Aeroespacial, Matriz Nuclear Descarbonizada e Agroindústria",
+        "titleEn": "Aerospace Industry, Low-Carbon Nuclear Grid, and Agribusiness",
+        "contentPt": "Segunda maior economia da Zona do Euro, a **França** combina forte indústria aeroespacial e ferroviária de alta velocidade (TGV), setor farmacêutico, bens de luxo, turismo internacional e a maior produção agrícola da União Europeia [1][2].\n\nSua matriz elétrica — majoritariamente nuclear complementada por hidrelétricas e renováveis — resulta em uma das mais baixas intensidades de carbono na geração de eletricidade entre as economias do G7 [2].",
+        "contentEn": "The Eurozone's second-largest economy, **France** pairs aerospace, high-speed rail (TGV), pharmaceuticals, luxury manufacturing, and global tourism with the European Union's largest agricultural output [1][2].\n\nIts electricity mix, anchored in nuclear power alongside hydro and renewables, delivers among the lowest carbon intensities of power generation in the G7 [2].",
+        "primarySource": "Banco Mundial (WDI) / Eurostat",
+        "primarySourceEn": "World Bank (WDI) / Eurostat",
+        "sourceUrl": "https://data.worldbank.org/country/FRA",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Iluminismo, Revolução de 1789 e Construção da União Europeia",
+        "titleEn": "Enlightenment, the 1789 Revolution, and European Union Founding",
+        "contentPt": "A **Revolução Francesa (1789)** e a Declaração dos Direitos do Homem e do Cidadão marcaram a ruptura do Antigo Regime e difundiram os ideais de cidadania, soberania popular e codificação civil (Código Napoleônico) [1].\n\nApós as duas Guerras Mundiais e os conflitos de descolonização na Indochina e na Argélia, a reconciliação franco-alemã lançou as bases da Comunidade Europeia do Carvão e do Aço (1951) e da atual União Europeia [1].",
+        "contentEn": "The **French Revolution (1789)** and the Declaration of the Rights of Man and of the Citizen dismantled the Ancien Régime and shaped modern constitutionalism and civil law (Napoleonic Code) [1].\n\nFollowing both World Wars and decolonization conflicts in Indochina and Algeria, Franco-German reconciliation laid the cornerstone of European integration from 1951 onward [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Microbiologia, Radioatividade, Filosofia e Literatura",
+        "titleEn": "Microbiology, Radioactivity, Philosophy, and Literature",
+        "contentPt": "Nomes decisivos da ciência e do pensamento emergiram na **França** [1]:\n- **Louis Pasteur (1822–1895)** e **Marie Skłodowska-Curie (1867–1934)**: fundamentos da microbiologia, vacinação e radioatividade (dupla laureada com o Nobel).\n- **René Descartes (1596–1650)** e **Simone de Beauvoir (1908–1986)**: marcos da filosofia moderna, matemática analítica e teoria feminista.\n- **Victor Hugo (1802–1885)** e **Émile Zola (1840–1902)**: referências da literatura social e dos direitos civis.",
+        "contentEn": "Landmark scientists and thinkers shaped global knowledge from **France** [1]:\n- **Louis Pasteur (1822–1895)** and **Marie Skłodowska-Curie (1867–1934)**: pioneers of germ theory, vaccines, and radioactivity (double Nobel laureate).\n- **René Descartes (1596–1650)** and **Simone de Beauvoir (1908–1986)**: key figures in modern philosophy, analytic geometry, and feminist thought.\n- **Victor Hugo (1802–1885)** and **Émile Zola (1840–1902)**: leading voices of social literature and civic rights.",
+        "primarySource": "UNESCO / Instituto Pasteur",
+        "primarySourceEn": "UNESCO / Institut Pasteur",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Cinema, Artes Visuais, Gastronomia e Mais de 50 Sítios UNESCO",
+        "titleEn": "Cinema, Visual Arts, Gastronomy, and Over 50 UNESCO Sites",
+        "contentPt": "Berço da fotografia, do cinematógrafo dos irmãos Lumière e de movimentos artísticos como o Impressionismo, a **França** mantém rede pública extensa de museus, bibliotecas e fomento audiovisual [1].\n\nReúne mais de 50 sítios do Patrimônio Mundial da UNESCO, incluindo o Palácio de Versalhes, o Mont-Saint-Michel, as margens do Sena em Paris, a Catedral de Chartres e as lagoas da Nova Caledônia [1].",
+        "contentEn": "Birthplace of photography, the Lumière cinematograph, and Impressionism, **France** sustains an extensive network of public museums, archives, and cinema institutions [1].\n\nIt holds over 50 UNESCO World Heritage sites, including the Palace of Versailles, Mont-Saint-Michel, the Banks of the Seine in Paris, Chartres Cathedral, and the Lagoons of New Caledonia [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na França",
+        "primarySourceEn": "UNESCO — World Heritage in France",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/fr",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Longevidade Elevada, Instituto Pasteur e Biodiversidade Ultramarina",
+        "titleEn": "High Longevity, Institut Pasteur, and Overseas Biodiversity",
+        "contentPt": "A **França** registra elevada expectativa de vida ao nascer e cobertura universal de saúde baseada no sistema *Assurance Maladie*, apoiada por instituições científicas como o INSERM, o CNRS e o Instituto Pasteur [1].\n\nGraças aos territórios ultramarinos (floresta amazônica na Guiana Francesa e recifes de coral no Índico e Pacífico), figura entre os países de maior responsabilidade global em biodiversidade marinha e tropical [1].",
+        "contentEn": "**France** records high life expectancy and universal healthcare coverage via *Assurance Maladie*, supported by major research agencies including INSERM, CNRS, and Institut Pasteur [1].\n\nThrough its overseas territories—including Amazonian rainforest in French Guiana and Indo-Pacific coral reefs—France stewards significant tropical and marine biodiversity [1].",
+        "primarySource": "OMS (WHO) — Perfil de Saúde da França",
+        "primarySourceEn": "World Health Organization (WHO) — France Health Profile",
+        "sourceUrl": "https://data.who.int/countries/250",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "ITA": {
+    "isoCode": "ITA",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Península Itálica, Arco Alpino, Apeninos e Vulcanismo Mediterrâneo",
+        "titleEn": "Italian Peninsula, Alpine Arc, Apennines, and Mediterranean Volcanism",
+        "contentPt": "Projetada sobre o centro do Mar Mediterrâneo, a **Itália** combina a fértil Planície do Pó (ao sul dos **Alpes**), a espinha dorsal montanhosa dos **Apeninos** e as grandes ilhas da Sicília e da Sardenha [1][3].\n\nLocalizada na zona de convergência entre as placas Africana e Euroasiática, concentra os principais vulcões ativos da Europa continental e insular (Etna, Vesúvio e Stromboli) e intensa atividade sísmica histórica [3].",
+        "contentEn": "Extending into the central Mediterranean Sea, **Italy** pairs the fertile Po Valley south of the **Alps** with the **Apennine** mountain spine and the major islands of Sicily and Sardinia [1][3].\n\nSituated along the African–Eurasian tectonic boundary, it hosts Europe's principal active volcanoes—Mount Etna, Vesuvius, and Stromboli—and significant historical seismicity [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Itália",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Italy",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Parlamentarista, Regiões Autônomas e Pilar da União Europeia",
+        "titleEn": "Parliamentary Republic, Regional Autonomy, and EU Founding Member",
+        "contentPt": "A **Itália** é uma **República Parlamentarista** unitária descentralizada em 20 regiões (cinco com estatuto especial), regida pela Constituição Republicana de 1948 [1].\n\nO Parlamento bicameral (Câmara dos Deputados e Senado da República) exerce controle simétrico sobre o Conselho de Ministros. O país é membro fundador da União Europeia (Tratados de Roma, 1957), do G7, do G20 e da OTAN [1].",
+        "contentEn": "**Italy** is a unitary **Parliamentary Republic** organized into 20 regions (five with special autonomy statutes) under its 1948 Republican Constitution [1].\n\nIts symmetric bicameral Parliament (Chamber of Deputies and Senate) grants confidence to the Council of Ministers. Italy is a founding member of the European Union (1957 Treaties of Rome), the G7, G20, and NATO [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Segunda Potência Manufatureira Europeia e Distritos Industriais",
+        "titleEn": "Europe's Second-Largest Manufacturing Base and Industrial Districts",
+        "contentPt": "Membro do G7 e terceira maior economia da Zona do Euro, a **Itália** é a segunda maior potência manufatureira da União Europeia, apoiada por redes de pequenas e médias empresas altamente especializadas em máquinas industriais, automação, farmacêutica, design, moda e agroindústria [1][2].\n\nO país enfrenta desafios estruturais ligados à disparidade regional Norte–Sul, à dívida pública e ao acelerado envelhecimento demográfico [2].",
+        "contentEn": "A G7 economy and the Eurozone's third largest, **Italy** holds the European Union's second-largest manufacturing base, driven by specialized SME industrial districts in precision machinery, pharmaceuticals, design, fashion, and food exports [1][2].\n\nKey structural challenges include the North–South productivity divide, high public debt, and rapid demographic aging [2].",
+        "primarySource": "Banco Mundial (WDI) / Eurostat",
+        "primarySourceEn": "World Bank (WDI) / Eurostat",
+        "sourceUrl": "https://data.worldbank.org/country/ITA",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "De Roma Antiga e do Renascimento ao Risorgimento e à República",
+        "titleEn": "From Ancient Rome and the Renaissance to the Risorgimento and Republic",
+        "contentPt": "Berço da civilização etrusca, da **República e do Império Romano** e das cidades-Estado mercantis que impulsionaram o **Renascimento** (Florença, Veneza, Gênova e Milão), a península unificou-se politicamente no **Risorgimento** (1861) [1].\n\nApós o regime fascista (1922–1943) e a Resistência na Segunda Guerra Mundial, o referendo de 1946 instituiu a República Italiana, seguida pelo forte crescimento industrial do pós-guerra [1].",
+        "contentEn": "Cradle of Etruscan culture, **Ancient Rome**, and the maritime and urban republics that ignited the **Renaissance** (Florence, Venice, Genoa, Milan), the peninsula achieved modern political unification in the **Risorgimento** (1861) [1].\n\nAfter the Fascist era (1922–1943) and World War II Resistance, the 1946 referendum established the Italian Republic, followed by rapid postwar industrial modernization [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Método Científico, Física Moderna, Artes e Neurobiologia",
+        "titleEn": "Scientific Method, Modern Physics, Arts, and Neurobiology",
+        "contentPt": "A tradição intelectual italiana abrange ciência experimental, artes e literatura [1]:\n- **Galileu Galilei (1564–1642)** e **Leonardo da Vinci (1452–1519)**: pioneiros da astronomia observacional, da mecânica e da síntese entre arte e engenharia.\n- **Enrico Fermi (1901–1954)** e **Rita Levi-Montalcini (1909–2012)**: laureados com o Nobel em física nuclear e neurobiologia (fator de crescimento nervoso).\n- **Dante Alighieri (1265–1321)** e **Maria Montessori (1870–1952)**: pilares da língua literária italiana e da pedagogia científica moderna.",
+        "contentEn": "Italian intellectual history spans science, arts, and pedagogy [1]:\n- **Galileo Galilei (1564–1642)** and **Leonardo da Vinci (1452–1519)**: founders of observational astronomy, modern mechanics, and Renaissance polymathy.\n- **Enrico Fermi (1901–1954)** and **Rita Levi-Montalcini (1909–2012)**: Nobel laureates in nuclear physics and neurobiology (nerve growth factor).\n- **Dante Alighieri (1265–1321)** and **Maria Montessori (1870–1952)**: cornerstones of Italian literature and child-centered scientific pedagogy.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Maior Acervo de Patrimônio Mundial da UNESCO, Ópera e Cinema",
+        "titleEn": "World's Largest UNESCO Heritage Collection, Opera, and Cinema",
+        "contentPt": "A **Itália** detém o maior número de sítios do Patrimônio Mundial da UNESCO do planeta (60 sítios), entre eles os centros históricos de Roma, Florença e Veneza, Pompeia, as Dolomitas e o Monte Etna [1].\n\nSua contribuição às humanidades inclui a invenção da ópera, a terminologia musical universal, a arquitetura clássica e o cinema neorrealista [1].",
+        "contentEn": "**Italy** holds the world's largest number of UNESCO World Heritage sites (60), spanning the historic centers of Rome, Florence, and Venice, Pompeii, the Dolomites, and Mount Etna [1].\n\nIts enduring cultural legacies include the birth of opera, universal musical notation terms, classical architecture, and neorealist cinema [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Itália",
+        "primarySourceEn": "UNESCO — World Heritage in Italy",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/it",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Longevidade Mediterrânea, Serviço Sanitário Nacional e Flora Alpina",
+        "titleEn": "Mediterranean Longevity, National Health Service, and Alpine Flora",
+        "contentPt": "O **Servizio Sanitario Nazionale (SSN)** assegura cobertura universal regionalizada, contribuindo para uma das maiores expectativas de vida do mundo, associada também a padrões alimentares mediterrâneos e baixa mortalidade cardiovascular [1].\n\nA variedade altitudinal entre os Alpes e o Mediterrâneo confere à Itália uma das floras mais ricas da Europa em endemismos vegetais e reservas marinhas [1].",
+        "contentEn": "Italy's regionally administered **Servizio Sanitario Nazionale (SSN)** provides universal healthcare, contributing alongside Mediterranean dietary patterns to one of the highest life expectancies worldwide [1].\n\nIts elevation range from the Alps to Mediterranean islands supports one of Europe's richest endemic plant floras and marine sanctuaries [1].",
+        "primarySource": "OMS (WHO) — Perfil de Saúde da Itália",
+        "primarySourceEn": "World Health Organization (WHO) — Italy Health Profile",
+        "sourceUrl": "https://data.who.int/countries/380",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "CAN": {
+    "isoCode": "CAN",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Escudo Canadense, Floresta Boreal, Grandes Lagos e Ártico",
+        "titleEn": "Canadian Shield, Boreal Forest, Great Lakes, and the Arctic",
+        "contentPt": "Segundo maior país do mundo em área territorial e detentor da mais extensa linha costeira do planeta, o **Canadá** estende-se dos Oceanos Atlântico e Pacífico ao Oceano Ártico [1][3].\n\nO **Escudo Canadense** pré-cambriano, a imensa **Floresta Boreal (Taiga)**, as Pradarias, as Montanhas Rochosas e o arquipélago ártico abrigam mais da metade dos lagos naturais do planeta e vasta reserva de água doce superficial [3].",
+        "contentEn": "The world's second-largest nation by total area and home to its longest coastline, **Canada** spans from the Atlantic and Pacific Oceans to the Arctic Archipelago [1][3].\n\nIts geography encompasses the Precambrian **Canadian Shield**, vast **Boreal Forest (Taiga)**, interior Prairies, the Rocky Mountains, and more than half of the world's natural freshwater lakes [3].",
+        "primarySource": "ONU / Natural Earth — Geografia do Canadá",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Canada",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Federação Parlamentarista Bilíngue e Carta de Direitos e Liberdades",
+        "titleEn": "Bilingual Parliamentary Federation and Charter of Rights and Freedoms",
+        "contentPt": "O **Canadá** é uma **Federação Parlamentarista** e Monarquia Constitucional formada por 10 províncias e 3 territórios, oficialmente bilíngue em inglês e francês [1].\n\nA repatriação constitucional de 1982 consolidou a Carta Canadense dos Direitos e Liberdades e o reconhecimento constitucional dos direitos dos povos indígenas (Primeiras Nações, Inuit e Métis). O país integra o G7, G20, OTAN e a Commonwealth [1].",
+        "contentEn": "**Canada** is a federally organized **Parliamentary Constitutional Monarchy** comprising 10 provinces and 3 territories, with English and French as co-official languages [1].\n\nThe Constitution Act of 1982 entrenched the Canadian Charter of Rights and Freedoms and affirmed Indigenous rights (First Nations, Inuit, and Métis). Canada is a member of the G7, G20, NATO, and the Commonwealth [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Energia Hidrelétrica, Recursos Naturais, Tecnologia e Comércio Norte-Americano",
+        "titleEn": "Hydropower, Natural Resources, High-Tech, and North American Trade",
+        "contentPt": "Membro do G7 e fortemente integrado ao mercado norte-americano (acordo USMCA/CUSMA), o **Canadá** alia um setor de serviços de alta qualificação — incluindo centros de pesquisa em inteligência artificial, finanças e engenharia — a grande produção mineral, florestal, agrícola e energética [1][2].\n\nMais de 60% de sua eletricidade provém de fontes renováveis, especialmente grandes usinas hidrelétricas em Quebec, Colúmbia Britânica e Manitoba [2].",
+        "contentEn": "A G7 economy closely integrated with North American trade (USMCA/CUSMA), **Canada** combines a knowledge-intensive services sector—including leading artificial-intelligence, financial, and aerospace hubs—with major mineral, timber, agricultural, and energy exports [1][2].\n\nOver 60% of Canadian electricity is generated from renewables, led by large-scale hydropower in Quebec, British Columbia, and Manitoba [2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/CAN",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Povos Indígenas, Confederação de 1867 e Reconciliação Contemporânea",
+        "titleEn": "Indigenous Nations, the 1867 Confederation, and Contemporary Reconciliation",
+        "contentPt": "Habitado há milênios por centenas de nações **Primeiras Nações** e povos **Inuit**, o território recebeu colonização francesa (Nova França) e britânica a partir dos séculos XVI–XVII [1]. A **Confederação Canadense de 1867** estabeleceu o Domínio do Canadá, expandido do Atlântico ao Pacífico por ferrovias transcontinentais [1].\n\nNas últimas décadas, a política pública enfatizou o multiculturalismo e a Comissão da Verdade e Reconciliação sobre o impacto histórico das escolas residenciais indígenas [1].",
+        "contentEn": "Inhabited for millennia by diverse **First Nations** and **Inuit** societies, the region saw French (New France) and British settlement from the sixteenth and seventeenth centuries [1]. The **1867 Confederation** created the Dominion of Canada, linked coast-to-coast by transcontinental rail [1].\n\nIn recent decades, national policy has centered on official multiculturalism and the Truth and Reconciliation Commission addressing the legacy of residential schools [1].",
+        "primarySource": "UNESCO / ONU — Memória e Povos Indígenas",
+        "primarySourceEn": "UNESCO / United Nations — History and Indigenous Peoples",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Descoberta da Insulina, Física, Literatura e Ciência Contemporânea",
+        "titleEn": "Discovery of Insulin, Physics, Literature, and Modern Science",
+        "contentPt": "Pesquisadores e artistas canadenses deixaram contribuição marcante [1]:\n- **Frederick Banting (1891–1941)** e **Charles Best (1899–1978)**: descoberta da insulina em Toronto (Prêmio Nobel de 1923), revolucionando o tratamento do diabetes.\n- **Donna Strickland (1959–)** e **Arthur B. McDonald (1943–)**: laureados com o Nobel de Física em lasers de alta intensidade e oscilação de neutrinos.\n- **Alice Munro (1931–2024)** e **Margaret Atwood (1939–)**: referências internacionais do conto e da ficção contemporânea.",
+        "contentEn": "Canadian scientists and writers have shaped global medicine, physics, and literature [1]:\n- **Frederick Banting (1891–1941)** and **Charles Best (1899–1978)**: discovery of insulin in Toronto (1923 Nobel Prize), transforming diabetes care worldwide.\n- **Donna Strickland (1959–)** and **Arthur B. McDonald (1943–)**: Nobel laureates in laser physics and neutrino oscillations.\n- **Alice Munro (1931–2024)** and **Margaret Atwood (1939–)**: internationally acclaimed authors of short fiction and speculative literature.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Pluralismo Cultural, Artes Indígenas e Parques Naturais UNESCO",
+        "titleEn": "Cultural Pluralism, Indigenous Arts, and UNESCO Natural Heritage",
+        "contentPt": "A expressão cultural canadense integra tradições anglófonas, francófonas (com forte cena literária, teatral e cinematográfica em Quebec), culturas indígenas (como a escultura Inuit e os totens da costa noroeste) e diásporas imigrantes globais [1].\n\nSeus 22 sítios UNESCO incluem o Centro Histórico de Quebec, os Parques das Montanhas Rochosas Canadenses, o Parque Nacional Nahanni, o Parque Nacional Gros Morne e Pimachiowin Aki [1].",
+        "contentEn": "Canadian culture weaves together Anglophone and Francophone traditions (including Quebec's vibrant cinema and theater), Indigenous arts (such as Inuit sculpture and Northwest Coast carving), and global immigrant communities [1].\n\nIts 22 UNESCO World Heritage sites include Historic District of Old Québec, the Canadian Rocky Mountain Parks, Nahanni National Park, Gros Morne, and Pimachiowin Aki [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no Canadá",
+        "primarySourceEn": "UNESCO — World Heritage in Canada",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/ca",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Sistema Universal Medicare, Floresta Boreal e Aquecimento Ártico",
+        "titleEn": "Universal Medicare, Boreal Carbon Sinks, and Arctic Warming",
+        "contentPt": "O sistema público universal de saúde (**Medicare**), financiado conjuntamente pelas províncias e pelo governo federal, garante acesso sem cobrança direta a serviços médicos e hospitalares essenciais, sustentando elevada expectativa de vida [1].\n\nA floresta boreal e as turfeiras subárticas canadenses representam um dos maiores estoques terrestres de carbono do globo, hoje sob pressão crescente de incêndios florestais e degelo acelerado do permafrost [1].",
+        "contentEn": "Canada's publicly funded universal healthcare system (**Medicare**), administered provincially under federal standards, provides equitable access to hospital and physician care and underpins high life expectancy [1].\n\nCanadian boreal forests and peatlands store vast terrestrial carbon reserves increasingly challenged by wildfire intensification and Arctic permafrost thaw [1].",
+        "primarySource": "OMS (WHO) — Perfil de Saúde do Canadá",
+        "primarySourceEn": "World Health Organization (WHO) — Canada Health Profile",
+        "sourceUrl": "https://data.who.int/countries/124",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "RUS": {
+    "isoCode": "RUS",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Maior Extensão Territorial do Planeta: da Planície Europeia à Sibéria",
+        "titleEn": "World's Largest Landmass: From the East European Plain to Siberia",
+        "contentPt": "Com mais de 17 milhões de km² distribuídos por 11 fusos horários entre o Leste Europeu e o Norte da Ásia, a **Rússia** é o maior país do planeta em extensão territorial [1][3].\n\nOs Montes Urais separam a planície europeia das vastas bacias siberianas (rios Ob, Ienissei e Lena), dominadas por tundra ártica, **taiga** e estepes ao sul. O país abriga o **Lago Baikal**, o lago mais profundo e de maior volume de água doce líquida superficial da Terra, e o Monte Elbrus (5.642 m) no Cáucaso [3].",
+        "contentEn": "Spanning more than 17 million km² across 11 time zones from Eastern Europe to Northern Asia, **Russia** is the largest country on Earth by land area [1][3].\n\nThe Ural Mountains divide the East European Plain from vast Siberian river basins (Ob, Yenisei, Lena) covered by Arctic tundra and **taiga**, alongside southern steppes. Russia holds **Lake Baikal**, Earth's deepest and largest-volume freshwater lake, and Mount Elbrus (5,642 m) in the Caucasus [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Rússia",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Russia",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Federação Semipresidencialista, Assento Permanente na ONU e Geopolítica",
+        "titleEn": "Federal Semi-Presidential State, UN Security Council Seat, and Geopolitics",
+        "contentPt": "Constituída em 1991 após a dissolução da União Soviética e regida pela Constituição de 1993 (emendada em 2020), a **Federação Russa** organiza-se formalmente como república federal com forte concentração de poder no Executivo presidencial [1].\n\nComo Estado sucessor da URSS, ocupa assento permanente no Conselho de Segurança da ONU e integra o G20 e o BRICS. Desde 2022, a invasão em larga escala da Ucrânia provocou profundo realinhamento geopolítico e sanções econômicas internacionais [1].",
+        "contentEn": "Established in 1991 upon the dissolution of the Soviet Union and governed under the 1993 Constitution (amended in 2020), the **Russian Federation** is formally a federal republic characterized by strong presidential executive centralization [1].\n\nAs the USSR's successor state, Russia holds a permanent UN Security Council seat and belongs to the G20 and BRICS. Its full-scale invasion of Ukraine in 2022 triggered far-reaching geopolitical realignments and international sanctions [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Hidrocarbonetos, Minerais Estratégicos, Cereais e Reorientação Comercial",
+        "titleEn": "Hydrocarbons, Strategic Minerals, Grains, and Trade Reorientation",
+        "contentPt": "Membro do G20 e do BRICS, a **Rússia** figura entre os maiores produtores mundiais de gás natural, petróleo, trigo, fertilizantes, níquel, paládio e energia nuclear civil [1][2].\n\nSua economia combina grande dotação de recursos naturais e capacidade aeroespacial e metalúrgica com desafios de longo prazo ligados à diversificação industrial, declínio demográfico e impactos de sanções comerciais sobre cadeias tecnológicas [2].",
+        "contentEn": "A member of the G20 and BRICS, **Russia** ranks among the world's top producers of natural gas, oil, wheat, fertilizers, nickel, palladium, and civil nuclear technology [1][2].\n\nIts resource-rich economy and aerospace/metallurgical capabilities face persistent structural headwinds from industrial concentration, demographic contraction, and international sanctions affecting technology supply chains [2].",
+        "primarySource": "Banco Mundial (WDI) / ONU",
+        "primarySourceEn": "World Bank (WDI) / UN",
+        "sourceUrl": "https://data.worldbank.org/country/RUS",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Do Império Russo e da União Soviética à Federação Contemporânea",
+        "titleEn": "From the Russian Empire and Soviet Union to the Modern Federation",
+        "contentPt": "A partir do Principado de Moscou e da expansão imperial sob Pedro, o Grande e Catarina II, a **Rússia** consolidou-se como império transcontinental euroasiático [1]. A **Revolução de 1917** fundou a **União Soviética (URSS)**, que protagonizou a derrota do nazismo na Frente Oriental da Segunda Guerra Mundial e a Guerra Fria bipolar [1].\n\nA URSS inaugurou a era espacial com o satélite **Sputnik 1 (1957)** e o voo de **Iuri Gagarin (1961)**, dissolvendo-se pacificamente em 1991 em 15 repúblicas soberanas [1].",
+        "contentEn": "Expanding from Muscovy into a transcontinental Eurasian empire under Peter the Great and Catherine II, **Russia** underwent the **1917 Revolution**, giving rise to the **Soviet Union (USSR)**, a decisive force on the Eastern Front of World War II and a Cold War superpower [1].\n\nThe USSR launched the Space Age with **Sputnik 1 (1957)** and **Yuri Gagarin (1961)** before dissolving in 1991 into 15 independent republics [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Tabela Periódica, Exploração Espacial, Literatura e Música",
+        "titleEn": "Periodic Table, Spaceflight, World Literature, and Music",
+        "contentPt": "A ciência e as artes russas exerceram impacto decisivo no mundo moderno [1]:\n- **Dmitri Mendeleev (1834–1907)** e **Sofia Kovalevskaya (1850–1891)**: formulação da Tabela Periódica dos elementos e pioneirismo em equações diferenciais.\n- **Sergei Korolev (1907–1966)**, **Iuri Gagarin (1934–1968)** e **Valentina Tereshkova (1937–)**: protagonistas da astronáutica e primeiros voos humanos em órbita.\n- **Fiódor Dostoiévski (1821–1881)**, **Liev Tolstói (1828–1910)** e **Piotr Ilitch Tchaikovsky (1840–1893)**: gigantes da literatura e da música sinfônica.",
+        "contentEn": "Russian science and arts left a deep imprint on global civilization [1]:\n- **Dmitri Mendeleev (1834–1907)** and **Sofia Kovalevskaya (1850–1891)**: architect of the Periodic Table and pioneer of mathematical analysis.\n- **Sergei Korolev (1907–1966)**, **Yuri Gagarin (1934–1968)**, and **Valentina Tereshkova (1937–)**: leaders of human spaceflight.\n- **Fyodor Dostoevsky (1821–1881)**, **Leo Tolstoy (1828–1910)**, and **Pyotr Ilyich Tchaikovsky (1840–1893)**: masters of world literature and classical music.",
+        "primarySource": "UNESCO / ONU — Ciência e Cultura",
+        "primarySourceEn": "UNESCO / UN — Science and Culture",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Tradição Literária, Balé Clássico, Escolas Matemáticas e Patrimônio UNESCO",
+        "titleEn": "Literary Tradition, Classical Ballet, Mathematics, and UNESCO Heritage",
+        "contentPt": "A **Rússia** possui rica diversidade multiétnica (mais de 190 povos) e tradição centenária em literatura, balé clássico (Bolshoi e Mariinsky), cinema de vanguarda e pesquisa matemática e física [1].\n\nSeus mais de 30 sítios do Patrimônio Mundial da UNESCO incluem o Kremlin e a Praça Vermelha em Moscou, o Centro Histórico de São Petersburgo, o Lago Baikal, os Vulcões de Kamchatka e as Montanhas Douradas de Altai [1].",
+        "contentEn": "**Russia** encompasses over 190 ethnic groups and a longstanding heritage in literature, classical ballet (Bolshoi and Mariinsky), early avant-garde cinema, and mathematical sciences [1].\n\nIts more than 30 UNESCO World Heritage sites include the Moscow Kremlin and Red Square, Historic Centre of Saint Petersburg, Lake Baikal, Volcanoes of Kamchatka, and the Golden Mountains of Altai [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Rússia",
+        "primarySourceEn": "UNESCO — World Heritage in the Russian Federation",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/ru",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Taiga Siberiana, Permafrost Ártico e Saúde Pública",
+        "titleEn": "Siberian Taiga, Arctic Permafrost, and Public Health",
+        "contentPt": "A **taiga siberiana** forma a maior extensão contínua de floresta boreal do planeta, abrigando espécies ameaçadas como o tigre-de-amur e o leopardo-de-amur, além do ecossistema único do Lago Baikal (com centenas de espécies endêmicas) [1].\n\nNa saúde pública, o país mantém rede universal estatal e programas de vacinação, enfrentando desafios demográficos ligados a doenças cardiovasculares e envelhecimento populacional [1].",
+        "contentEn": "The **Siberian taiga** constitutes Earth's largest contiguous boreal forest, sheltering rare wildlife such as the Amur tiger and Amur leopard alongside Lake Baikal's highly endemic freshwater ecosystem [1].\n\nIn public health, state-backed healthcare coverage and immunization programs operate alongside persistent cardiovascular mortality and demographic aging challenges [1].",
+        "primarySource": "OMS (WHO) — Perfil de Saúde da Federação Russa",
+        "primarySourceEn": "World Health Organization (WHO) — Russian Federation Health Profile",
+        "sourceUrl": "https://data.who.int/countries/643",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "MEX": {
+    "isoCode": "MEX",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Ponte Mesoamericana, Sierras Madres, Eixo Vulcânico e Península de Yucatán",
+        "titleEn": "Mesoamerican Bridge, Sierra Madre Ranges, Volcanic Belt, and Yucatán",
+        "contentPt": "Situado entre o Oceano Pacífico, o Golfo do México e o Mar do Caribe, o **México** conecta a América do Norte à América Central e abriga uma das mais acentuadas transições ecológicas do planeta [1][3].\n\nAs cadeias **Sierra Madre Ocidental** e **Oriental**, o Eixo Neovulcânico Transversal (onde se ergue o Pico de Orizaba, 5.636 m), os desertos de Sonora e Chihuahua e a planície cárstica da Península de Yucatán (com cenotes e a cratera de Chicxulub) moldam seu território [3].",
+        "contentEn": "Bordered by the Pacific Ocean, the Gulf of Mexico, and the Caribbean Sea, **Mexico** bridges North and Central America across dramatic ecological gradients [1][3].\n\nIts landscape unites the **Sierra Madre Occidental** and **Oriental**, the Trans-Mexican Volcanic Belt (Pico de Orizaba, 5,636 m), the Sonoran and Chihuahuan deserts, and the karstic Yucatán Peninsula with its cenotes and the Chicxulub impact structure [3].",
+        "primarySource": "ONU / Natural Earth — Geografia do México",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Mexico",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Federal Presidencialista e Democracia Constitucional",
+        "titleEn": "Federal Presidential Republic and Constitutional Democracy",
+        "contentPt": "Os **Estados Unidos Mexicanos** constituem uma **República Federal Presidencialista** formada por 31 estados e a Cidade do México, sob a Constituição Política de 1917 — pioneira mundial em direitos sociais e trabalhistas [1].\n\nO Legislativo bicameral (Câmara dos Deputados e Senado) e a Suprema Corte equilibram o Executivo federal. O país é membro do G20, da OCDE e da Aliança do Pacífico [1].",
+        "contentEn": "The **United Mexican States** is a **Federal Presidential Republic** comprising 31 states and Mexico City under the landmark 1917 Constitution—one of the world's earliest charters to codify social and labor rights [1].\n\nA bicameral Congress of the Union and an independent Supreme Court balance federal governance. Mexico belongs to the G20, OECD, and the Pacific Alliance [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Polo Manufatureiro Norte-Americano, Exportações Industriais e Turismo",
+        "titleEn": "North American Manufacturing Hub, Industrial Exports, and Tourism",
+        "contentPt": "Segunda maior economia da América Latina e membro do G20 e da OCDE, o **México** é um dos maiores exportadores mundiais de veículos automotores, eletrônicos, equipamentos médicos e produtos agroalimentares, profundamente integrado às cadeias produtivas da América do Norte (USMCA/T-MEC) [1][2].\n\nTurismo internacional, remessas e relocalização industrial (*nearshoring*) sustentam o dinamismo econômico, coexistindo com desafios de informalidade, desigualdade regional e segurança pública [2].",
+        "contentEn": "Latin America's second-largest economy and a G20 and OECD member, **Mexico** is a major global exporter of automobiles, electronics, medical devices, and agricultural produce tightly woven into North American supply chains (USMCA/T-MEC) [1][2].\n\nInternational tourism and nearshoring manufacturing investment drive growth alongside ongoing challenges in labor informality, regional inequality, and public security [2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/MEX",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Civilizações Mesoamericanas, Independência (1810) e Revolução Mexicana",
+        "titleEn": "Mesoamerican Civilizations, Independence (1810), and the Mexican Revolution",
+        "contentPt": "Berço das grandes civilizações mesoamericanas — **Olmecas, Maias, Zapotecas, Teotihuacan e Mexicas (Astecas)** —, o território tornou-se o Vice-Reino da Nova Espanha após 1521 [1].\n\nO movimento iniciado por Miguel Hidalgo em 1810 levou à independência em 1821. No século XX, a **Revolução Mexicana (1910–1920)** redefiniu a reforma agrária, a educação pública e o constitucionalismo social latino-americano [1].",
+        "contentEn": "Cradle of major Mesoamerican civilizations—including the **Olmec, Maya, Zapotec, Teotihuacan, and Mexica (Aztec)**—the region became the Viceroyalty of New Spain after 1521 [1].\n\nLaunched by Miguel Hidalgo in 1810, independence was achieved in 1821. The **Mexican Revolution (1910–1920)** reshaped agrarian reform, public education, and twentieth-century Latin American constitutionalism [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Química Atmosférica, Muralismo, Literatura e Diplomacia",
+        "titleEn": "Atmospheric Chemistry, Muralism, Literature, and Diplomacy",
+        "contentPt": "Figuras mexicanas marcaram a ciência ambiental, as artes e a paz internacional [1]:\n- **Mario Molina (1943–2020)**: Nobel de Química por desvendar a destruição da camada de ozônio pelos CFCs, fundamentando o Protocolo de Montreal.\n- **Frida Kahlo (1907–1954)** e **Diego Rivera (1886–1957)**: ícones da pintura moderna e do muralismo.\n- **Octavio Paz (1914–1998)** e **Alfonso García Robles (1911–1991)**: laureados com o Nobel de Literatura e da Paz (Tratado de Tlatelolco de desnuclearização da América Latina).",
+        "contentEn": "Mexican figures have shaped atmospheric science, art, and diplomacy [1]:\n- **Mario Molina (1943–2020)**: Chemistry Nobel laureate who uncovered CFC ozone depletion, paving the way for the Montreal Protocol.\n- **Frida Kahlo (1907–1954)** and **Diego Rivera (1886–1957)**: icons of modern painting and Mexican muralism.\n- **Octavio Paz (1914–1998)** and **Alfonso García Robles (1911–1991)**: Nobel laureates in Literature and Peace (Treaty of Tlatelolco nuclear-weapon-free zone).",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Línguas Indígenas, Gastronomia Patrimônio UNESCO e Arquitetura",
+        "titleEn": "Indigenous Languages, UNESCO Gastronomy, and Architectural Heritage",
+        "contentPt": "O **México** é a nação hispanófona mais populosa do planeta e reconhece 68 agrupamentos linguísticos indígenas (como náuatle, maia e zapoteco) como línguas nacionais [1].\n\nLidera as Américas em sítios do Patrimônio Mundial da UNESCO (35 sítios), incluindo Teotihuacan, Chichén Itzá, Palenque, o Centro Histórico da Cidade do México e Xochimilco, além do reconhecimento imaterial à culinária tradicional mexicana e ao Día de Muertos [1].",
+        "contentEn": "**Mexico** is the world's most populous Spanish-speaking country and recognizes 68 Indigenous language families—including Nahuatl, Maya, and Zapotec—as national languages [1].\n\nIt leads the Americas with 35 UNESCO World Heritage sites—including Teotihuacan, Chichén Itzá, Palenque, and Xochimilco—alongside UNESCO Intangible Heritage recognition for traditional Mexican cuisine and Día de Muertos [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no México",
+        "primarySourceEn": "UNESCO — World Heritage in Mexico",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/mx",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "País Megadiverso, Centro de Domesticação do Milho e Saúde Pública",
+        "titleEn": "Megadiverse Nation, Maize Domestication Center, and Public Health",
+        "contentPt": "Integrante do grupo de **países megadiversos**, o **México** concentra cerca de 10% a 12% da biodiversidade terrestre conhecida, abrigando a Reserva da Biosfera da Borboleta-Monarca, o Golfo da Califórnia e o centro histórico de domesticação do milho, feijão, cacau e abóbora [1].\n\nNa saúde pública, combina avanços em vacinação e redução da mortalidade infantil com políticas de prevenção a doenças metabólicas e cardiovasculares [1].",
+        "contentEn": "One of the world's **megadiverse nations**, **Mexico** hosts an estimated 10–12% of terrestrial biodiversity, including the Monarch Butterfly Biosphere Reserve, the Gulf of California, and the Mesoamerican center of maize, bean, cacao, and squash domestication [1].\n\nPublic health initiatives pair broad immunization coverage with prevention strategies addressing diabetes and cardiovascular disease [1].",
+        "primarySource": "OMS (WHO) / IUCN — Saúde e Biodiversidade do México",
+        "primarySourceEn": "World Health Organization (WHO) / IUCN — Mexico Health & Biodiversity",
+        "sourceUrl": "https://data.who.int/countries/484",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  }
+}

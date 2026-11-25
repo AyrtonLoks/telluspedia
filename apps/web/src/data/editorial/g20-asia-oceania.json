@@ -1,0 +1,632 @@
+{
+  "CHN": {
+    "isoCode": "CHN",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Planalto Tibetano, Grandes Bacias Fluviais e Extensa Fachada do Pacífico",
+        "titleEn": "Tibetan Plateau, Great River Basins, and Vast Pacific Seaboard",
+        "contentPt": "Terceiro maior país do mundo em área terrestre, a **China** organiza-se em três grandes degraus topográficos: o **Planalto Tibetano** e o Himalaia a oeste (Monte Everest na fronteira com o Nepal), planaltos e desertos interiores (Taklamakan e Gobi) ao centro-norte e férteis planícies aluviais a leste [1][3].\n\nOs rios **Yangtzé** (o maior da Ásia, com 6.300 km) e **Amarelo (Huang He)** estruturam há milênios a agricultura, a navegação interior e o adensamento populacional na costa do Pacífico [3].",
+        "contentEn": "The world's third-largest country by land area, **China** descends eastward across three dramatic topographic steps: the **Tibetan Plateau** and Himalayas in the west, interior basins and deserts (Taklamakan and Gobi) across the north-central expanse, and fertile coastal plains in the east [1][3].\n\nThe **Yangtze** (Asia's longest river at 6,300 km) and **Yellow (Huang He)** rivers have anchored agriculture, transport, and dense settlement for millennia [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da China",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of China",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Popular, Planejamento Quinquenal e Papel Multilateral",
+        "titleEn": "People's Republic, Five-Year Planning, and Multilateral Role",
+        "contentPt": "A **República Popular da China** (proclamada em 1949) é um Estado unitário socialista governado pelo Partido Comunista da China, com a Assembleia Popular Nacional como órgão legislativo supremo e o Conselho de Estado no Executivo [1].\n\nIntegra o Conselho de Segurança da ONU como membro permanente, além do G20 e do BRICS, conduzindo planejamento estratégico plurianual de infraestrutura, indústria e transição tecnológica [1].",
+        "contentEn": "The **People's Republic of China** (founded in 1949) is a unitary socialist state led by the Chinese Communist Party, with the National People's Congress as its highest legislative organ and the State Council heading administration [1].\n\nChina holds a permanent UN Security Council seat, belongs to the G20 and BRICS, and guides long-term industrial and infrastructure priorities through Five-Year Plans [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Segunda Maior Economia Mundial, Manufatura Avançada e Transição Solar",
+        "titleEn": "World's Second-Largest Economy, Advanced Manufacturing, and Solar Scale",
+        "contentPt": "Segunda maior economia global em PIB nominal e maior potência manufatureira e exportadora de mercadorias, a **China** retirou centenas de milhões de pessoas da pobreza extrema desde as reformas econômicas iniciadas em 1978, segundo dados auditados do Banco Mundial [1][2].\n\nLidera mundialmente a capacidade instalada de energia solar, eólica, baterias, veículos elétricos e trens de alta velocidade, ao mesmo tempo em que enfrenta o desafio de reduzir emissões de carvão e lidar com o rápido envelhecimento demográfico [2].",
+        "contentEn": "The world's second-largest economy by nominal GDP and largest merchandise manufacturer and exporter, **China** lifted hundreds of millions out of extreme poverty following market reforms initiated in 1978, according to World Bank data [1][2].\n\nIt leads global deployment of solar photovoltaics, wind power, batteries, electric vehicles, and high-speed rail while confronting coal-decarbonization and rapid demographic aging challenges [2].",
+        "primarySource": "Banco Mundial (WDI) / ONU",
+        "primarySourceEn": "World Bank (WDI) / UN",
+        "sourceUrl": "https://data.worldbank.org/country/CHN",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Civilização Contínua, Rota da Seda e Transformação do Século XX",
+        "titleEn": "Continuous Civilization, Silk Road, and Twentieth-Century Transformation",
+        "contentPt": "Com mais de quatro milênios de continuidade histórica — das dinastias Shang, Zhou, Qin e Han às eras Tang, Song, Ming e Qing —, a civilização chinesa desenvolveu invenções decisivas como o **papel, a imprensa xilográfica, a bússola e a pólvora**, conectando a Eurásia pela **Rota da Seda** [1].\n\nApós a queda do império em 1911, conflitos civis e a Segunda Guerra Mundial, a fundação da República Popular (1949) e a abertura de 1978 redefiniram o peso econômico e científico do país no século XXI [1].",
+        "contentEn": "Spanning more than four millennia across the Shang, Zhou, Qin, Han, Tang, Song, Ming, and Qing dynasties, Chinese civilization pioneered **papermaking, woodblock printing, the magnetic compass, and gunpowder**, linking Eurasia via the **Silk Road** [1].\n\nFollowing the 1911 fall of the Qing Empire, civil war, and World War II, the 1949 founding of the People's Republic and the 1978 Reform and Opening-Up reshaped China's modern global role [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Filosofia Clássica, Ciência Médica e Física Contemporânea",
+        "titleEn": "Classical Philosophy, Medical Science, and Modern Physics",
+        "contentPt": "Pensadores e cientistas chineses contribuíram profundamente para o conhecimento universal [1]:\n- **Confúcio (551–479 a.C.)** e **Laozi**: fundadores das tradições ético-filosóficas do confucionismo e do taoísmo.\n- **Tu Youyou (1930–)**: laureada com o Prêmio Nobel de Medicina (2015) pela descoberta da artemisinina, salvando milhões de vidas no combate à malária.\n- **Chien-Shiung Wu (1912–1997)** e **Yuan Longping (1930–2021)**: referências em física experimental nuclear e no desenvolvimento do arroz híbrido de alto rendimento.",
+        "contentEn": "Chinese thinkers and scientists have shaped global philosophy and science [1]:\n- **Confucius (551–479 BCE)** and **Laozi**: foundational voices of Confucian ethics and Daoist philosophy.\n- **Tu Youyou (1930–)**: 2015 Nobel laureate in Physiology or Medicine for discovering artemisinin, transforming malaria treatment worldwide.\n- **Chien-Shiung Wu (1912–1997)** and **Yuan Longping (1930–2021)**: pioneers of experimental nuclear physics and high-yield hybrid rice.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Caligrafia, Arquitetura Imperial e Segundo Maior Acervo UNESCO do Mundo",
+        "titleEn": "Calligraphy, Imperial Architecture, and Second-Largest UNESCO Heritage",
+        "contentPt": "A tradição artística chinesa abrange escrita logográfica milenar, caligrafia, pintura de paisagens (*shan shui*), porcelana, ópera clássica e jardinagem paisagística [1].\n\nCom 59 sítios do Patrimônio Mundial da UNESCO, destaca-se pela Grande Muralha, Cidade Proibida, Exército de Terracota em Xi'an, Cavernas de Mogao, Vale de Jiuzhaigou e os Santuários do Panda-Gigante em Sichuan [1].",
+        "contentEn": "Chinese cultural traditions span logographic writing, calligraphy, *shan shui* landscape painting, fine porcelain, classical opera, and scholar gardens [1].\n\nHolding 59 UNESCO World Heritage sites—second globally—China stewards the Great Wall, Forbidden City, Terracotta Army of Xi'an, Mogao Caves, Jiuzhaigou Valley, and Sichuan Giant Panda Sanctuaries [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na China",
+        "primarySourceEn": "UNESCO — World Heritage in China",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/cn",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Biodiversidade Temperada e Subtropical, Panda-Gigante e Saúde Pública",
+        "titleEn": "Temperate-Subtropical Biodiversity, Giant Panda Recovery, and Public Health",
+        "contentPt": "País megadiverso, a **China** abriga mais de 30.000 espécies de plantas vasculares e espécies emblemáticas como o **panda-gigante** (reclassificado pela IUCN de *Em Perigo* para *Vulnerável* graças à expansão de parques nacionais) e o macaco-dourado-de-nariz-arrebitado [1].\n\nNa saúde pública, o aumento acentuado da expectativa de vida nas últimas cinco décadas acompanhou a ampliação da cobertura básica de seguros de saúde e de programas de imunização [1].",
+        "contentEn": "A megadiverse nation, **China** hosts over 30,000 vascular plant species and flagship conservation efforts such as the **giant panda**—reclassified by the IUCN from Endangered to Vulnerable through national park expansion [1].\n\nIn public health, steep gains in life expectancy over the past five decades reflect expanded primary healthcare coverage, sanitation, and immunization [1].",
+        "primarySource": "OMS (WHO) / IUCN — Saúde e Biodiversidade da China",
+        "primarySourceEn": "World Health Organization (WHO) / IUCN — China Health & Biodiversity",
+        "sourceUrl": "https://data.who.int/countries/156",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "IND": {
+    "isoCode": "IND",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Subcontinente Indiano, Himalaia, Planície Indo-Gangética e Monções",
+        "titleEn": "Indian Subcontinent, Himalayas, Indo-Gangetic Plain, and Monsoons",
+        "contentPt": "Sétimo maior país do mundo em área e o mais populoso do planeta, a **Índia** domina o subcontinente sul-asiático entre o Mar Arábico, a Baía de Bengala e o Oceano Índico [1][3].\n\nO choque tectônico da placa Indiana com a Eurásia ergueu o **Himalaia** ao norte, alimentando as planícies férteis do **Ganges** e do Brahmaputra; ao sul estende-se o **Planalto do Decã**, ladeado pelos Gates Ocidentais e Orientais sob o regime sazonal das **monções** [3].",
+        "contentEn": "The world's seventh-largest country by area and its most populous nation, **India** spans the South Asian subcontinent between the Arabian Sea, the Bay of Bengal, and the Indian Ocean [1][3].\n\nTectonic collision uplifted the **Himalayas** in the north, feeding the fertile **Indo-Gangetic Plain**, while the peninsular **Deccan Plateau** is flanked by the Western and Eastern Ghats under a vital seasonal **monsoon** climate [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Índia",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of India",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Maior Democracia Parlamentarista do Mundo e Federação Plural",
+        "titleEn": "World's Largest Parliamentary Democracy and Plural Federation",
+        "contentPt": "A **Índia** é uma **República Federal Parlamentarista** composta por 28 estados e 8 territórios da União, regida pela Constituição de 1950 (a mais extensa constituição escrita de um Estado soberano) [1].\n\nCom mais de 900 milhões de eleitores registrados, realiza periodicamente as maiores eleições democráticas da história humana. É membro fundador do Movimento dos Não-Alinhados e integrante do G20 e do BRICS [1].",
+        "contentEn": "**India** is a **Federal Parliamentary Republic** of 28 states and 8 union territories governed under the 1950 Constitution, the longest written constitution of any sovereign nation [1].\n\nWith over 900 million registered voters, it conducts the largest democratic elections in history. India is a key member of the G20, BRICS, and multilateral institutions [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Serviços Digitais, Indústria Farmacêutica, Espaço e Crescimento Acelerado",
+        "titleEn": "Digital Services, Pharmaceuticals, Spaceflight, and Rapid Growth",
+        "contentPt": "Entre as cinco maiores economias do mundo em PIB nominal e com uma das maiores taxas de expansão entre os países do G20, a **Índia** combina um polo global de tecnologia da informação e infraestrutura pública digital (UPI/Aadhaar) com a maior capacidade mundial de produção de vacinas e medicamentos genéricos [1][2].\n\nSua agência espacial (**ISRO**) alcançou marcos históricos como a órbita marciana (*Mangalyaan*) e o primeiro pouso próximo ao polo sul lunar (*Chandrayaan-3*, 2023) [1][2].",
+        "contentEn": "Among the world's five largest economies and one of the fastest-growing G20 members, **India** pairs global IT services and digital public infrastructure (UPI) with world-leading generic pharmaceuticals and vaccine manufacturing [1][2].\n\nIts space agency (**ISRO**) achieved historic milestones including Mars orbit (*Mangalyaan*) and the first soft landing near the lunar south pole (*Chandrayaan-3*, 2023) [1][2].",
+        "primarySource": "Banco Mundial (WDI) / FMI",
+        "primarySourceEn": "World Bank (WDI) / IMF",
+        "sourceUrl": "https://data.worldbank.org/country/IND",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Civilização do Vale do Indo, Impérios Clássicos e Independência de 1947",
+        "titleEn": "Indus Valley Civilization, Classical Empires, and 1947 Independence",
+        "contentPt": "Da civilização urbana do **Vale do Indo** (Harappa e Mohenjo-Daro, c. 2500 a.C.) aos impérios Máuria (Ashoka), Gupta — era dourada da matemática, astronomia e do sistema decimal com o zero — e Mogol, a **Índia** foi um eixo central do comércio e do pensamento asiático [1].\n\nApós o domínio colonial britânico, o movimento liderado por Mahatma Gandhi e Jawaharlal Nehru conquistou a **independência em 1947**, marcada pela Partição do subcontinente e pela consolidação da República constitucional [1].",
+        "contentEn": "From the urban **Indus Valley Civilization** (c. 2500 BCE) through the Maurya (Ashoka), Gupta—golden age of mathematics, astronomy, and the decimal zero—and Mughal eras, **India** served as a major crossroads of Asian scholarship and trade [1].\n\nFollowing British colonial rule, the independence movement led by Mahatma Gandhi and Jawaharlal Nehru achieved **sovereignty in 1947**, accompanied by Partition and the birth of the constitutional Republic [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Matemática, Física, Direitos Civis e Economia do Desenvolvimento",
+        "titleEn": "Mathematics, Physics, Civil Rights, and Development Economics",
+        "contentPt": "Personalidades indianas transformaram a ciência, a ética política e a economia [1]:\n- **Mahatma Gandhi (1869–1948)** e **B. R. Ambedkar (1891–1956)**: líderes da resistência não-violenta (*satyagraha*) e da redação da Constituição indiana e direitos sociais.\n- **Srinivasa Ramanujan (1887–1920)** e **C. V. Raman (1888–1970)**: gênio da teoria dos números e Prêmio Nobel de Física pelo efeito Raman.\n- **Rabindranath Tagore (1861–1941)** e **Amartya Sen (1933–)**: laureados com o Nobel em Literatura e Economia do desenvolvimento humano.",
+        "contentEn": "Indian leaders and scholars have shaped global science, ethics, and economics [1]:\n- **Mahatma Gandhi (1869–1948)** and **B. R. Ambedkar (1891–1956)**: architects of nonviolent resistance (*satyagraha*) and India's constitutional human-rights framework.\n- **Srinivasa Ramanujan (1887–1920)** and **C. V. Raman (1888–1970)**: visionary number theorist and Physics Nobel laureate for the Raman effect.\n- **Rabindranath Tagore (1861–1941)** and **Amartya Sen (1933–)**: Nobel laureates in Literature and human-development economics.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Mosaico Linguístico, Tradições Filosóficas, Cinema e 43 Sítios UNESCO",
+        "titleEn": "Linguistic Mosaic, Philosophical Traditions, Cinema, and 43 UNESCO Sites",
+        "contentPt": "Com 22 línguas oficiais reconhecidas constitucionalmente e centenas de idiomas regionais, a **Índia** é berço do hinduísmo, do budismo, do jainismo e do sikhismo, além de abrigar a maior indústria cinematográfica mundial em volume de produções [1].\n\nSeus 43 sítios do Patrimônio Mundial da UNESCO incluem o Taj Mahal, as Cavernas de Ajanta e Ellora, Hampi, Jaipur, os Gates Ocidentais e o Parque Nacional de Kaziranga [1].",
+        "contentEn": "Recognizing 22 scheduled languages alongside hundreds of regional tongues, **India** is the birthplace of Hinduism, Buddhism, Jainism, and Sikhism, and home to the world's most prolific film industries [1].\n\nIts 43 UNESCO World Heritage sites span the Taj Mahal, Ajanta and Ellora Caves, Hampi, Jaipur, the Western Ghats, and Kaziranga National Park [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Índia",
+        "primarySourceEn": "UNESCO — World Heritage in India",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/in",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Hotspots de Biodiversidade, Conservação do Tigre e Farmácia do Mundo",
+        "titleEn": "Biodiversity Hotspots, Tiger Conservation, and Global Vaccine Capacity",
+        "contentPt": "A **Índia** abriga quatro grandes hotspots globais de biodiversidade (Himalaia, Gates Ocidentais, Indo-Birmânia e Sundaland nas Ilhas Nicobar) e concentra mais de 70% da população mundial de **tigres-de-bengala** em vida livre graças ao *Project Tiger* [1].\n\nEm saúde pública, erradicou a poliomielite selvagem (2014) e desempenha papel central na oferta mundial de vacinas acessíveis, enquanto enfrenta desafios ligados à qualidade do ar urbano e ondas de calor extremo [1].",
+        "contentEn": "**India** encompasses four global biodiversity hotspots (Himalaya, Western Ghats, Indo-Burma, and Nicobar/Sundaland) and safeguards over 70% of the world's wild **Bengal tigers** under *Project Tiger* [1].\n\nIn public health, India eliminated wild polio (2014) and anchors global affordable vaccine supply while confronting urban air pollution and extreme heat risks [1].",
+        "primarySource": "OMS (WHO) / IUCN — Saúde e Biodiversidade da Índia",
+        "primarySourceEn": "World Health Organization (WHO) / IUCN — India Health & Biodiversity",
+        "sourceUrl": "https://data.who.int/countries/356",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "KOR": {
+    "isoCode": "KOR",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Península Coreana Meridional, Montanhas Taebaek e Arquipélago de Jeju",
+        "titleEn": "Southern Korean Peninsula, Taebaek Mountains, and Jeju Island",
+        "contentPt": "Ocupando a metade sul da Península da Coreia entre o Mar Amarelo e o Mar do Leste (Mar do Japão), a **Coreia do Sul** apresenta relevo predominantemente montanhoso (~70% do território), estruturado pela cordilheira **Taebaek** e por planícies férteis no oeste e sul (bacias dos rios Han e Nakdong) [1][3].\n\nAo sul destaca-se a ilha vulcânica de **Jeju**, onde se ergue o monte Hallasan (1.947 m), ponto culminante do país [3].",
+        "contentEn": "Occupying the southern half of the Korean Peninsula between the Yellow Sea and the East Sea (Sea of Japan), **South Korea** is roughly 70% mountainous, anchored by the **Taebaek** range and fertile western and southern basins (Han and Nakdong rivers) [1][3].\n\nOff the southern coast lies volcanic **Jeju Island**, crowned by Hallasan (1,947 m), the country's highest peak [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Coreia do Sul",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of South Korea",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Presidencialista Democrática e Institucionalidade Pós-1987",
+        "titleEn": "Democratic Presidential Republic and Post-1987 Constitutionalism",
+        "contentPt": "A **República da Coreia** é uma **República Presidencialista** democrática unitária regida pela Constituição de 1987, que consagrou eleições presidenciais diretas (mandato único de cinco anos), Assembleia Nacional unicameral e Tribunal Constitucional independente [1].\n\nMembro do G20 e da OCDE, atua de forma ativa em fóruns econômicos da Ásia-Pacífico e cooperação internacional para o desenvolvimento [1].",
+        "contentEn": "The **Republic of Korea** is a unitary democratic **Presidential Republic** governed under the 1987 Constitution, establishing direct presidential elections (single five-year term), a unicameral National Assembly, and an independent Constitutional Court [1].\n\nA member of the G20 and OECD, South Korea plays an active role in Indo-Pacific economic governance and development cooperation [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Semicondutores, Construção Naval, Inovação em P&D e Transição Demográfica",
+        "titleEn": "Semiconductors, Shipbuilding, R&D Intensity, and Demographic Shift",
+        "contentPt": "Protagonista de uma das mais rápidas industrializações do século XX (*Milagre no Rio Han*), a **Coreia do Sul** tornou-se potência de alta tecnologia líder global em **semicondutores de memória**, telas avançadas, baterias, construção naval e indústria automotiva [1][2].\n\nRegistra uma das mais altas proporções de investimento em Pesquisa & Desenvolvimento (P&D) em relação ao PIB na OCDE, enquanto enfrenta o maior desafio demográfico do mundo desenvolvido devido à taxa de fecundidade historicamente baixa [2].",
+        "contentEn": "Achieving one of the twentieth century's fastest industrial transformations (*Miracle on the Han River*), **South Korea** is a high-tech powerhouse leading globally in **memory semiconductors**, displays, batteries, shipbuilding, and automobiles [1][2].\n\nIt ranks among the OECD's highest investors in R&D as a share of GDP while confronting an acute demographic challenge from the world's lowest fertility rate [2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/KOR",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Dos Três Reinos e Dinastia Joseon à Democracia Contemporânea",
+        "titleEn": "From the Three Kingdoms and Joseon Dynasty to Modern Democracy",
+        "contentPt": "A história coreana milenar atravessa os Três Reinos (Goguryeo, Baekje e Silla), a dinastia Goryeo — pioneira da impressão com tipos móveis metálicos (século XIII) — e a longa **Dinastia Joseon (1392–1897)**, durante a qual o rei Sejong promulgou o alfabeto fonético **Hangul** em 1446 [1].\n\nApós a ocupação japonesa (1910–1945), a divisão da península e a Guerra da Coreia (1950–1953), o país reconstruiu-se economicamente e consolidou a redemocratização plena com o movimento civil de junho de 1987 [1].",
+        "contentEn": "Korea's millennia-long history spans the Three Kingdoms, the Goryeo Dynasty—pioneer of movable metal type printing in the thirteenth century—and the **Joseon Dynasty (1392–1897)**, under which King Sejong promulgated the **Hangul** phonetic alphabet in 1446 [1].\n\nFollowing Japanese colonial rule (1910–1945), national division, and the Korean War (1950–1953), South Korea rebuilt rapidly and secured full democratic transition through the June 1987 civic movement [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Inovação Linguística, Democracia, Literatura e Cinema",
+        "titleEn": "Linguistic Innovation, Democracy, Literature, and Cinema",
+        "contentPt": "Nomes emblemáticos sintetizam a trajetória intelectual e artística coreana [1]:\n- **Rei Sejong, o Grande (1397–1450)**: promotor da criação do alfabeto científico *Hangul* para democratizar a alfabetização.\n- **Kim Dae-jung (1924–2009)**: Prêmio Nobel da Paz (2000) pela luta democrática e reconciliação na península.\n- **Han Kang (1970–)** e **Bong Joon-ho (1969–)**: laureada com o Prêmio Nobel de Literatura (2024) e cineasta de reconhecimento global.",
+        "contentEn": "Key figures illuminate Korea's intellectual and cultural legacy [1]:\n- **King Sejong the Great (1397–1450)**: champion of the scientific *Hangul* alphabet to expand universal literacy.\n- **Kim Dae-jung (1924–2009)**: 2000 Nobel Peace Prize laureate for advancing democracy and human rights.\n- **Han Kang (1970–)** and **Bong Joon-ho (1969–)**: 2024 Nobel laureate in Literature and internationally acclaimed filmmaker.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Patrimônio Hangul, Arquitetura Hanok e Difusão Cultural Hallyu",
+        "titleEn": "Hangul Heritage, Hanok Architecture, and Global Hallyu Culture",
+        "contentPt": "A cultura sul-coreana combina raízes históricas — como o alfabeto *Hangul*, o conjunto de templos budistas e palácios reais de Seul e a tradição gastronômica do *kimjang* — com notável projeção contemporânea no cinema, música, literatura e artes digitais (*Hallyu*) [1].\n\nSeus 16 sítios UNESCO incluem o Palácio Changdeokgung, as Áreas Históricas de Gyeongju, a Ilha Vulcânica e Tubos de Lava de Jeju e os planos de maré *Getbol* [1].",
+        "contentEn": "South Korean culture pairs deep historical roots—*Hangul*, Seoul's royal palaces, Buddhist temples, and *kimjang* culinary heritage—with major global influence in contemporary cinema, literature, music, and digital arts (*Hallyu*) [1].\n\nIts 16 UNESCO World Heritage sites include Changdeokgung Palace, Gyeongju Historic Areas, Jeju Volcanic Island and Lava Tubes, and the *Getbol* tidal flats [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Coreia do Sul",
+        "primarySourceEn": "UNESCO — World Heritage in the Republic of Korea",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/kr",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Expectativa de Vida Líder Global, Reflorestamento e Zonas Úmidas",
+        "titleEn": "Top Global Life Expectancy, Reforestation, and Coastal Wetlands",
+        "contentPt": "A **Coreia do Sul** figura entre os países com maior expectativa de vida ao nascer e menor mortalidade infantil do planeta, sustentada pelo **National Health Insurance Service (NHIS)** universal e alta capacidade de diagnóstico hospitalar [1].\n\nNo plano ambiental, conduziu um dos programas de reflorestamento nacional mais bem-sucedidos do século XX após a Guerra da Coreia e protege zonas úmidas costeiras vitais para aves migratórias da Rota Ásia Oriental–Australásia [1].",
+        "contentEn": "**South Korea** ranks among the global leaders in life expectancy and low infant mortality, underpinned by its universal **National Health Insurance Service (NHIS)** and advanced clinical diagnostics [1].\n\nEnvironmentally, it executed one of the twentieth century's most successful nationwide reforestation programs and protects coastal tidal flats vital to migratory birds along the East Asian–Australasian Flyway [1].",
+        "primarySource": "OMS (WHO) — Perfil de Saúde da Coreia do Sul",
+        "primarySourceEn": "World Health Organization (WHO) — Republic of Korea Health Profile",
+        "sourceUrl": "https://data.who.int/countries/410",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "AUS": {
+    "isoCode": "AUS",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Continente-Ilha, Outback Árido, Cordilheira Divisória e Grande Barreira de Coral",
+        "titleEn": "Island Continent, Arid Outback, Great Dividing Range, and Barrier Reef",
+        "contentPt": "Sexto maior país do mundo e único a ocupar um continente inteiro, a **Austrália** estende-se entre os Oceanos Índico e Pacífico, incluindo a ilha da Tasmânia [1][3].\n\nCaracteriza-se pelo interior árido e semiárido (**Outback**), pela Cordilheira Divisória a leste (onde se concentra a maior parte da população e a bacia Murray–Darling) e pela **Grande Barreira de Coral** no nordeste — o maior sistema de recifes de coral da Terra [3].",
+        "contentEn": "The world's sixth-largest nation and the only country spanning an entire continent, **Australia** lies between the Indian and Pacific Oceans and includes Tasmania [1][3].\n\nIts geography pairs the vast arid interior (**Outback**) with the eastern Great Dividing Range, the Murray–Darling Basin, and the northeastern **Great Barrier Reef**—Earth's largest coral reef system [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Austrália",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Australia",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Federação Parlamentarista da Commonwealth e Democracia Constitucional",
+        "titleEn": "Parliamentary Federation of the Commonwealth and Constitutional Democracy",
+        "contentPt": "A **Comunidade da Austrália** (*Commonwealth of Australia*), federada em 1901, é uma **Federação Parlamentarista** e Monarquia Constitucional composta por seis estados e dois territórios continentais principais, com capital planejada em **Camberra** [1].\n\nPossui Parlamento bicameral (Câmara dos Representantes e Senado), voto obrigatório e atuação destacada no G20, na OCDE, na APEC e no Fórum das Ilhas do Pacífico [1].",
+        "contentEn": "Federated in 1901, the **Commonwealth of Australia** is a **Parliamentary Federation** and Constitutional Monarchy of six states and two major mainland territories, centered on the planned capital **Canberra** [1].\n\nWith a bicameral Parliament (House of Representatives and Senate) and compulsory voting, Australia plays an active role in the G20, OECD, APEC, and the Pacific Islands Forum [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Mineração Estratégica, Serviços Avançados, Educação e Energia Solar",
+        "titleEn": "Strategic Mining, Advanced Services, Education, and Rooftop Solar",
+        "contentPt": "Economia de alta renda do G20 e da OCDE, a **Austrália** combina um setor de serviços dominante (finanças, educação superior internacional, pesquisa médica e tecnologia) com liderança mundial nas exportações de minério de ferro, lítio, terras raras, gás natural e produtos agropecuários [1][2].\n\nApresenta uma das mais elevadas penetrações residenciais de energia solar fotovoltaica do mundo, em meio à transição gradual para longe do carvão na geração elétrica [2].",
+        "contentEn": "A high-income G20 and OECD economy, **Australia** combines a dominant services sector (finance, international higher education, medical research) with global leadership in exports of iron ore, lithium, critical minerals, liquefied natural gas, and agriculture [1][2].\n\nIt boasts one of the highest rates of rooftop solar photovoltaic adoption globally alongside ongoing grid decarbonization away from coal [2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/AUS",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Mais de 60 Mil Anos de Povos Originários à Federação de 1901",
+        "titleEn": "Over 60,000 Years of First Nations Heritage to the 1901 Federation",
+        "contentPt": "Os **Povos Aborígenes e das Ilhas do Estreito de Torres** habitam o continente australiano há mais de 60.000 anos, constituindo uma das culturas vivas mais antigas e contínuas da humanidade [1].\n\nA colonização britânica iniciada em 1788 gerou profundas rupturas para os povos originários e deu origem às seis colônias que se uniram na **Federação de 1901**. O século XX trouxe reformas sociais, o reconhecimento constitucional indígena de 1967 e uma sociedade urbana crescentemente multicultural [1].",
+        "contentEn": "**Aboriginal and Torres Strait Islander peoples** have cared for the Australian continent for over 60,000 years, representing among the world's oldest continuous living cultures [1].\n\nBritish colonization from 1788 deeply disrupted Indigenous societies and established six colonies that united in the **1901 Federation**, later evolving into a pluralistic, multicultural democracy following the 1967 referendum [1].",
+        "primarySource": "UNESCO / ONU — Memória e Povos Indígenas",
+        "primarySourceEn": "UNESCO / United Nations — History and Indigenous Heritage",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Medicina Nobel, Astronomia, Direitos Indígenas e Literatura",
+        "titleEn": "Nobel Medicine, Astronomy, Indigenous Rights, and Literature",
+        "contentPt": "Contribuições australianas destacam-se na ciência biomédica, na justiça social e nas artes [1]:\n- **Howard Florey (1898–1968)**, **Elizabeth Blackburn (1948–)** e **Barry Marshall (1951–)**: laureados com o Prêmio Nobel em Medicina (penicilina, telômeros e *Helicobacter pylori*).\n- **Eddie Mabo (1936–1992)**: líder das Ilhas do Estreito de Torres cuja ação judicial histórica derrubou a doutrina colonial de *terra nullius* (1992).\n- **Patrick White (1912–1990)**: Prêmio Nobel de Literatura (1973).",
+        "contentEn": "Australian figures have made landmark contributions to medicine, law, and literature [1]:\n- **Howard Florey (1898–1968)**, **Elizabeth Blackburn (1948–)**, and **Barry Marshall (1951–)**: Medicine Nobel laureates for penicillin development, telomerase, and *Helicobacter pylori*.\n- **Eddie Mabo (1936–1992)**: Torres Strait Islander leader whose landmark High Court victory overturned *terra nullius* in 1992.\n- **Patrick White (1912–1990)**: 1973 Nobel laureate in Literature.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Arte Rupestre Milenar, Arquitetura Contemporânea e 20 Sítios UNESCO",
+        "titleEn": "Ancient Rock Art, Modern Architecture, and 20 UNESCO Sites",
+        "contentPt": "A identidade cultural australiana reúne a arte visual e a narrativa oral dos povos originários, a tradição literária e cinematográfica contemporânea e instituições icônicas como a Ópera de Sydney [1].\n\nSeus 20 sítios do Patrimônio Mundial da UNESCO incluem a Grande Barreira de Coral, o Parque Nacional Uluru–Kata Tjuta, Kakadu, a Região Selvagem da Tasmânia, a Costa de Ningaloo e a Paisagem Cultural de Budj Bim [1].",
+        "contentEn": "Australian cultural life bridges ancient Indigenous rock art and oral traditions with contemporary cinema, literature, and architectural landmarks like the Sydney Opera House [1].\n\nIts 20 UNESCO World Heritage sites encompass the Great Barrier Reef, Uluru–Kata Tjuta National Park, Kakadu, the Tasmanian Wilderness, Ningaloo Coast, and the Budj Bim Cultural Landscape [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Austrália",
+        "primarySourceEn": "UNESCO — World Heritage in Australia",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/au",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Endemismo Evolutivo Único, Conservação Marinha e Saúde Universal",
+        "titleEn": "Extraordinary Endemism, Marine Conservation, and Universal Healthcare",
+        "contentPt": "Isolada geograficamente por dezenas de milhões de anos, a **Austrália** é um país megadiverso com taxas excepcionais de endemismo — incluindo marsupiais (cangurus, coalas, vombates), monotremados (ornitorrinco e equidna) e florestas de eucaliptos — hoje vulneráveis a espécies invasoras, incêndios severos e branqueamento de corais [1].\n\nNa saúde pública, o sistema universal **Medicare** sustenta uma das maiores expectativas de vida do mundo [1].",
+        "contentEn": "Geographically isolated for tens of millions of years, megadiverse **Australia** exhibits extraordinary endemism—marsupials, monotremes (platypus and echidna), and eucalyptus ecosystems—facing pressures from invasive species, severe bushfires, and coral bleaching [1].\n\nIts universal **Medicare** system underpins one of the highest life expectancies worldwide [1].",
+        "primarySource": "OMS (WHO) / IUCN — Saúde e Biodiversidade da Austrália",
+        "primarySourceEn": "World Health Organization (WHO) / IUCN — Australia Health & Biodiversity",
+        "sourceUrl": "https://data.who.int/countries/036",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "IDN": {
+    "isoCode": "IDN",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Maior Estado Arquipelágico do Mundo e Anel de Fogo do Pacífico",
+        "titleEn": "World's Largest Archipelagic State and the Pacific Ring of Fire",
+        "contentPt": "Distribuída ao longo da Linha do Equador entre os Oceanos Índico e Pacífico, a **Indonésia** reúne mais de 17.000 ilhas — com destaque para Sumatra, Java, Bornéu (Kalimantan), Sulawesi e a porção ocidental da Nova Guiné (Papua) [1][3].\n\nSituada na interseção de três grandes placas tectônicas no **Anel de Fogo do Pacífico**, concentra mais de 120 vulcões ativos (como Merapi, Krakatoa e Bromo), solos vulcânicos extremamente férteis e clima equatorial úmido [3].",
+        "contentEn": "Straddling the Equator between the Indian and Pacific Oceans, **Indonesia** is the world's largest archipelagic state, encompassing over 17,000 islands including Sumatra, Java, Kalimantan (Borneo), Sulawesi, and western New Guinea (Papua) [1][3].\n\nPositioned at a major tectonic junction along the **Pacific Ring of Fire**, it hosts over 120 active volcanoes—including Merapi and Krakatoa—alongside fertile volcanic soils and humid equatorial climates [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Indonésia",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Indonesia",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Presidencialista Democrática e Liderança na ASEAN",
+        "titleEn": "Democratic Presidential Republic and ASEAN Leadership",
+        "contentPt": "Quarto país mais populoso do mundo e terceira maior democracia em população, a **Indonésia** é uma **República Presidencialista** unitária e descentralizada em 38 províncias, guiada pelo princípio constitucional pluralista *Pancasila* e pelo lema *Bhinneka Tunggal Ika* («Unidade na Diversidade») [1].\n\nÉ o único país do Sudeste Asiático integrante do G20 e membro fundador da **ASEAN**, exercendo papel diplomático estratégico no Indo-Pacífico [1].",
+        "contentEn": "The world's fourth-most-populous nation and third-largest democracy, **Indonesia** is a decentralized unitary **Presidential Republic** of 38 provinces guided by the pluralist *Pancasila* philosophy and the motto *Bhinneka Tunggal Ika* ('Unity in Diversity') [1].\n\nAs Southeast Asia's sole G20 member and a founding pillar of **ASEAN**, Indonesia plays a pivotal diplomatic role across the Indo-Pacific [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Maior Economia do Sudeste Asiático, Níquel e Mercado Interno",
+        "titleEn": "Southeast Asia's Largest Economy, Nickel Processing, and Domestic Scale",
+        "contentPt": "Maior economia do Sudeste Asiático e integrante do G20, a **Indonésia** apoia-se em um vasto mercado consumidor interno, manufatura, economia digital em expansão e liderança mundial na produção e refino de **níquel** (estratégico para baterias de veículos elétricos), estanho, óleo de palma e produtos marinhos [1][2].\n\nSeus desafios estratégicos envolvem infraestrutura interinsular, proteção florestal e redução gradual da dependência de carvão na matriz elétrica [2].",
+        "contentEn": "Southeast Asia's largest economy and a G20 member, **Indonesia** combines a large domestic consumer market, growing digital commerce, and manufacturing with global leadership in **nickel** mining and downstream refining for EV batteries, alongside tin, palm oil, and fisheries [1][2].\n\nKey priorities include inter-island logistics, rainforest conservation, and accelerating power-grid decarbonization [2].",
+        "primarySource": "Banco Mundial (WDI) / ONU",
+        "primarySourceEn": "World Bank (WDI) / UN",
+        "sourceUrl": "https://data.worldbank.org/country/IDN",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Reinos Marítimos Srivijaya e Majapahit, Independência (1945) e Reformasi",
+        "titleEn": "Srivijaya and Majapahit Kingdoms, 1945 Independence, and Reformasi",
+        "contentPt": "Rota milenar do comércio das especiarias, o arquipélago abrigou grandes potências marítimas como **Srivijaya** (séculos VII–XIII) e **Majapahit** (séculos XIII–XVI), além dos sultanatos islâmicos costeiros [1].\n\nApós séculos de colonização neerlandesa, Sukarno e Mohammad Hatta proclamaram a **independência em 17 de agosto de 1945**; em 1955, a Conferência de Bandung consolidou a diplomacia dos países não-alinhados. Desde 1998 (*Reformasi*), o país consolidou eleições diretas e descentralização democrática [1].",
+        "contentEn": "A historic hub of the maritime spice trade, the archipelago hosted major kingdoms including **Srivijaya** (7th–13th centuries) and **Majapahit** (13th–16th centuries), followed by flourishing coastal sultanates [1].\n\nFollowing Dutch colonial rule, Sukarno and Mohammad Hatta proclaimed **independence on August 17, 1945**, and the 1955 Bandung Conference shaped Non-Aligned diplomacy. Since the 1998 *Reformasi* era, Indonesia has consolidated direct multiparty democracy [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Emancipação Feminina, Independência, Literatura e Engenharia",
+        "titleEn": "Women's Education, Independence, Literature, and Engineering",
+        "contentPt": "Personalidades indonésias marcaram a formação nacional e a cultura do Sudeste Asiático [1]:\n- **Raden Adjeng Kartini (1879–1904)**: pioneira da educação feminina e da emancipação das mulheres em Java.\n- **Sukarno (1901–1970)** e **Mohammad Hatta (1902–1980)**: líderes da independência e arquitetos da unidade nacional.\n- **Pramoedya Ananta Toer (1925–2006)**: principal romancista moderno da Indonésia (*Quarteto de Buru*).",
+        "contentEn": "Indonesian leaders and writers shaped modern Southeast Asian thought [1]:\n- **Raden Adjeng Kartini (1879–1904)**: pioneer of women's education and civic emancipation in Java.\n- **Sukarno (1901–1970)** and **Mohammad Hatta (1902–1980)**: independence leaders and co-founders of the Republic.\n- **Pramoedya Ananta Toer (1925–2006)**: Indonesia's foremost modern novelist (*Buru Quartet*).",
+        "primarySource": "UNESCO — Memória do Mundo",
+        "primarySourceEn": "UNESCO — Memory of the World",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Mais de 700 Línguas, Borobudur, Batik, Gamelão e Patrimônio UNESCO",
+        "titleEn": "Over 700 Languages, Borobudur, Batik, Gamelan, and UNESCO Heritage",
+        "contentPt": "A **Indonésia** possui mais de 700 línguas vivas (unificadas nacionalmente pela língua *Bahasa Indonesia*) e tradições artísticas reconhecidas pela UNESCO como Patrimônio Imaterial, incluindo o tecido **Batik**, a música de **Gamelão** e o teatro de sombras **Wayang** [1].\n\nEntre seus 10 sítios do Patrimônio Mundial estão os templos de **Borobudur** (o maior monumento budista da Terra) e **Prambanan**, o sistema de irrigação *Subak* de Bali e o Parque Nacional de Komodo [1].",
+        "contentEn": "**Indonesia** speaks over 700 living languages unified by *Bahasa Indonesia*, alongside UNESCO Intangible Heritage traditions including **Batik** textiles, **Gamelan** orchestras, and **Wayang** shadow puppetry [1].\n\nIts 10 UNESCO World Heritage sites include **Borobudur** (the world's largest Buddhist temple), **Prambanan**, Bali's *Subak* irrigation landscape, and Komodo National Park [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Indonésia",
+        "primarySourceEn": "UNESCO — World Heritage in Indonesia",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/id",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Linha de Wallace, Triângulo de Coral e Terceira Maior Floresta Tropical",
+        "titleEn": "Wallace Line, Coral Triangle, and Third-Largest Rainforest",
+        "contentPt": "Atravessada pela célebre **Linha de Wallace** biogeográfica, a **Indonésia** é um dos centros mundiais de megadiversidade terrestre e marinha, situando-se no coração do **Triângulo de Coral** e abrigando espécies únicas como o **orangotango**, o **dragão-de-komodo** e o rinoceronte-de-java [1].\n\nNa saúde pública, o programa nacional universal *Jaminan Kesehatan Nasional (JKN)* expandiu o acesso hospitalar para mais de 250 milhões de cidadãos, em paralelo à vigilância de doenças tropicais [1].",
+        "contentEn": "Straddling the biogeographic **Wallace Line**, **Indonesia** is a premier global center of terrestrial and marine megadiversity within the **Coral Triangle**, home to **orangutans**, **Komodo dragons**, and Javan rhinos [1].\n\nIn public health, its national universal health insurance scheme (*Jaminan Kesehatan Nasional*, JKN) covers more than 250 million people alongside tropical-disease surveillance [1].",
+        "primarySource": "OMS (WHO) / IUCN — Saúde e Biodiversidade da Indonésia",
+        "primarySourceEn": "World Health Organization (WHO) / IUCN — Indonesia Health & Biodiversity",
+        "sourceUrl": "https://data.who.int/countries/360",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "TUR": {
+    "isoCode": "TUR",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Ponte Transcontinental entre Europa e Ásia, Estreitos Turcos e Anatólia",
+        "titleEn": "Transcontinental Bridge Between Europe and Asia, Turkish Straits, and Anatolia",
+        "contentPt": "Localizada na interseção entre o Sudeste Europeu (Trácia Oriental) e o Sudoeste Asiático (Península da **Anatólia**), a **Turquia** controla os estreitos estratégicos do **Bósforo** e de **Dardanelos**, única ligação marítima entre o Mar Negro e o Mediterrâneo [1][3].\n\nO planalto interior da Anatólia é cercado pelas cadeias dos Montes Pônticos e Taurus até o Monte Ararate (5.137 m), sobre uma das zonas tectônicas mais ativas da Eurásia (Falha Norte-Anatólia) [3].",
+        "contentEn": "Bridging Southeastern Europe (Eastern Thrace) and Western Asia (**Anatolia**), **Türkiye** controls the strategic **Bosphorus** and **Dardanelles** straits linking the Black Sea to the Mediterranean [1][3].\n\nIts central Anatolian plateau is rimmed by the Pontic and Taurus mountain chains rising to Mount Ararat (5,137 m) along one of Eurasia's most active seismic zones (North Anatolian Fault) [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Turquia",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Türkiye",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Presidencialista, OTAN, G20 e Encruzilhada Diplomática",
+        "titleEn": "Presidential Republic, NATO, G20, and Diplomatic Crossroads",
+        "contentPt": "Fundada em 1923 como república secular sob a liderança de Mustafa Kemal Atatürk, a **República da Turquia** (capital em **Ancara**) adotou em 2018 o sistema de **República Presidencialista**, com a Grande Assembleia Nacional como órgão legislativo unicameral [1].\n\nÉ membro do G20, da OCDE, do Conselho da Europa e da OTAN desde 1952, atuando como elo diplomático e logístico entre a Europa, o Mar Negro, o Cáucaso e o Oriente Médio [1].",
+        "contentEn": "Founded in 1923 as a secular republic under Mustafa Kemal Atatürk with **Ankara** as its capital, the **Republic of Türkiye** transitioned in 2018 to a **Presidential Republic** alongside the unicameral Grand National Assembly [1].\n\nA member of the G20, OECD, Council of Europe, and NATO since 1952, Türkiye acts as a major diplomatic and transit hub connecting Europe, the Black Sea, the Caucasus, and the Middle East [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Indústria Automotiva e Manufatura Integrada à Europa, Turismo e Logística",
+        "titleEn": "Euro-Integrated Manufacturing, Automotive Exports, Tourism, and Aviation",
+        "contentPt": "Integrante do G20 e da União Aduaneira com a União Europeia, a **Turquia** desenvolveu base manufatureira diversificada em veículos automotores, eletrodomésticos, têxteis, siderurgia, construção civil e sistemas aeronáuticos, além de figurar entre os principais destinos turísticos e hubs de aviação do mundo [1][2].\n\nNos últimos anos, a política econômica tem buscado reancorar a inflação elevada e fortalecer a resiliência financeira e energética [2].",
+        "contentEn": "A G20 member in a customs union with the European Union, **Türkiye** possesses a diversified industrial base in automobiles, appliances, textiles, steel, construction, and aerospace, alongside one of the world's largest tourism and international aviation sectors [1][2].\n\nRecent macroeconomic policy focuses on disinflation, external balance, and renewable energy expansion [2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/TUR",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "De Göbekli Tepe e Bizâncio ao Império Otomano e à República de 1923",
+        "titleEn": "From Göbekli Tepe and Byzantium to the Ottoman Empire and 1923 Republic",
+        "contentPt": "A **Anatólia** guarda alguns dos mais antigos assentamentos humanos do Neolítico (**Göbekli Tepe**, c. 9600 a.C., e Çatalhöyük), bem como civilizações hitita, frígia, greco-romana e o **Império Bizantino** (Constantinopla) [1].\n\nA partir de 1453, o **Império Otomano** governou vastas regiões do Mediterrâneo Oriental, Balcãs e Oriente Médio por séculos. Em 1923, o Tratado de Lausanne e as reformas modernizadoras de Atatürk fundaram a República moderna [1].",
+        "contentEn": "**Anatolia** preserves some of humanity's oldest Neolithic monumental sites (**Göbekli Tepe**, c. 9600 BCE, and Çatalhöyük), followed by Hittite, Phrygian, Greco-Roman, and **Byzantine** (Constantinople) civilizations [1].\n\nFrom 1453 onward, the **Ottoman Empire** spanned the Eastern Mediterranean, Balkans, and Middle East for centuries until the 1923 Treaty of Lausanne and Atatürk's modernizing reforms established the Republic [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Arquitetura Otomana, Reforma Republicana, Bioquímica e Literatura",
+        "titleEn": "Ottoman Architecture, Republican Reform, Biochemistry, and Literature",
+        "contentPt": "Figuras históricas e científicas da **Turquia** projetaram-se internacionalmente [1]:\n- **Mimar Sinan (c. 1489–1588)**: arquiteto-chefe otomano autor de obras-primas como a Mesquita de Süleymaniye e a Mesquita Selimiye.\n- **Mustafa Kemal Atatürk (1881–1938)**: fundador da República moderna e promotor da alfabetização com o alfabeto latino e dos direitos civis das mulheres.\n- **Aziz Sancar (1946–)** e **Orhan Pamuk (1952–)**: laureados com o Prêmio Nobel de Química (reparo de DNA) e de Literatura.",
+        "contentEn": "Notable Turkish figures span architecture, statecraft, biochemistry, and literature [1]:\n- **Mimar Sinan (c. 1489–1588)**: master Ottoman architect behind the Süleymaniye and Selimiye mosques.\n- **Mustafa Kemal Atatürk (1881–1938)**: founder of the modern Republic who championed educational reform and women's suffrage.\n- **Aziz Sancar (1946–)** and **Orhan Pamuk (1952–)**: Nobel laureates in Chemistry (DNA repair) and Literature.",
+        "primarySource": "UNESCO / Fundação Nobel",
+        "primarySourceEn": "UNESCO / Nobel Prize",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Istambul, Capadócia, Éfeso e 21 Sítios do Patrimônio Mundial UNESCO",
+        "titleEn": "Istanbul, Cappadocia, Ephesus, and 21 UNESCO World Heritage Sites",
+        "contentPt": "Síntese singular de heranças anatólias, mediterrâneas, bizantinas, turcomanas e islâmicas, a **Turquia** conserva rica tradição musical, cerâmica (*Iznik*), literária e arquitetônica [1].\n\nSeus 21 sítios do Patrimônio Mundial da UNESCO incluem as Áreas Históricas de Istambul (Santa Sofia e Palácio Topkapi), a Capadócia, Éfeso, Troia, Hierápolis–Pamukkale e o santuário neolítico de Göbekli Tepe [1].",
+        "contentEn": "A rich synthesis of Anatolian, Mediterranean, Byzantine, Turkic, and Islamic legacies, **Türkiye** sustains celebrated traditions in architecture, *Iznik* ceramics, music, and cinema [1].\n\nIts 21 UNESCO World Heritage sites include the Historic Areas of Istanbul, Cappadocia, Ephesus, Troy, Hierapolis–Pamukkale, and Neolithic Göbekli Tepe [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Turquia",
+        "primarySourceEn": "UNESCO — World Heritage in Türkiye",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/tr",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Encruzilhada Florística Euro-Asiática e Cobertura de Saúde Pública",
+        "titleEn": "Eurasian Floristic Crossroads and Universal Health Coverage",
+        "contentPt": "Ponto de encontro de três regiões fitogeográficas (Mediterrânea, Euro-Siberiana e Irano-Turaniana), a **Turquia** abriga mais de 10.000 espécies vegetais — cerca de um terço endêmicas — e rotas migratórias essenciais de aves sobre o Bósforo [1].\n\nNa saúde pública, o programa de reforma sanitária expandiu a cobertura universal do seguro de saúde geral (*Genel Sağlık Sigortası*), elevando a expectativa de vida e reduzindo fortemente a mortalidade materna e infantil nas últimas décadas [1].",
+        "contentEn": "Situated at the convergence of three phytogeographic zones (Mediterranean, Euro-Siberian, and Irano-Turanian), **Türkiye** hosts over 10,000 plant species—roughly one-third endemic—and vital bird migration corridors across the Bosphorus [1].\n\nIn public health, universal health insurance (*Genel Sağlık Sigortası*) expanded clinical access and drove marked reductions in maternal and infant mortality [1].",
+        "primarySource": "OMS (WHO) — Perfil de Saúde da Turquia",
+        "primarySourceEn": "World Health Organization (WHO) — Türkiye Health Profile",
+        "sourceUrl": "https://data.who.int/countries/792",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "SAU": {
+    "isoCode": "SAU",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Península Arábica, Rub' al-Khali, Mar Vermelho e Golfo Pérsico",
+        "titleEn": "Arabian Peninsula, Rub' al-Khali Desert, Red Sea, and Persian Gulf",
+        "contentPt": "Maior país do Oriente Médio e ocupante da maior parte da Península Arábica, a **Arábia Saudita** possui extensas costas no **Mar Vermelho** (a oeste) e no **Golfo Pérsico** (a leste) [1][3].\n\nO território combina a cordilheira de Hejaz e Asir (com altitudes superiores a 3.000 m no sudoeste), o planalto central do Négede (onde fica **Riade**) e alguns dos maiores campos de dunas contínuas do planeta, incluindo o deserto **Rub' al-Khali** («Quarto Vazio») [3].",
+        "contentEn": "The largest country in the Middle East, covering most of the Arabian Peninsula, **Saudi Arabia** fronts both the **Red Sea** to the west and the **Persian Gulf** to the east [1][3].\n\nIts landscape spans the Hejaz and Asir mountains (rising above 3,000 m in the southwest), the central Najd plateau (**Riyadh**), and vast sand seas including the **Rub' al-Khali** ('Empty Quarter'), Earth's largest continuous sand desert [3].",
+        "primarySource": "ONU / Natural Earth — Geografia da Arábia Saudita",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Saudi Arabia",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 5,
+        "titlePt": "Reino da Arábia Saudita, G20 e Conselho de Cooperação do Golfo",
+        "titleEn": "Kingdom of Saudi Arabia, G20, and Gulf Cooperation Council",
+        "contentPt": "Unificada em 1932 pelo rei Abdulaziz Al Saud, a **Arábia Saudita** é uma **Monarquia** unitária regida pela Lei Básica de Governança (1992), com o Conselho de Ministros e o Conselho Consultivo (*Majlis al-Shura*) sediados em Riade [1].\n\nÉ o único país árabe membro do **G20**, sede do **Conselho de Cooperação do Golfo (CCG)** e da Organização para a Cooperação Islâmica (OCI), desempenhando papel central nos mercados globais de energia e na diplomacia regional [1].",
+        "contentEn": "Unified in 1932 under King Abdulaziz Al Saud, **Saudi Arabia** is a unitary **Monarchy** governed under the 1992 Basic Law of Governance, with the Council of Ministers and Consultative Assembly (*Majlis al-Shura*) based in Riyadh [1].\n\nAs the sole Arab member of the **G20** and host to the **Gulf Cooperation Council (GCC)** and Organisation of Islamic Cooperation (OIC), it plays a central role in global energy markets and regional diplomacy [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Maior Exportador Global de Petróleo e Diversificação Econômica (Visão 2030)",
+        "titleEn": "Leading Oil Exporter and Economic Diversification (Vision 2030)",
+        "contentPt": "Maior economia do Oriente Médio e membro do G20, a **Arábia Saudita** detém a segunda maior reserva comprovada de petróleo do mundo e lidera historicamente as exportações globais de petróleo bruto e petroquímicos [1][2].\n\nSob a estratégia **Visão 2030**, o país investe na ampliação de receitas não petrolíferas — incluindo logística portuária, mineração, turismo cultural, energia solar em larga escala e ampliação da participação feminina na força de trabalho [2].",
+        "contentEn": "The Middle East's largest economy and a G20 member, **Saudi Arabia** holds the world's second-largest proven oil reserves and is a leading exporter of crude oil and petrochemicals [1][2].\n\nUnder its **Vision 2030** framework, the Kingdom is expanding non-oil sectors—including logistics, mining, cultural tourism, utility-scale solar power, and growing female labor-force participation [2].",
+        "primarySource": "Banco Mundial (WDI) / FMI",
+        "primarySourceEn": "World Bank (WDI) / IMF",
+        "sourceUrl": "https://data.worldbank.org/country/SAU",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Rotas do Incenso, Berço do Islã e Unificação de 1932",
+        "titleEn": "Incense Trade Routes, Birthplace of Islam, and 1932 Unification",
+        "contentPt": "Na Antiguidade, oásis como **Al-Ula (Hegra)** e Tayma conectavam as rotas caravaneiras do incenso entre o Oceano Índico e o Mediterrâneo [1]. No século VII, **Meca** e **Medina**, na região do Hejaz, tornaram-se o berço do Islã e o núcleo espiritual de uma civilização que transformou a ciência, a filosofia e o comércio afro-euroasiático [1].\n\nEm 1932, a unificação do Hejaz e do Négede fundou o Reino moderno; a descoberta de petróleo em 1938 impulsionou profunda transformação urbana e econômica no século XX [1].",
+        "contentEn": "In antiquity, oasis kingdoms such as **Al-Ula (Hegra)** and Tayma linked the Arabian incense trade between the Indian Ocean and the Mediterranean [1]. In the seventh century, **Mecca** and **Medina** in the Hejaz became the birthplace of Islam, anchoring a civilization that profoundly advanced science, trade, and scholarship [1].\n\nFollowing the 1932 unification of the modern Kingdom, the 1938 discovery of oil transformed Saudi infrastructure, urbanization, and global standing [1].",
+        "primarySource": "UNESCO / ONU — Memória Histórica",
+        "primarySourceEn": "UNESCO / United Nations — Historical Memory",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Formação do Estado Moderno, Exploração Espacial e Ciência",
+        "titleEn": "Modern Statehood, Spaceflight, and Contemporary Science",
+        "contentPt": "Marcos históricos e científicos modernos vinculam-se a figuras sauditas [1]:\n- **Abdulaziz Al Saud (1875–1953)**: unificador das regiões da península e fundador do Reino da Arábia Saudita em 1932.\n- **Sultan bin Salman Al Saud (1956–)** e **Rayyana Barnawi (1988–)**: primeiro astronauta árabe a orbitar a Terra (1985) e pesquisadora biomédica, primeira mulher árabe a bordo da Estação Espacial Internacional (2023).\n- **Hayat Sindi (1967–)**: biotecnóloga destacada em diagnósticos médicos acessíveis e conselheira científica internacional da UNESCO.",
+        "contentEn": "Notable Saudi figures span modern statecraft, spaceflight, and biotechnology [1]:\n- **Abdulaziz Al Saud (1875–1953)**: unifier of the modern Kingdom of Saudi Arabia in 1932.\n- **Sultan bin Salman Al Saud (1956–)** and **Rayyana Barnawi (1988–)**: first Arab astronaut in space (1985) and biomedical researcher, first Arab woman aboard the International Space Station (2023).\n- **Hayat Sindi (1967–)**: biotechnologist pioneering low-cost point-of-care diagnostics and UNESCO science adviser.",
+        "primarySource": "UNESCO / NASA — Ciência e Cultura",
+        "primarySourceEn": "UNESCO / NASA — Science and Culture",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Meca e Medina, Arqueologia de Hegra e 8 Sítios UNESCO",
+        "titleEn": "Mecca and Medina, Hegra Archaeology, and 8 UNESCO Heritage Sites",
+        "contentPt": "Guardiã das duas cidades mais sagradas do Islã (**Meca** e **Medina**), que recebem milhões de peregrinos anualmente no *Hajj*, a **Arábia Saudita** preserva também tradições poéticas árabes clássicas, arquitetura de barro do Négede e sítios arqueológicos milenares [1].\n\nSeus 8 sítios do Patrimônio Mundial da UNESCO incluem **Hegra (Al-Hijr)** — cidade nabateia escavada na rocha —, o distrito de At-Turaif em Diriyah, a Jidá Histórica, o Oásis de Al-Ahsa e a área cultural de Ḥimā [1].",
+        "contentEn": "Custodian of Islam's two holiest cities (**Mecca** and **Medina**), welcoming millions annually for the *Hajj*, **Saudi Arabia** also preserves classical Arabic poetic traditions, Najdi mud-brick architecture, and ancient oasis archaeology [1].\n\nIts 8 UNESCO World Heritage sites include Nabataean **Hegra (Al-Hijr)**, At-Turaif in Diriyah, Historic Jeddah, Al-Ahsa Oasis, and the Ḥimā Cultural Area [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Arábia Saudita",
+        "primarySourceEn": "UNESCO — World Heritage in Saudi Arabia",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/sa",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Recifes do Mar Vermelho, Dessalinização e Infraestrutura Hospitalar",
+        "titleEn": "Red Sea Coral Reefs, Desalination, and Modern Health Infrastructure",
+        "contentPt": "O litoral do **Mar Vermelho** abriga recifes de coral excepcionalmente resistentes ao aquecimento térmico — estudados internacionalmente em centros como a KAUST —, enquanto reservas como `Uruq Bani Ma'arid` (Patrimônio Natural UNESCO) reintroduzem o **órix-da-arábia** e gazelas em habitats áridos [1].\n\nSem rios perenes, o país é líder mundial em **dessalinização de água do mar** e mantém rede hospitalar moderna com cobertura vacinal elevada, concentrando esforços preventivos em doenças crônicas não transmissíveis [1].",
+        "contentEn": "Saudi Arabia's **Red Sea** coastline shelters thermally resilient coral reefs studied globally (including at KAUST), while protected reserves like `Uruq Bani Ma'arid` (UNESCO Natural Heritage) restore native **Arabian oryx** and gazelle populations [1].\n\nLacking permanent rivers, the country leads the world in **seawater desalination** and operates modern healthcare networks focused on immunization and noncommunicable-disease prevention [1].",
+        "primarySource": "OMS (WHO) / IUCN — Saúde e Biodiversidade da Arábia Saudita",
+        "primarySourceEn": "World Health Organization (WHO) / IUCN — Saudi Arabia Health & Biodiversity",
+        "sourceUrl": "https://data.who.int/countries/682",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  }
+}

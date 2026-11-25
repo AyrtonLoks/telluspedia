@@ -1,0 +1,542 @@
+{
+  "BRA": {
+    "isoCode": "BRA",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Dimensões Continentais, Biomas e Recursos Naturais",
+        "titleEn": "Continental Dimensions, Biomes, and Natural Resources",
+        "contentPt": "O **Brasil** ocupa cerca de 8,5 milhões de km² na porção centro-oriental da América do Sul, abrangendo quase metade do subcontinente [1][3]. O território reúne seis biomas terrestres oficiais reconhecidos pelo IBGE: **Amazônia**, **Cerrado**, **Mata Atlântica**, **Caatinga**, **Pampa** e **Pantanal**, além de extensa zona costeira atlântica [1].\n\nA rede hidrográfica é estruturada pelas bacias Amazônica, do Tocantins–Araguaia, do São Francisco e do Paraná–Paraguai–Uruguai [1]. Essa configuração sustenta uma das matrizes elétricas mais renováveis entre as grandes economias, combinando hidrelétricas, energia eólica e solar fotovoltaica [2].",
+        "contentEn": "**Brazil** spans roughly 8.5 million km² across eastern and central South America, covering nearly half of the subcontinent [1][3]. Its territory encompasses six official terrestrial biomes mapped by IBGE: the **Amazon**, **Cerrado**, **Atlantic Forest**, **Caatinga**, **Pampa**, and **Pantanal**, alongside an extensive Atlantic coastline [1].\n\nMajor river basins include the Amazon, Tocantins–Araguaia, São Francisco, and Paraná–Paraguay–Uruguay systems [1]. This hydrography underpins one of the most renewable electricity grids among major economies, combining hydropower with rapid wind and solar expansion [2].",
+        "primarySource": "IBGE — Mapa de Biomas e Geografia do Brasil",
+        "primarySourceEn": "IBGE — Biomes and Geography of Brazil",
+        "sourceUrl": "https://www.ibge.gov.br/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 7,
+        "titlePt": "Sistema Político, Federalismo e Constituição de 1988",
+        "titleEn": "Political System, Federalism, and the 1988 Constitution",
+        "contentPt": "O **Brasil** organiza-se como **República Federativa Presidencialista** sob a Constituição de 1988, composta por União, 26 estados, Distrito Federal e mais de cinco mil municípios com autonomia federativa [1].\n\nA separação de poderes segue o modelo tripartite [1]:\n- **Executivo**: chefiado pelo Presidente da República, eleito diretamente em até dois turnos para mandato de quatro anos.\n- **Legislativo**: bicameral no Congresso Nacional (Câmara dos Deputados e Senado Federal).\n- **Judiciário**: encabeçado pelo Supremo Tribunal Federal (STF), guardião da Constituição.",
+        "contentEn": "**Brazil** is a **Federal Presidential Republic** governed under the 1988 Constitution, uniting the federal government, 26 states, the Federal District, and over five thousand autonomous municipalities [1].\n\nState authority is divided across three independent branches [1]:\n- **Executive**: led by the President, directly elected in up to two rounds for a four-year term.\n- **Legislature**: bicameral National Congress comprising the Chamber of Deputies and the Federal Senate.\n- **Judiciary**: headed by the Supreme Federal Court (STF), guardian of constitutional order.",
+        "primarySource": "Constituição da República Federativa do Brasil de 1988",
+        "primarySourceEn": "Constitution of the Federative Republic of Brazil (1988)",
+        "sourceUrl": "https://www.congressonacional.leg.br/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 7,
+        "titlePt": "Estrutura Econômica, Indústria, Agronegócio e Serviços",
+        "titleEn": "Economic Structure, Industry, Agribusiness, and Services",
+        "contentPt": "A economia do **Brasil** é a maior da América Latina e figura entre as principais economias do G20 [2]. O setor de serviços concentra a maior parcela do PIB e do emprego urbano, enquanto a agropecuária de larga escala (soja, café, proteína animal, celulose e cana-de-açúcar) e a mineração respondem por superávits comerciais recorrentes [1][2].\n\nA base industrial inclui aviação comercial, exploração de petróleo em águas ultraprofundas, metalurgia, química e biocombustíveis, convivendo com desafios estruturais de produtividade e desigualdade regional [1][2].",
+        "contentEn": "**Brazil** has the largest economy in Latin America and ranks among the major G20 economies [2]. Services account for the largest share of GDP and urban employment, while export-oriented agribusiness (soybeans, coffee, meat, pulp, sugarcane) and mining generate sustained trade surpluses [1][2].\n\nIts diversified industrial base spans commercial aviation, ultra-deepwater offshore oil, metallurgy, chemicals, and biofuels, alongside enduring structural challenges in productivity and regional inequality [1][2].",
+        "primarySource": "Banco Central do Brasil / Banco Mundial (WDI)",
+        "primarySourceEn": "Central Bank of Brazil / World Bank (WDI)",
+        "sourceUrl": "https://data.worldbank.org/country/BRA",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 9,
+        "titlePt": "Dos Povos Originários à República Democrática",
+        "titleEn": "From Indigenous Societies to the Democratic Republic",
+        "contentPt": "O território brasileiro abrigou diversas sociedades indígenas por milênios antes da chegada da esquadra portuguesa em 1500 [1]. O período colonial estruturava-se em ciclos extrativos e agrários sustentados pela escravidão africana e indígena, até a transferência da corte portuguesa em 1808 e a Independência em 1822 [1].\n\nA abolição formal da escravidão ocorreu em 1888 e a Proclamação da República em 1889 [1]. O século XX combinou industrialização acelerada, a construção de Brasília, o regime militar (1964–1985) e a redemocratização consolidada na Constituição de 1988 [1].",
+        "contentEn": "Diverse Indigenous societies inhabited Brazil for millennia prior to the Portuguese landing in 1500 [1]. Colonial rule relied on plantation and extractive cycles built on enslaved African and Indigenous labor until the Portuguese court relocated to Rio de Janeiro in 1808 and independence was declared in 1822 [1].\n\nSlavery was formally abolished in 1888 and the Republic proclaimed in 1889 [1]. The twentieth century saw rapid industrialization, the founding of Brasília, military rule (1964–1985), and democratic restoration under the 1988 Constitution [1].",
+        "primarySource": "Arquivo Nacional / IHGB — História do Brasil",
+        "primarySourceEn": "National Archives of Brazil / IHGB",
+        "sourceUrl": "https://www.gov.br/arquivonacional/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Personalidades Históricas, Científicas e Intelectuais",
+        "titleEn": "Historical, Scientific, and Intellectual Figures",
+        "contentPt": "A formação intelectual e científica do **Brasil** reúne figuras de projeção internacional [1]:\n- **Machado de Assis (1839–1908)**: escritor e cofundador da Academia Brasileira de Letras, referência da literatura moderna.\n- **Oswaldo Cruz (1872–1917)** e **Carlos Chagas (1879–1934)**: médicos pioneiros da medicina tropical e da saúde pública (Fiocruz).\n- **Milton Santos (1926–2001)**: geógrafo laureado com o Prêmio Vautrin Lud, renovador da teoria crítica do espaço.\n- **Nise da Silveira (1905–1999)**: psiquiatra pioneira na humanização do cuidado em saúde mental.",
+        "contentEn": "**Brazil's** intellectual and scientific heritage spans literature, medicine, and social thought [1]:\n- **Machado de Assis (1839–1908)**: novelist and co-founder of the Brazilian Academy of Letters.\n- **Oswaldo Cruz (1872–1917)** and **Carlos Chagas (1879–1934)**: pioneers of tropical medicine and public epidemiology (Fiocruz).\n- **Milton Santos (1926–2001)**: Vautrin Lud Prize geographer who reshaped critical spatial theory.\n- **Nise da Silveira (1905–1999)**: psychiatrist who pioneered humane mental health care.",
+        "primarySource": "UNESCO / Arquivo Nacional do Brasil",
+        "primarySourceEn": "UNESCO / National Archives of Brazil",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 6,
+        "titlePt": "Língua Portuguesa, Patrimônio UNESCO e Pluralidade Cultural",
+        "titleEn": "Portuguese Language, UNESCO Heritage, and Cultural Plurality",
+        "contentPt": "Maior país lusófono do mundo, o **Brasil** articula matrizes indígenas, africanas, portuguesas e de fluxos migratórios europeus, árabes e asiáticos [1]. Além do português, mais de duzentas línguas indígenas e línguas de sinais (Libras) integram o patrimônio linguístico nacional [1].\n\nEntre os sítios reconhecidos pela UNESCO figuram o Plano Piloto de Brasília, o Centro Histórico de Ouro Preto, Salvador, Olinda, o Parque Nacional da Serra da Capivara e o Cais do Valongo, ao lado de manifestações imateriais como o samba de roda, o frevo e a roda de capoeira [1].",
+        "contentEn": "As the world's largest Portuguese-speaking nation, **Brazil** blends Indigenous, African, Portuguese, and immigrant traditions from Europe, the Middle East, and Asia [1]. Over two hundred Indigenous languages and Brazilian Sign Language (Libras) form part of its linguistic heritage [1].\n\nUNESCO World Heritage sites include Brasília, Ouro Preto, Salvador, Olinda, Serra da Capivara National Park, and Valongo Wharf, complemented by intangible heritage such as samba de roda, frevo, and capoeira [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no Brasil",
+        "primarySourceEn": "UNESCO — World Heritage in Brazil",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/br",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Megabiodiversidade e Sistema Único de Saúde (SUS)",
+        "titleEn": "Megabiodiversity and the Unified Health System (SUS)",
+        "contentPt": "O **Brasil** integra o grupo dos países megadiversos, concentrando expressiva parcela da flora e fauna terrestres e de água doce do planeta, monitorada em redes abertas como o GBIF e a Lista Vermelha da IUCN [1].\n\nNa saúde pública, a Constituição de 1988 instituiu o **Sistema Único de Saúde (SUS)**, de acesso universal e gratuito, reconhecido internacionalmente pelo Programa Nacional de Imunizações (PNI), vigilância epidemiológica e rede de atenção primária, embora enfrente pressões demográficas e arboviroses tropicais [1][2].",
+        "contentEn": "**Brazil** is one of the world's megadiverse nations, holding a substantial share of global terrestrial and freshwater flora and fauna documented via GBIF and the IUCN Red List [1].\n\nIn public health, the 1988 Constitution established the universal **Unified Health System (SUS)**, widely recognized for its National Immunization Program (PNI), epidemiological surveillance, and primary care network, while addressing demographic aging and tropical arboviruses [1][2].",
+        "primarySource": "OMS — Global Health Observatory (Brasil)",
+        "primarySourceEn": "WHO — Global Health Observatory (Brazil)",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "DEU": {
+    "isoCode": "DEU",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Relevo da Europa Central, Bacias do Reno e do Elba",
+        "titleEn": "Central European Relief and the Rhine and Elbe Basins",
+        "contentPt": "A **Alemanha** situa-se no centro geográfico da Europa, estendendo-se das planícies costeiras do Mar do Norte e do Mar Báltico às terras altas centrais (*Mittelgebirge*) e aos Alpes bávaros ao sul [1][3].\n\nOs rios **Reno**, **Elba** e **Danúbio** conformam eixos históricos de navegação, comércio e abastecimento hídrico, conectando o país a nove nações vizinhas — o maior número de fronteiras terrestres da União Europeia [1][3].",
+        "contentEn": "**Germany** lies at the geographic heart of Europe, stretching from the North and Baltic Sea lowlands across the central uplands (*Mittelgebirge*) to the Bavarian Alps in the south [1][3].\n\nThe **Rhine**, **Elbe**, and **Danube** rivers form historic corridors of navigation and commerce, linking Germany with nine neighboring countries — the highest number of land borders in the European Union [1][3].",
+        "primarySource": "Destatis / Eurostat — Geografia da Alemanha",
+        "primarySourceEn": "Destatis / Eurostat — Geography of Germany",
+        "sourceUrl": "https://www.destatis.de/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 7,
+        "titlePt": "Federalismo Parlamentar e a Lei Fundamental (Grundgesetz)",
+        "titleEn": "Parliamentary Federalism and the Basic Law (Grundgesetz)",
+        "contentPt": "A **Alemanha** é uma república parlamentar federal composta por 16 estados (*Länder*) regida pela Lei Fundamental de 1949 (*Grundgesetz*), que consagra a dignidade humana como cláusula pétrea [1].\n\nO Chanceler Federal lidera o governo perante o *Bundestag*, enquanto o *Bundesrat* representa os governos estaduais no processo legislativo; o Tribunal Constitucional Federal (Karlsruhe) assegura o controle de constitucionalidade [1].",
+        "contentEn": "**Germany** is a federal parliamentary republic of 16 states (*Länder*) governed by the 1949 Basic Law (*Grundgesetz*), which enshrines human dignity as an inviolable constitutional principle [1].\n\nThe Federal Chancellor leads the executive accountable to the *Bundestag*, while the *Bundesrat* represents state governments in federal legislation; the Federal Constitutional Court in Karlsruhe safeguards constitutional review [1].",
+        "primarySource": "Deutscher Bundestag — Lei Fundamental",
+        "primarySourceEn": "Deutscher Bundestag — Basic Law",
+        "sourceUrl": "https://www.bundestag.de/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 7,
+        "titlePt": "Economia Social de Mercado, Mittelstand e Transição Energética",
+        "titleEn": "Social Market Economy, Mittelstand, and Energy Transition",
+        "contentPt": "Principal economia da União Europeia, a **Alemanha** estrutura-se no modelo da economia social de mercado, apoiado em exportações industriais de alta precisão (automotiva, máquinas, química, óptica e farmacêutica) e na rede de pequenas e médias empresas especializadas (*Mittelstand*) [1][2].\n\nA estratégia de transição energética (*Energiewende*) impulsionou a geração eólica e solar, ao mesmo tempo em que impõe desafios de infraestrutura de rede, custos industriais e envelhecimento demográfico [1][2].",
+        "contentEn": "As the European Union's largest economy, **Germany** operates a social market economy anchored by high-precision industrial exports (automotive, machinery, chemicals, optics, pharmaceuticals) and specialized small-and-medium enterprises (*Mittelstand*) [1][2].\n\nThe *Energiewende* energy transition has expanded wind and solar power while presenting grid, industrial cost, and demographic aging challenges [1][2].",
+        "primarySource": "Banco Mundial / Eurostat / OCDE",
+        "primarySourceEn": "World Bank / Eurostat / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/DEU",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 9,
+        "titlePt": "Da Unificação de 1871 à Reunificação e Integração Europeia",
+        "titleEn": "From the 1871 Unification to Reunification and European Integration",
+        "contentPt": "A unificação do Estado-nação alemão em 1871 foi seguida pela Primeira Guerra Mundial, pela República de Weimar (1919–1933), pela ditadura nazista e pelos crimes do Holocausto e da Segunda Guerra Mundial [1].\n\nDividida entre a Alemanha Ocidental (RFA) e a Alemanha Oriental (RDA) durante a Guerra Fria, a sociedade alemã viveu a queda pacífica do Muro de Berlim em 1989 e a reunificação em 1990, consolidando papel central na fundação e expansão da União Europeia [1].",
+        "contentEn": "Following unification in 1871, German history was marked by World War I, the Weimar Republic (1919–1933), the Nazi dictatorship, the Holocaust, and World War II [1].\n\nDivided into West Germany (FRG) and East Germany (GDR) throughout the Cold War, the country achieved peaceful reunification in 1990 after the fall of the Berlin Wall in 1989, anchoring modern European integration [1].",
+        "primarySource": "Bundesarchiv — Arquivo Federal da Alemanha",
+        "primarySourceEn": "Bundesarchiv — German Federal Archives",
+        "sourceUrl": "https://www.bundesarchiv.de/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Ciência, Filosofia e Música na Tradição Alemã",
+        "titleEn": "Science, Philosophy, and Music in German Tradition",
+        "contentPt": "A tradição científica e filosófica alemã influenciou profundamente o pensamento moderno [1]:\n- **Alexander von Humboldt (1769–1859)**: naturalista e fundador da geografia física moderna.\n- **Albert Einstein (1879–1955)** e **Emmy Noether (1882–1935)**: revolucionários da física teórica e da álgebra moderna.\n- **Immanuel Kant (1724–1804)** e **Hannah Arendt (1906–1975)**: referências da filosofia crítica e política.\n- **Johann Sebastian Bach** e **Ludwig van Beethoven**: pilares da música clássica ocidental.",
+        "contentEn": "German scientific and philosophical traditions deeply shaped modern knowledge [1]:\n- **Alexander von Humboldt (1769–1859)**: naturalist and founder of modern physical geography.\n- **Albert Einstein (1879–1955)** and **Emmy Noether (1882–1935)**: founders of modern theoretical physics and abstract algebra.\n- **Immanuel Kant (1724–1804)** and **Hannah Arendt (1906–1975)**: foundational philosophers of ethics and political theory.\n- **Johann Sebastian Bach** and **Ludwig van Beethoven**: cornerstones of Western classical music.",
+        "primarySource": "Bundesarchiv / UNESCO",
+        "primarySourceEn": "Bundesarchiv / UNESCO",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Patrimônio UNESCO, Bauhaus e Instituições Culturais",
+        "titleEn": "UNESCO Heritage, Bauhaus, and Cultural Institutions",
+        "contentPt": "A **Alemanha** abriga mais de cinquenta sítios do Patrimônio Mundial da UNESCO, incluindo a Catedral de Colônia, a Ilha dos Museus em Berlim, a arquitetura modernista da **Bauhaus** em Weimar e Dessau e o Vale do Alto Médio Reno [1].\n\nO sistema federal descentralizado mantém intensa rede pública de teatros, orquestras, bibliotecas e universidades de pesquisa de acesso amplo [1].",
+        "contentEn": "**Germany** is home to more than fifty UNESCO World Heritage sites, including Cologne Cathedral, Berlin's Museum Island, the modernist **Bauhaus** sites in Weimar and Dessau, and the Upper Middle Rhine Valley [1].\n\nIts decentralized federal model sustains a dense network of public theaters, orchestras, libraries, and research universities [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na Alemanha",
+        "primarySourceEn": "UNESCO — World Heritage in Germany",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/de",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Saúde Universal Bismarquiana e Conservação Temperada",
+        "titleEn": "Bismarckian Universal Health Care and Temperate Conservation",
+        "contentPt": "O sistema de saúde alemão é historicamente o modelo de seguro social universal (criado em 1883), combinando fundos estatutários solidários e seguro privado, com ampla infraestrutura hospitalar e pesquisa biomédica (Instituto Robert Koch) [1][2].\n\nNo plano ecológico, cerca de um terço do território é coberto por florestas temperadas manejadas e parques nacionais costeiros como o Mar de Wadden [1].",
+        "contentEn": "Germany pioneered statutory universal health insurance in 1883, operating a dual statutory-and-private coverage model supported by extensive hospital capacity and biomedical research (Robert Koch Institute) [1][2].\n\nEcologically, roughly one third of the country consists of managed temperate forests alongside protected coastal ecosystems such as the Wadden Sea [1].",
+        "primarySource": "OMS / Destatis — Saúde e Meio Ambiente",
+        "primarySourceEn": "WHO / Destatis — Health and Environment",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "USA": {
+    "isoCode": "USA",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 6,
+        "titlePt": "Território Biocontinental, Grandes Planícies e Bacia do Mississippi",
+        "titleEn": "Transcontinental Geography, Great Plains, and Mississippi Basin",
+        "contentPt": "Os **Estados Unidos** estendem-se do Atlântico ao Pacífico, incorporando o Alasca ártico e o arquipélago vulcânico do Havaí [1][3]. O relevo articula os Montes Apalaches a leste, as Grandes Planícies irrigadas pela bacia do **Mississippi–Missouri** no centro e as Montanhas Rochosas e a Serra Nevada a oeste [1].\n\nEssa amplitude latitudinal gera climas que variam da tundra subártica aos desertos do Sudoeste, florestas temperadas úmidas e ecossistemas subtropicais na Flórida [1].",
+        "contentEn": "The **United States** spans from the Atlantic to the Pacific Ocean, including Arctic Alaska and the volcanic Hawaiian archipelago [1][3]. Its topography integrates the Appalachian Mountains in the east, the Great Plains drained by the **Mississippi–Missouri** basin in the center, and the Rocky Mountains and Sierra Nevada in the west [1].\n\nThis vast latitudinal span encompasses tundra, southwestern deserts, temperate rainforests, and subtropical wetlands [1].",
+        "primarySource": "USGS — Serviço Geológico dos Estados Unidos",
+        "primarySourceEn": "USGS — United States Geological Survey",
+        "sourceUrl": "https://www.usgs.gov/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 7,
+        "titlePt": "Constituição de 1787, Federalismo e Freios e Contrapesos",
+        "titleEn": "The 1787 Constitution, Federalism, and Checks and Balances",
+        "contentPt": "Regidos pela Constituição de 1787 e suas emendas (incluindo a Carta de Direitos), os **Estados Unidos** constituem uma república federal presidencialista de 50 estados e o Distrito de Colúmbia [1].\n\nO poder divide-se entre Presidência (eleita via Colégio Eleitoral), Congresso bicameral (Câmara dos Representantes e Senado) e Suprema Corte, com ampla descentralização jurídica e fiscal para os governos estaduais [1].",
+        "contentEn": "Governed under the 1787 Constitution and its amendments (including the Bill of Rights), the **United States** is a federal presidential republic of 50 states and the District of Columbia [1].\n\nAuthority is balanced among the Presidency (elected through the Electoral College), the bicameral Congress (House and Senate), and the Supreme Court, with substantial legislative and fiscal powers reserved to states [1].",
+        "primarySource": "National Archives (NARA) — Constituição dos EUA",
+        "primarySourceEn": "National Archives (NARA) — U.S. Constitution",
+        "sourceUrl": "https://www.archives.gov/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 7,
+        "titlePt": "Economia de Inovação, Serviços Financeiros e Mercado Global",
+        "titleEn": "Innovation Economy, Financial Markets, and Global Trade",
+        "contentPt": "Maior economia do mundo por PIB nominal, os **Estados Unidos** lideram em tecnologia da informação, biotecnologia, indústria aeroespacial, serviços financeiros e produção energética [1][2].\n\nO dólar norte-americano atua como principal moeda de reserva internacional sob política monetária do Federal Reserve, enquanto o país convive com elevados níveis de produtividade e disparidades socioeconômicas marcantes [1][2].",
+        "contentEn": "As the world's largest economy by nominal GDP, the **United States** leads in information technology, biotechnology, aerospace, financial services, and energy production [1][2].\n\nThe U.S. dollar serves as the primary global reserve currency under Federal Reserve monetary policy, alongside high labor productivity and pronounced socioeconomic disparities [1][2].",
+        "primarySource": "Bureau of Economic Analysis (BEA) / Banco Mundial",
+        "primarySourceEn": "Bureau of Economic Analysis (BEA) / World Bank",
+        "sourceUrl": "https://data.worldbank.org/country/USA",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 9,
+        "titlePt": "Da Independência de 1776 à Ordem Internacional Contemporânea",
+        "titleEn": "From 1776 Independence to the Contemporary Global Order",
+        "contentPt": "Fundados após a Declaração de Independência de 1776 contra o Império Britânico, os **Estados Unidos** expandiram-se para o oeste no século XIX mediante deslocamento forçado de povos indígenas e atravessaram a Guerra Civil (1861–1865), que aboliu a escravidão [1].\n\nNo século XX, tornaram-se potência decisiva nas duas Guerras Mundiais, cofundadores da ONU, protagonistas da Guerra Fria e da corrida espacial (Apollo 11 em 1969), bem como palco do movimento pelos direitos civis [1].",
+        "contentEn": "Founded after the 1776 Declaration of Independence from Great Britain, the **United States** expanded westward in the nineteenth century through the displacement of Native nations and endured the Civil War (1861–1865), which abolished slavery [1].\n\nIn the twentieth century, the nation played a decisive role in both World Wars, co-founded the United Nations, led the Western bloc in the Cold War and the Apollo 11 Moon landing (1969), and experienced the Civil Rights Movement [1].",
+        "primarySource": "National Archives (NARA)",
+        "primarySourceEn": "U.S. National Archives (NARA)",
+        "sourceUrl": "https://www.archives.gov/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Lideranças Cívicas, Científicas e Culturais",
+        "titleEn": "Civic, Scientific, and Cultural Figures",
+        "contentPt": "A trajetória norte-americana é marcada por lideranças que repercutiram globalmente [1]:\n- **Frederick Douglass (1818–1895)** e **Martin Luther King Jr. (1929–1968)**: referências da luta abolicionista e pelos direitos civis.\n- **Katherine Johnson (1918–2020)** e **Richard Feynman (1918–1988)**: marcos da matemática orbital da NASA e da física quântica.\n- **Rachel Carson (1907–1964)**: bióloga marinha cuja obra *Primavera Silenciosa* impulsionou a ciência ambiental moderna.",
+        "contentEn": "U.S. history features figures whose work resonated worldwide [1]:\n- **Frederick Douglass (1818–1895)** and **Martin Luther King Jr. (1929–1968)**: leaders of abolition and the Civil Rights Movement.\n- **Katherine Johnson (1918–2020)** and **Richard Feynman (1918–1988)**: pioneers of NASA orbital mechanics and quantum electrodynamics.\n- **Rachel Carson (1907–1964)**: marine biologist whose book *Silent Spring* catalyzed modern environmental science.",
+        "primarySource": "National Archives / NASA",
+        "primarySourceEn": "National Archives / NASA",
+        "sourceUrl": "https://www.nasa.gov/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Parques Nacionais, Jazz, Cinema e Universidades de Pesquisa",
+        "titleEn": "National Parks, Jazz, Cinema, and Research Universities",
+        "contentPt": "A cultura norte-americana influenciou a produção artística global por meio do jazz, do blues, do cinema, da literatura e das artes visuais, refletindo uma sociedade marcada por sucessivas ondas migratórias [1].\n\nEntre os sítios UNESCO destacam-se os parques nacionais de Yellowstone (primeiro parque nacional moderno do mundo, 1872), Grand Canyon, Yosemite, Everglades e o Independence Hall na Filadélfia [1].",
+        "contentEn": "American culture shaped global arts through jazz, blues, cinema, literature, and visual arts, reflecting a society built through successive waves of migration [1].\n\nUNESCO World Heritage sites include Yellowstone (the world's first modern national park, 1872), Grand Canyon, Yosemite, Everglades, and Independence Hall in Philadelphia [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial nos Estados Unidos",
+        "primarySourceEn": "UNESCO — World Heritage in the United States",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/us",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Pesquisa Biomédica, CDC e Desafios de Acesso à Saúde",
+        "titleEn": "Biomedical Research, CDC, and Healthcare Access Challenges",
+        "contentPt": "Os **Estados Unidos** concentram instituições líderes em pesquisa biomédica e vigilância sanitária, como os Institutos Nacionais de Saúde (NIH) e o Centro de Controle e Prevenção de Doenças (CDC) [1].\n\nApesar do maior gasto per capita em saúde do mundo, o sistema predominantemente baseado em seguros privados (combinado a programas públicos como Medicare e Medicaid) apresenta desigualdades de acesso e expectativa de vida inferior à média dos pares da OCDE [1][2].",
+        "contentEn": "The **United States** hosts leading biomedical research and public-health institutions including the National Institutes of Health (NIH) and the Centers for Disease Control and Prevention (CDC) [1].\n\nDespite the highest per-capita healthcare spending globally, its largely private insurance system (alongside Medicare and Medicaid) exhibits persistent access gaps and lower life expectancy than OECD peers [1][2].",
+        "primarySource": "CDC / OMS — Global Health Observatory",
+        "primarySourceEn": "CDC / WHO — Global Health Observatory",
+        "sourceUrl": "https://www.cdc.gov/",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "JPN": {
+    "isoCode": "JPN",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Arquipélago do Círculo de Fogo e Montanhas Florestadas",
+        "titleEn": "Ring of Fire Archipelago and Forested Mountains",
+        "contentPt": "O **Japão** é um arquipélago no Leste Asiático formado por quatro ilhas principais (**Honshu**, **Hokkaido**, **Kyushu** e **Shikoku**) e milhares de ilhas menores situadas na convergência de quatro placas tectônicas [1][3].\n\nMais de dois terços do território são montanhosos e florestados, concentrando a população nas planícies costeiras como Kanto (Tóquio) e Kansai (Osaka–Quioto), sob constante engenharia de resiliência sísmica e contra tsunamis [1].",
+        "contentEn": "**Japan** is an East Asian archipelago composed of four main islands (**Honshu**, **Hokkaido**, **Kyushu**, and **Shikoku**) and thousands of smaller islands positioned at the junction of four tectonic plates [1][3].\n\nMore than two thirds of its landmass is mountainous and forested, concentrating population in coastal plains such as Kanto (Tokyo) and Kansai (Osaka–Kyoto), supported by advanced seismic and tsunami resilience engineering [1].",
+        "primarySource": "e-Stat Japan / USGS",
+        "primarySourceEn": "e-Stat Japan / USGS",
+        "sourceUrl": "https://www.e-stat.go.jp/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Monarquia Constitucional Parlamentar e Constituição de 1947",
+        "titleEn": "Constitutional Parliamentary Monarchy and the 1947 Constitution",
+        "contentPt": "Sob a Constituição de 1947, o **Japão** é uma monarquia constitucional parlamentar na qual a soberania reside no povo e o Imperador atua como símbolo do Estado e da unidade nacional [1].\n\nO poder legislativo cabe à Dieta Nacional bicameral (Câmara dos Representantes e Câmara dos Conselheiros), que designa o Primeiro-Ministro chefe de governo; o Artigo 9º estabelece o compromisso pacifista constitucional [1].",
+        "contentEn": "Under the 1947 Constitution, **Japan** is a constitutional parliamentary monarchy in which sovereignty rests with the people and the Emperor serves as symbol of the State and national unity [1].\n\nLegislative power is vested in the bicameral National Diet (House of Representatives and House of Councillors), which designates the Prime Minister; Article 9 enshrines constitutional pacifism [1].",
+        "primarySource": "Arquivo Nacional do Japão — Constituição de 1947",
+        "primarySourceEn": "National Archives of Japan — 1947 Constitution",
+        "sourceUrl": "https://www.archives.go.jp/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 7,
+        "titlePt": "Indústria de Alta Tecnologia, Robótica e Transição Demográfica",
+        "titleEn": "High-Tech Industry, Robotics, and Demographic Transition",
+        "contentPt": "Uma das maiores economias do mundo, o **Japão** destaca-se em robótica industrial, semicondutores, automóveis, equipamentos ópticos, trens de alta velocidade (*Shinkansen*) e pesquisa em materiais avançados [1][2].\n\nO país lidera a experiência global de sociedade superenvelhecida, impulsionando soluções em automação, cuidados geriátricos e eficiência energética diante da escassez de recursos minerais próprios [1][2].",
+        "contentEn": "One of the world's largest economies, **Japan** excels in industrial robotics, semiconductors, automobiles, precision optics, high-speed rail (*Shinkansen*), and advanced materials [1][2].\n\nAs the world's foremost super-aged society, Japan pioneers automation, geriatric care, and energy efficiency while importing most mineral and energy raw materials [1][2].",
+        "primarySource": "Banco Mundial / OCDE / e-Stat Japan",
+        "primarySourceEn": "World Bank / OECD / e-Stat Japan",
+        "sourceUrl": "https://data.worldbank.org/country/JPN",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Do Período Edo e Restauração Meiji à Reconstrução Pós-1945",
+        "titleEn": "From the Edo Period and Meiji Restoration to Post-1945 Reconstruction",
+        "contentPt": "Após séculos de xogunatos e o longo isolamento relativo do Período Edo (1603–1868), a **Restauração Meiji** de 1868 promoveu rápida modernização institucional, educacional e industrial [1].\n\nA expansão imperial na Ásia culminou na Segunda Guerra Mundial e nos bombardeios atômicos de Hiroshima e Nagasaki (1945). No pós-guerra, a reconstrução democrática e tecnológica transformou o país em referência econômica e científica global [1].",
+        "contentEn": "Following centuries of shogunate governance and the relative isolation of the Edo Period (1603–1868), the 1868 **Meiji Restoration** catalyzed rapid institutional, educational, and industrial modernization [1].\n\nImperial expansion across Asia ended in World War II and the atomic bombings of Hiroshima and Nagasaki (1945), followed by democratic constitutional reform and extraordinary postwar technological reconstruction [1].",
+        "primarySource": "National Archives of Japan",
+        "primarySourceEn": "National Archives of Japan",
+        "sourceUrl": "https://www.archives.go.jp/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Pioneiros em Ciência, Literatura e Cinema",
+        "titleEn": "Pioneers in Science, Literature, and Cinema",
+        "contentPt": "O **Japão** reúne laureados científicos e criadores de alcance mundial [1]:\n- **Hideki Yukawa (1907–1981)**: primeiro japonês laureado com o Nobel de Física pela teoria dos mésons.\n- **Shinya Yamanaka (n. 1962)**: Nobel de Medicina pela descoberta das células-tronco pluripotentes induzidas (iPS).\n- **Murasaki Shikibu (séc. XI)**: autora de *O Conto de Genji*, marco fundador da narrativa romanesca.\n- **Akira Kurosawa (1910–1998)** e **Hayao Miyazaki**: referências da linguagem cinematográfica mundial.",
+        "contentEn": "**Japan** has produced globally influential scientists and artists [1]:\n- **Hideki Yukawa (1907–1981)**: Japan's first Nobel laureate in Physics for meson theory.\n- **Shinya Yamanaka (b. 1962)**: Nobel laureate in Medicine for induced pluripotent stem (iPS) cells.\n- **Murasaki Shikibu (11th c.)**: author of *The Tale of Genji*, foundational work of narrative fiction.\n- **Akira Kurosawa (1910–1998)** and **Hayao Miyazaki**: landmarks of world cinema.",
+        "primarySource": "UNESCO / National Archives of Japan",
+        "primarySourceEn": "UNESCO / National Archives of Japan",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Tradições de Quioto, Estética e Cultura Contemporânea",
+        "titleEn": "Kyoto Traditions, Aesthetics, and Contemporary Culture",
+        "contentPt": "A cultura japonesa articula tradições xintoístas e budistas com inovação contemporânea em design, arquitetura, literatura e artes visuais [1].\n\nOs sítios UNESCO englobam os Monumentos Históricos da Antiga Quioto, Nara, o Monte Fuji, o Memorial da Paz de Hiroshima e as ilhas de Yakushima e Okinawa, ao lado de manifestações como o teatro *Noh*, *Kabuki* e a culinária tradicional *Washoku* [1].",
+        "contentEn": "Japanese culture weaves Shinto and Buddhist traditions together with contemporary design, architecture, literature, and visual media [1].\n\nUNESCO World Heritage sites include Historic Monuments of Ancient Kyoto, Nara, Mount Fuji, the Hiroshima Peace Memorial, and Yakushima, alongside intangible heritage such as *Noh*, *Kabuki*, and *Washoku* culinary traditions [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no Japão",
+        "primarySourceEn": "UNESCO — World Heritage in Japan",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/jp",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Longevidade Recorde e Cobertura Universal de Saúde",
+        "titleEn": "Record Longevity and Universal Health Coverage",
+        "contentPt": "O **Japão** registra consistentemente uma das maiores expectativas de vida ao nascer do planeta, resultado combinado de cobertura universal de saúde (desde 1961), medicina preventiva, saneamento e padrões alimentares equilibrados [1][2].\n\nEcologicamente, o arco insular estende-se de zonas subárticas em Hokkaido a recifes subtropicais em Okinawa, abrigando elevada taxa de endemismo insular [1].",
+        "contentEn": "**Japan** consistently records one of the highest life expectancies at birth globally, reflecting universal health coverage (since 1961), preventive care, sanitation, and dietary patterns [1][2].\n\nEcologically, its island arc spans from subarctic Hokkaido to subtropical coral reefs in Okinawa, supporting high rates of island endemism [1].",
+        "primarySource": "MHLW Japan / OMS — Global Health Observatory",
+        "primarySourceEn": "MHLW Japan / WHO — Global Health Observatory",
+        "sourceUrl": "https://www.mhlw.go.jp/",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "ZAF": {
+    "isoCode": "ZAF",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Encontro do Atlântico com o Índico e Planalto do Highveld",
+        "titleEn": "Confluence of the Atlantic and Indian Oceans and the Highveld",
+        "contentPt": "Situada na extremidade meridional da África, a **África do Sul** é banhada pelos oceanos Atlântico e Índico (que se encontram no Cabo das Agulhas) e possui relevo dominado pelo planalto interior do *Highveld* e pela escarpa dos Montes Drakensberg [1][3].\n\nO país abriga biomas notáveis como a Região Florística do Cabo (*Fynbos*), savanas, desertos do Karoo e áreas costeiras subtropicais, sob climas predominantemente semiáridos a mediterrâneos [1].",
+        "contentEn": "Positioned at the southern tip of Africa, **South Africa** borders both the Atlantic and Indian Oceans (meeting at Cape Agulhas) and rises onto the interior *Highveld* plateau ringed by the Drakensberg escarpment [1][3].\n\nIts biomes include the Cape Floristic Region (*Fynbos*), savannas, the semi-arid Karoo, and subtropical coastal belts [1].",
+        "primarySource": "Stats SA / Natural Earth",
+        "primarySourceEn": "Stats SA / Natural Earth",
+        "sourceUrl": "https://www.statssa.gov.za/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "Democracia Constitucional de 1996 e Três Capitais",
+        "titleEn": "The 1996 Constitutional Democracy and Three Capitals",
+        "contentPt": "A **África do Sul** é uma república parlamentar constitucional regida pela Constituição de 1996, reconhecida internacionalmente pela abrangência de sua Declaração de Direitos [1].\n\nO país distribui singularmente as sedes dos três poderes entre **Pretória** (Executivo), **Cidade do Cabo** (Legislativo bicameral) e **Bloemfontein** (Suprema Corte de Apelação), com a Corte Constitucional sediada em Joanesburgo [1].",
+        "contentEn": "**South Africa** is a constitutional parliamentary republic governed by the 1996 Constitution, widely noted for its comprehensive Bill of Rights [1].\n\nNational branches are uniquely distributed across three capitals: **Pretoria** (Executive), **Cape Town** (bicameral Parliament), and **Bloemfontein** (Supreme Court of Appeal), with the Constitutional Court sitting in Johannesburg [1].",
+        "primarySource": "Constituição da República da África do Sul (1996) / Stats SA",
+        "primarySourceEn": "Constitution of the Republic of South Africa (1996)",
+        "sourceUrl": "https://www.statssa.gov.za/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Polo Industrial e Financeiro Africano e Transição Energética",
+        "titleEn": "African Industrial and Financial Hub and Energy Transition",
+        "contentPt": "Membro do G20 e do BRICS, a **África do Sul** possui a economia mais industrializada e o setor financeiro mais profundo do continente africano, combinando mineração (platina, ouro, manganês, cromo), manufatura automotiva, agricultura e serviços financeiros [1][2].\n\nO país enfrenta desafios persistentes de desemprego estrutural, desigualdade socioeconômica herdada do apartheid e modernização do sistema elétrico rumo a fontes renováveis [1][2].",
+        "contentEn": "A member of the G20 and BRICS, **South Africa** has Africa's most industrialized economy and deepest financial markets, spanning mining (platinum, gold, manganese, chromium), automotive manufacturing, agriculture, and financial services [1][2].\n\nKey policy challenges include structural unemployment, socioeconomic inequalities rooted in the apartheid era, and modernizing its electricity grid toward renewables [1][2].",
+        "primarySource": "Banco Mundial (WDI) / Stats SA",
+        "primarySourceEn": "World Bank (WDI) / Stats SA",
+        "sourceUrl": "https://data.worldbank.org/country/ZAF",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Dos Povos Khoisan e Bantu ao Fim do Apartheid em 1994",
+        "titleEn": "From Khoisan and Bantu Societies to the End of Apartheid in 1994",
+        "contentPt": "A região abriga alguns dos mais antigos registros fósseis de hominíneos do planeta (Berço da Humanidade) e sociedades históricas Khoisan, Zulu, Xhosa e Sotho, antes da colonização neerlandesa (1652) e britânica [1].\n\nEntre 1948 e 1994 vigorou o regime institucional de segregação racial do **Apartheid**, superado após décadas de resistência interna e pressão internacional nas primeiras eleições multirraciais universais de abril de 1994, que elegeram Nelson Mandela [1].",
+        "contentEn": "South Africa holds some of the earliest hominin fossil sites on Earth (Cradle of Humankind) and historic Khoisan, Zulu, Xhosa, and Sotho polities prior to Dutch (1652) and British colonization [1].\n\nFrom 1948 to 1994 the institutionalized racial segregation of **Apartheid** prevailed until internal resistance and international pressure culminated in South Africa's first universal multiracial elections in April 1994, electing Nelson Mandela [1].",
+        "primarySource": "Nelson Mandela Foundation / ONU",
+        "primarySourceEn": "Nelson Mandela Foundation / United Nations",
+        "sourceUrl": "https://www.nelsonmandela.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Lideranças dos Direitos Humanos, Literatura e Ciência",
+        "titleEn": "Leaders in Human Rights, Literature, and Science",
+        "contentPt": "A **África do Sul** projetou figuras marcantes na luta pela igualdade e no saber científico [1]:\n- **Nelson Mandela (1918–2013)** e **Desmond Tutu (1931–2021)**: Prêmios Nobel da Paz e símbolos da reconciliação democrática.\n- **Miriam Makeba (1932–2008)**: cantora e ativista antiapartheid de projeção mundial.\n- **Nadine Gordimer (1923–2014)** e **J. M. Coetzee**: Prêmios Nobel de Literatura.\n- **Sydney Brenner (1927–2019)**: Nobel de Medicina pelo trabalho pioneiro em genética molecular.",
+        "contentEn": "**South Africa** produced globally resonant figures in human rights, arts, and science [1]:\n- **Nelson Mandela (1918–2013)** and **Desmond Tutu (1931–2021)**: Nobel Peace Prize laureates and icons of democratic reconciliation.\n- **Miriam Makeba (1932–2008)**: internationally acclaimed singer and anti-apartheid advocate.\n- **Nadine Gordimer (1923–2014)** and **J. M. Coetzee**: Nobel laureates in Literature.\n- **Sydney Brenner (1927–2019)**: Nobel laureate in Medicine for foundational molecular genetics.",
+        "primarySource": "Nelson Mandela Foundation / UNESCO",
+        "primarySourceEn": "Nelson Mandela Foundation / UNESCO",
+        "sourceUrl": "https://www.nelsonmandela.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Multilinguismo Constitucional e Patrimônio da Humanidade",
+        "titleEn": "Constitutional Multilingualism and World Heritage",
+        "contentPt": "A Constituição sul-africana reconhece **doze línguas oficiais** (incluindo zulu, xhosa, africâner, inglês, sotho e a Língua de Sinais Sul-Africana), refletindo a diversidade cultural conhecida como \"Nação Arco-Íris\" [1].\n\nSeus sítios UNESCO incluem a Ilha Robben, o Berço da Humanidade, a Paisagem Cultural de Mapungubwe, o Parque uKhahlamba-Drakensberg e as Áreas Protegidas da Região Florística do Cabo [1].",
+        "contentEn": "South Africa's Constitution recognizes **twelve official languages** (including Zulu, Xhosa, Afrikaans, English, Sotho, and South African Sign Language), reflecting the cultural diversity of the \"Rainbow Nation\" [1].\n\nUNESCO World Heritage sites include Robben Island, the Cradle of Humankind, Mapungubwe Cultural Landscape, Maloti-Drakensberg Park, and the Cape Floristic Region Protected Areas [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial na África do Sul",
+        "primarySourceEn": "UNESCO — World Heritage in South Africa",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/za",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Hotspots de Biodiversidade e Pesquisa em Saúde Pública",
+        "titleEn": "Biodiversity Hotspots and Public Health Research",
+        "contentPt": "A **África do Sul** é um dos países mais biodiversos do planeta, abrigando o hotspot floral do Cabo e grandes áreas de conservação como o Parque Nacional Kruger, fundamentais para a proteção de rinocerontes, elefantes e grandes felinos [1].\n\nNa saúde pública, o país lidera a pesquisa genômica e epidemiológica africana no enfrentamento ao HIV/AIDS e à tuberculose, com o maior programa de terapia antirretroviral do mundo [1][2].",
+        "contentEn": "**South Africa** ranks among the planet's most biodiverse nations, encompassing the Cape Floristic hotspot and major reserves such as Kruger National Park vital to rhino, elephant, and big cat conservation [1].\n\nIn public health, South Africa leads African genomic and epidemiological research against HIV/AIDS and tuberculosis, operating the world's largest antiretroviral therapy program [1][2].",
+        "primarySource": "OMS — Global Health Observatory / IUCN",
+        "primarySourceEn": "WHO — Global Health Observatory / IUCN",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "EGY": {
+    "isoCode": "EGY",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "O Vale e o Delta do Nilo, Saara e Península do Sinai",
+        "titleEn": "The Nile Valley and Delta, Sahara, and Sinai Peninsula",
+        "contentPt": "País transcontinental entre o nordeste da África e o sudoeste da Ásia (Península do Sinai), o **Egito** é banhado pelos mares Mediterrâneo e Vermelho e interligado pelo estratégico **Canal de Suez** [1][3].\n\nEmbora o deserto do Saara cubra a maior parte do território, quase toda a população e a agricultura concentram-se na estreita faixa fértil do **Rio Nilo** e em seu delta mediterrâneo [1].",
+        "contentEn": "A transcontinental nation spanning northeastern Africa and southwestern Asia (Sinai Peninsula), **Egypt** borders the Mediterranean and Red Seas, connected by the strategic **Suez Canal** [1][3].\n\nAlthough the Sahara Desert covers most of its land area, nearly all population and agriculture cluster along the fertile **Nile River** valley and Mediterranean delta [1].",
+        "primarySource": "CAPMAS Egypt / Natural Earth",
+        "primarySourceEn": "CAPMAS Egypt / Natural Earth",
+        "sourceUrl": "https://www.capmas.gov.eg/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Árabe do Egito e Papel Diplomático Regional",
+        "titleEn": "Arab Republic of Egypt and Regional Diplomatic Role",
+        "contentPt": "O **Egito** é uma república semipresidencialista com sede de governo na região metropolitana do Cairo (e na Nova Capital Administrativa) e sede permanente da **Liga dos Estados Árabes** [1].\n\nSua posição geográfica no corredor Suez–Mediterrâneo–Mar Vermelho confere ao país peso central na diplomacia do Oriente Médio, do Norte da África e da União Africana [1].",
+        "contentEn": "**Egypt** is a semi-presidential republic governed from Greater Cairo (including the New Administrative Capital) and serves as the permanent headquarters of the **League of Arab States** [1].\n\nIts strategic position along the Suez–Mediterranean–Red Sea corridor makes Egypt a central diplomatic actor across the Middle East, North Africa, and the African Union [1].",
+        "primarySource": "ONU / CAPMAS Egypt",
+        "primarySourceEn": "United Nations / CAPMAS Egypt",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Canal de Suez, Turismo, Agricultura do Nilo e Serviços",
+        "titleEn": "Suez Canal, Tourism, Nile Agriculture, and Services",
+        "contentPt": "A economia egípcia apoia-se nas receitas de trânsito do **Canal de Suez** — uma das artérias mais críticas do comércio marítimo mundial —, no turismo cultural e costeiro, nas remessas externas, no gás natural, na manufatura têxtil e na agricultura irrigada do Nilo [1][2].\n\nO crescimento populacional acelerado impõe desafios permanentes de segurança alimentar, gestão hídrica do Nilo e equilíbrio fiscal [1][2].",
+        "contentEn": "Egypt's economy relies on transit revenues from the **Suez Canal** — one of global shipping's most critical chokepoints — alongside heritage and Red Sea tourism, remittances, natural gas, textiles, and irrigated Nile agriculture [1][2].\n\nRapid population growth creates ongoing challenges in food security, Nile water management, and macroeconomic stability [1][2].",
+        "primarySource": "Banco Mundial (WDI) / FMI",
+        "primarySourceEn": "World Bank (WDI) / IMF",
+        "sourceUrl": "https://data.worldbank.org/country/EGY",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 9,
+        "titlePt": "Cinco Milênios: Do Egito Faraônico à República Moderna",
+        "titleEn": "Five Millennia: From Pharaonic Egypt to the Modern Republic",
+        "contentPt": "A unificação do Alto e Baixo Egito por volta de 3100 a.C. inaugurou uma das civilizações contínuas mais antigas da história, marcada pela escrita hieroglífica, pela engenharia monumental de Gizé e Tebas e por períodos greco-romano, copta e islâmico (fundação do Cairo fatímida e da Universidade de Al-Azhar no século X) [1].\n\nA abertura do Canal de Suez em 1869, a independência formal no século XX e a Revolução de 1952 moldaram a república contemporânea [1].",
+        "contentEn": "The unification of Upper and Lower Egypt around 3100 BCE inaugurated one of history's longest-enduring civilizations, defined by hieroglyphic writing, monumental architecture at Giza and Thebes, and subsequent Greco-Roman, Coptic, and Islamic eras (including the 10th-century founding of Cairo and Al-Azhar University) [1].\n\nThe opening of the Suez Canal in 1869, twentieth-century independence, and the 1952 Revolution shaped the modern republic [1].",
+        "primarySource": "UNESCO — Patrimônio Histórico do Egito",
+        "primarySourceEn": "UNESCO — Historical Heritage of Egypt",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/eg",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Intelectuais, Cientistas e Artistas do Egito",
+        "titleEn": "Scholars, Scientists, and Artists of Egypt",
+        "contentPt": "A herança intelectual egípcia atravessa da Antiguidade à ciência contemporânea [1]:\n- **Hipátia de Alexandria (c. 355–415)**: matemática, astrônoma e filósofa da Antiguidade tardia.\n- **Naguib Mahfouz (1911–2006)**: primeiro escritor de língua árabe laureado com o Prêmio Nobel de Literatura.\n- **Ahmed Zewail (1946–2016)**: Prêmio Nobel de Química pelo desenvolvimento da femtoquímica.\n- **Umm Kulthum (1898–1975)**: cantora ícone da música clássica árabe do século XX.",
+        "contentEn": "Egypt's intellectual legacy spans from Antiquity to contemporary science [1]:\n- **Hypatia of Alexandria (c. 355–415)**: mathematician, astronomer, and philosopher of late Antiquity.\n- **Naguib Mahfouz (1911–2006)**: first Arabic-language author awarded the Nobel Prize in Literature.\n- **Ahmed Zewail (1946–2016)**: Nobel laureate in Chemistry for pioneering femtochemistry.\n- **Umm Kulthum (1898–1975)**: iconic vocalist of twentieth-century Arabic music.",
+        "primarySource": "UNESCO / Biblioteca de Alexandria",
+        "primarySourceEn": "UNESCO / Bibliotheca Alexandrina",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Patrimônio Faraônico, Cairo Histórico e Cinema Árabe",
+        "titleEn": "Pharaonic Heritage, Historic Cairo, and Arabic Cinema",
+        "contentPt": "O **Egito** é um dos centros culturais e cinematográficos mais influentes do mundo árabe, reunindo tradições islâmicas, coptas e mediterrâneas [1].\n\nSeus sítios UNESCO incluem Mênfis e as Pirâmides de Gizé, a Antiga Tebas (Luxor), os Monumentos Núbios de Abu Simbel a Filas, o Cairo Histórico, o Mosteiro de Santa Catarina no Sinai e o sítio paleontológico de Wadi Al-Hitan [1].",
+        "contentEn": "**Egypt** is a leading cultural and cinematic hub of the Arab world, blending Islamic, Coptic, and Mediterranean traditions [1].\n\nUNESCO World Heritage sites include Memphis and the Giza Necropolis, Ancient Thebes (Luxor), Nubian Monuments from Abu Simbel to Philae, Historic Cairo, Saint Catherine's Monastery in Sinai, and the Wadi Al-Hitan paleontological valley [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial no Egito",
+        "primarySourceEn": "UNESCO — World Heritage in Egypt",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/eg",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Recifes do Mar Vermelho e Eliminação da Hepatite C e Malária",
+        "titleEn": "Red Sea Reefs and Public Health Milestones",
+        "contentPt": "O **Egito** alcançou marcos reconhecidos pela OMS na saúde pública, destacando-se pela campanha nacional em larga escala contra a **hepatite C** e pela certificação oficial de eliminação da malária em 2024 [1].\n\nNo plano ambiental, os recifes de coral do Mar Vermelho figuram entre os mais resilientes ao aquecimento oceânico no planeta, enquanto o Delta do Nilo demanda adaptação frente à elevação do nível do mar [1][2].",
+        "contentEn": "**Egypt** achieved WHO-recognized public health milestones through its nationwide **hepatitis C** screening and treatment campaign and official malaria-free certification in 2024 [1].\n\nEnvironmentally, Egypt's Red Sea coral reefs rank among the most heat-resilient globally, while the low-lying Nile Delta faces long-term sea-level adaptation challenges [1][2].",
+        "primarySource": "OMS — Global Health Observatory (Egito)",
+        "primarySourceEn": "WHO — Global Health Observatory (Egypt)",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  }
+}

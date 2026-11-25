@@ -9,6 +9,7 @@ import { getSourceUrl } from "@/lib/citations";
 import { HoverCardPreview } from "./HoverCardPreview";
 import { HoverCitationCard } from "./HoverCitationCard";
 import { AnalyticalProfileView } from "./AnalyticalProfileView";
+import { COUNTRY_NAME_TO_ISO, createReaderTokenRegex } from "./reader-country-links";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { useI18n } from "@/lib/i18n/useT";
@@ -17,9 +18,22 @@ import { formatCountryName } from "@/lib/i18n/format";
 interface ReaderContentProps {
   country: CountryData;
   dimension?: string;
+  isLoadingEditorial?: boolean;
 }
 
-export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension }) => {
+interface FootnoteEntry {
+  source: string;
+  detail: string;
+  type: string;
+  url: string;
+  referenceDate?: string;
+}
+
+export const ReaderContent: React.FC<ReaderContentProps> = ({
+  country,
+  dimension,
+  isLoadingEditorial = false,
+}) => {
   const { locale, t } = useI18n();
   const displayName = formatCountryName(country.iso2, country.nameCommon, locale);
   const storeDimension = useReaderStore((s) => s.activeDimension);
@@ -33,44 +47,22 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
 
   const section = country.dossierSections?.find((s) => s.dimension === activeDimension);
 
-  const COUNTRY_NAME_TO_ISO: Record<string, string> = useMemo(
-    () => ({
-      "Brasil": "BRA",
-      "Alemanha": "DEU",
-      "Estados Unidos": "USA",
-      "Japão": "JPN",
-      "África do Sul": "ZAF",
-      "Egito": "EGY",
-      "Canadá": "CAN",
-      "França": "FRA",
-      "Reino Unido": "GBR",
-      "Itália": "ITA",
-      "Espanha": "ESP",
-      "Portugal": "PRT",
-      "China": "CHN",
-      "Índia": "IND",
-      "Rússia": "RUS",
-      "Austrália": "AUS",
-      "Argentina": "ARG",
-      "México": "MEX",
-      "Chile": "CHL",
-      "Colômbia": "COL",
-      "Polônia": "POL",
-    }),
-    []
-  );
-
   // Build footnotes strictly from real sources declared on the curated dossier section
   const activeFootnotesMap = useMemo(() => {
-    if (!section) return {} as Record<number, { source: string; detail: string; type: string }>;
+    if (!section) return {} as Record<number, FootnoteEntry>;
 
-    const baseMap: Record<number, { source: string; detail: string; type: string }> = {};
+    const baseMap: Record<number, FootnoteEntry> = {};
     const primarySource = section.citationsJson?.primarySource;
     if (primarySource) {
       baseMap[1] = {
         source: primarySource,
-        detail: "Publicação ou repositório institucional declarado neste verbete.",
-        type: "Fonte Primária Direta",
+        detail: t(
+          "reader.primarySourceDetail",
+          "Publicação ou repositório institucional declarado neste verbete."
+        ),
+        type: t("reader.primarySourceType", "Fonte Primária Direta"),
+        url: section.citationsJson?.sourceUrl || getSourceUrl(primarySource),
+        referenceDate: section.citationsJson?.referenceDate,
       };
     }
 
@@ -81,27 +73,55 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
     }
 
     if (citedNumbers.has(2)) {
+      const statsSource = t(
+        "reader.statsSourceName",
+        "Banco Mundial (World Development Indicators) / Divisão de Estatística da ONU"
+      );
       baseMap[2] = {
-        source: "Banco Mundial (World Development Indicators) / Divisão de Estatística da ONU",
-        detail: "Séries temporais e indicadores demográficos e macroeconômicos auditados.",
-        type: "Série Estatística Oficial",
+        source: statsSource,
+        detail: t(
+          "reader.statsSourceDetail",
+          "Séries temporais e indicadores demográficos e macroeconômicos auditados."
+        ),
+        type: t("reader.statsSourceType", "Série Estatística Oficial"),
+        url: getSourceUrl("Banco Mundial"),
+        referenceDate: section.citationsJson?.referenceDate,
       };
     }
 
     if (citedNumbers.has(3)) {
+      const cartoSource = t("reader.cartoSourceName", "Cartografia Natural Earth (1:110m)");
       baseMap[3] = {
-        source: "Cartografia Natural Earth (1:110m)",
-        detail: "Delimitações territoriais e vetores geoespaciais calibrados.",
-        type: "Cartografia Oficial",
+        source: cartoSource,
+        detail: t(
+          "reader.cartoSourceDetail",
+          "Delimitações territoriais e vetores geoespaciais calibrados."
+        ),
+        type: t("reader.cartoSourceType", "Cartografia Oficial"),
+        url: getSourceUrl("Natural Earth"),
       };
     }
 
     return baseMap;
-  }, [section]);
+  }, [section, t]);
 
   // Perfil Analítico & Posição Global (T38): disponível para todos os 177 países contemporâneos
   if (activeDimension === "ANALYTICAL_PROFILE" && !country.isHistoricalEntity) {
     return <AnalyticalProfileView country={country} />;
+  }
+
+  if (!section && isLoadingEditorial) {
+    return (
+      <article
+        role="status"
+        data-testid="reader-loading-editorial"
+        className="max-h-[calc(85vh-6rem)] flex-1 overflow-y-auto px-6 py-4"
+      >
+        <div className="rounded-card border border-line bg-surface-raised p-6 text-label text-fg-secondary">
+          {t("reader.loadingEditorial", "Carregando dossiê multidisciplinar auditado…")}
+        </div>
+      </article>
+    );
   }
 
   // Empty state when no dossier has been authored for this country/dimension
@@ -201,12 +221,13 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
 
   const title = section.title;
   const content = section.contentMarkdown;
+  const sectionRefDate = section.citationsJson?.referenceDate;
+  const publicationYear = sectionRefDate ? Number(sectionRefDate.slice(0, 4)) || 2026 : 2026;
 
   // Token parser for text elements: [N], bold **...**, italics *...*, and country hover cards
   const renderFormattedParagraph = (paragraph: string, pIdx: number) => {
     const parseLineTokens = (cleanLine: string, lIdx: number) => {
-      const regex =
-        /(\[\d+\]|\*\*[^*]+\*\*|\*[^*]+\*|Estados Unidos|África do Sul|Reino Unido|Alemanha|Brasil|Japão|Egito|Canadá|França|Itália|Espanha|Portugal|China|Índia|Rússia|Austrália|Argentina|México|Chile|Colômbia|Polônia)/g;
+      const regex = createReaderTokenRegex();
       const parts: React.ReactNode[] = [];
       let lastIndex = 0;
       let match: RegExpExecArray | null;
@@ -233,10 +254,10 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                 onOpenCitationModal={() => {
                   setCitationModalOpen(true, {
                     title: `${fn.source}${fn.detail ? ` — ${fn.detail}` : ""}`,
-                    countryName: country.nameCommon,
-                    url: getSourceUrl(fn.source),
+                    countryName: displayName,
+                    url: fn.url,
                     accessDate: new Date(),
-                    publicationYear: 2026,
+                    publicationYear,
                   });
                 }}
               />
@@ -349,12 +370,17 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
       {/* Header of Dossier Entry */}
       <div className="border-b border-line pb-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge tone="neutral">{activeDimension}</Badge>
             <span className="flex items-center gap-1 font-mono text-caption tabular-nums text-fg-muted">
               <Clock aria-hidden="true" className="h-3.5 w-3.5" />
               <span>{t("reader.readingTime", "Leitura de ~")}{section.estimatedReadMin || 6} min</span>
             </span>
+            {sectionRefDate && (
+              <span className="font-mono text-caption tabular-nums text-fg-muted">
+                · {t("reader.referenceDate", "Referência:")} {sectionRefDate}
+              </span>
+            )}
           </div>
 
           <Button
@@ -371,7 +397,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                 dimensionName: activeDimension,
                 url,
                 accessDate: new Date(),
-                publicationYear: 2026,
+                publicationYear,
               });
             }}
           >
@@ -422,7 +448,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                 <div className="min-w-0 flex-1 space-y-1">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <a
-                      href={getSourceUrl(fn.source)}
+                      href={fn.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-label font-medium text-fg transition-colors duration-fast ease-out hover:text-accent hover:underline"
@@ -433,10 +459,13 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                     </a>
                     <Badge tone="neutral">{fn.type}</Badge>
                   </div>
-                  <p className="text-caption leading-relaxed text-fg-secondary">{fn.detail}</p>
+                  <p className="text-caption leading-relaxed text-fg-secondary">
+                    {fn.detail}
+                    {fn.referenceDate ? ` (${t("reader.referenceDate", "Referência:")} ${fn.referenceDate})` : ""}
+                  </p>
                   <div className="mt-1 flex items-center justify-between gap-2 border-t border-line pt-2 text-caption">
                     <a
-                      href={getSourceUrl(fn.source)}
+                      href={fn.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-accent hover:text-accent-hover hover:underline"
@@ -451,9 +480,9 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({ country, dimension
                         setCitationModalOpen(true, {
                           title: `${fn.source}${fn.detail ? ` — ${fn.detail}` : ""}`,
                           countryName: displayName,
-                          url: getSourceUrl(fn.source),
+                          url: fn.url,
                           accessDate: new Date(),
-                          publicationYear: 2026,
+                          publicationYear,
                         });
                       }}
                       title={`${t("reader.generateCitation", "Gerar citação")}: ${fn.source}`}

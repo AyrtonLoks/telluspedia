@@ -38,7 +38,13 @@ const DIMENSIONS: DimensionItem[] = [
   { key: "NEWS_CURRENT_AFFAIRS", labelKey: "reader.dim.NEWS_CURRENT_AFFAIRS", label: "Atualidades & Relações", icon: <Newspaper aria-hidden="true" className="h-4 w-4" />, estimatedMin: 4 },
 ];
 
-export const ReaderTableOfContents: React.FC = () => {
+interface ReaderTableOfContentsProps {
+  availableDimensions?: ReadonlySet<string>;
+}
+
+export const ReaderTableOfContents: React.FC<ReaderTableOfContentsProps> = ({
+  availableDimensions,
+}) => {
   const { t } = useI18n();
   const activeDimension = useReaderStore((s) => s.activeDimension);
   const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
@@ -53,6 +59,11 @@ export const ReaderTableOfContents: React.FC = () => {
       <div className="mt-2 space-y-1">
         {DIMENSIONS.map((dim) => {
           const isActive = activeDimension === dim.key;
+          const isCurated = Boolean(
+            availableDimensions &&
+              dim.key !== "ANALYTICAL_PROFILE" &&
+              availableDimensions.has(dim.key)
+          );
           return (
             <button
               key={dim.key}
@@ -70,8 +81,15 @@ export const ReaderTableOfContents: React.FC = () => {
                 <span className={isActive ? "text-accent" : "text-fg-muted"}>{dim.icon}</span>
                 <span className="line-clamp-1">{t(dim.labelKey, dim.label)}</span>
               </div>
-              <span className="shrink-0 font-mono text-caption tabular-nums text-fg-muted">
-                {dim.estimatedMin}m
+              <span className="flex shrink-0 items-center gap-1.5 font-mono text-caption tabular-nums text-fg-muted">
+                {isCurated && (
+                  <span
+                    aria-hidden="true"
+                    className="h-1.5 w-1.5 rounded-full bg-accent"
+                    title={t("reader.curatedBadge", "Curado RN13")}
+                  />
+                )}
+                <span>{dim.estimatedMin}m</span>
               </span>
             </button>
           );

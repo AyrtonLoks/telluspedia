@@ -1,0 +1,452 @@
+{
+  "PRT": {
+    "isoCode": "PRT",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Fachada Atlântica Ibérica e Arquipélagos dos Açores e Madeira",
+        "titleEn": "Iberian Atlantic Facade and the Azores and Madeira Archipelagos",
+        "contentPt": "**Portugal** ocupa a faixa ocidental da Península Ibérica e inclui as regiões autônomas atlânticas dos **Açores** e da **Madeira**, conferindo ao país uma das maiores Zonas Econômicas Exclusivas marítimas da União Europeia [1][3].\n\nOs rios **Douro**, **Tejo** e **Guadiana** recortam um território de transição entre o norte atlântico úmido e o sul mediterrâneo (Alentejo e Algarve) [1].",
+        "contentEn": "**Portugal** occupies the western edge of the Iberian Peninsula alongside the Atlantic autonomous archipelagos of the **Azores** and **Madeira**, giving it one of the largest maritime Exclusive Economic Zones in the European Union [1][3].\n\nThe **Douro**, **Tagus**, and **Guadiana** rivers shape a transition from the humid Atlantic north to the Mediterranean south (Alentejo and Algarve) [1].",
+        "primarySource": "Eurostat / Instituto Nacional de Estatística (INE Portugal)",
+        "primarySourceEn": "Eurostat / Statistics Portugal (INE)",
+        "sourceUrl": "https://ec.europa.eu/eurostat",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 6,
+        "titlePt": "República Semipresidencialista, Constituição de 1976 e União Europeia",
+        "titleEn": "Semi-Presidential Republic, 1976 Constitution, and EU Membership",
+        "contentPt": "Instaurada após a Revolução dos Cravos de 25 de abril de 1974, a democracia portuguesa rege-se pela Constituição de 1976 em regime **semipresidencialista**, com Presidente da República eleito diretamente e governo chefiado pelo Primeiro-Ministro perante a Assembleia da República [1].\n\nMembro fundador da CPLP e integrante da União Europeia e da Zona do Euro, Portugal combina autonomia regional insular nos Açores e na Madeira [1].",
+        "contentEn": "Established after the Carnation Revolution of 25 April 1974, Portuguese democracy operates under the 1976 Constitution as a **semi-presidential republic**, pairing a directly elected President with a Prime Minister accountable to the Assembly of the Republic [1].\n\nA founding member of the CPLP and member of the European Union and Eurozone, Portugal grants regional autonomy to the Azores and Madeira [1].",
+        "primarySource": "ONU / Eurostat — Instituições de Portugal",
+        "primarySourceEn": "United Nations / Eurostat — Portuguese Institutions",
+        "sourceUrl": "https://ec.europa.eu/eurostat",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Serviços, Turismo, Indústria Exportadora e Liderança Renovável",
+        "titleEn": "Services, Tourism, Export Manufacturing, and Renewable Leadership",
+        "contentPt": "Integrada ao mercado único europeu, a economia de **Portugal** combina serviços de turismo e tecnologia, indústria automotiva, calçadista, têxtil, de cortiça e agroalimentar (vinho e azeite) [1][2].\n\nO país destaca-se na transição energética europeia, com elevada participação de energia eólica, hídrica e solar no consumo elétrico nacional [2].",
+        "contentEn": "Integrated into the European single market, **Portugal's** economy blends tourism and technology services with automotive, footwear, textile, cork, and agri-food exports (wine and olive oil) [1][2].\n\nPortugal stands out in Europe's energy transition, generating a high share of national electricity from wind, hydro, and solar sources [2].",
+        "primarySource": "Banco Mundial (WDI) / OCDE",
+        "primarySourceEn": "World Bank (WDI) / OECD",
+        "sourceUrl": "https://data.worldbank.org/country/PRT",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Da Formação do Reino em 1143 à Democracia Europeia",
+        "titleEn": "From the 1143 Kingdom to European Democracy",
+        "contentPt": "Um dos Estados-nação mais antigos da Europa (Tratado de Zamora, 1143), **Portugal** protagonizou a expansão marítima dos séculos XV e XVI ligando Europa, África, Ásia e América do Sul [1].\n\nApós a Implantação da República (1910) e o longo regime autoritário do Estado Novo (1933–1974), a Revolução dos Cravos (1974) restaurou a democracia, encerrou o ciclo colonial na África e abriu caminho para a adesão às Comunidades Europeias em 1986 [1].",
+        "contentEn": "One of Europe's oldest nation-states (Treaty of Zamora, 1143), **Portugal** spearheaded fifteenth- and sixteenth-century oceanic voyages linking Europe, Africa, Asia, and South America [1].\n\nFollowing the 1910 Republic and the authoritarian Estado Novo regime (1933–1974), the 1974 Carnation Revolution restored democracy, ended colonial rule in Africa, and led to European Community accession in 1986 [1].",
+        "primarySource": "UNESCO / Arquivo Histórico Português",
+        "primarySourceEn": "UNESCO / Portuguese Historical Archives",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Literatura, Ciência e Navegação na História Lusófona",
+        "titleEn": "Literature, Science, and Navigation in Lusophone History",
+        "contentPt": "Figuras portuguesas marcaram a literatura e o conhecimento científico internacional [1]:\n- **Luís de Camões (c. 1524–1580)**: autor de *Os Lusíadas*, obra fundadora da língua portuguesa literária.\n- **Fernando Pessoa (1888–1935)** e **José Saramago (1922–2010)**: referências da modernidade literária e Prêmio Nobel de Literatura (1998).\n- **Egas Moniz (1874–1955)**: neurologista laureado com o Prêmio Nobel de Medicina (1949), pioneiro da angiografia cerebral.",
+        "contentEn": "Portuguese figures shaped world literature and science [1]:\n- **Luís de Camões (c. 1524–1580)**: author of *Os Lusíadas*, foundational epic of the Portuguese language.\n- **Fernando Pessoa (1888–1935)** and **José Saramago (1922–2010)**: pillars of modern literature and 1998 Nobel laureate.\n- **Egas Moniz (1874–1955)**: neurologist who pioneered cerebral angiography and received the 1949 Nobel Prize in Medicine.",
+        "primarySource": "UNESCO — Memória do Mundo",
+        "primarySourceEn": "UNESCO — Memory of the World",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Fado, Azulejaria e Patrimônio Mundial UNESCO",
+        "titleEn": "Fado, Azulejo Tilework, and UNESCO World Heritage",
+        "contentPt": "A cultura portuguesa expressa-se na língua compartilhada pela CPLP, na tradição musical do **Fado** (Patrimônio Imaterial da UNESCO), na azulejaria e na arquitetura manuelina e contemporânea [1].\n\nEntre os sítios UNESCO destacam-se a Universidade de Coimbra, os centros históricos do Porto, Évora e Guimarães, a paisagem cultural de Sintra, o Alto Douro Vinhateiro e a Floresta Laurissilva da Madeira [1].",
+        "contentEn": "Portuguese culture is expressed through the shared CPLP language, **Fado** music (UNESCO Intangible Heritage), *azulejo* tilework, and Manueline and contemporary architecture [1].\n\nUNESCO World Heritage sites include the University of Coimbra, historic centers of Porto, Évora, and Guimarães, Sintra, the Alto Douro Wine Region, and Madeira's Laurisilva Forest [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial em Portugal",
+        "primarySourceEn": "UNESCO — World Heritage in Portugal",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/pt",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Serviço Nacional de Saúde (SNS) e Ecossistemas Atlânticos",
+        "titleEn": "National Health Service (SNS) and Atlantic Ecosystems",
+        "contentPt": "Criado em 1979, o **Serviço Nacional de Saúde (SNS)** garante cobertura universal e sustenta elevada expectativa de vida e altas taxas de vacinação, além de políticas de saúde pública inovadoras [1][2].\n\nOs arquipélagos macaronésicos preservam florestas relíquia (Laurissilva) e reservas marinhas profundas estratégicas para a conservação do Atlântico Norte [1].",
+        "contentEn": "Established in 1979, Portugal's **National Health Service (SNS)** provides universal coverage supporting high life expectancy, strong immunization rates, and innovative public health policies [1][2].\n\nThe Macaronesian archipelagos protect relict Laurisilva forests and deep-sea marine reserves vital to North Atlantic conservation [1].",
+        "primarySource": "OMS — Global Health Observatory / OCDE",
+        "primarySourceEn": "WHO — Global Health Observatory / OECD",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "AGO": {
+    "isoCode": "AGO",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Planalto Central, Costa Atlântica e Deserto do Namibe",
+        "titleEn": "Central Plateau, Atlantic Coast, and Namib Desert",
+        "contentPt": "**Angola** localiza-se na costa sudoeste da África (incluindo o enclave de Cabinda ao norte do rio Congo), estendendo-se por mais de 1,2 milhão de km² de savanas tropicais, florestas úmidas ao norte, o Planalto Central (Bié) e a faixa árida do **Deserto do Namibe** ao sul [1][3].\n\nOs rios **Kwanza**, **Cunene**, **Cubango** e afluentes do Congo tornam o planalto angolano importante divisor hídrico da África Austral [1].",
+        "contentEn": "**Angola** lies on Africa's southwestern Atlantic coast (including the Cabinda exclave north of the Congo River), spanning over 1.2 million km² across northern rainforests, central *miombo* savannas on the Bié Plateau, and the arid **Namib Desert** in the south [1][3].\n\nThe **Kwanza**, **Cunene**, **Okavango (Cubango)**, and Congo tributaries make Angola's central highlands a vital watershed for Southern Africa [1].",
+        "primarySource": "ONU / Natural Earth — Geografia de Angola",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Angola",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 5,
+        "titlePt": "República Presidencialista e Integração na SADC e CPLP",
+        "titleEn": "Presidential Republic and SADC / CPLP Integration",
+        "contentPt": "Regida pela Constituição de 2010, **Angola** é uma república unitária presidencialista com capital em **Luanda** e Assembleia Nacional unicameral [1].\n\nO país exerce protagonismo diplomático na Comunidade de Desenvolvimento da África Austral (SADC), na União Africana e na Comunidade dos Países de Língua Portuguesa (CPLP) [1].",
+        "contentEn": "Governed under the 2010 Constitution, **Angola** is a unitary presidential republic with its capital in **Luanda** and a unicameral National Assembly [1].\n\nAngola plays an active diplomatic role within the Southern African Development Community (SADC), the African Union, and the Community of Portuguese Language Countries (CPLP) [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Petróleo, Diamantes, Corredor do Lobito e Diversificação",
+        "titleEn": "Oil, Diamonds, the Lobito Corridor, and Diversification",
+        "contentPt": "Entre os principais produtores africanos de petróleo e diamantes, **Angola** busca diversificar sua economia para agricultura, pesca, indústria de transformação e infraestrutura logística, com destaque para o **Corredor Ferroviário do Lobito** ligando o interior mineral africano ao Atlântico [1][2].\n\nA forte dependência de hidrocarbonetos torna o orçamento sensível aos ciclos globais de commodities, motivando reformas fiscais e investimento em capital humano [2].",
+        "contentEn": "One of Africa's major oil and diamond producers, **Angola** is pursuing economic diversification into agriculture, fisheries, manufacturing, and regional logistics, anchored by the **Lobito Rail Corridor** linking Central African minerals to the Atlantic [1][2].\n\nHigh hydrocarbon dependence exposes public finances to global commodity cycles, driving fiscal reforms and human-capital investment [2].",
+        "primarySource": "Banco Mundial (WDI) / FMI",
+        "primarySourceEn": "World Bank (WDI) / IMF",
+        "sourceUrl": "https://data.worldbank.org/country/AGO",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 8,
+        "titlePt": "Dos Reinos do Congo e Ndongo à Independência e Paz de 2002",
+        "titleEn": "From the Kongo and Ndongo Kingdoms to Independence and the 2002 Peace",
+        "contentPt": "Antes e durante o contato português no século XV, o território abrigava reinos estruturados como o **Reino do Congo** (Mbanza Kongo), **Ndongo** e **Matamba** [1]. O período colonial foi profundamente marcado pelo tráfico transatlântico de pessoas escravizadas e pela guerra de libertação iniciada em 1961 [1].\n\nIndependente em 11 de novembro de 1975, Angola atravessou uma longa guerra civil inserida no contexto da Guerra Fria até o acordo de paz de 2002, abrindo fase de reconstrução de infraestrutura e crescimento urbano [1].",
+        "contentEn": "Before and during fifteenth-century Portuguese contact, Angola was home to organized states including the **Kingdom of Kongo** (Mbanza Kongo), **Ndongo**, and **Matamba** [1]. Colonial rule was deeply marked by the transatlantic slave trade and the liberation war launched in 1961 [1].\n\nIndependent on 11 November 1975, Angola endured a prolonged Cold War-entangled civil war until the 2002 peace settlement inaugurated nationwide infrastructure reconstruction [1].",
+        "primarySource": "UNESCO — História Geral da África",
+        "primarySourceEn": "UNESCO — General History of Africa",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Lideranças Históricas e Expressão Literária Angolana",
+        "titleEn": "Historical Leaders and Angolan Literary Voices",
+        "contentPt": "A memória histórica e literária de **Angola** reúne nomes de projeção lusófona e africana [1]:\n- **Rainha Njinga Mbandi (c. 1583–1663)**: diplomata e estrategista dos reinos de Ndongo e Matamba na resistência colonial.\n- **Agostinho Neto (1922–1979)**: médico, poeta e primeiro presidente da República de Angola.\n- **Pepetela** e **Ondjaki**: escritores centrais da ficção contemporânea em língua portuguesa.",
+        "contentEn": "**Angola's** historical and literary memory includes figures recognized across Africa and the Lusophone world [1]:\n- **Queen Njinga Mbandi (c. 1583–1663)**: ruler and diplomat of Ndongo and Matamba who led anticolonial resistance.\n- **Agostinho Neto (1922–1979)**: physician, poet, and first President of independent Angola.\n- **Pepetela** and **Ondjaki**: acclaimed voices of contemporary Portuguese-language literature.",
+        "primarySource": "UNESCO — Mulheres na História da África",
+        "primarySourceEn": "UNESCO — Women in African History",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Mbanza Kongo, Línguas Nacionais, Semba e Kuduro",
+        "titleEn": "Mbanza Kongo, National Languages, Semba, and Kuduro",
+        "contentPt": "**Angola** combina o português (língua oficial e amplamente falada) com línguas nacionais bantas como **umbundo**, **quimbundo**, **quicongo** e **chokwe** [1].\n\nO centro histórico de **Mbanza Kongo**, antiga capital do Reino do Congo, integra o Patrimônio Mundial da UNESCO, enquanto gêneros musicais como o **semba**, a **kizomba** e o **kuduro** projetam a cultura angolana internacionalmente [1].",
+        "contentEn": "**Angola** combines Portuguese (official and widely spoken) with Bantu national languages including **Umbundu**, **Kimbundu**, **Kikongo**, and **Chokwe** [1].\n\n**Mbanza Kongo**, historic capital of the Kingdom of Kongo, is a UNESCO World Heritage site, while musical genres such as **semba**, **kizomba**, and **kuduro** carry Angolan creativity worldwide [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial em Angola",
+        "primarySourceEn": "UNESCO — World Heritage in Angola",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/ao",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Palanca-Negra-Gigante, Ecossistemas e Saúde Materno-Infantil",
+        "titleEn": "Giant Sable Antelope, Ecosystems, and Public Health",
+        "contentPt": "A fauna angolana inclui espécies endêmicas raras como a **palanca-negra-gigante** (*Hippotragus niger variani*, Criticamente em Perigo na Lista Vermelha da IUCN), protegida no Parque Nacional de Cangandala, além das florestas de miombo e zonas úmidas do Cubango [1].\n\nNa saúde pública, os esforços priorizam a redução da mortalidade infantil, o controle da malária e a ampliação da atenção primária em áreas urbanas e rurais [1][2].",
+        "contentEn": "Angolan wildlife includes rare endemics such as the critically endangered **giant sable antelope** (*Hippotragus niger variani*, IUCN Red List), protected in Cangandala National Park alongside *miombo* woodlands and Okavango headwaters [1].\n\nPublic health priorities center on reducing child mortality, malaria control, and expanding primary health access across urban and rural provinces [1][2].",
+        "primarySource": "OMS — Global Health Observatory / IUCN",
+        "primarySourceEn": "WHO — Global Health Observatory / IUCN",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "MOZ": {
+    "isoCode": "MOZ",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Costa do Canal de Moçambique e Bacia do Rio Zambeze",
+        "titleEn": "Mozambique Channel Coast and the Zambezi River Basin",
+        "contentPt": "**Moçambique** estende-se por cerca de 2.500 km ao longo do Oceano Índico, frente a Madagascar, com planícies costeiras recortadas por manguezais e estuários e terras altas no interior [1][3].\n\nOs rios **Zambeze**, **Limpopo** e **Rovuma** estruturam a hidrografia nacional, enquanto a exposição ao Canal de Moçambique torna o litoral vulnerável a ciclones tropicais intensificados pelas mudanças climáticas [1].",
+        "contentEn": "**Mozambique** stretches roughly 2,500 km along the Indian Ocean opposite Madagascar, featuring coastal plains lined with mangroves and estuaries rising toward inland plateaus [1][3].\n\nThe **Zambezi**, **Limpopo**, and **Rovuma** rivers dominate its hydrology, while exposure to the Mozambique Channel makes coastal provinces vulnerable to intensifying tropical cyclones [1].",
+        "primarySource": "ONU / FAO — Geografia de Moçambique",
+        "primarySourceEn": "United Nations / FAO — Geography of Mozambique",
+        "sourceUrl": "https://www.fao.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 5,
+        "titlePt": "República Constitucional, SADC, CPLP e Commonwealth",
+        "titleEn": "Constitutional Republic, SADC, CPLP, and Commonwealth",
+        "contentPt": "Regido pela Constituição de 2004 (com emendas subsequentes), **Moçambique** é uma república presidencialista multipartidária com capital em **Maputo** e Assembleia da República eleita diretamente [1].\n\nO país ocupa posição singular na diplomacia africana ao integrar simultaneamente a CPLP, a SADC, a União Africana e a Comunidade das Nações (Commonwealth) [1].",
+        "contentEn": "Governed under the 2004 Constitution (as amended), **Mozambique** is a multiparty presidential republic with its capital in **Maputo** and a directly elected Assembly of the Republic [1].\n\nMozambique bridges regional groupings as a member of the CPLP, SADC, the African Union, and the Commonwealth of Nations [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 6,
+        "titlePt": "Agricultura, Corredores Portuários do Índico e Energia",
+        "titleEn": "Agriculture, Indian Ocean Port Corridors, and Energy",
+        "contentPt": "A agricultura familiar emprega a maioria da força de trabalho moçambicana, complementada por corredores ferroviários e portuários estratégicos (Maputo, Beira e Nacala) que escoam o comércio de países vizinhos sem litoral [1][2].\n\nA hidrelétrica de **Cahora Bassa** no Zambeze e as grandes reservas de gás natural na Bacia do Rovuma ampliam o papel energético regional, diante de desafios fiscais e de resiliência climática [2].",
+        "contentEn": "Smallholder agriculture employs the majority of Mozambique's workforce, complemented by strategic rail-and-port corridors (Maputo, Beira, Nacala) serving landlocked Southern African neighbors [1][2].\n\nThe **Cahora Bassa** hydroelectric dam on the Zambezi and major Rovuma Basin natural gas reserves expand regional energy supply amid fiscal and climate resilience challenges [2].",
+        "primarySource": "Banco Mundial (WDI) / FMI",
+        "primarySourceEn": "World Bank (WDI) / IMF",
+        "sourceUrl": "https://data.worldbank.org/country/MOZ",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Rotas do Oceano Índico, Independência de 1975 e Acordos de Paz",
+        "titleEn": "Indian Ocean Trade Routes, 1975 Independence, and Peace Accords",
+        "contentPt": "Integrado há séculos às rotas marítimas suaíli e árabes do Índico (com a Ilha de Moçambique como entreposto central), o território passou ao domínio colonial português a partir do século XVI [1].\n\nA luta anticolonial liderada pela FRELIMO culminou na independência em 25 de junho de 1975; após conflito civil encerrado pelo Acordo Geral de Paz de Roma (1992), o país estabeleceu eleições multipartidárias [1].",
+        "contentEn": "Integrated for centuries into Swahili and Arab Indian Ocean trade networks centered around Mozambique Island, the coast came under Portuguese colonial rule from the sixteenth century [1].\n\nThe anticolonial struggle led by FRELIMO achieved independence on 25 June 1975; following a civil conflict ended by the 1992 Rome General Peace Accords, Mozambique established multiparty elections [1].",
+        "primarySource": "UNESCO — História Geral da África",
+        "primarySourceEn": "UNESCO — General History of Africa",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Vozes Históricas, Literárias e das Artes Visuais",
+        "titleEn": "Historical, Literary, and Visual Arts Figures",
+        "contentPt": "**Moçambique** projeta nomes de destaque nas letras, nas artes e na vida pública africana [1]:\n- **Eduardo Mondlane (1920–1969)** e **Samora Machel (1933–1986)**: lideranças da independência nacional.\n- **Paulina Chiziane (n. 1955)**: primeira mulher africana laureada com o Prêmio Camões de literatura.\n- **Mia Couto (n. 1955)**: biólogo e escritor premiado internacionalmente.\n- **Malangatana Ngwenya (1936–2011)**: pintor e muralista símbolo das artes visuais africanas.",
+        "contentEn": "**Mozambique** has produced influential figures in literature, arts, and public life [1]:\n- **Eduardo Mondlane (1920–1969)** and **Samora Machel (1933–1986)**: leaders of national independence.\n- **Paulina Chiziane (b. 1955)**: first African woman awarded the Camões Prize for Literature.\n- **Mia Couto (b. 1955)**: biologist and internationally acclaimed novelist.\n- **Malangatana Ngwenya (1936–2011)**: renowned painter and muralist.",
+        "primarySource": "UNESCO / CPLP",
+        "primarySourceEn": "UNESCO / CPLP",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Ilha de Moçambique, Timbila Chopi e Escultura Makonde",
+        "titleEn": "Island of Mozambique, Chopi Timbila, and Makonde Sculpture",
+        "contentPt": "A identidade cultural moçambicana entrelaça línguas bantas (emakhuwa, changana, sena, chuwabo) com o português e heranças do Índico [1].\n\nA **Ilha de Moçambique** é Patrimônio Mundial da UNESCO, enquanto a música orquestral de xilofones **Timbila dos Chopi** (Patrimônio Imaterial da UNESCO), a escultura em ébano **Makonde** e a música *marrabenta* constituem expressões emblemáticas [1].",
+        "contentEn": "Mozambican cultural identity weaves Bantu languages (Emakhuwa, Changana, Sena, Chuwabo) with Portuguese and Indian Ocean maritime heritage [1].\n\nThe **Island of Mozambique** is a UNESCO World Heritage site, while **Chopi Timbila** xylophone orchestras (UNESCO Intangible Heritage), **Makonde** ebony carving, and *marrabenta* music stand as iconic art forms [1].",
+        "primarySource": "UNESCO — Patrimônio Mundial em Moçambique",
+        "primarySourceEn": "UNESCO — World Heritage in Mozambique",
+        "sourceUrl": "https://whc.unesco.org/en/statesparties/mz",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Restauração da Gorongosa, Recifes do Índico e Saúde Pública",
+        "titleEn": "Gorongosa Restoration, Indian Ocean Reefs, and Public Health",
+        "contentPt": "O **Parque Nacional da Gorongosa** tornou-se referência mundial em restauração ecológica de savanas e pesquisa biológica colaborativa, enquanto os arquipélagos de Bazaruto e Quirimbas protegem dugongos, tartarugas marinhas e recifes de coral [1].\n\nNa saúde pública, programas em parceria com a OMS focam malária, HIV, imunização infantil e resposta sanitária pós-ciclones [1][2].",
+        "contentEn": "**Gorongosa National Park** has become a global model for savanna ecological restoration and collaborative biodiversity science, while the Bazaruto and Quirimbas archipelagos shelter dugongs, sea turtles, and coral reefs [1].\n\nPublic health initiatives with the WHO focus on malaria, HIV, childhood immunization, and post-cyclone emergency response [1][2].",
+        "primarySource": "OMS — Global Health Observatory / IUCN",
+        "primarySourceEn": "WHO — Global Health Observatory / IUCN",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "GNB": {
+    "isoCode": "GNB",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Estuários da África Ocidental e Arquipélago dos Bijagós",
+        "titleEn": "West African Estuaries and the Bijagós Archipelago",
+        "contentPt": "A **Guiné-Bissau** situa-se na costa atlântica da África Ocidental entre o Senegal e a Guiné, caracterizada por planícies baixas cortadas por rios de maré (Cacheu, Geba, Corubal), extensos manguezais e pelo **Arquipélago dos Bijagós**, composto por dezenas de ilhas [1][3].",
+        "contentEn": "**Guinea-Bissau** lies on West Africa's Atlantic coast between Senegal and Guinea, defined by low-lying plains dissected by tidal rivers (Cacheu, Geba, Corubal), extensive mangroves, and the **Bijagós Archipelago** of dozens of coastal islands [1][3].",
+        "primarySource": "UNESCO / Natural Earth — Geografia da Guiné-Bissau",
+        "primarySourceEn": "UNESCO / Natural Earth — Geography of Guinea-Bissau",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 5,
+        "titlePt": "República Semipresidencialista, CEDEAO e CPLP",
+        "titleEn": "Semi-Presidential Republic, ECOWAS, and CPLP",
+        "contentPt": "A **Guiné-Bissau** organiza-se como república semipresidencialista com capital em **Bissau**, Presidente eleito por sufrágio direto e Assembleia Nacional Popular [1].\n\nO país integra a CPLP, a União Africana, a CEDEAO e a União Econômica e Monetária da África Ocidental (UEMOA, moeda franco CFA) [1].",
+        "contentEn": "**Guinea-Bissau** is a semi-presidential republic with its capital in **Bissau**, pairing a directly elected President with the National People's Assembly [1].\n\nIt participates in the CPLP, the African Union, ECOWAS, and the West African Economic and Monetary Union (WAEMU, CFA franc zone) [1].",
+        "primarySource": "ONU — Perfis Institucionais",
+        "primarySourceEn": "United Nations — Country Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 5,
+        "titlePt": "Castanha de Caju, Rizicultura de Bolanha e Pesca Costeira",
+        "titleEn": "Cashew Agriculture, Bolanha Rice Farming, and Coastal Fisheries",
+        "contentPt": "A economia guineense assenta na agricultura familiar e na pesca, figurando a **castanha de caju** como principal produto de exportação, ao lado do cultivo tradicional de arroz em terras alagáveis (*bolanhas*) [1][2].\n\nA diversificação agroindustrial, a infraestrutura elétrica e o fortalecimento da educação constituem prioridades de desenvolvimento [2].",
+        "contentEn": "Guinea-Bissau's economy relies on smallholder agriculture and fisheries, with **raw cashew nuts** as its primary export alongside traditional wetland rice cultivation (*bolanhas*) [1][2].\n\nAgro-processing diversification, electricity infrastructure, and education expansion remain central development priorities [2].",
+        "primarySource": "Banco Mundial (WDI) / FAO",
+        "primarySourceEn": "World Bank (WDI) / FAO",
+        "sourceUrl": "https://data.worldbank.org/country/GNB",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Do Reino de Kaabu à Luta de Libertação e Independência (1973–1974)",
+        "titleEn": "From the Kaabu Kingdom to the Liberation Struggle and Independence",
+        "contentPt": "Parte da área histórica da confederação **Kaabu** (ligada ao Império do Mali), o litoral guineense tornou-se entreposto atlântico a partir do século XV e colônia portuguesa [1].\n\nSob liderança do PAIGC e de Amílcar Cabral, a luta de libertação levou à proclamação unilateral da independência em Madina do Boé em 24 de setembro de 1973, reconhecida por Portugal em setembro de 1974 após a Revolução dos Cravos [1].",
+        "contentEn": "Historically linked to the **Kaabu** confederation (associated with the Mali Empire), the Guinea-Bissau coast became an Atlantic trading zone from the fifteenth century under Portuguese colonial rule [1].\n\nLed by the PAIGC and Amílcar Cabral, the liberation struggle culminated in the unilateral declaration of independence at Madina do Boé on 24 September 1973, recognized by Portugal in September 1974 following the Carnation Revolution [1].",
+        "primarySource": "UNESCO — História Geral da África",
+        "primarySourceEn": "UNESCO — General History of Africa",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Amílcar Cabral e o Pensamento Anticolonial e Cultural",
+        "titleEn": "Amílcar Cabral and Anticolonial and Cultural Thought",
+        "contentPt": "A **Guiné-Bissau** legou figuras centrais para a história política e cultural africana [1]:\n- **Amílcar Cabral (1924–1973)**: engenheiro agrônomo, teórico da descolonização e líder da independência da Guiné-Bissau e de Cabo Verde.\n- **Titina Silá (1943–1973)**: combatente e símbolo da participação feminina na luta de libertação.\n- **Abdulai Sila**: escritor pioneiro da literatura moderna guineense.",
+        "contentEn": "**Guinea-Bissau** contributed seminal figures to African political and cultural history [1]:\n- **Amílcar Cabral (1924–1973)**: agronomist, anticolonial theorist, and leader of Guinea-Bissau and Cabo Verde's independence movement.\n- **Titina Silá (1943–1973)**: freedom fighter honored as a symbol of women's role in independence.\n- **Abdulai Sila**: pioneering novelist of modern Guinean literature.",
+        "primarySource": "UNESCO — Memória do Mundo",
+        "primarySourceEn": "UNESCO — Memory of the World",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Crioulo Guineense, Diversidade Étnica e Música Gumbé",
+        "titleEn": "Guinean Creole, Ethnic Diversity, and Gumbé Music",
+        "contentPt": "Com o português como língua oficial, o **crioulo guineense** (*kriol*) atua como principal língua franca entre mais de vinte grupos étnicos (balantas, fulas, mandingas, manjacos, papéis, bijagós) [1].\n\nO carnaval de Bissau, as tradições matriarcais das ilhas Bijagós e o gênero musical **gumbé** expressam a síntese cultural do país [1].",
+        "contentEn": "Alongside Portuguese as the official language, **Guinean Creole** (*Kriol*) serves as the unifying lingua franca across more than twenty ethnic communities (Balanta, Fula, Mandinka, Manjaco, Papel, Bijagós) [1].\n\nBissau's carnival, the matrilineal traditions of the Bijagós islands, and **gumbé** music embody the nation's cultural synthesis [1].",
+        "primarySource": "UNESCO — Cultura e Diversidade",
+        "primarySourceEn": "UNESCO — Culture and Diversity",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Reserva da Biosfera dos Bijagós e Saúde Comunitária",
+        "titleEn": "Bijagós Biosphere Reserve and Community Health",
+        "contentPt": "O **Arquipélago dos Bijagós** é Reserva da Biosfera da UNESCO e santuário único na África Ocidental para tartarugas marinhas verdes, peixes-boi africanos, aves migratórias e raros hipopótamos de água salgada [1].\n\nA agenda sanitária prioriza o combate à malária, o fortalecimento da vacinação infantil e a saúde materna em regiões insulares e rurais [1][2].",
+        "contentEn": "The **Bijagós Archipelago** is a UNESCO Biosphere Reserve and vital West African sanctuary for green sea turtles, African manatees, migratory birds, and rare saltwater-adapted hippopotamuses [1].\n\nPublic health priorities focus on malaria control, childhood vaccination, and maternal care across island and rural communities [1][2].",
+        "primarySource": "UNESCO MAB / OMS",
+        "primarySourceEn": "UNESCO MAB / WHO",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  },
+  "TLS": {
+    "isoCode": "TLS",
+    "referenceDate": "2026-11-25",
+    "sections": [
+      {
+        "dimension": "GEOGRAPHY",
+        "estimatedReadMin": 5,
+        "titlePt": "Metade Oriental de Timor, Monte Ramelau e Triângulo de Coral",
+        "titleEn": "Eastern Timor, Mount Ramelau, and the Coral Triangle",
+        "contentPt": "**Timor-Leste** ocupa a porção oriental da ilha de Timor (mais o enclave de Oecusse e as ilhas de Ataúro e Jaco) no Sudeste Asiático marítimo, entre o Mar de Banda e o Mar de Timor, a noroeste da Austrália [1][3].\n\nO relevo é acidentado, culminando no **Monte Ramelau** (2.963 m), cercado por águas tropicais de altíssima diversidade marinha no coração do Triângulo de Coral [1].",
+        "contentEn": "**Timor-Leste** occupies the eastern half of Timor island (plus the Oecusse exclave and Ataúro and Jaco islands) in maritime Southeast Asia, between the Banda and Timor Seas northwest of Australia [1][3].\n\nRugged central mountains culminate at **Mount Ramelau** (2,963 m), surrounded by exceptionally biodiverse waters inside the Coral Triangle [1].",
+        "primarySource": "ONU / Natural Earth — Geografia de Timor-Leste",
+        "primarySourceEn": "United Nations / Natural Earth — Geography of Timor-Leste",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "GOVERNMENT_POLITICS",
+        "estimatedReadMin": 5,
+        "titlePt": "Democracia Semipresidencialista, CPLP e Integração na ASEAN",
+        "titleEn": "Semi-Presidential Democracy, CPLP, and ASEAN Integration",
+        "contentPt": "Primeiro Estado soberano nascido no século XXI (restauração da independência em 20 de maio de 2002), **Timor-Leste** é uma república democrática semipresidencialista com capital em **Díli** e Parlamento Nacional unicameral [1].\n\nMembro ativo da CPLP, o país consolidou instituições eleitorais competitivas e avançou em seu processo de adesão plena à ASEAN [1].",
+        "contentEn": "The first sovereign nation born in the twenty-first century (restoration of independence on 20 May 2002), **Timor-Leste** is a semi-presidential democratic republic governed from **Dili** with a unicameral National Parliament [1].\n\nAn active member of the CPLP, Timor-Leste has built competitive electoral institutions while advancing full accession to ASEAN [1].",
+        "primarySource": "ONU — Missão e Perfis de Timor-Leste",
+        "primarySourceEn": "United Nations — Timor-Leste Profiles",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "ECONOMY_SOCIAL",
+        "estimatedReadMin": 5,
+        "titlePt": "Fundo Petrolífero, Café Orgânico e Diversificação Econômica",
+        "titleEn": "Petroleum Fund, Organic Coffee, and Economic Diversification",
+        "contentPt": "A economia timorense financia grande parte do orçamento público por meio do **Fundo Petrolífero** (baseado em reservas offshore do Mar de Timor), enquanto o setor não petrolífero apoia-se na agricultura familiar, na produção de **café orgânico** de altitude e no turismo de mergulho e natureza [1][2].\n\nA transição de longo prazo exige diversificar receitas diante da maturação dos campos offshore existentes [2].",
+        "contentEn": "Timor-Leste finances much of its public budget through its **Petroleum Fund** derived from Timor Sea offshore fields, while the non-oil economy centers on smallholder farming, highland **organic coffee**, and dive and nature tourism [1][2].\n\nLong-term fiscal sustainability depends on economic diversification as mature offshore reserves decline [2].",
+        "primarySource": "Banco Mundial (WDI) / FMI",
+        "primarySourceEn": "World Bank (WDI) / IMF",
+        "sourceUrl": "https://data.worldbank.org/country/TLS",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "HISTORY",
+        "estimatedReadMin": 7,
+        "titlePt": "Da Colonização Portuguesa ao Referendo de 1999 e Independência",
+        "titleEn": "From Portuguese Colonization to the 1999 Referendum and Independence",
+        "contentPt": "Colônia portuguesa desde o século XVI, **Timor-Leste** proclamou a independência em novembro de 1975, mas sofreu ocupação militar pela Indonésia dias depois, iniciando 24 anos de resistência diplomática e popular [1].\n\nNo referendo supervisionado pela ONU em 30 de agosto de 1999, a população votou majoritariamente pela soberania; após administração transitória das Nações Unidas (UNTAET), o país restaurou plenamente sua independência em 2002 [1].",
+        "contentEn": "A Portuguese colony from the sixteenth century, **Timor-Leste** declared independence in November 1975 before Indonesian military occupation began 24 years of popular and diplomatic resistance [1].\n\nIn a UN-supervised referendum on 30 August 1999, voters overwhelmingly chose sovereignty; following UN transitional administration (UNTAET), full independence was restored in 2002 [1].",
+        "primarySource": "ONU — Arquivos UNTAET / CAVR",
+        "primarySourceEn": "United Nations — UNTAET Archives",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOGRAPHIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Laureados do Nobel da Paz e Construtores da Soberania",
+        "titleEn": "Nobel Peace Laureates and Builders of Sovereignty",
+        "contentPt": "A luta pela autodeterminação de **Timor-Leste** projetou lideranças reconhecidas mundialmente [1]:\n- **José Ramos-Horta (n. 1949)** e **Dom Carlos Filipe Ximenes Belo (n. 1948)**: laureados conjuntamente com o Prêmio Nobel da Paz de 1996 pela busca de solução justa e pacífica.\n- **Xanana Gusmão (n. 1946)**: líder histórico da resistência e primeiro presidente após a restauração da independência.",
+        "contentEn": "**Timor-Leste's** struggle for self-determination produced globally recognized leaders [1]:\n- **José Ramos-Horta (b. 1949)** and **Bishop Carlos Filipe Ximenes Belo (b. 1948)**: joint recipients of the 1996 Nobel Peace Prize for pursuing a just and peaceful settlement.\n- **Xanana Gusmão (b. 1946)**: historic resistance leader and first President after restored independence.",
+        "primarySource": "ONU / Fundação Nobel",
+        "primarySourceEn": "United Nations / Nobel Prize",
+        "sourceUrl": "https://data.un.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "CULTURE_HUMANITIES",
+        "estimatedReadMin": 5,
+        "titlePt": "Tétum, Português, Tecelagem Tais e Casas Sagradas Uma Lulik",
+        "titleEn": "Tetum, Portuguese, Tais Weaving, and Uma Lulik Sacred Houses",
+        "contentPt": "**Timor-Leste** adota o **tétum** e o **português** como línguas oficiais, em convivência com mais de quinze línguas austronésias e papuas [1].\n\nO tecido tradicional **Tais** — inscrito pela UNESCO como Patrimônio Cultural Imaterial —, a arquitetura cerimonial das *Uma Lulik* e as tradições comunitárias de gestão ambiental (*Tara Bandu*) marcam a identidade nacional [1].",
+        "contentEn": "**Timor-Leste** adopts **Tetum** and **Portuguese** as official languages alongside more than fifteen Austronesian and Papuan languages [1].\n\nTraditional handwoven **Tais** textiles (UNESCO Intangible Cultural Heritage), ceremonial *Uma Lulik* sacred houses, and customary environmental stewardship (*Tara Bandu*) anchor national identity [1].",
+        "primarySource": "UNESCO — Patrimônio Imaterial em Timor-Leste",
+        "primarySourceEn": "UNESCO — Intangible Heritage in Timor-Leste",
+        "sourceUrl": "https://www.unesco.org/",
+        "referenceDate": "2026-11-25"
+      },
+      {
+        "dimension": "BIOLOGY_HEALTH",
+        "estimatedReadMin": 5,
+        "titlePt": "Recifes de Ataúro, Parque Nino Konis Santana e Saúde Infantil",
+        "titleEn": "Ataúro Reefs, Nino Konis Santana Park, and Public Health",
+        "contentPt": "As águas em torno da **Ilha de Ataúro** e do **Parque Nacional Nino Konis Santana** abrigam uma das maiores riquezas de espécies de peixes recifais já registradas em levantamentos científicos internacionais, além de rotas migratórias de baleias-azuis e cachalotes [1].\n\nNa saúde pública, o país registrou avanços expressivos no controle da malária (próximo à eliminação) e na expansão da rede básica de atendimento [1][2].",
+        "contentEn": "Waters surrounding **Ataúro Island** and **Nino Konis Santana National Park** harbor some of the highest reef-fish species richness ever recorded in marine biodiversity surveys, alongside blue whale and sperm whale migration corridors [1].\n\nIn public health, Timor-Leste has made major strides toward malaria elimination and expanding primary care access [1][2].",
+        "primarySource": "OMS — Global Health Observatory / IUCN",
+        "primarySourceEn": "WHO — Global Health Observatory / IUCN",
+        "sourceUrl": "https://www.who.int/data/gho",
+        "referenceDate": "2026-11-25"
+      }
+    ]
+  }
+}
