@@ -243,7 +243,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | T49 | LoD progressivo de fronteiras (`RN21` / `RN07`): Natural Earth `1:50m` no zoom aproximado + territórios disputados/autônomos | 3D/Dados | P2 | M | DONE | antigravity | — | G-FRONTEIRAS, G-GLOBO, G-PAIS, G-SHELL |
 | D29 | Lixo Marítimo, Giros Oceânicos & Microplásticos (`RN17`): 5 giros (NOAA) + advecção Lagrangiana acoplada a ventos/correntes (D27) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D30 | Dados Ambientais & INPE (`RN17`): INPE BDQueimadas por bioma + TerraBrasilis (DETER/PRODES desmatamento Amazônia e Cerrado, T05) | 3D/Dados | P1 | G | DONE | antigravity | — | G-OBS, G-GLOBO, G-PIPELINE, G-ESTUDOS |
-| D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | REVIEW | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
+| D31 | Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas | 3D/Conteúdo | P1 | G | IN_PROGRESS | antigravity | — | G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS |
 | D32 | Mapa de Espécies Animais & Biodiversidade (`RN13.7`): ocorrências GBIF + fauna emblemática/ameaçada (IUCN Red List) por bioma/país | 3D/Dados | P1 | G | TODO | — | D31 | G-OBS, G-GLOBO, G-PAIS, G-CONTEUDO |
 | D33 | Modo 2D & Projeções Cartográficas Comparativas (`d3-geo`): Equal Earth, Mercator, Natural Earth/Robinson e Azimutal Equidistante | 3D/UX | P1 | G | TODO | — | — | G-GLOBO, G-FRONTEIRAS, G-SHELL, G-ESTUDOS |
 | D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | TODO | — | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
@@ -2631,7 +2631,7 @@ O `DATA_SOURCES.md` e o `ROADMAP.md` original previam integração direta com o 
 
 ### D31 · Mapa dos Biomas (Global & Brasil): 14 biomas terrestres (WWF/RESOLVE) + 6 Biomas Brasileiros (IBGE) com fichas ecológicas
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d31-biomes-map · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d31-biomes-ux-and-real-geodata · **Worktree:** ../telluspedia-wt/antigravity-d31
 - **Prioridade:** P1 · **Área:** 3D/Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-FRONTEIRAS, G-OBS, G-CONTEUDO, G-ESTUDOS
 
 **Contexto / problema**
