@@ -249,9 +249,9 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D34 | Coroplético Temporal Animado (1990–2024) + indicadores CO₂ per capita e Energia Renovável % com persistência em Estudos | 3D/Dados | P1 | G | DONE | ayrton | — | G-FRONTEIRAS, G-PAIS, G-SHELL, G-ESTUDOS |
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | DONE | ayrton | — | G-PAIS, G-CONTEUDO |
 | D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | DONE | ayrton | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
-| D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | REVIEW | antigravity | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
+| D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
 | D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | TODO | — | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS |
-| D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | TODO | — | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
+| D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | TODO | — | — | G-OBS, G-GLOBO, G-ESTUDOS |
 | D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | TODO | — | — | G-COSMOS, G-GLOBO, G-EPOCA |
 | D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | TODO | — | — | G-CONTEUDO, G-EPOCA, G-PAIS |
@@ -2806,7 +2806,7 @@ A obra do geógrafo brasileiro **Milton Santos** (1926–2001, Prêmio Vautrin L
 
 ### D37 · Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d37-studio-tools · **Worktree:** —
+- **Status:** DONE · **Responsável:** ayrton · **Branch:** task/d37-studio-tools · **Worktree:** —
 - **Prioridade:** P1 · **Área:** Produto/UX · **Tamanho:** G · **Depende de:** — · **Grupos:** G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL
 
 **Contexto / problema**
@@ -2828,6 +2828,7 @@ Pesquisadores, professores e estudantes conseguem comparar indicadores e salvar 
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-25 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`c522c7d`) com grupos livres (`G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL`).
 - 2026-11-26 · antigravity · REVIEW · Implementadas as três Ferramentas de Estúdio (`D37`, 100% D14 bilíngue `pt-BR`/`en`): (1) **Régua geodésica 3D & 2D** (`geodesic-ruler.ts`, `GeodesicRulerLayer.tsx`, `GeodesicRulerPanel.tsx`, `studioToolsStore.ts`, `map-2d-studio.ts`) com arcos ortodrômicos via `slerpVectors` em raio `1.004` (erro `< 0,05%` vs Haversine em pares de capitais e antipodais), leitura acumulada e por trecho em `km` e milhas náuticas (`nm`), azimute inicial/final com rosa dos ventos, pausa/retomada sem conflito com seleção normal de países, `dispose()` explícito na GPU (`RN21`) e projeção de grande círculo no Mapa 2D (`d3.geoPath`); (2) **Exportação no Comparador** (`comparator-export.ts`, `comparator-export-svg.ts`, `ComparatorExportBar.tsx`, `ComparisonGrid.tsx`, `ComparisonCharts.tsx`) com CSV estrito RFC 4180 (CRLF, valores brutos oficiais, lacunas `null` vazias sem interpolação e proteção contra *formula injection*) e exportação vetorial **SVG** autônoma + raster **PNG 2×** (1920×1080) com título, legenda e atribuição institucional de fonte primária (`RN02`) em `pt-BR` e `en`; (3) **Pinos anotados em Estudos** (`Study.annotations` JSONB + migration `20261125213000_add_study_annotations`, `study-annotations.ts` livre de `zod` no bundle cliente, validação Zod estrita em `study-schema.ts` com teto de 20 pinos / 80 chars título / 280 chars nota, `StudyAnnotationsLayer.tsx`, `StudyPinsPanel.tsx`, `StudyShareBadges.tsx`, `ForkStudyBanner.tsx`, `study-export.ts`) com persistência real no PostgreSQL em `/api/studies`, herança imutável em `/api/studies/[slug]/fork` e guarda `RN16` de somente-leitura com derivação de cópia editável. Validado: `db:generate`, `prisma migrate deploy`, `typecheck` (0 erros), `lint` (0 erros), `build` (`/` em **163 kB**, `< 160 KiB` gzip em `bundle-budget.test.ts` 6/6), `texture-budget.test.ts` (todos os arquivos ≤ 520 linhas), `design-system.test.tsx` (104/104), `tw-merge-table.test.ts`, `studio-tools-d37.test.tsx` (8/8), suíte completa `pnpm test` (`871/872`, 0 falhas) e Playwright Chromium WebGL E2E (`studio-tools.spec.ts` 2/2, 0 erros de console).
+- 2026-11-26 · ayrton · DONE · Aprovada pelo Ayrton.
 
 ---
 
@@ -2856,7 +2857,7 @@ Dois requisitos explícitos do `DISCOVERY.md` ainda não têm implementação co
 
 ### D39 · Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d39-seismic-tectonics · **Worktree:** ../telluspedia-wt/antigravity-d39
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS
 
 **Contexto / problema**
@@ -2877,6 +2878,7 @@ O Observatório Planetário cobre queimadas, eventos severos, satélite GIBS, ó
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`9d70bef`) com grupos livres (`G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS`).
 
 ---
 
