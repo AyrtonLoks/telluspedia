@@ -16,6 +16,7 @@ import {
   currentMoonWorldPos,
   calculatePlanetaryPosition,
 } from "@/lib/astronomy-planets";
+import { calculateProbePosition, type DeepSpaceProbeId } from "@/lib/deep-space-probes";
 import { bodySceneRadius, earthSystemScale, scaledViewDistance, SUN_CORONA_RATIO, type CosmicScaleMode } from "@/lib/cosmic-scale";
 import {
   easeInOutCubic,
@@ -122,8 +123,25 @@ export function getScaledBodyViewOffset(id: CelestialBodyId | null, mode: Cosmic
   return base.normalize().multiplyScalar(distance);
 }
 
+/** Offset seguro da câmera para sondas do espaço profundo (livre de vetor nulo / NaN — AGENTS.md §1). */
+export function getProbeViewOffset(
+  probeId: DeepSpaceProbeId,
+  mode: CosmicScaleMode
+): THREE.Vector3 {
+  if (probeId === "JWST") {
+    const s = mode === "real" ? 0.55 : 1.0;
+    return new THREE.Vector3(0, 1.05 * s, 2.35 * s);
+  }
+  return new THREE.Vector3(0, 1.6, 3.4);
+}
+
 /** Zoom mínimo do OrbitControls no modo Cosmos: 1,0 no visual; perto do corpo no modo real. */
-export function cosmicMinDistance(id: CelestialBodyId | null, mode: CosmicScaleMode): number {
+export function cosmicMinDistance(
+  id: CelestialBodyId | null,
+  mode: CosmicScaleMode,
+  probeId: DeepSpaceProbeId | null = null
+): number {
+  if (probeId) return probeId === "JWST" && mode === "real" ? 0.45 : 0.85;
   if (mode === "visual" || !id || id === "SUN" || id === "HALLEY") return 1.0;
   if (id === "EARTH") return 1.0;
   if (id === "MOON") return 0.4;
@@ -136,6 +154,7 @@ export const CosmicCameraController: React.FC = () => {
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
+  const focusedProbeId = useCosmicStore((s) => s.focusedProbeId);
   const scaleMode = useCosmicStore((s) => s.scaleMode);
   const selectedYear = useTimelineStore((s) => s.selectedYear) || new Date().getUTCFullYear();
 
@@ -151,6 +170,7 @@ export const CosmicCameraController: React.FC = () => {
   } | null>(null);
   const prevCosmicMode = useRef<boolean>(false);
   const prevFocusedId = useRef<CelestialBodyId | null>(null);
+  const prevFocusedProbeId = useRef<DeepSpaceProbeId | null>(null);
   const prevScaleMode = useRef<CosmicScaleMode>(scaleMode);
 
   // Layout effect: a reancoragem precisa acontecer antes do próximo quadro, senão a troca de
@@ -159,14 +179,19 @@ export const CosmicCameraController: React.FC = () => {
     if (!controlsHook) return;
 
     const cosmicModeChanged = prevCosmicMode.current !== isCosmicMode;
-    const focusChanged = prevFocusedId.current !== focusedBodyId;
-    // Trocar a escala com um corpo focado reenquadra a câmera no novo tamanho.
-    const scaleChanged = prevScaleMode.current !== scaleMode && isCosmicMode && focusedBodyId !== null;
+    const focusChanged =
+      prevFocusedId.current !== focusedBodyId || prevFocusedProbeId.current !== focusedProbeId;
+    // Trocar a escala com um corpo ou sonda focada reenquadra a câmera no novo tamanho.
+    const scaleChanged =
+      prevScaleMode.current !== scaleMode &&
+      isCosmicMode &&
+      (focusedBodyId !== null || focusedProbeId !== null);
     const previousScale = prevScaleMode.current;
     prevScaleMode.current = scaleMode;
     if (!cosmicModeChanged && !focusChanged && !scaleChanged) return;
     prevCosmicMode.current = isCosmicMode;
     prevFocusedId.current = focusedBodyId;
+    prevFocusedProbeId.current = focusedProbeId;
 
     resetControlsDeltas(controlsHook);
     let from: OrbitState = { target: controlsHook.target.clone(), camera: camera.position.clone() };
@@ -210,9 +235,17 @@ export const CosmicCameraController: React.FC = () => {
       limits = { min: 0.4, max: 6.0 };
       const bodyPos = getBodyPosition("MOON", selectedYear, false);
       to = { target: bodyPos.clone(), camera: bodyPos.clone().add(getBodyViewOffset("MOON")) };
+    } else if (isCosmicMode && focusedProbeId) {
+      // Sonda do espaço profundo selecionada (Voyager 1/2, New Horizons, JWST)
+      limits = { min: cosmicMinDistance(null, scaleMode, focusedProbeId), max: 1600.0 };
+      const probePos = calculateProbePosition(focusedProbeId, selectedYear, scaleMode).scenePosition;
+      to = {
+        target: probePos.clone(),
+        camera: probePos.clone().add(getProbeViewOffset(focusedProbeId, scaleMode)),
+      };
     } else {
       // Vista cósmica
-      limits = { min: cosmicMinDistance(focusedBodyId, scaleMode), max: 1200.0 };
+      limits = { min: cosmicMinDistance(focusedBodyId, scaleMode), max: 1600.0 };
       const bodyPos = getBodyPosition(focusedBodyId, selectedYear, isCosmicMode);
       to = { target: bodyPos.clone(), camera: bodyPos.clone().add(getScaledBodyViewOffset(focusedBodyId, scaleMode)) };
     }
@@ -238,7 +271,7 @@ export const CosmicCameraController: React.FC = () => {
     transition.current = { from, to, obstacles, elapsed: 0, duration, limits };
     orbitTransition.active = true;
     orbitTransition.progress = 0;
-  }, [isCosmicMode, focusedBodyId, scaleMode, controlsHook, camera, selectedYear]);
+  }, [isCosmicMode, focusedBodyId, focusedProbeId, scaleMode, controlsHook, camera, selectedYear]);
 
   useFrame((_, delta) => {
     if (!controlsHook) return;
@@ -259,6 +292,12 @@ export const CosmicCameraController: React.FC = () => {
         orbitTransition.active = false;
         if (useCosmicExitStore.getState().exit) useCosmicExitStore.getState().setExit(null);
       }
+      controlsHook.update();
+    } else if (isCosmicMode && focusedProbeId) {
+      const probeTarget = calculateProbePosition(focusedProbeId, selectedYear, scaleMode).scenePosition;
+      const deltaTarget = probeTarget.clone().sub(controlsHook.target);
+      controlsHook.target.copy(probeTarget);
+      camera.position.add(deltaTarget);
       controlsHook.update();
     } else if (focusedBodyId && focusedBodyId !== "SUN") {
       // Acompanha o alvo em órbita em tempo real

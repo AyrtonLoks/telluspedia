@@ -4,6 +4,8 @@ import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { readGibsView } from "@/lib/gibs-view";
 import { DEFAULT_MAP_PROJECTION, isMapProjectionId } from "@/lib/map-projections-types";
 import type { CelestialBodyId } from "@/lib/astronomy-planets";
+import type { DeepSpaceProbeId } from "@/lib/deep-space-probes-ids";
+import { ECLIPSE_YEAR_BY_ID, type EclipseId } from "@/lib/eclipses-ids";
 import type { StudyRecord } from "@/lib/studies-store";
 import { normalizeStudyEpoch } from "@/lib/study-epoch";
 import {
@@ -194,20 +196,65 @@ export function focusCelestialBody(id: CelestialBodyId) {
   useCosmicStore.getState().focusBody(id);
 }
 
-/** Deseleciona o corpo focado: fecha o painel cósmico e solta a câmera. */
+/** Foca uma sonda do espaço profundo no Modo Cosmos (abre o painel no dock) sem limpar o país selecionado. */
+export function focusDeepSpaceProbe(id: DeepSpaceProbeId) {
+  useGlobeStore.getState().setHoveredIso(null);
+  const cosmic = useCosmicStore.getState();
+  if (!cosmic.isCosmicMode) {
+    cosmic.enterCosmicProbeView(id);
+  } else {
+    cosmic.focusProbe(id);
+  }
+}
+
+/** Ativa ou limpa um eclipse solar/lunar emblemático, sincronizando o ano da timeline e a câmera. */
+export function selectEclipseEvent(
+  eclipseId: EclipseId | null,
+  options?: { lat?: number; lng?: number; offsetMinutes?: number; keepCosmicMode?: boolean }
+) {
+  const cosmic = useCosmicStore.getState();
+  if (!eclipseId) {
+    cosmic.setActiveEclipse(null, 0);
+    return;
+  }
+  const year = ECLIPSE_YEAR_BY_ID[eclipseId];
+  useSceneStore.getState().closeScene({ restore: false });
+  const tl = useTimelineStore.getState();
+  const nextRange =
+    year >= tl.startYear && year <= tl.endYear
+      ? {}
+      : { startYear: Math.max(1400, year - 25), endYear: Math.min(2100, year + 25) };
+  useTimelineStore.setState({
+    ...nextRange,
+    geologicalMa: null,
+    selectedYear: year,
+    selectedMilestoneId: null,
+  });
+  cosmic.setActiveEclipse(eclipseId, options?.offsetMinutes ?? 0);
+  if (!options?.keepCosmicMode && cosmic.isCosmicMode) {
+    cosmic.exitToEarthView();
+  }
+  if (options?.lat !== undefined && options?.lng !== undefined && !useCosmicStore.getState().isCosmicMode) {
+    useGlobeStore.getState().flyTo(options.lat, options.lng, 2.05);
+  }
+}
+
+/** Deseleciona o corpo ou sonda focada: fecha o painel cósmico e solta a câmera. */
 export function clearCelestialFocus() {
   useCosmicStore.getState().focusBody(null);
+  useCosmicStore.getState().focusProbe(null);
 }
 
 /**
- * Clique no vazio do canvas. No modo cósmico, desfaz só o foco do corpo celeste (o país selecionado
+ * Clique no vazio do canvas. No modo cósmico, desfaz só o foco do corpo celeste/sonda (o país selecionado
  * continua na aba dele). No modo Terra, deseleciona país, marco e entidade do Observatório.
  */
 export function handleCanvasPointerMissed() {
   const cosmic = useCosmicStore.getState();
   cosmic.setHoveredBody(null);
+  cosmic.setHoveredProbe(null);
   if (cosmic.isCosmicMode) {
-    if (cosmic.focusedBodyId) clearCelestialFocus();
+    if (cosmic.focusedBodyId || cosmic.focusedProbeId) clearCelestialFocus();
     return;
   }
   useGlobeStore.getState().setSelectedIso(null);

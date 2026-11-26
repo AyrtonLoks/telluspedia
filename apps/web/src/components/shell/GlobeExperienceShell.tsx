@@ -120,6 +120,10 @@ const TransversalHud = dynamic(
   () => import("@/components/transversal/TransversalHud").then((m) => m.TransversalHud),
   { ssr: false }
 );
+const EclipseHud = dynamic(
+  () => import("@/components/eclipse/EclipseHud").then((m) => m.EclipseHud),
+  { ssr: false }
+);
 const StudioToolsHud = dynamic(
   () => import("@/components/studio/StudioToolsHud").then((m) => m.StudioToolsHud),
   { ssr: false }
@@ -209,6 +213,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
   const isTransversalVisible = useTransversalStore(
     (s) => s.isSelectorOpen || s.activeEntityId !== null || s.trail.length > 0
+  );
+  const isEclipseVisible = useCosmicStore(
+    (s) => s.isEclipseMenuOpen || s.activeEclipseId !== null
   );
   const isStudioToolsVisible = useStudioToolsStore(
     (s) =>
@@ -464,6 +471,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
 
         {/* Linha do Tempo Transversal & Trilha de Estudo RN14/RN04 (D38 — carregado sob demanda) */}
         {!isCosmicMode && isTransversalVisible && <TransversalHud />}
+
+        {/* Simulador de Eclipses Solares & Lunares (D41 — carregado sob demanda) */}
+        {epoch.mode !== "GEOLOGICAL" && isEclipseVisible && <EclipseHud />}
 
         {/* Ferramentas de Estúdio: Régua Geodésica + Pinos Anotados (D37 — carregado sob demanda) */}
         {!isCosmicMode && isStudioToolsVisible && (

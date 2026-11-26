@@ -50,13 +50,17 @@ export function useRightDock(): RightDockState {
   const observatoryOpen = useStoreSnapshot(useObservatoryStore, (s) => s.isPanelOpen);
   const isCosmicMode = useStoreSnapshot(useCosmicStore, (s) => s.isCosmicMode);
   const focusedBodyId = useStoreSnapshot(useCosmicStore, (s) => s.focusedBodyId);
+  const focusedProbeId = useStoreSnapshot(useCosmicStore, (s) => s.focusedProbeId);
   const isInspectorOpen = useStoreSnapshot(useCosmicStore, (s) => s.isInspectorOpen);
   const preferred = useStoreSnapshot(useLayoutStore, (s) => s.activeRightPanel);
 
   return resolveRightDock({
     countryOpen: Boolean(selectedIso) && !isReaderOpen,
     observatoryOpen,
-    cosmosOpen: (isCosmicMode || focusedBodyId === "MOON") && isInspectorOpen && Boolean(focusedBodyId),
+    cosmosOpen:
+      (isCosmicMode || focusedBodyId === "MOON") &&
+      isInspectorOpen &&
+      Boolean(focusedBodyId || focusedProbeId),
     preferred,
   });
 }

@@ -29,11 +29,8 @@ import type { ViewCamera } from "@/lib/explore/view-camera";
 import { ScenePlayer } from "@/components/scenes/ScenePlayer";
 import { getScene } from "@/lib/scenes/catalog";
 import { PaleoPlatesLayer } from "./PaleoPlatesLayer";
-import { NasaFirmsLayer } from "./NasaFirmsLayer";
 import { GibsLayer } from "./GibsLayer";
-import { NasaEonetLayer } from "./NasaEonetLayer";
-import { AirTrafficLayer } from "./AirTrafficLayer";
-import { MaritimeRoutesLayer } from "./MaritimeRoutesLayer";
+import { GlobeObservatoryLayers } from "./GlobeObservatoryLayers";
 import { ObservatoryTelemetryHUD } from "@/components/observatory/ObservatoryTelemetryHUD";
 import { CosmicCameraController } from "./CosmicCameraController";
 import { SunCore } from "./SunCore";
@@ -41,6 +38,7 @@ import { PlanetarySystem } from "./PlanetarySystem";
 import { AsteroidBeltLayer } from "./AsteroidBeltLayer";
 import { CometHalleyTrajectory } from "./CometHalleyTrajectory";
 import { MeteorShowersLayer } from "./MeteorShowersLayer";
+import { DeepSpaceProbesLayer } from "./DeepSpaceProbesLayer";
 
 import { useGlobeStore, MIN_CAMERA_ALTITUDE, MAX_CAMERA_ALTITUDE } from "@/stores/globeStore";
 import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
@@ -57,52 +55,14 @@ import { useSunDirection } from "@/lib/epoch/useSunDirection";
 
 // SGP4 (satellite.js) só baixa quando a camada da ISS é ligada (T35).
 const IssOrbitLayer = lazy(() => import("./IssOrbitLayer").then((m) => ({ default: m.IssOrbitLayer })));
-// Partículas GPU de ventos globais (D27a) só baixam quando a camada é ligada.
-const WindParticlesLayer = lazy(() =>
-  import("./WindParticlesLayer").then((m) => ({ default: m.WindParticlesLayer }))
-);
-// Lixo marítimo, giros oceânicos e deriva Lagrangiana (D29) só baixam quando a camada é ligada.
-const MarineDebrisLayer = lazy(() =>
-  import("./MarineDebrisLayer").then((m) => ({ default: m.MarineDebrisLayer }))
-);
-// Monitoramento ambiental INPE TerraBrasilis DETER/PRODES (D30) só baixa quando a camada é ligada.
-const InpeDeforestationLayer = lazy(() =>
-  import("./InpeDeforestationLayer").then((m) => ({ default: m.InpeDeforestationLayer }))
-);
-// Mapa dos Biomas Global (14 WWF/RESOLVE) & Brasil (6 IBGE) (D31) só baixa quando a camada é ligada.
-const BiomesLayer = lazy(() =>
-  import("./BiomesLayer").then((m) => ({ default: m.BiomesLayer }))
+const EclipseShadowLayer = lazy(() =>
+  import("./EclipseShadowLayer").then((m) => ({ default: m.EclipseShadowLayer }))
 );
 const BiomeHudOverlay = lazy(() =>
   import("@/components/observatory/BiomeHudOverlay").then((m) => ({ default: m.BiomeHudOverlay }))
 );
-// Mapa de Espécies Animais & Biodiversidade GBIF + IUCN (D32) só baixa quando a camada é ligada.
-const SpeciesLayer = lazy(() =>
-  import("./SpeciesLayer").then((m) => ({ default: m.SpeciesLayer }))
-);
-// Observatório Sísmico & Placas Tectônicas Contemporâneas USGS + PB2002 (D39) só baixa quando ligado.
-const SeismicTectonicLayer = lazy(() =>
-  import("./SeismicTectonicLayer").then((m) => ({ default: m.SeismicTectonicLayer }))
-);
-const SubmarineCablesLayer = lazy(() =>
-  import("./SubmarineCablesLayer").then((m) => ({ default: m.SubmarineCablesLayer }))
-);
-const AirQualityLayer = lazy(() =>
-  import("./AirQualityLayer").then((m) => ({ default: m.AirQualityLayer }))
-);
 const SpeciesHudOverlay = lazy(() =>
   import("@/components/observatory/SpeciesHudOverlay").then((m) => ({ default: m.SpeciesHudOverlay }))
-);
-// Lentes de Geografia Crítica — Legado de Milton Santos (D36) só baixam quando ativadas.
-const CriticalGeoLayer = lazy(() =>
-  import("./CriticalGeoLayer").then((m) => ({ default: m.CriticalGeoLayer }))
-);
-// Ferramentas de Estúdio 3D (D37: Régua Geodésica + Pinos Anotados) só baixam quando ativadas.
-const GeodesicRulerLayer = lazy(() =>
-  import("./GeodesicRulerLayer").then((m) => ({ default: m.GeodesicRulerLayer }))
-);
-const StudyAnnotationsLayer = lazy(() =>
-  import("./StudyAnnotationsLayer").then((m) => ({ default: m.StudyAnnotationsLayer }))
 );
 
 /**
@@ -209,6 +169,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
   const annotationsCount = useStudyStore((s) => s.annotations.length);
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  const activeEclipseId = useCosmicStore((s) => s.activeEclipseId);
   const cosmicScaleMode = useCosmicStore((s) => s.scaleMode);
   // D11: no modo Cosmos o grupo Terra + Lua segue a política única de escala.
   const earthGroupScale = isCosmicMode ? earthSystemScale(cosmicScaleMode) : 1;
@@ -295,6 +256,7 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             <AsteroidBeltLayer />
             <CometHalleyTrajectory />
             <MeteorShowersLayer />
+            <DeepSpaceProbesLayer />
           </SolarSystemFrame>
         )}
         {isCosmicMode && <CelestialLabelManager />}
@@ -320,72 +282,29 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {/* Player genérico de cenas (trajetórias de Magalhães, Apollo 11 e qualquer cena com dados) */}
             {activeSceneData && <ScenePlayer scene={activeSceneData} />}
 
+            {/* Sombra de umbra/penumbra e faixa de totalidade de Eclipses Solares & Lunares (D41) */}
+            {!isGeological && activeEclipseId !== null && (
+              <Suspense fallback={null}>
+                <EclipseShadowLayer />
+              </Suspense>
+            )}
+
             {/* Camadas do Observatório Planetário (NASA & Tráfego Global) */}
             {isContemporary && activeObservatoryLayers.includes("NASA_GIBS") && <GibsLayer />}
-            {isContemporary && activeObservatoryLayers.includes("NASA_FIRMS") && <NasaFirmsLayer />}
-            {isContemporary && activeObservatoryLayers.includes("NASA_EONET") && <NasaEonetLayer />}
             {isContemporary && activeObservatoryLayers.includes("ISS_SATELLITES") && (
               <Suspense fallback={null}>
                 <IssOrbitLayer />
               </Suspense>
             )}
-            {isContemporary && activeObservatoryLayers.includes("FLIGHTS_OPENSKY") && <AirTrafficLayer />}
-            {isContemporary && activeObservatoryLayers.includes("MARITIME_ROUTES") && <MaritimeRoutesLayer />}
-            {isContemporary && activeObservatoryLayers.includes("GLOBAL_WINDS") && (
-              <Suspense fallback={null}>
-                <WindParticlesLayer />
-              </Suspense>
-            )}
-            {isContemporary && activeObservatoryLayers.includes("MARINE_DEBRIS") && (
-              <Suspense fallback={null}>
-                <MarineDebrisLayer />
-              </Suspense>
-            )}
-            {isContemporary && activeObservatoryLayers.includes("INPE_DEFORESTATION") && (
-              <Suspense fallback={null}>
-                <InpeDeforestationLayer />
-              </Suspense>
-            )}
-            {isContemporary && activeObservatoryLayers.includes("BIOMES_MAP") && (
-              <Suspense fallback={null}>
-                <BiomesLayer />
-              </Suspense>
-            )}
-            {isContemporary && activeObservatoryLayers.includes("SPECIES_MAP") && (
-              <Suspense fallback={null}>
-                <SpeciesLayer />
-              </Suspense>
-            )}
-            {isContemporary && activeObservatoryLayers.includes("USGS_EARTHQUAKES") && (
-              <Suspense fallback={null}>
-                <SeismicTectonicLayer />
-              </Suspense>
-            )}
-            {isContemporary && activeObservatoryLayers.includes("SUBMARINE_CABLES") && (
-              <Suspense fallback={null}>
-                <SubmarineCablesLayer />
-              </Suspense>
-            )}
-            {isContemporary && activeObservatoryLayers.includes("AIR_QUALITY") && (
-              <Suspense fallback={null}>
-                <AirQualityLayer />
-              </Suspense>
-            )}
-            {isContemporary && activeCriticalLens !== null && (
-              <Suspense fallback={null}>
-                <CriticalGeoLayer />
-              </Suspense>
-            )}
-            {!isCosmicMode && hasRulerPoints && (
-              <Suspense fallback={null}>
-                <GeodesicRulerLayer />
-              </Suspense>
-            )}
-            {!isCosmicMode && (annotationsCount > 0 || hasPendingPin) && (
-              <Suspense fallback={null}>
-                <StudyAnnotationsLayer />
-              </Suspense>
-            )}
+            <GlobeObservatoryLayers
+              isContemporary={isContemporary}
+              isCosmicMode={isCosmicMode}
+              activeObservatoryLayers={activeObservatoryLayers}
+              activeCriticalLens={activeCriticalLens}
+              hasRulerPoints={hasRulerPoints}
+              annotationsCount={annotationsCount}
+              hasPendingPin={hasPendingPin}
+            />
           </EarthOrientationGroup>
         </group>
       </Canvas>

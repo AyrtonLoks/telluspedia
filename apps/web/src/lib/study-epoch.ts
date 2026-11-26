@@ -1,10 +1,15 @@
-import { isContemporaryEpoch } from "./observatory-data";
 import { MAGELLAN_ROUTE_ID } from "./epoch/constants";
 
 const ANACHRONISTIC_ERAS = new Set(["PRUSSIA_1870", "WW1_1914", "WW2_1939"]);
 /** @deprecated use MAGELLAN_ROUTE_ID de lib/epoch/constants. */
 export const MAGELLAN_STUDY_ROUTE = MAGELLAN_ROUTE_ID;
 export const MAX_STUDY_GEOLOGICAL_MA = 4600;
+
+function isContemporaryStudyEpoch(year: number | null, geologicalMa: number | null): boolean {
+  if (geologicalMa !== null && geologicalMa > 0) return false;
+  if (year !== null && year < 1957) return false;
+  return true;
+}
 
 interface StudyEpochInput {
   timelineEndYear?: number | null;
@@ -21,7 +26,7 @@ export function normalizeStudyEpoch(input: StudyEpochInput) {
     typeof ma === "number" && Number.isFinite(ma) && ma > 0 && ma <= MAX_STUDY_GEOLOGICAL_MA ? ma : null;
   const activeRouteId = input.activeRouteId?.trim() || null;
   const contemporary =
-    isContemporaryEpoch(input.timelineEndYear ?? null, geologicalMa) &&
+    isContemporaryStudyEpoch(input.timelineEndYear ?? null, geologicalMa) &&
     activeRouteId !== MAGELLAN_STUDY_ROUTE &&
     !ANACHRONISTIC_ERAS.has(input.historicalEra ?? "");
 

@@ -182,6 +182,8 @@ const MIGRATED = [
   "src/components/critical-geo/VerticalitiesHudSection.tsx",
   "src/components/transversal/StudyTrailBar.tsx",
   "src/components/transversal/TransversalHud.tsx",
+  "src/components/eclipse/EclipseHud.tsx",
+  "src/components/hud/CosmicProbeInspectorCard.tsx",
   "src/components/dossiers/MiltonSantosDossierView.tsx",
   "src/components/dossiers/MiltonSantosCitations.tsx",
   "src/components/pwa/PwaLifecycle.tsx",

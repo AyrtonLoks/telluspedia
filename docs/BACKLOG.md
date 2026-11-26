@@ -253,7 +253,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | DONE | ayrton | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL |
 | D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | DONE | ayrton | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | DONE | ayrton | — | G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL |
-| D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | IN_PROGRESS | antigravity | — | G-COSMOS, G-GLOBO, G-EPOCA |
+| D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | REVIEW | antigravity | — | G-COSMOS, G-GLOBO, G-EPOCA |
 | D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | TODO | — | — | G-CONTEUDO, G-EPOCA, G-PAIS |
 | D43 | Cartografia Histórica Expandida: snapshots TopoJSON 1500 (Grandes Navegações) e 1815 (Congresso de Viena) + 2 novas cenas curadas | Conteúdo/3D | P2 | G | TODO | — | — | G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE |
 | D44 | TellusBridge v2: cobertura 100% dos 299 nós (biomas, Milton Santos, sismologia, eclipses), trilhas em `/study/[slug]` e selos no globo | Produto/Conteúdo | P2 | M | TODO | — | D31, D36, D39, D41 | G-CONTEUDO, G-ESTUDOS, G-PAIS |
@@ -2919,7 +2919,7 @@ Mais de 95% do tráfego intercontinental de dados trafega por cabos submarinos q
 
 ### D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d41-eclipses-deep-space · **Worktree:** ../telluspedia-wt/antigravity-d41
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d41-eclipses-deep-space · **Worktree:** —
 - **Prioridade:** P2 · **Área:** 3D/Cosmos · **Tamanho:** G · **Depende de:** — · **Grupos:** G-COSMOS, G-GLOBO, G-EPOCA
 
 **Contexto / problema**
@@ -2931,15 +2931,16 @@ O Modo Cosmos (`Horizonte 4`) já modela o Sistema Solar, Halley, asteroides, ch
 3. Garantir handover seguro de câmera sem `NaN` (`AGENTS.md` §1) e tradução `pt-BR`/`en`.
 
 **Critérios de aceite**
-- [ ] Pelo menos 4 eclipses emblemáticos projetam sombra coerente e faixa de totalidade sobre a Terra na data correta.
-- [ ] Sondas espaciais selecionáveis no Modo Cosmos com distância em UA e tempo-luz calculados em função da data da timeline.
-- [ ] Testes unitários para cálculo de distância/tempo-luz das sondas e geometria de totalidade; zero regressões no Cosmos.
+- [x] Pelo menos 4 eclipses emblemáticos projetam sombra coerente e faixa de totalidade sobre a Terra na data correta.
+- [x] Sondas espaciais selecionáveis no Modo Cosmos com distância em UA e tempo-luz calculados em função da data da timeline.
+- [x] Testes unitários para cálculo de distância/tempo-luz das sondas e geometria de totalidade; zero regressões no Cosmos.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`04fa12e`) com grupos livres (`G-COSMOS, G-GLOBO, G-EPOCA`).
+- 2026-11-26 · antigravity · REVIEW · Implementados (1) catálogo e motor físico de 5 eclipses curados NASA GSFC (`sobral-1919` com link para `/dossies/einstein`, `north-america-2024`, `blood-moon-2025` lunar total com refração avermelhada de Rayleigh em `OrbitingMoon.tsx`, `arctic-spain-2026` e `luxor-2027` Saros 136), sincronizando `useSunDirection` ao segundo exato UTC, projetando umbra/penumbra GLSL + fita geodésica 3D de totalidade + cone espacial em `EclipseShadowLayer.tsx` (`raycast` não bloqueante e `.dispose()` `RN21`) e controle deslizante temporal em `EclipseHud.tsx`; e (2) camada opcional `PROBES` no Modo Cosmos (`DeepSpaceProbesLayer.tsx`, `deep-space-probes.ts`, `deep-space-probes-catalog.ts`) para **Voyager 1**, **Voyager 2**, **New Horizons** e **James Webb (JWST · L2)** com efemérides calibradas NASA JPL Horizons (distância heliocêntrica/geocêntrica em UA, velocidade e tempo-luz DSN de 1 e 2 vias), handover seguro sem `NaN` em `CosmicCameraController.tsx`, ficha completa em `CosmicProbeInspectorCard.tsx` no `RightDock`, URL (`?sonda=...&eclipse=...`), busca `⌘K` e i18n `pt-BR`/`en`. Validado com `typecheck`, `lint`, `build` (`/` = `163 kB`, `< 160 KiB` gzip), `905/906` testes unitários (`0` falhas) e E2E Playwright (`eclipses-probes.spec.ts` `1/1`).
 
 ---
 

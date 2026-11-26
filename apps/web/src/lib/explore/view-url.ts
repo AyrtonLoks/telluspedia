@@ -1,4 +1,9 @@
 import { CELESTIAL_BODY_IDS } from "@/lib/celestial-bodies";
+import { isDeepSpaceProbeId } from "@/lib/deep-space-probes-ids";
+import {
+  clampEclipseOffsetMinutes,
+  isEclipseId,
+} from "@/lib/eclipses-ids";
 import { GEOLOGICAL_MILESTONE_MA } from "@/lib/epoch/constants";
 import { COUNTRY_ISO_CODES } from "@/lib/country-isos";
 import { findMilestoneById } from "@/lib/milestones";
@@ -62,7 +67,7 @@ const layerIds: readonly ObservatoryLayer[] = [
   "AIR_QUALITY",
 ];
 const viewKeys = [
-  "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
+  "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "sonda", "eclipse", "escala",
   "camadas", "gibs", "bioma", "sismos", "cabos", "aqi", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
   "mapa", "proj", "coropletico", "coropleticoAno", "lente", "trilha",
 ];
@@ -105,6 +110,15 @@ export function encodeView(view: ViewCamera) {
   }
   if (cosmic.isCosmicMode) params.set("modo", "cosmos");
   if (cosmic.focusedBodyId) params.set("corpo", cosmic.focusedBodyId);
+  if (cosmic.focusedProbeId) params.set("sonda", cosmic.focusedProbeId);
+  if (cosmic.activeEclipseId) {
+    params.set(
+      "eclipse",
+      cosmic.eclipseOffsetMinutes !== 0
+        ? `${cosmic.activeEclipseId},${cosmic.eclipseOffsetMinutes}`
+        : cosmic.activeEclipseId
+    );
+  }
   if (cosmic.scaleMode === "real") params.set("escala", "real");
   if (cosmic.activeCosmicLayers.length !== ALL_COSMIC_LAYERS.length) {
     params.set("camadasCosmos", cosmic.activeCosmicLayers.join(","));
@@ -192,12 +206,27 @@ export function restoreView(search: string, view: ViewCamera) {
 
   const body = params.get("corpo");
   const focusedBodyId = CELESTIAL_BODY_IDS.find((id) => id === body) ?? null;
-  const isCosmicMode = params.get("modo") === "cosmos";
-  const focus = isCosmicMode || focusedBodyId === "MOON" ? focusedBodyId : null;
+  const rawProbe = params.get("sonda");
+  const probeCandidate = isDeepSpaceProbeId(rawProbe) ? rawProbe : null;
+  const [rawEclipseId, rawEclipseOffset] = (params.get("eclipse") ?? "").split(",");
+  const activeEclipseId = isEclipseId(rawEclipseId) ? rawEclipseId : null;
+  const eclipseOffsetMinutes = activeEclipseId
+    ? clampEclipseOffsetMinutes(Number(rawEclipseOffset ?? "0"))
+    : 0;
+  const isCosmicMode = params.get("modo") === "cosmos" || probeCandidate !== null;
+  const focusedProbeId = isCosmicMode ? probeCandidate : null;
+  const focus =
+    focusedProbeId === null && (isCosmicMode || focusedBodyId === "MOON")
+      ? focusedBodyId
+      : null;
   useCosmicStore.setState({
     isCosmicMode,
     focusedBodyId: focus,
-    isInspectorOpen: focus !== null,
+    focusedProbeId,
+    activeEclipseId,
+    eclipseOffsetMinutes,
+    isEclipseMenuOpen: activeEclipseId !== null,
+    isInspectorOpen: focus !== null || focusedProbeId !== null,
     isPlaying: false,
     scaleMode: params.get("escala") === "real" ? "real" : "visual",
     activeCosmicLayers: params.has("camadasCosmos")

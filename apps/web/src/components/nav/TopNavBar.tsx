@@ -76,6 +76,8 @@ export const TopNavBar: React.FC = () => {
     useChoroplethStore.getState().resetChoropleth();
     useCriticalGeoStore.getState().resetCriticalGeo();
     useTransversalStore.getState().resetTransversal();
+    useCosmicStore.getState().setActiveEclipse(null, 0);
+    useCosmicStore.getState().setEclipseMenuOpen(false);
     useStudyStore.getState().resetStudy();
     if (typeof window !== "undefined" && window.location.pathname.startsWith("/study/")) {
       window.history.replaceState(null, "", "/");

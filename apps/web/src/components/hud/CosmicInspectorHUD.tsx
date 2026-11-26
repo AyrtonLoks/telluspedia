@@ -30,6 +30,7 @@ import { useI18n } from "@/lib/i18n/useT";
 import { formatNumber } from "@/lib/i18n/format";
 import { CosmicLayersMenu } from "./CosmicLayersMenu";
 import { CosmicHalleyCard } from "./CosmicHalleyCard";
+import { CosmicProbeInspectorCard } from "./CosmicProbeInspectorCard";
 
 function formatCosmicEpoch(decimalYear: number): string {
   const wholeYear = Math.floor(decimalYear);
@@ -65,6 +66,12 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
     typeof window === "undefined"
       ? useCosmicStore.getState().focusedBodyId
       : storeFocusedBodyId;
+
+  const storeFocusedProbeId = useCosmicStore((s) => s.focusedProbeId);
+  const focusedProbeId =
+    typeof window === "undefined"
+      ? useCosmicStore.getState().focusedProbeId
+      : storeFocusedProbeId;
 
   const storeIsInspectorOpen = useCosmicStore((s) => s.isInspectorOpen);
   const isInspectorOpen =
@@ -109,6 +116,9 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
   );
 
   if (placement === "floating") return layersToggle;
+  if (isInspectorOpen && focusedProbeId) {
+    return <CosmicProbeInspectorCard probeId={focusedProbeId} selectedYear={selectedYear} />;
+  }
   if (!isInspectorOpen || !focusedBodyId) return placement === "dock" ? null : layersToggle;
 
   const meta = ASTROPHYSICAL_CATALOG[focusedBodyId];

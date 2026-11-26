@@ -10,6 +10,8 @@ import {
   type SubsolarPoint,
 } from "../astronomy";
 import { findMilestoneById } from "../milestones";
+import { resolveEclipseTargetDate, type EclipseId } from "../eclipses-ids";
+import { useCosmicStore } from "../../stores/cosmicStore";
 import { useTimelineStore } from "../../stores/timelineStore";
 import { getEpochState, useEpochState } from "./useEpochState";
 
@@ -23,6 +25,8 @@ export interface SunDirectionInput {
   effectiveYear: number | null;
   selectedMilestoneId: string | null;
   activeScene: string | null;
+  activeEclipseId?: EclipseId | null;
+  eclipseOffsetMinutes?: number;
   now?: Date;
 }
 
@@ -120,13 +124,15 @@ export function computeSunDirection(input: SunDirectionInput): SunDirectionState
     ? findMilestoneById(input.selectedMilestoneId)
     : undefined;
 
-  const targetDate = resolveAstronomicalDate({
-    selectedYear: input.effectiveYear,
-    selectedMilestoneExactDate: milestone?.exactDate ?? null,
-    selectedMilestoneYear: milestone?.year ?? null,
-    activeScene: input.activeScene,
-    now,
-  });
+  const targetDate = input.activeEclipseId
+    ? resolveEclipseTargetDate(input.activeEclipseId, input.eclipseOffsetMinutes ?? 0)
+    : resolveAstronomicalDate({
+        selectedYear: input.effectiveYear,
+        selectedMilestoneExactDate: milestone?.exactDate ?? null,
+        selectedMilestoneYear: milestone?.year ?? null,
+        activeScene: input.activeScene,
+        now,
+      });
 
   const hasFractionalYear =
     typeof input.effectiveYear === "number" &&
@@ -137,6 +143,7 @@ export function computeSunDirection(input: SunDirectionInput): SunDirectionState
     Math.floor(input.effectiveYear) === now.getUTCFullYear();
 
   const isLiveClock =
+    !input.activeEclipseId &&
     sceneLockedInstant(input.activeScene) === null &&
     !milestone?.exactDate &&
     milestone?.year == null &&
@@ -166,10 +173,13 @@ export function computeSunDirection(input: SunDirectionInput): SunDirectionState
 export function getSunDirection(now?: Date): SunDirectionState {
   const epoch = getEpochState();
   const selectedMilestoneId = useTimelineStore.getState().selectedMilestoneId;
+  const cosmic = useCosmicStore.getState();
   return computeSunDirection({
     effectiveYear: epoch.effectiveYear,
     selectedMilestoneId,
     activeScene: epoch.activeScene,
+    activeEclipseId: cosmic.activeEclipseId,
+    eclipseOffsetMinutes: cosmic.eclipseOffsetMinutes,
     now,
   });
 }
@@ -187,6 +197,16 @@ export function useSunDirection(): SunDirectionState {
     typeof window === "undefined"
       ? useTimelineStore.getState().selectedMilestoneId
       : storeMilestoneId;
+  const storeEclipseId = useCosmicStore((s) => s.activeEclipseId);
+  const storeEclipseOffset = useCosmicStore((s) => s.eclipseOffsetMinutes);
+  const activeEclipseId =
+    typeof window === "undefined"
+      ? useCosmicStore.getState().activeEclipseId
+      : storeEclipseId;
+  const eclipseOffsetMinutes =
+    typeof window === "undefined"
+      ? useCosmicStore.getState().eclipseOffsetMinutes
+      : storeEclipseOffset;
 
   const clockMs = useSyncExternalStore(
     subscribeSolarClock,
@@ -200,8 +220,17 @@ export function useSunDirection(): SunDirectionState {
         effectiveYear: epoch.effectiveYear,
         selectedMilestoneId,
         activeScene: epoch.activeScene,
+        activeEclipseId,
+        eclipseOffsetMinutes,
         now: new Date(clockMs),
       }),
-    [epoch.effectiveYear, selectedMilestoneId, epoch.activeScene, clockMs]
+    [
+      epoch.effectiveYear,
+      selectedMilestoneId,
+      epoch.activeScene,
+      activeEclipseId,
+      eclipseOffsetMinutes,
+      clockMs,
+    ]
   );
 }

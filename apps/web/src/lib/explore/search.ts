@@ -6,7 +6,20 @@ import { HISTORICAL_ENTITIES, HISTORICAL_ERAS } from "@/lib/historical-entities"
 import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { GIBS_PRODUCT_IDS, GIBS_PRODUCTS, isGibsProductId } from "@/lib/gibs";
 import { getEpochState } from "@/lib/epoch/useEpochState";
-import { applyTimelinePreset, restoreContemporaryTimeline, selectCountry } from "@/stores/actions";
+import {
+  applyTimelinePreset,
+  focusDeepSpaceProbe,
+  restoreContemporaryTimeline,
+  selectCountry,
+  selectEclipseEvent,
+} from "@/stores/actions";
+import {
+  DEEP_SPACE_PROBE_IDS,
+  DEEP_SPACE_PROBES_CATALOG,
+  isDeepSpaceProbeId,
+} from "@/lib/deep-space-probes";
+import { ECLIPSES_CATALOG, ECLIPSES_LIST } from "@/lib/eclipses-catalog";
+import { isEclipseId } from "@/lib/eclipses-ids";
 import { CHOROPLETH_INDICATOR_LIST, type ChoroplethIndicatorId } from "@/lib/choropleth";
 import {
   MAP_PROJECTION_IDS,
@@ -125,6 +138,23 @@ const entries: SearchResult[] = [
   })),
   ...Object.values(ASTROPHYSICAL_CATALOG).map((body) => ({
     id: `body:${body.id}`, group: "body" as const, title: body.namePt, keywords: body.name,
+  })),
+  ...DEEP_SPACE_PROBE_IDS.map((id) => {
+    const probe = DEEP_SPACE_PROBES_CATALOG[id];
+    return {
+      id: `probe:${id}`,
+      group: "command" as const,
+      title: `Sonda Espacial: ${probe.namePt}`,
+      detail: probe.agency,
+      keywords: `sonda espacial cosmos nasa jpl ${probe.nameEn} ${probe.shortCode} ${probe.regimePt}`,
+    };
+  }),
+  ...ECLIPSES_LIST.map((ec) => ({
+    id: `eclipse:${ec.id}`,
+    group: "command" as const,
+    title: ec.titlePt,
+    detail: String(ec.year),
+    keywords: `eclipse solar lunar umbra penumbra totalidade saros ${ec.titleEn} ${ec.regionPt}`,
   })),
   ...Object.entries(OBSERVATORY_SEARCH_LAYERS).map(([id, layer]) => ({
     id: `layer:${id}`, group: "layer" as const, title: layer.title, keywords: `ativar ${layer.keywords}`,
@@ -398,6 +428,12 @@ export function runSearchResult(result: SearchResult) {
         showEarth();
         globe.setProjectionId(value);
         globe.setViewMode("2d");
+      } else if (result.id.startsWith("probe:") && isDeepSpaceProbeId(value)) {
+        focusDeepSpaceProbe(value);
+        useLayoutStore.getState().setActiveRightPanel("cosmos");
+      } else if (result.id.startsWith("eclipse:") && isEclipseId(value)) {
+        const ec = ECLIPSES_CATALOG[value];
+        selectEclipseEvent(value, { lat: ec.greatestLat, lng: ec.greatestLng });
       } else if (result.id.startsWith("transversal:") && isTransversalEntityId(value)) {
         showEarth();
         void useTransversalStore.getState().activateEntity(value);

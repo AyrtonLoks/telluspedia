@@ -13,6 +13,7 @@ import { calculateLunarPosition } from "@/lib/astronomy";
 import { calculatePlanetaryPosition, currentMoonWorldPos, ASTROPHYSICAL_CATALOG } from "@/lib/astronomy-planets";
 import { bodySceneRadius, celestialLabelPriority, earthSystemScale } from "@/lib/cosmic-scale";
 import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
+import { ECLIPSE_KIND_BY_ID } from "@/lib/eclipses-ids";
 import { sceneHasTrajectoryKind } from "@/lib/scenes/catalog";
 
 import { isDragRelease } from "@/lib/pointer-intent";
@@ -38,6 +39,7 @@ uniform sampler2D uMoonTexture;
 uniform vec3 uSunDirection;
 uniform vec3 uHighlightColor;
 uniform float uHighlightStrength;
+uniform float uLunarUmbra;
 
 varying vec3 vNormal;
 varying vec3 vWorldPosition;
@@ -58,6 +60,9 @@ void main() {
   // Subtle cool earthshine on the night hemisphere so unlit lunar phase remains discernible
   vec3 earthshine = albedo * vec3(0.05, 0.06, 0.085);
   vec3 sunlit = albedo * lit * 1.18;
+  // Rayleigh-refracted copper-red umbral glow during a Total Lunar Eclipse ('Blood Moon', D41)
+  vec3 bloodMoon = albedo * lit * vec3(0.76, 0.20, 0.08);
+  sunlit = mix(sunlit, bloodMoon, clamp(uLunarUmbra, 0.0, 1.0));
 
   // Soft selection/hover rim highlight without washing out the astronomical phase
   float fresnel = pow(1.0 - max(0.0, dot(N, viewDir)), 2.5);
@@ -168,8 +173,15 @@ export const OrbitingMoon: React.FC = () => {
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const hoveredBodyId = useCosmicStore((s) => s.hoveredBodyId);
   const setHoveredBody = useCosmicStore((s) => s.setHoveredBody);
+  const activeEclipseId = useCosmicStore((s) => s.activeEclipseId);
+  const eclipseOffsetMinutes = useCosmicStore((s) => s.eclipseOffsetMinutes);
   const scaleMode = useCosmicStore((s) => s.scaleMode);
   const showLabels = useCosmicStore((s) => s.activeCosmicLayers.includes("LABELS"));
+  const isLunarEclipse =
+    activeEclipseId !== null && ECLIPSE_KIND_BY_ID[activeEclipseId] === "lunar_total";
+  const lunarUmbraStrength = isLunarEclipse
+    ? Math.max(0, 1 - Math.max(0, Math.abs(eclipseOffsetMinutes) - 35) / 75)
+    : 0;
 
   // Política única de escala no modo Cosmos (D11). O grupo Terra + Lua já vem escalado por
   // earthSystemScale; aqui só se compensa a diferença até o raio da política. No modo Terra
@@ -210,6 +222,7 @@ export const OrbitingMoon: React.FC = () => {
         uSunDirection: { value: new THREE.Vector3(1, 0, 0) },
         uHighlightColor: { value: new THREE.Color("#38bdf8") },
         uHighlightStrength: { value: 0.0 },
+        uLunarUmbra: { value: 0.0 },
       },
     });
     const rGeo = new THREE.RingGeometry(0.36, 0.42, 48);
@@ -301,12 +314,14 @@ export const OrbitingMoon: React.FC = () => {
 
     moonMat.uniforms.uHighlightColor.value.set(isFocused ? "#38bdf8" : "#93c5fd");
     moonMat.uniforms.uHighlightStrength.value = isFocused ? 0.85 : isHovered ? 0.45 : 0.0;
+    moonMat.uniforms.uLunarUmbra.value = lunarUmbraStrength;
     invalidate();
   }, [
     moonMat,
     isFocused,
     isHovered,
     isCosmicMode,
+    lunarUmbraStrength,
     sun.isLiveClock,
     sun.timestamp,
     earthModeSunDir,

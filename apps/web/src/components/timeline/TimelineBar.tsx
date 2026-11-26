@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import React, { useEffect, useRef } from "react";
-import { ChevronUp, ChevronDown, Clock, Play, Pause, FastForward, GitBranch } from "lucide-react";
+import { ChevronUp, ChevronDown, Clock, Eclipse, Play, Pause, FastForward, GitBranch } from "lucide-react";
 
 const StudyContext = dynamic(
   () => import("@/components/tellus-bridge/StudyContext").then((m) => m.StudyContext),
@@ -46,6 +46,9 @@ export const TimelineBar: React.FC = () => {
 
   const storeIsPlaying = useCosmicStore((s) => s.isPlaying);
   const storePlaybackSpeed = useCosmicStore((s) => s.playbackSpeed);
+  const activeEclipseId = useCosmicStore((s) => s.activeEclipseId);
+  const isEclipseMenuOpen = useCosmicStore((s) => s.isEclipseMenuOpen);
+  const toggleEclipseMenu = useCosmicStore((s) => s.toggleEclipseMenu);
   const setPlayback = useCosmicStore((s) => s.setPlayback);
   const setPlaybackSpeed = useCosmicStore((s) => s.setPlaybackSpeed);
 
@@ -169,6 +172,23 @@ export const TimelineBar: React.FC = () => {
                   : activeTransversal.shortLabelPt
                 : t("transversal.buttonLabel", "Transversal")}
             </span>
+          </button>
+
+          <button
+            type="button"
+            data-testid="timeline-eclipses-button"
+            aria-label={t("eclipse.buttonAria", "Abrir simulador de eclipses solares e lunares")}
+            aria-pressed={activeEclipseId !== null || isEclipseMenuOpen}
+            onClick={toggleEclipseMenu}
+            className={cn(
+              "inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-control border px-2.5 text-caption font-medium transition-colors duration-fast ease-out",
+              activeEclipseId !== null || isEclipseMenuOpen
+                ? "border-accent/50 bg-accent/15 text-accent"
+                : "border-line bg-surface-raised text-fg-secondary hover:bg-surface-hover hover:text-fg"
+            )}
+          >
+            <Eclipse aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+            <span>{t("eclipse.buttonLabel", "Eclipses")}</span>
           </button>
 
           <PresetSelector />

@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Layers } from "lucide-react";
+import { Eclipse, Layers, Rocket } from "lucide-react";
 import {
   ALL_COSMIC_LAYERS,
   COSMIC_LAYER_LABELS,
+  useCosmicStore,
   type CosmicLayerId,
 } from "@/stores/cosmicStore";
+import { DEEP_SPACE_PROBE_IDS, DEEP_SPACE_PROBES_CATALOG } from "@/lib/deep-space-probes";
+import { focusDeepSpaceProbe } from "@/stores/actions";
 import type { CosmicScaleMode } from "@/lib/cosmic-scale";
 import { Panel } from "@/components/ui/Panel";
 import { cn } from "@/components/ui/cn";
@@ -125,6 +128,38 @@ export const CosmicLayersMenu: React.FC<CosmicLayersMenuProps> = ({
                 ? t("cosmic.scale.realDesc", "Raios na proporção real entre os corpos. As distâncias continuam comprimidas.")
                 : t("cosmic.scale.visualDesc", "Raios exagerados por um fator único para todos ficarem visíveis. Distâncias comprimidas.")}
             </p>
+          </div>
+
+          <div className="space-y-1.5 border-t border-line pt-2.5">
+            <h4 className="flex items-center gap-1.5 text-caption font-medium text-fg-muted">
+              <Rocket aria-hidden="true" className="h-3.5 w-3.5" />
+              <span>{t("probe.quickSelect", "Sondas espaciais")}</span>
+            </h4>
+            <div className="grid grid-cols-2 gap-1">
+              {DEEP_SPACE_PROBE_IDS.map((probeId) => {
+                const p = DEEP_SPACE_PROBES_CATALOG[probeId];
+                return (
+                  <button
+                    key={probeId}
+                    type="button"
+                    data-testid={`cosmic-probe-btn-${probeId}`}
+                    onClick={() => focusDeepSpaceProbe(probeId)}
+                    className="rounded-control border border-line bg-surface-raised px-2 py-1 text-left text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover hover:text-fg"
+                  >
+                    {p.id === "JWST" ? "JWST · L2" : p.namePt}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              data-testid="cosmic-open-eclipses"
+              onClick={() => useCosmicStore.getState().setEclipseMenuOpen(true)}
+              className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-control border border-line bg-surface-raised px-2.5 py-1.5 text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover hover:text-fg"
+            >
+              <Eclipse aria-hidden="true" className="h-3.5 w-3.5 text-warning" />
+              <span>{t("eclipse.openMenu", "Simulador de Eclipses")}</span>
+            </button>
           </div>
 
           <a
