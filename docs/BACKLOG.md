@@ -251,7 +251,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | DONE | ayrton | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
 | D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | TODO | — | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS |
-| D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | IN_PROGRESS | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
+| D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | REVIEW | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | TODO | — | — | G-OBS, G-GLOBO, G-ESTUDOS |
 | D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | TODO | — | — | G-COSMOS, G-GLOBO, G-EPOCA |
 | D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | TODO | — | — | G-CONTEUDO, G-EPOCA, G-PAIS |
@@ -2857,7 +2857,7 @@ Dois requisitos explícitos do `DISCOVERY.md` ainda não têm implementação co
 
 ### D39 · Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d39-seismic-tectonics · **Worktree:** ../telluspedia-wt/antigravity-d39
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d39-seismic-tectonics · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS
 
 **Contexto / problema**
@@ -2870,15 +2870,16 @@ O Observatório Planetário cobre queimadas, eventos severos, satélite GIBS, ó
 4. Suportar serialização em URL e Estudos (`/study/[slug]`), supressão coerente em eras geológicas/históricas e tradução completa `pt-BR`/`en`.
 
 **Critérios de aceite**
-- [ ] Camada sísmica exibe dados reais da USGS com selo explícito de procedência T05 e fallback honesto quando offline.
-- [ ] Controles D14 de janela temporal, magnitude mínima e toggle de placas tectônicas com picking interativo e telemetria.
-- [ ] Zero vazamento de `BufferGeometry` (`dispose()`), respeito a `RN22` (`isThrottled`) e `bundle-budget.test.ts` `< 160 KiB`.
+- [x] Camada sísmica exibe dados reais da USGS com selo explícito de procedência T05 e fallback honesto quando offline.
+- [x] Controles D14 de janela temporal, magnitude mínima e toggle de placas tectônicas com picking interativo e telemetria.
+- [x] Zero vazamento de `BufferGeometry` (`dispose()`), respeito a `RN22` (`isThrottled`) e `bundle-budget.test.ts` `< 160 KiB`.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` + inspeção visual no Chromium WebGL.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`9d70bef`) com grupos livres (`G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS`).
+- 2026-11-26 · antigravity · REVIEW · Implementado o Observatório Sísmico & Tectônico (`USGS_EARTHQUAKES`, 100% D14 bilíngue `pt-BR`/`en`): (1) Proxy `/api/observatory/earthquakes` (`seismic-source.ts`, `seismic-data.ts`, `seismic-types.ts`, bucket `observatory:earthquakes` em `rate-limit.ts`) consumindo os feeds oficiais **USGS Earthquake Hazards GeoJSON** nas janelas `24h` / `7d` / `30d` e limiares `M2.5+` / `M4.5+` / `M6.0+`, sob contrato estrito `T05` (`live`/`cache`/`stale`/`fallback` com TTL 5 min e `Cache-Control`) e sanitização estrita de URLs HTTPS `earthquake.usgs.gov`; (2) Camada 3D sob demanda (`SeismicTectonicLayer.tsx`) com epicentros instanciados (`THREE.InstancedMesh`) dimensionados por magnitude e coloridos pela profundidade hipocentral Wadati–Benioff (`< 70 km`, `70–300 km`, `> 300 km`), anéis concêntricos de ondas sísmicas em `M >= 5.0` / alerta de tsunami pausados em `isThrottled` (`RN22`), picking instantâneo + suporte completo no Mapa 2D (`map-2d-observatory.ts`, `useFlatMapObservatory.ts`); (3) Fronteiras de placas tectônicas contemporâneas **PB2002** (Peter Bird, 2003 — `public/data/tectonic-plates-pb2002.json`, 27 sistemas globais convergentes, divergentes e transformantes carregados sob demanda) com `dispose()` explícito na GPU (`RN21`) e atalho direto para comparar com Pangeia (`250 Ma`); (4) Controles D14 (`SeismicLayerControls.tsx`, `observatory-layer-options.ts`), ficha sísmica no `ObservatoryTelemetryHUD` (`EarthquakeTelemetryDetails.tsx` com magnitude, profundidade, alerta oceânico de tsunami e link oficial USGS), serialização em URL (`?camadas=USGS_EARTHQUAKES&sismos=...`), Estudos (`study-schema.ts`, `study-export.ts`), supressão em eras históricas/geológicas e busca `⌘K` (`search.ts`). Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` mantido em **163 kB**, `< 160 KiB` gzip em `bundle-budget.test.ts` 6/6), `texture-budget.test.ts` (3/3), `design-system.test.tsx` (106/106), `tw-merge-table.test.ts` (5/5), `seismic-tectonics-d39.test.tsx` (5/5), suíte completa `pnpm test` (`878/879`, 0 falhas) e Playwright Chromium WebGL E2E (`seismic-tectonics.spec.ts` 1/1, 0 erros de console).
 
 ---
 

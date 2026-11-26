@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame } from "lucide-react";
+import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame, Zap } from "lucide-react";
+import { EarthquakeTelemetryDetails } from "./EarthquakeTelemetryDetails";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { EONET_CATEGORIES, formatEonetDate, observationLocation, type ObservatoryEntity } from "@/lib/observatory-data";
@@ -28,6 +29,7 @@ const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone
   VESSEL_GROUP: { title: "Embarcações da área", tone: "layer-maritime", icon: <Anchor /> },
   VESSEL: { title: "Embarcação", tone: "layer-maritime", icon: <Anchor /> },
   MARITIME: { title: "Corredor Mercante", tone: "layer-maritime", icon: <Anchor /> },
+  EARTHQUAKE: { title: "Boletim Sísmico (USGS)", tone: "warning", icon: <Zap /> },
 };
 
 /** Par rótulo/valor da telemetria; valores numéricos em mono tabular. */
@@ -200,6 +202,14 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
 
         {selectedEntity.type === "EONET" && (
           <EonetDetails entity={selectedEntity} onFocus={handleFocus} onSelect={setSelectedEntity} />
+        )}
+
+        {selectedEntity.type === "EARTHQUAKE" && (
+          <EarthquakeTelemetryDetails
+            event={selectedEntity.data}
+            meta={selectedEntity.meta}
+            onFocus={handleFocus}
+          />
         )}
 
         {selectedEntity.type === "EONET_CLUSTER" && (

@@ -119,6 +119,8 @@ const MIGRATED = [
   "src/components/observatory/BiomeHudOverlay.tsx",
   "src/components/observatory/SpeciesLayerControls.tsx",
   "src/components/observatory/SpeciesHudOverlay.tsx",
+  "src/components/observatory/SeismicLayerControls.tsx",
+  "src/components/observatory/EarthquakeTelemetryDetails.tsx",
   "src/components/hud/InspectorHUD.tsx",
   "src/components/hud/CountryFaunaSection.tsx",
   "src/components/hud/CountryHeader.tsx",

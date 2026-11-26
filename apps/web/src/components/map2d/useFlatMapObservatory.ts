@@ -8,6 +8,8 @@ import type { GibsImagePixels, Observatory2dRenderState } from "@/lib/map-2d-obs
 import type { SatelliteSnapshot } from "@/lib/observatory-data";
 import { ISS_NORAD_ID } from "@/lib/satellite-catalog";
 import { filterSpeciesCatalog } from "@/lib/species-catalog";
+import { getTectonicPlatesSync, loadTectonicPlates } from "@/lib/seismic-data";
+import type { TectonicPlatesCollection } from "@/lib/seismic-types";
 import { loadSatelliteLib, useObservatoryStore } from "@/stores/observatoryStore";
 import { speciesCacheKey, useSpeciesStore } from "@/stores/speciesStore";
 
@@ -45,6 +47,8 @@ export function useFlatMapObservatory(enabled: boolean): Observatory2dRenderStat
   const marineDebrisHorizonMonths = useObservatoryStore((s) => s.marineDebrisHorizonMonths);
   const prodesBiome = useObservatoryStore((s) => s.prodesBiome);
   const inpeDeforestation = useObservatoryStore((s) => s.inpeDeforestation);
+  const earthquakes = useObservatoryStore((s) => s.earthquakes);
+  const showTectonicPlates = useObservatoryStore((s) => s.showTectonicPlates);
 
   const selectedSpeciesId = useSpeciesStore((s) => s.selectedSpeciesId);
   const hoveredSpeciesId = useSpeciesStore((s) => s.hoveredSpeciesId);
@@ -58,6 +62,7 @@ export function useFlatMapObservatory(enabled: boolean): Observatory2dRenderStat
   const isIssActive = enabled && activeLayers.includes("ISS_SATELLITES");
   const isInpeDeforestActive = enabled && activeLayers.includes("INPE_DEFORESTATION");
   const isDebrisActive = enabled && activeLayers.includes("MARINE_DEBRIS");
+  const isPlates2dActive = enabled && activeLayers.includes("USGS_EARTHQUAKES") && showTectonicPlates;
 
   // 1. Amostra equiretangular em memória da imagem NASA GIBS ativa para reprojeção 2D
   const [gibsPixels, setGibsPixels] = useState<GibsImagePixels | null>(null);
@@ -118,6 +123,25 @@ export function useFlatMapObservatory(enabled: boolean): Observatory2dRenderStat
       alive = false;
     };
   }, [isInpeDeforestActive]);
+
+  const [tectonicPlates, setTectonicPlates] = useState<TectonicPlatesCollection | null>(() =>
+    isPlates2dActive ? getTectonicPlatesSync() : null
+  );
+  useEffect(() => {
+    if (!isPlates2dActive) return;
+    const cached = getTectonicPlatesSync();
+    if (cached) {
+      setTectonicPlates(cached);
+      return;
+    }
+    let alive = true;
+    void loadTectonicPlates().then((loaded) => {
+      if (alive && loaded) setTectonicPlates(loaded);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [isPlates2dActive]);
 
   // 3. Propagação periódica leve (2s) da ISS e satélites artificiais no Modo 2D
   const [satelliteSnapshots, setSatelliteSnapshots] = useState<SatelliteSnapshot[]>([]);
@@ -232,5 +256,8 @@ export function useFlatMapObservatory(enabled: boolean): Observatory2dRenderStat
     selectedSpeciesId,
     hoveredSpeciesId,
     selectedSpeciesOccurrences,
+    seismicEvents: earthquakes?.events ?? [],
+    showTectonicPlates,
+    tectonicPlates,
   };
 }

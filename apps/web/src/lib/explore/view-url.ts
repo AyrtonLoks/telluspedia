@@ -6,6 +6,13 @@ import { HISTORICAL_ENTITY_IDS } from "@/lib/historical-eras";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
 import { encodeGibsView, readGibsView } from "@/lib/gibs-view";
 import { DEFAULT_BIOME_SCOPE, encodeBiomesView, readBiomesView } from "@/lib/biomes-types";
+import {
+  DEFAULT_SEISMIC_MIN_MAGNITUDE,
+  DEFAULT_SEISMIC_WINDOW,
+  DEFAULT_SHOW_TECTONIC_PLATES,
+  encodeSeismicView,
+  readSeismicView,
+} from "@/lib/seismic-types";
 import { DEFAULT_MAP_PROJECTION, readMapView } from "@/lib/map-projections-types";
 import {
   CHOROPLETH_MAX_YEAR,
@@ -41,10 +48,11 @@ const layerIds: readonly ObservatoryLayer[] = [
   "INPE_DEFORESTATION",
   "BIOMES_MAP",
   "SPECIES_MAP",
+  "USGS_EARTHQUAKES",
 ];
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
-  "camadas", "gibs", "bioma", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
+  "camadas", "gibs", "bioma", "sismos", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
   "mapa", "proj", "coropletico", "coropleticoAno", "lente",
 ];
 
@@ -97,6 +105,16 @@ export function encodeView(view: ViewCamera) {
   }
   if (observatory.activeLayers.includes("BIOMES_MAP")) {
     params.set("bioma", encodeBiomesView(observatory.biomeScope, observatory.biomeFilterId));
+  }
+  if (observatory.activeLayers.includes("USGS_EARTHQUAKES")) {
+    params.set(
+      "sismos",
+      encodeSeismicView(
+        observatory.seismicWindow,
+        observatory.seismicMinMagnitude,
+        observatory.showTectonicPlates
+      )
+    );
   }
   if (observatory.isPanelOpen) params.set("observatorio", "1");
   const choropleth = useChoroplethStore.getState();
@@ -172,6 +190,12 @@ export function restoreView(search: string, view: ViewCamera) {
   observatory.setBiomeScope(biomesView?.scope ?? DEFAULT_BIOME_SCOPE);
   observatory.setBiomeFilterId(biomesView?.filterId ?? null);
   observatory.setSelectedBiomeId(biomesView?.filterId ?? null);
+  const seismicView = readSeismicView(params.get("sismos"));
+  observatory.setSeismicFilter({
+    window: seismicView?.window ?? DEFAULT_SEISMIC_WINDOW,
+    minMagnitude: seismicView?.minMagnitude ?? DEFAULT_SEISMIC_MIN_MAGNITUDE,
+  });
+  observatory.setShowTectonicPlates(seismicView?.showPlates ?? DEFAULT_SHOW_TECTONIC_PLATES);
   if (layers.length !== observatory.activeLayers.length || layers.some((id) => !observatory.activeLayers.includes(id))) {
     observatory.setAllLayers(layers);
   }

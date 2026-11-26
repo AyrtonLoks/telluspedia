@@ -6,6 +6,7 @@
 import { geoPath, type GeoPermissibleObjects, type GeoProjection } from "d3-geo";
 import { vesselIsMoving } from "@/lib/ais-data";
 import type { MapProjectionId } from "@/lib/map-projections-types";
+import { PLATE_BOUNDARY_COLORS_HEX, SEISMIC_DEPTH_COLORS_HEX } from "@/lib/seismic-data";
 import { IUCN_STATUS_META } from "@/lib/species-catalog";
 import {
   drawInpeDeforestation2d,
@@ -88,6 +89,54 @@ export function renderObservatory2dLayers(
   }
   if (active.has("INPE_DEFORESTATION")) {
     drawInpeDeforestation2d(ctx, width, height, projection, projectionId, state, state.layerOpacity.INPE_DEFORESTATION ?? 0.9);
+  }
+
+  // Terremotos (USGS GeoJSON) & Placas Tectônicas Contemporâneas (PB2002 — D39)
+  if (active.has("USGS_EARTHQUAKES")) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0.25, state.layerOpacity.USGS_EARTHQUAKES ?? 0.95);
+    if (state.showTectonicPlates && state.tectonicPlates) {
+      const path = geoPath(projection, ctx);
+      for (const feat of state.tectonicPlates.features) {
+        const bType = feat.properties.boundaryType;
+        ctx.beginPath();
+        path(feat as unknown as GeoPermissibleObjects);
+        ctx.strokeStyle = PLATE_BOUNDARY_COLORS_HEX[bType] ?? "#f59e0b";
+        ctx.lineWidth = bType === "convergent" ? 1.55 : 1.25;
+        ctx.stroke();
+      }
+    }
+
+    const quakes = state.seismicEvents ?? [];
+    for (let i = quakes.length - 1; i >= 0; i--) {
+      const ev = quakes[i]!;
+      const pt = projectPointSafe(projection, projectionId, ev.lng, ev.lat, width, height);
+      if (!pt) continue;
+      const color = SEISMIC_DEPTH_COLORS_HEX[ev.depthBand] ?? "#f97316";
+      const radius = Math.max(2.6, Math.min(10.5, (ev.magnitude - 1.8) * 1.6));
+      if (ev.magnitude >= 5.0 || ev.tsunamiAlert) {
+        ctx.beginPath();
+        ctx.arc(pt[0], pt[1], radius + 4, 0, Math.PI * 2);
+        ctx.strokeStyle = ev.tsunamiAlert ? "#ef4444" : color;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.arc(pt[0], pt[1], radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = "#0b1120";
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+      hits.push({
+        kind: "ENTITY",
+        x: pt[0],
+        y: pt[1],
+        radius: Math.max(9, radius + 4),
+        entity: { type: "EARTHQUAKE", data: ev, meta: state.layerMeta.USGS_EARTHQUAKES },
+      });
+    }
+    ctx.restore();
   }
 
   // Tráfego Marítimo & AIS

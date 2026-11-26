@@ -125,6 +125,25 @@ export async function loadObservatoryLayer(
       applyMeta("BIOMES_MAP", buildBiomesMeta(get().biomeScope));
     } else if (layerId === "SPECIES_MAP") {
       applyMeta("SPECIES_MAP", buildSpeciesMeta());
+    } else if (layerId === "USGS_EARTHQUAKES") {
+      const { seismicWindow, seismicMinMagnitude } = get();
+      const [{ isValidSeismicPayload }, body] = await Promise.all([
+        import("@/lib/seismic-data"),
+        fetchEnvelope(
+          `/api/observatory/earthquakes?window=${seismicWindow}&minMag=${seismicMinMagnitude}`
+        ),
+      ]);
+      if (isObservatoryEnvelope(body) && isValidSeismicPayload(body.data)) {
+        const cur = get();
+        if (
+          body.data.window !== cur.seismicWindow ||
+          body.data.minMagnitude !== cur.seismicMinMagnitude
+        ) {
+          return;
+        }
+        set({ earthquakes: body.data });
+        applyMeta("USGS_EARTHQUAKES", body.meta);
+      } else throw new Error("Resposta USGS Earthquakes inválida");
     } else if (layerId === "NASA_EONET") {
       const body = await fetchEnvelope("/api/observatory/eonet");
       if (isObservatoryEnvelope(body) && Array.isArray(body.data)) {
@@ -238,6 +257,11 @@ export async function loadObservatoryLayer(
     if (layerId === "INPE_DEFORESTATION") {
       const { buildTerraBrasilisPayload } = await import("@/lib/inpe-data");
       set({ inpeDeforestation: buildTerraBrasilisPayload([], 30) });
+    }
+    if (layerId === "USGS_EARTHQUAKES") {
+      const { buildFallbackSeismicPayload } = await import("@/lib/seismic-data");
+      const { seismicWindow, seismicMinMagnitude } = get();
+      set({ earthquakes: buildFallbackSeismicPayload(seismicWindow, seismicMinMagnitude) });
     }
   } finally {
     set((s) => ({

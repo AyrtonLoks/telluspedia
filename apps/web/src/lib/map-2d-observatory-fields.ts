@@ -31,6 +31,7 @@ import type {
 } from "@/lib/observatory-data";
 import type { ObservatoryMeta } from "@/lib/observatory-source";
 import type { SpeciesCatalogEntry, SpeciesOccurrencePoint } from "@/lib/species-types";
+import type { SeismicEvent, TectonicPlatesCollection } from "@/lib/seismic-types";
 import type { FlowMode, OceanCurrentGrid, WindAltitude, WindFieldPayload } from "@/lib/winds-types";
 
 export interface GibsImagePixels {
@@ -68,6 +69,9 @@ export interface Observatory2dRenderState {
   selectedSpeciesId: string | null;
   hoveredSpeciesId: string | null;
   selectedSpeciesOccurrences: readonly SpeciesOccurrencePoint[];
+  seismicEvents?: readonly SeismicEvent[];
+  showTectonicPlates?: boolean;
+  tectonicPlates?: TectonicPlatesCollection | null;
 }
 
 export type Observatory2dHitTarget =

@@ -49,6 +49,10 @@ const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywo
     title: "Espécies Animais & Biodiversidade (GBIF / IUCN)",
     keywords: "espécies animais fauna biodiversidade GBIF IUCN Red List extinção onça arara lobo-guará mico-leão peixe-boi panda tigre elefante baleia urso-polar",
   },
+  USGS_EARTHQUAKES: {
+    title: "Terremotos & Placas Tectônicas (USGS / PB2002)",
+    keywords: "terremotos sismos abalos sismologia placas tectonicas falha subduccao dorsal mesoatlantica circulo de fogo tsunami USGS PB2002",
+  },
 };
 
 const presets: Record<TimelinePreset, string> = {

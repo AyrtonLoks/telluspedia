@@ -39,6 +39,11 @@ import type {
   TerraBrasilisPayload,
 } from "@/lib/inpe-types";
 import type { BiomeId, BiomeScope } from "@/lib/biomes-types";
+import type {
+  SeismicMinMagnitude,
+  SeismicPayload,
+  SeismicWindow,
+} from "@/lib/seismic-types";
 
 export interface FirmsWindow {
   days: FirmsWindowDays;
@@ -59,6 +64,7 @@ export const ALL_OBSERVATORY_LAYERS: readonly ObservatoryLayer[] = [
   "INPE_DEFORESTATION",
   "BIOMES_MAP",
   "SPECIES_MAP",
+  "USGS_EARTHQUAKES",
 ];
 
 export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
@@ -74,6 +80,7 @@ export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
   INPE_DEFORESTATION: 0.9,
   BIOMES_MAP: 0.72,
   SPECIES_MAP: 0.95,
+  USGS_EARTHQUAKES: 0.95,
 };
 
 export function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
@@ -209,6 +216,13 @@ export interface ObservatoryState {
   setSelectedBiomeId: (id: BiomeId | null) => void;
   setHoveredBiomeId: (id: BiomeId | null) => void;
   setBiomePickMode: (enabled: boolean) => void;
+  /** Observatório Sísmico & Tectônico (USGS GeoJSON + Placas PB2002 — D39). */
+  earthquakes: SeismicPayload | null;
+  seismicWindow: SeismicWindow;
+  seismicMinMagnitude: SeismicMinMagnitude;
+  showTectonicPlates: boolean;
+  setSeismicFilter: (filter: { window?: SeismicWindow; minMagnitude?: SeismicMinMagnitude }) => void;
+  setShowTectonicPlates: (enabled: boolean) => void;
 
   isLoading: Record<ObservatoryLayer, boolean>;
   hasLoaded: Record<ObservatoryLayer, boolean>;

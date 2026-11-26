@@ -17,6 +17,11 @@ import {
 import { DEFAULT_FIRE_SOURCE, DEFAULT_PRODES_BIOME } from "@/lib/inpe-types";
 import { DEFAULT_BIOME_SCOPE, isBiomeIdForScope } from "@/lib/biomes-types";
 import {
+  DEFAULT_SEISMIC_MIN_MAGNITUDE,
+  DEFAULT_SEISMIC_WINDOW,
+  DEFAULT_SHOW_TECTONIC_PLATES,
+} from "@/lib/seismic-types";
+import {
   buildBiomesMeta,
   DEFAULT_FIRMS_WINDOW,
   DEFAULT_LAYER_OPACITY,
@@ -156,6 +161,27 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   setSelectedBiomeId: (selectedBiomeId) => set({ selectedBiomeId }),
   setHoveredBiomeId: (hoveredBiomeId) => set({ hoveredBiomeId }),
   setBiomePickMode: (biomePickMode) => set({ biomePickMode }),
+  earthquakes: null,
+  seismicWindow: DEFAULT_SEISMIC_WINDOW,
+  seismicMinMagnitude: DEFAULT_SEISMIC_MIN_MAGNITUDE,
+  showTectonicPlates: DEFAULT_SHOW_TECTONIC_PLATES,
+  setSeismicFilter: (filter) => {
+    const cur = get();
+    const nextWindow = filter.window ?? cur.seismicWindow;
+    const nextMinMag = filter.minMagnitude ?? cur.seismicMinMagnitude;
+    if (nextWindow === cur.seismicWindow && nextMinMag === cur.seismicMinMagnitude) return;
+    set((s) => ({
+      seismicWindow: nextWindow,
+      seismicMinMagnitude: nextMinMag,
+      selectedEntity: s.selectedEntity?.type === "EARTHQUAKE" ? null : s.selectedEntity,
+    }));
+    if (get().activeLayers.includes("USGS_EARTHQUAKES")) {
+      void get().loadLayerData("USGS_EARTHQUAKES");
+    } else {
+      set((s) => ({ hasLoaded: { ...s.hasLoaded, USGS_EARTHQUAKES: false } }));
+    }
+  },
+  setShowTectonicPlates: (showTectonicPlates) => set({ showTectonicPlates }),
   loadCurrentsData: async () => {
     const { loadCurrentsLayer } = await loadObservatoryLoaders();
     return loadCurrentsLayer(set, get);
@@ -192,7 +218,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     } else if (!active && isCurrentlyActive) {
       set((state) => ({
         activeLayers: activeLayers.filter((id) => id !== layerId),
-        selectedEntity: layerId === "NASA_EONET" && isEonetSelection(state.selectedEntity) ? null : state.selectedEntity,
+        selectedEntity:
+          (layerId === "NASA_EONET" && isEonetSelection(state.selectedEntity)) ||
+          (layerId === "USGS_EARTHQUAKES" && state.selectedEntity?.type === "EARTHQUAKE")
+            ? null
+            : state.selectedEntity,
         marineDebrisPickMode: layerId === "MARINE_DEBRIS" ? false : state.marineDebrisPickMode,
         biomePickMode: layerId === "BIOMES_MAP" ? false : state.biomePickMode,
         hoveredBiomeId: layerId === "BIOMES_MAP" ? null : state.hoveredBiomeId,
@@ -204,8 +234,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   setAllLayers: (layers) => {
     set((state) => ({
       activeLayers: layers,
-      selectedEntity: !layers.includes("NASA_EONET") && isEonetSelection(state.selectedEntity)
-        ? null : state.selectedEntity,
+      selectedEntity:
+        (!layers.includes("NASA_EONET") && isEonetSelection(state.selectedEntity)) ||
+        (!layers.includes("USGS_EARTHQUAKES") && state.selectedEntity?.type === "EARTHQUAKE")
+          ? null
+          : state.selectedEntity,
     }));
     const { hasLoaded, loadLayerData } = get();
     for (const layer of layers) {
@@ -286,5 +319,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       selectedBiomeId: null,
       hoveredBiomeId: null,
       biomePickMode: false,
+      seismicWindow: DEFAULT_SEISMIC_WINDOW,
+      seismicMinMagnitude: DEFAULT_SEISMIC_MIN_MAGNITUDE,
+      showTectonicPlates: DEFAULT_SHOW_TECTONIC_PLATES,
     }),
 }));

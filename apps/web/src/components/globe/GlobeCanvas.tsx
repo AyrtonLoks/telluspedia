@@ -80,6 +80,10 @@ const BiomeHudOverlay = lazy(() =>
 const SpeciesLayer = lazy(() =>
   import("./SpeciesLayer").then((m) => ({ default: m.SpeciesLayer }))
 );
+// Observatório Sísmico & Placas Tectônicas Contemporâneas USGS + PB2002 (D39) só baixa quando ligado.
+const SeismicTectonicLayer = lazy(() =>
+  import("./SeismicTectonicLayer").then((m) => ({ default: m.SeismicTectonicLayer }))
+);
 const SpeciesHudOverlay = lazy(() =>
   import("@/components/observatory/SpeciesHudOverlay").then((m) => ({ default: m.SpeciesHudOverlay }))
 );
@@ -344,6 +348,11 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {isContemporary && activeObservatoryLayers.includes("SPECIES_MAP") && (
               <Suspense fallback={null}>
                 <SpeciesLayer />
+              </Suspense>
+            )}
+            {isContemporary && activeObservatoryLayers.includes("USGS_EARTHQUAKES") && (
+              <Suspense fallback={null}>
+                <SeismicTectonicLayer />
               </Suspense>
             )}
             {isContemporary && activeCriticalLens !== null && (

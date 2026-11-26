@@ -1,5 +1,6 @@
 import type { AisVessel, VesselGroup } from "./ais-data";
 import type { ObservatoryMeta } from "./observatory-source";
+import type { SeismicEvent } from "./seismic-types";
 
 /** Camadas que a busca ⌘K, a URL compartilhável e os estudos conhecem. */
 export type ObservatoryLayerId =
@@ -20,7 +21,8 @@ export type ObservatoryLayer =
   | "MARINE_DEBRIS"
   | "INPE_DEFORESTATION"
   | "BIOMES_MAP"
-  | "SPECIES_MAP";
+  | "SPECIES_MAP"
+  | "USGS_EARTHQUAKES";
 
 export interface FirmsHotspot {
   id: string;
@@ -173,7 +175,8 @@ export type ObservatoryEntity =
   | { type: "AIRCRAFT"; data: AircraftState; estimatedPosition?: { lat: number; lng: number }; meta?: ObservatoryMeta }
   | { type: "MARITIME"; data: MaritimeRoute }
   | { type: "VESSEL"; data: AisVessel; meta: ObservatoryMeta; group?: VesselGroup }
-  | { type: "VESSEL_GROUP"; data: VesselGroup; meta: ObservatoryMeta };
+  | { type: "VESSEL_GROUP"; data: VesselGroup; meta: ObservatoryMeta }
+  | { type: "EARTHQUAKE"; data: SeismicEvent; meta: ObservatoryMeta };
 
 
 /**

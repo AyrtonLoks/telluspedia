@@ -83,6 +83,10 @@ export function collectStudyPrimarySources(study: StudyRecord): PrimarySourceEnt
   if (study.isCosmicMode) {
     add("NASA JPL / IAU — Efemérides e Parâmetros Planetários", "https://ssd.jpl.nasa.gov/");
   }
+  if (study.activeObservatoryLayers?.includes("USGS_EARTHQUAKES")) {
+    add("USGS Earthquake Hazards Program (ANSS ComCat GeoJSON)", "https://earthquake.usgs.gov/");
+    add("Peter Bird (2003) PB2002 — Limites de Placas Tectônicas", "https://peterbird.name/oldFTP/PB2002/");
+  }
 
   return Array.from(byKey.values());
 }

@@ -1,0 +1,466 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "source": "Peter Bird (2003) PB2002 — An updated digital model of plate boundaries",
+    "citation": "Bird, P. (2003), An updated digital model of plate boundaries, Geochemistry, Geophysics, Geosystems, 4(3), 1027, doi:10.1029/2001GC000252.",
+    "url": "https://peterbird.name/oldFTP/PB2002/"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "peru-chile-trench",
+        "name": "Fossa Peru–Chile (Subducção Nazca–América do Sul)",
+        "nameEn": "Peru–Chile Trench (Nazca–South America Subduction)",
+        "boundaryType": "convergent",
+        "plates": "NZ/SA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-78.2, 5.5], [-80.1, 1.2], [-81.4, -4.8], [-80.2, -9.5], [-77.5, -13.8],
+          [-74.2, -17.2], [-71.2, -20.5], [-71.5, -25.8], [-72.3, -31.5], [-73.8, -37.2],
+          [-75.2, -42.5], [-75.8, -46.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "middle-america-trench",
+        "name": "Fossa Mesoamericana (Subducção Cocos–Caribe/América do Norte)",
+        "nameEn": "Middle America Trench (Cocos–Caribbean/North America)",
+        "boundaryType": "convergent",
+        "plates": "CO/NA-CA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-105.6, 20.2], [-102.5, 17.6], [-98.2, 15.8], [-94.0, 14.2], [-90.2, 12.6],
+          [-86.8, 10.6], [-84.0, 8.4], [-82.5, 7.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "cascadia-subduction",
+        "name": "Zona de Subducção de Cascadia (Juan de Fuca–América do Norte)",
+        "nameEn": "Cascadia Subduction Zone (Juan de Fuca–North America)",
+        "boundaryType": "convergent",
+        "plates": "JF/NA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-124.8, 40.4], [-125.4, 43.2], [-125.8, 46.2], [-126.8, 48.8], [-128.4, 50.6]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "aleutian-alaska-trench",
+        "name": "Fossa do Alasca–Aleutas (Subducção Pacífico–América do Norte)",
+        "nameEn": "Alaska–Aleutian Trench (Pacific–North America Subduction)",
+        "boundaryType": "convergent",
+        "plates": "PA/NA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-144.5, 59.2], [-151.0, 56.8], [-158.0, 54.4], [-165.5, 52.6], [-173.0, 51.4],
+          [-179.8, 50.8]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "aleutian-west-kamchatka-japan",
+        "name": "Fossa de Kamchatka–Curilas–Japão (Círculo de Fogo Noroeste)",
+        "nameEn": "Kamchatka–Kuril–Japan Trench (NW Ring of Fire)",
+        "boundaryType": "convergent",
+        "plates": "PA/NA-EU"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [179.8, 50.9], [172.5, 52.4], [164.0, 54.8], [160.2, 51.5], [154.5, 47.2],
+          [148.2, 43.4], [144.2, 40.2], [142.8, 36.5], [141.8, 34.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "izu-bonin-mariana-trench",
+        "name": "Fossa de Izu–Bonin–Marianas (Subducção Pacífico–Filipinas)",
+        "nameEn": "Izu–Bonin–Mariana Trench (Pacific–Philippine Sea)",
+        "boundaryType": "convergent",
+        "plates": "PA/PH"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [141.8, 34.2], [142.4, 29.8], [143.5, 25.2], [146.8, 20.5], [147.6, 15.8],
+          [144.8, 11.8], [141.2, 10.6]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "ryukyu-philippine-trench",
+        "name": "Fossa de Nankai–Ryukyu–Filipinas",
+        "nameEn": "Nankai–Ryukyu–Philippine Trench",
+        "boundaryType": "convergent",
+        "plates": "PH/EU"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [139.2, 34.5], [134.5, 32.2], [130.5, 29.2], [127.2, 25.5], [122.8, 23.2],
+          [122.5, 18.5], [125.2, 13.5], [127.0, 8.2], [126.8, 3.8]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sunda-java-banda-arc",
+        "name": "Arco de Sunda–Java–Banda (Subducção Indo-Australiana–Sunda)",
+        "nameEn": "Sunda–Java–Banda Trench (Indo-Australian–Sunda Subduction)",
+        "boundaryType": "convergent",
+        "plates": "AU/EU"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [92.2, 14.5], [93.4, 8.5], [95.8, 3.2], [99.2, -1.8], [103.5, -6.5],
+          [108.5, -9.2], [115.2, -10.8], [122.5, -10.8], [128.5, -8.4], [131.5, -5.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "new-guinea-solomon-vanuatu",
+        "name": "Arco da Nova Guiné–Salomão–Novas Hébridas",
+        "nameEn": "New Guinea–Solomon–New Hebrides Arc",
+        "boundaryType": "convergent",
+        "plates": "AU/PA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [135.0, -3.2], [142.5, -3.8], [149.5, -6.2], [155.8, -7.8], [161.5, -11.2],
+          [166.8, -15.8], [169.2, -20.4], [172.0, -22.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tonga-kermadec-hikurangi",
+        "name": "Fossa de Tonga–Kermadec–Hikurangi (Subducção Pacífico–Austrália)",
+        "nameEn": "Tonga–Kermadec–Hikurangi Trench (Pacific–Australia)",
+        "boundaryType": "convergent",
+        "plates": "PA/AU"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-173.2, -15.2], [-174.2, -20.5], [-176.0, -26.5], [-177.5, -32.2],
+          [179.4, -37.5], [176.8, -41.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "alpine-himalayan-belt",
+        "name": "Cinturão Alpino–Himalaio (Colisão África/Arábia/Índia–Eurásia)",
+        "nameEn": "Alpine–Himalayan Belt (Africa/Arabia/India–Eurasia Collision)",
+        "boundaryType": "convergent",
+        "plates": "AF-AR-IN/EU"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-6.0, 36.0], [3.5, 36.8], [12.5, 37.8], [21.5, 35.5], [27.5, 34.8],
+          [36.5, 37.2], [44.5, 36.8], [51.5, 31.8], [57.5, 26.8], [66.2, 25.8],
+          [71.5, 33.8], [78.5, 30.8], [85.5, 27.6], [92.5, 27.5], [96.5, 24.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "lesser-antilles-scotia-arcs",
+        "name": "Arco de Subducção das Pequenas Antilhas",
+        "nameEn": "Lesser Antilles Subduction Arc",
+        "boundaryType": "convergent",
+        "plates": "SA/CA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.5, 19.6], [-61.2, 18.2], [-59.5, 15.2], [-59.8, 12.2], [-61.5, 10.4]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "south-sandwich-trench",
+        "name": "Fossa de Sandwich do Sul (Subducção América do Sul–Scotia)",
+        "nameEn": "South Sandwich Trench (South America–Scotia Subduction)",
+        "boundaryType": "convergent",
+        "plates": "SA/SC"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-28.5, -55.2], [-25.2, -57.2], [-25.0, -59.5], [-27.8, -60.8]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "mid-atlantic-ridge-north",
+        "name": "Dorsal Mesoatlântica Norte (América do Norte–Eurásia/África)",
+        "nameEn": "North Mid-Atlantic Ridge (North America–Eurasia/Africa)",
+        "boundaryType": "divergent",
+        "plates": "NA/EU-AF"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-6.0, 72.5], [-16.8, 66.2], [-22.4, 63.8], [-29.5, 57.5], [-28.2, 51.5],
+          [-28.5, 44.5], [-31.2, 38.5], [-38.5, 31.2], [-45.2, 23.5], [-45.8, 15.2],
+          [-40.8, 10.2], [-31.5, 4.2], [-18.5, -0.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "mid-atlantic-ridge-south",
+        "name": "Dorsal Mesoatlântica Sul (América do Sul–África)",
+        "nameEn": "South Mid-Atlantic Ridge (South America–Africa)",
+        "boundaryType": "divergent",
+        "plates": "SA/AF"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-13.2, -1.5], [-12.5, -8.5], [-13.8, -16.5], [-13.5, -24.5], [-14.2, -32.5],
+          [-16.5, -40.5], [-14.2, -47.5], [-4.5, -52.8], [-0.5, -54.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "east-pacific-rise",
+        "name": "Dorsal do Pacífico Leste (Pacífico–Cocos/Nazca/Antártica)",
+        "nameEn": "East Pacific Rise (Pacific–Cocos/Nazca/Antarctic)",
+        "boundaryType": "divergent",
+        "plates": "PA/CO-NZ-AN"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-109.2, 23.5], [-104.5, 15.5], [-102.5, 6.5], [-102.0, -2.5], [-106.5, -11.5],
+          [-112.8, -20.5], [-114.5, -29.5], [-111.8, -38.5], [-113.5, -48.5],
+          [-124.5, -55.8], [-142.0, -61.5], [-165.0, -64.0], [-179.5, -64.8]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "chile-galapagos-ridges",
+        "name": "Dorsal de Galápagos e Dorsal do Chile",
+        "nameEn": "Galápagos Spreading Center & Chile Rise",
+        "boundaryType": "divergent",
+        "plates": "CO/NZ"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-101.8, 2.2], [-95.0, 1.8], [-89.5, 1.2], [-84.2, 2.8], [-79.5, 4.8]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "chile-rise-nazca-antarctic",
+        "name": "Dorsal do Chile (Nazca–Antártica)",
+        "nameEn": "Chile Rise (Nazca–Antarctic)",
+        "boundaryType": "divergent",
+        "plates": "NZ/AN"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8, -36.5], [-98.5, -38.5], [-86.5, -42.5], [-75.8, -46.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "red-sea-aden-indian-ridge",
+        "name": "Rifte do Mar Vermelho–Áden e Dorsal Central/Sudeste Indiana",
+        "nameEn": "Red Sea–Aden Rift & Central/Southeast Indian Ridge",
+        "boundaryType": "divergent",
+        "plates": "AF-AR/IN-AU-AN"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [34.2, 27.5], [38.2, 21.2], [42.5, 14.2], [48.5, 12.2], [57.5, 13.5],
+          [61.8, 6.5], [66.5, -2.5], [68.2, -12.5], [70.2, -23.5], [77.8, -32.5],
+          [92.5, -42.5], [112.0, -49.5], [135.0, -53.5], [155.0, -58.5], [175.0, -63.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "southwest-indian-ridge",
+        "name": "Dorsal Sudoeste Indiana (África–Antártica)",
+        "nameEn": "Southwest Indian Ridge (Africa–Antarctic)",
+        "boundaryType": "divergent",
+        "plates": "AF/AN"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-0.5, -54.5], [14.5, -52.5], [30.5, -47.5], [45.5, -40.5], [58.5, -32.5],
+          [70.0, -25.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "east-african-rift-system",
+        "name": "Sistema de Rifte Leste-Africano (Núbia–Somália)",
+        "nameEn": "East African Rift System (Nubia–Somalia)",
+        "boundaryType": "divergent",
+        "plates": "AF/SO"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [42.0, 11.8], [38.8, 8.2], [36.2, 2.5], [30.2, -2.5], [29.6, -7.5],
+          [34.5, -13.5], [35.2, -19.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "san-andreas-gulf-california",
+        "name": "Falha de San Andreas e Golfo da Califórnia (Pacífico–América do Norte)",
+        "nameEn": "San Andreas Fault & Gulf of California (Pacific–North America)",
+        "boundaryType": "transform",
+        "plates": "PA/NA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-124.8, 40.4], [-122.5, 37.8], [-120.4, 35.8], [-116.2, 33.4], [-113.5, 29.5],
+          [-109.5, 24.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "queen-charlotte-fairweather",
+        "name": "Falha Queen Charlotte–Fairweather (Canadá–Alasca)",
+        "nameEn": "Queen Charlotte–Fairweather Fault",
+        "boundaryType": "transform",
+        "plates": "PA/NA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-128.4, 50.6], [-132.8, 53.5], [-136.5, 56.8], [-141.5, 59.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "alpine-fault-new-zealand",
+        "name": "Falha Alpina da Nova Zelândia & Zona Macquarie",
+        "nameEn": "New Zealand Alpine Fault & Macquarie Ridge",
+        "boundaryType": "transform",
+        "plates": "PA/AU"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [176.8, -41.2], [171.8, -42.8], [167.8, -44.8], [164.2, -49.5], [159.2, -55.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "caribbean-north-south-transforms",
+        "name": "Falhas Transformantes do Caribe Norte (Cayman–Hispaniola)",
+        "nameEn": "Northern Caribbean Transform (Cayman–Septentrional)",
+        "boundaryType": "transform",
+        "plates": "NA/CA"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-88.5, 16.2], [-82.5, 18.5], [-76.0, 19.8], [-70.2, 19.6], [-65.5, 19.6]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dead-sea-north-anatolian-faults",
+        "name": "Transformante do Mar Morto e Falha Norte-Anatólia",
+        "nameEn": "Dead Sea Transform & North Anatolian Fault",
+        "boundaryType": "transform",
+        "plates": "AF/AR-EU"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [34.6, 28.0], [35.5, 32.0], [36.4, 36.5], [39.5, 39.8], [34.5, 41.0],
+          [29.0, 40.7], [25.5, 40.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "scotia-transform-ridges",
+        "name": "Zona Transformante de Magalhães–Fagnano e Dorsal Norte de Scotia",
+        "nameEn": "Magallanes–Fagnano & North Scotia Transform",
+        "boundaryType": "transform",
+        "plates": "SA/SC"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.5, -52.5], [-68.0, -54.2], [-58.0, -54.2], [-45.0, -53.8], [-32.0, -54.2],
+          [-28.5, -55.2]
+        ]
+      }
+    }
+  ]
+}

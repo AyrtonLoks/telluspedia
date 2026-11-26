@@ -68,6 +68,7 @@ const observatoryLayer = z.enum([
   "INPE_DEFORESTATION",
   "BIOMES_MAP",
   "SPECIES_MAP",
+  "USGS_EARTHQUAKES",
 ] satisfies ObservatoryLayer[]);
 const gibsProduct = z.enum(GIBS_PRODUCT_IDS);
 const gibsMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
