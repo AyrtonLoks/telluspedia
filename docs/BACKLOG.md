@@ -252,7 +252,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
 | D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | DONE | ayrton | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL |
 | D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | DONE | ayrton | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
-| D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | IN_PROGRESS | antigravity | — | G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL |
+| D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | REVIEW | antigravity | — | G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL |
 | D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | TODO | — | — | G-COSMOS, G-GLOBO, G-EPOCA |
 | D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | TODO | — | — | G-CONTEUDO, G-EPOCA, G-PAIS |
 | D43 | Cartografia Histórica Expandida: snapshots TopoJSON 1500 (Grandes Navegações) e 1815 (Congresso de Viena) + 2 novas cenas curadas | Conteúdo/3D | P2 | G | TODO | — | — | G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE |
@@ -2889,7 +2889,7 @@ O Observatório Planetário cobre queimadas, eventos severos, satélite GIBS, ó
 
 ### D40 · Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d40-cable-raycast-fix · **Worktree:** ../telluspedia-wt/antigravity-d40
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d40-cable-raycast-fix · **Worktree:** —
 - **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL
 
 **Contexto / problema**
@@ -2912,6 +2912,7 @@ Mais de 95% do tráfego intercontinental de dados trafega por cabos submarinos q
 - 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`cc316bc`) com grupos livres (`G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL`).
 - 2026-11-26 · antigravity · REVIEW · Implementadas as camadas `SUBMARINE_CABLES` (16 sistemas transoceânicos TeleGeography CC BY-SA 4.0 em `public/data/submarine-cables-telegeography.json`, SLERP esférico no raio `1.0025`, `InstancedMesh` de estações de aterramento, 6 gargalos geopolíticos estratégicos, filtro por bacia, atalho na lente Verticalidades de `D36`, `.dispose()` `RN21` e `isThrottled` `RN22`) e `AIR_QUALITY` (`/api/observatory/air-quality` sem chave sobre Open-Meteo Air Quality API CAMS sob contrato `T05` + rate-limit `observatory:air-quality` 120 req/min, 28 capitais globais no Observatório 3D/2D com escalas US AQI EPA e European AQI EEA + card pontual no `LiveWeatherWidget` do país selecionado com degradação limpa). Integrados URL (`?camadas=...&cabos=...&aqi=...`), Estudos (`/study/[slug]`), busca `⌘K`, i18n `pt-BR`/`en` e otimização modular (`webgl-quality-storage.ts` + `observatoryStore.ts`) mantendo `/` em `163 kB` (`< 160 KiB` gzip). Validado com `typecheck`, `lint`, `build`, `898/899` testes unitários (`0` falhas) e E2E Playwright (`cables-air-quality.spec.ts` `1/1`).
 - 2026-11-26 · antigravity · IN_PROGRESS · Reaberta para corrigir interceptação global de cliques em países pelo raycast padrão de `THREE.LineSegments` (`threshold = 1.0`) na camada `SUBMARINE_CABLES` reportada pelo Ayrton.
+- 2026-11-26 · antigravity · REVIEW · Substituído o raycast padrão de `THREE.LineSegments` (`raycaster.params.Line.threshold = 1.0`, que cobria o raio inteiro do globo e capturava cliques em qualquer país) por `createSubmarineCableRaycast` + `createCoastalMarkerRaycast` em `SubmarineCablesLayer.tsx` (interseção apenas no hemisfério frontal `1.0025`, cessão total a `EarthSphere` sobre qualquer massa continental via índice espacial em memória, tolerância angular ~5 px no oceano e cessão de marcadores costeiros em zoom macro `> 1.82`), além de focar automaticamente a aba `country` do `RightDock` ao clicar em país em 3D (`EarthSphere.tsx`) e 2D (`FlatMapCanvas.tsx`). Validado com `typecheck`, `lint`, `build` (`/` = `163 kB`), `899/900` testes unitários (`0` falhas) e E2E Playwright clicando diretamente no Brasil com `SUBMARINE_CABLES` ativa (`1/1`).
 
 ---
 

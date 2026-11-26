@@ -31,18 +31,35 @@ test.describe("D40 · Cabos Submarinos (TeleGeography) & Qualidade do Ar PM2.5/A
       });
     });
 
-    await page.goto("/?visao=1&pais=BRA&painel=country");
-    // 1. Validar exibição de PM2.5 + AQI no LiveWeatherWidget do país selecionado
+    // 1. Iniciar sem país selecionado com Observatório aberto e câmera 3D apontando para o Brasil,
+    //    ligar Cabos Submarinos e clicar diretamente no globo 3D sobre o país: deve abrir a ficha do Brasil!
+    await page.goto("/?visao=1&observatorio=1&camera=1.3851,-0.4782,1.7728");
+    await expect(page.getByTestId("observatory-panel")).toBeVisible({ timeout: 20000 });
+
+    await page.getByTestId("layer-toggle-SUBMARINE_CABLES").click();
+    await page.getByTestId("layer-options-toggle-SUBMARINE_CABLES").click();
+    await expect(page.getByTestId("submarine-cables-controls")).toBeVisible();
+
+    // Aguardar o dataset TeleGeography montar os 16 cabos no canvas 3D e clicar no centro do globo (1366x850 -> 683, 425 = Brasil)
+    const globeCanvas = page.locator("canvas").first();
+    await expect(globeCanvas).toBeVisible();
+    await page.waitForTimeout(700);
+    await globeCanvas.click({ position: { x: 683, y: 425 } });
+
+    // O clique sobre o país com SUBMARINE_CABLES ativa DEVE selecionar BRA e trazer a aba do país para frente no RightDock
+    await expect.poll(() => page.url(), { timeout: 10000 }).toContain("pais=BRA");
+    await expect(page.locator("[data-inspector-hud='true']")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId("submarine-cable-telemetry")).toHaveCount(0);
+
+    // Validar exibição de PM2.5 + AQI no LiveWeatherWidget do país recém-clicado
     const weatherAqi = page.getByTestId("live-weather-aqi");
     await expect(weatherAqi).toBeVisible({ timeout: 20000 });
     await expect(weatherAqi).toContainText("AQI 39");
     await expect(weatherAqi).toContainText("PM2.5 9.4");
 
-    // 2. Abrir Observatório e ativar Cabos Submarinos + Qualidade do Ar
+    // 2. Reabrir a aba Observatório e exercitar controles de Cabos Submarinos + Qualidade do Ar
     await page.getByTestId("top-nav-observatory-button").click();
     await expect(page.getByTestId("observatory-panel")).toBeVisible();
-
-    await page.getByTestId("layer-toggle-SUBMARINE_CABLES").click();
     await page.getByTestId("layer-options-toggle-SUBMARINE_CABLES").click();
     await expect(page.getByTestId("submarine-cables-controls")).toBeVisible();
 

@@ -158,19 +158,41 @@ export function renderObservatory2dLayers(
           width,
           height
         );
+        for (let i = 1; i < seg.length; i++) {
+          const [lngA, latA] = seg[i - 1]!;
+          const [lngB, latB] = seg[i]!;
+          if (Math.abs(lngB - lngA) > 120) continue;
+          const midPt = projectPointSafe(
+            projection,
+            projectionId,
+            (lngA + lngB) * 0.5,
+            (latA + latB) * 0.5,
+            width,
+            height
+          );
+          if (midPt) {
+            hits.push({
+              kind: "ENTITY",
+              x: midPt[0],
+              y: midPt[1],
+              radius: 7,
+              entity: { type: "SUBMARINE_CABLE", data: cable },
+            });
+          }
+        }
       }
       for (const lp of cable.landingPoints) {
         const pt = projectPointSafe(projection, projectionId, lp.lng, lp.lat, width, height);
         if (!pt) continue;
         ctx.beginPath();
-        ctx.arc(pt[0], pt[1], 3.1, 0, Math.PI * 2);
+        ctx.arc(pt[0], pt[1], 3.0, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
         hits.push({
           kind: "ENTITY",
           x: pt[0],
           y: pt[1],
-          radius: 9,
+          radius: 5.5,
           entity: { type: "SUBMARINE_CABLE", data: cable, landingName: lp.name },
         });
       }
@@ -187,7 +209,7 @@ export function renderObservatory2dLayers(
         kind: "ENTITY",
         x: pt[0],
         y: pt[1],
-        radius: 11,
+        radius: 8.5,
         entity: { type: "CABLE_CHOKE_POINT", data: cp },
       });
     }

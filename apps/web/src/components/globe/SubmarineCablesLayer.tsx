@@ -3,7 +3,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { latLngToVector3, slerpVectors } from "@/lib/geo-spatial";
+import { getContemporarySpatialIndexForLod } from "@/lib/borders-lod";
+import { latLngToVector3, slerpVectors, vector3ToLatLng } from "@/lib/geo-spatial";
 import { isDragRelease } from "@/lib/pointer-intent";
 import {
   CABLE_BASIN_COLORS_HEX,
@@ -87,6 +88,114 @@ export function filterSubmarineCables(
   return dataset.cables.filter((c) => c.basin === basin);
 }
 
+const CABLE_SURFACE_SPHERE = new THREE.Sphere(
+  new THREE.Vector3(0, 0, 0),
+  SUBMARINE_CABLES_RADIUS
+);
+const MACRO_PORT_ZOOM_THRESHOLD = 1.82;
+
+const _invMatrix = new THREE.Matrix4();
+const _localRay = new THREE.Ray();
+const _surfaceHit = new THREE.Vector3();
+const _segA = new THREE.Vector3();
+const _segB = new THREE.Vector3();
+const _segLine = new THREE.Line3();
+const _closest = new THREE.Vector3();
+const _bestLocal = new THREE.Vector3();
+const _worldHit = new THREE.Vector3();
+
+function defaultIsLandAt(lng: number, lat: number): boolean {
+  const spatialIndex = getContemporarySpatialIndexForLod("110m");
+  return spatialIndex ? spatialIndex([lng, lat]) !== null : false;
+}
+
+/**
+ * Raycast esférico dedicado para `<lineSegments>` de cabos submarinos:
+ * 1. Substitui `THREE.LineSegments.prototype.raycast` (`raycaster.params.Line.threshold = 1.0`,
+ *    que cobria o raio inteiro da Terra e bloqueava cliques em países);
+ * 2. Intersecta apenas o hemisfério frontal da esfera (`1.0025`), impedindo picking pelo verso;
+ * 3. Cede prioridade total a `EarthSphere` sobre qualquer massa continental (`isLandAt`);
+ * 4. Aplica tolerância angular proporcional ao zoom (~5 px na tela) no oceano.
+ */
+export function createSubmarineCableRaycast(
+  geometry: THREE.BufferGeometry,
+  isLandAt: (lng: number, lat: number) => boolean = defaultIsLandAt
+): THREE.Object3D["raycast"] {
+  return function submarineCableRaycast(
+    this: THREE.Object3D,
+    raycaster: THREE.Raycaster,
+    intersects: THREE.Intersection[]
+  ) {
+    const posAttr = geometry.getAttribute("position");
+    if (!posAttr || posAttr.count < 2) return;
+
+    _invMatrix.copy(this.matrixWorld).invert();
+    _localRay.copy(raycaster.ray).applyMatrix4(_invMatrix);
+
+    const hit = _localRay.intersectSphere(CABLE_SURFACE_SPHERE, _surfaceHit);
+    if (!hit) return;
+
+    const { lat, lng } = vector3ToLatLng(_surfaceHit);
+    if (isLandAt(lng, lat)) return;
+
+    const surfaceGap = Math.max(0.12, _localRay.origin.length() - SUBMARINE_CABLES_RADIUS);
+    const maxDist = Math.min(0.014, Math.max(0.003, surfaceGap * 0.008));
+    let bestDistSq = maxDist * maxDist;
+    let bestSegmentIndex = -1;
+
+    for (let i = 0; i + 1 < posAttr.count; i += 2) {
+      _segA.fromBufferAttribute(posAttr, i);
+      _segB.fromBufferAttribute(posAttr, i + 1);
+      _segLine.set(_segA, _segB);
+      _segLine.closestPointToPoint(_surfaceHit, true, _closest);
+      const dSq = _closest.distanceToSquared(_surfaceHit);
+      if (dSq <= bestDistSq) {
+        bestDistSq = dSq;
+        bestSegmentIndex = i;
+        _bestLocal.copy(_closest);
+      }
+    }
+
+    if (bestSegmentIndex < 0) return;
+
+    _worldHit.copy(_bestLocal).applyMatrix4(this.matrixWorld);
+    const distance = raycaster.ray.origin.distanceTo(_worldHit);
+    if (distance < raycaster.near || distance > raycaster.far) return;
+
+    intersects.push({
+      distance,
+      point: _worldHit.clone(),
+      index: bestSegmentIndex,
+      object: this,
+    });
+  };
+}
+
+/**
+ * Em zoom macro (`> 1.82`), marcadores costeiros cedem cliques sobre terra firme aos países;
+ * no mar (estreitos) ou em zoom aproximado sobre portos (`<= 1.82`), permanecem clicáveis.
+ */
+export function createCoastalMarkerRaycast(
+  baseRaycast: THREE.Object3D["raycast"],
+  isLandAt: (lng: number, lat: number) => boolean = defaultIsLandAt
+): THREE.Object3D["raycast"] {
+  return function coastalMarkerRaycast(
+    this: THREE.Object3D,
+    raycaster: THREE.Raycaster,
+    intersects: THREE.Intersection[]
+  ) {
+    const camDist = raycaster.ray.origin.length();
+    if (camDist > MACRO_PORT_ZOOM_THRESHOLD) {
+      const hit = raycaster.ray.intersectSphere(CABLE_SURFACE_SPHERE, _surfaceHit);
+      if (hit) {
+        const { lat, lng } = vector3ToLatLng(_surfaceHit);
+        if (isLandAt(lng, lat)) return;
+      }
+    }
+    baseRaycast.call(this, raycaster, intersects);
+  };
+}
+
 /**
  * Camada 3D de Cabos Submarinos de Internet (TeleGeography — D40):
  * - Arcos geodésicos SLERP sutis no raio `1.0025` com picking direto de sistema;
@@ -166,7 +275,8 @@ export const SubmarineCablesLayer: React.FC = () => {
         opacity: isSelected ? Math.min(1, opacity + 0.15) : opacity * 0.72,
         depthWrite: false,
       });
-      return { ...item, material };
+      const raycast = createSubmarineCableRaycast(item.geometry);
+      return { ...item, material, raycast };
     });
   }, [visibleCables, selectedCableId, opacity]);
 
@@ -180,7 +290,7 @@ export const SubmarineCablesLayer: React.FC = () => {
     };
   }, [cableItems, invalidate]);
 
-  const landingGeometry = useMemo(() => new THREE.SphereGeometry(0.0055, 8, 8), []);
+  const landingGeometry = useMemo(() => new THREE.SphereGeometry(0.0038, 8, 8), []);
   const landingMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
@@ -190,7 +300,7 @@ export const SubmarineCablesLayer: React.FC = () => {
       }),
     []
   );
-  const chokeRingGeometry = useMemo(() => new THREE.RingGeometry(0.015, 0.022, 24), []);
+  const chokeRingGeometry = useMemo(() => new THREE.RingGeometry(0.012, 0.018, 24), []);
   const chokeRingMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
@@ -203,9 +313,17 @@ export const SubmarineCablesLayer: React.FC = () => {
       }),
     []
   );
-  const chokeHitGeometry = useMemo(() => new THREE.SphereGeometry(0.024, 10, 10), []);
+  const chokeHitGeometry = useMemo(() => new THREE.SphereGeometry(0.011, 10, 10), []);
   const chokeHitMaterial = useMemo(
     () => new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }),
+    []
+  );
+  const landingRaycast = useMemo(
+    () => createCoastalMarkerRaycast(THREE.InstancedMesh.prototype.raycast),
+    []
+  );
+  const chokeMeshRaycast = useMemo(
+    () => createCoastalMarkerRaycast(THREE.Mesh.prototype.raycast),
     []
   );
 
@@ -301,6 +419,7 @@ export const SubmarineCablesLayer: React.FC = () => {
           key={item.cable.id}
           geometry={item.geometry}
           material={item.material}
+          raycast={item.raycast}
           onClick={(e) => {
             if (isDragRelease(e)) return;
             e.stopPropagation();
@@ -320,6 +439,7 @@ export const SubmarineCablesLayer: React.FC = () => {
           key={`cables-landings-${landingEntries.length}`}
           ref={landingMeshRef}
           args={[landingGeometry, landingMaterial, Math.max(1, landingEntries.length)]}
+          raycast={landingRaycast}
           onClick={handleLandingClick}
           onPointerOver={() => {
             if (typeof document !== "undefined") document.body.style.cursor = "pointer";
@@ -345,6 +465,7 @@ export const SubmarineCablesLayer: React.FC = () => {
                 <mesh
                   geometry={chokeHitGeometry}
                   material={chokeHitMaterial}
+                  raycast={chokeMeshRaycast}
                   onClick={(e) => {
                     if (isDragRelease(e)) return;
                     e.stopPropagation();

@@ -23,6 +23,7 @@ import {
 } from "@/lib/map-projections";
 import { selectCountry } from "@/stores/actions";
 import { useGlobeStore } from "@/stores/globeStore";
+import { useLayoutStore } from "@/stores/layoutStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useSpeciesStore } from "@/stores/speciesStore";
 import { useStudioToolsStore } from "@/stores/studioToolsStore";
@@ -312,7 +313,12 @@ export const FlatMapCanvas: React.FC = () => {
 
     if (isContemporary2d) {
       const hit = pickObservatory2dHit(hitTargetsRef.current, pos.x, pos.y);
-      if (hit) {
+      const yieldCableToCountry =
+        Boolean(picked?.iso) &&
+        zoom < 2.2 &&
+        hit?.kind === "ENTITY" &&
+        (hit.entity.type === "SUBMARINE_CABLE" || hit.entity.type === "CABLE_CHOKE_POINT");
+      if (hit && !yieldCableToCountry) {
         const obs = useObservatoryStore.getState();
         if (hit.kind === "SPECIES") {
           useSpeciesStore.getState().selectSpecies(hit.speciesId);
@@ -349,6 +355,7 @@ export const FlatMapCanvas: React.FC = () => {
 
     if (picked?.iso) {
       selectCountry(picked.iso);
+      useLayoutStore.getState().setActiveRightPanel("country");
       useTimelineStore.getState().selectMilestone(null);
     } else {
       selectCountry(null);

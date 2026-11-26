@@ -11,8 +11,12 @@ import {
 } from "../src/lib/submarine-cables-data";
 import {
   buildSubmarineCableGeometries,
+  createCoastalMarkerRaycast,
+  createSubmarineCableRaycast,
   SUBMARINE_CABLES_RADIUS,
 } from "../src/components/globe/SubmarineCablesLayer";
+import * as THREE from "three";
+import { latLngToVector3 } from "../src/lib/geo-spatial";
 import {
   classifyEuropeanAqiBand,
   classifyUsAqiBand,
@@ -272,5 +276,77 @@ describe("D40 · Cabos Submarinos de Internet (TeleGeography) & Qualidade do Ar 
 
     assert.ok(searchExplore("EllaLink").some((r) => r.id === "layer:SUBMARINE_CABLES"));
     assert.ok(searchExplore("PM2.5").some((r) => r.id === "layer:AIR_QUALITY"));
+  });
+
+  test("6. Raycast 3D de cabos submarinos nunca intercepta cliques sobre países nem atravessa o verso do globo", async () => {
+    const dataset = await loadSubmarineCables();
+    assert.ok(dataset);
+    const { byCable } = buildSubmarineCableGeometries(dataset.cables, null);
+
+    const castRadialRayAt = (lat: number, lng: number, camRadius = 2.4) => {
+      const origin = latLngToVector3(lat, lng, camRadius);
+      const direction = origin.clone().negate().normalize();
+      const raycaster = new THREE.Raycaster(origin, direction);
+      const hits: THREE.Intersection[] = [];
+      for (const item of byCable) {
+        const line = new THREE.LineSegments(item.geometry);
+        line.updateMatrixWorld(true);
+        const fn = createSubmarineCableRaycast(item.geometry);
+        fn.call(line, raycaster, hits);
+      }
+      return hits;
+    };
+
+    // Cliques sobre países (interior e costa: Brasil, Portugal, Egito) cedem 100% a EarthSphere (0 hits em cabos)
+    assert.equal(castRadialRayAt(-15.79, -47.88).length, 0, "Brasília não pode bater em cabo submarino");
+    assert.equal(castRadialRayAt(-3.73, -38.52).length, 0, "Terra firme costeira (Ceará) cede ao país");
+    assert.equal(castRadialRayAt(38.72, -9.14).length, 0, "Lisboa/Portugal cede ao país");
+    assert.equal(castRadialRayAt(30.04, 31.24).length, 0, "Cairo/Egito cede ao país");
+
+    // Oceano Pacífico Sul aberto longe de cabos -> 0 hits
+    assert.equal(castRadialRayAt(-48.0, -135.0).length, 0, "Oceano distante de cabos não gera falso positivo");
+
+    // Clique exato sobre vértice oceânico do EllaLink no Atlântico Equatorial (6.5°N, 31.0°W) seleciona o cabo
+    const oceanHits = castRadialRayAt(6.5, -31.0, 2.2);
+    assert.ok(oceanHits.length >= 1, "Segmento oceânico do EllaLink deve ser selecionável no mar");
+    const hitRadius = oceanHits[0]!.point.length();
+    assert.ok(Math.abs(hitRadius - SUBMARINE_CABLES_RADIUS) < 2e-3);
+
+    // Raio apontando pelo antípoda (-6.5°S, 149.0°E) não atravessa o planeta para acertar EllaLink no verso
+    const ellalinkItem = byCable.find((item) => item.cable.id === "ellalink")!;
+    const antipodeOrigin = latLngToVector3(-6.5, 149.0, 2.4);
+    const antipodeRay = new THREE.Raycaster(antipodeOrigin, antipodeOrigin.clone().negate().normalize());
+    const antipodeHits: THREE.Intersection[] = [];
+    const ellalinkLine = new THREE.LineSegments(ellalinkItem.geometry);
+    ellalinkLine.updateMatrixWorld(true);
+    createSubmarineCableRaycast(ellalinkItem.geometry).call(ellalinkLine, antipodeRay, antipodeHits);
+    assert.equal(antipodeHits.length, 0, "Cabo no hemisfério oculto não pode ser atingido através do globo");
+
+    // Marcadores costeiros cedem sobre terra em zoom macro (> 1.82) e delegam em zoom próximo (<= 1.82)
+    let delegatedCalls = 0;
+    const coastalFn = createCoastalMarkerRaycast(
+      () => {
+        delegatedCalls += 1;
+      },
+      () => true
+    );
+    const dummyMesh = new THREE.Mesh();
+    const macroOrigin = latLngToVector3(-15.79, -47.88, 2.4);
+    coastalFn.call(
+      dummyMesh,
+      new THREE.Raycaster(macroOrigin, macroOrigin.clone().negate().normalize()),
+      []
+    );
+    assert.equal(delegatedCalls, 0, "Em zoom macro sobre terra firme o marcador costeiro cede ao país");
+
+    const closeOrigin = latLngToVector3(-3.73, -38.52, 1.65);
+    coastalFn.call(
+      dummyMesh,
+      new THREE.Raycaster(closeOrigin, closeOrigin.clone().negate().normalize()),
+      []
+    );
+    assert.equal(delegatedCalls, 1, "Em zoom aproximado (<= 1.82) o porto costeiro permanece clicável");
+
+    for (const item of byCable) item.geometry.dispose();
   });
 });

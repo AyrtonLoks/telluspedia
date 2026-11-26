@@ -24,6 +24,7 @@ import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { worldSunDirection } from "@/lib/earth-orientation";
 import { isDragRelease } from "@/lib/pointer-intent";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useLayoutStore } from "@/stores/layoutStore";
 import { useStudioToolsStore } from "@/stores/studioToolsStore";
 import { pickLoadedBiomeAt } from "@/lib/biomes-types";
 import {
@@ -441,6 +442,7 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
 
     if (iso) {
       selectCountry(iso);
+      useLayoutStore.getState().setActiveRightPanel("country");
       useTimelineStore.getState().selectMilestone(null);
 
       const pilot = PILOT_COUNTRIES[iso];
