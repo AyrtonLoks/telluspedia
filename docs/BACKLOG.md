@@ -35,12 +35,12 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 |---|---|---|
 | `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18, T22, D19, D25, T35, T36, T48, D29, D39, D41, D42, D43 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27, D21, D24, T45, T49, D29, D30, D31, D32, D33, D37, D39, D40, D41 |
-| `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22, T35, T49, D31, D33, D34, D36, D43 |
+| `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22, T35, T49, D31, D33, D34, D36, D38, D43 |
 | `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28, T45, T49, D32, D34, D35, D36, D37, D38, D42, D44 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19, D25, T47, T48, D29, D30, D31, D33, D34, D37, D39, D40, D44 |
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24, T41, T36, T43, T44, T45, T47, D29, D30, D31, D32, D38, D39, D40 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24, T35, T45, D41 |
-| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41, T44, T46, T49, D33, D34, D36, D37 |
+| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41, T44, T46, T49, D33, D34, D36, D37, D38 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26, T35, T45, T48, D36, D38, D43 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34, T43, T47, D30 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19, T35, T42, T43, T44, T45, T46, T47 |
@@ -250,8 +250,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | DONE | ayrton | — | G-PAIS, G-CONTEUDO |
 | D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | DONE | ayrton | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
-| D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | TODO | — | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS |
-| D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | REVIEW | antigravity | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
+| D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | IN_PROGRESS | antigravity | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL |
+| D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | DONE | ayrton | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | TODO | — | — | G-OBS, G-GLOBO, G-ESTUDOS |
 | D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | TODO | — | — | G-COSMOS, G-GLOBO, G-EPOCA |
 | D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | TODO | — | — | G-CONTEUDO, G-EPOCA, G-PAIS |
@@ -2834,8 +2834,8 @@ Pesquisadores, professores e estudantes conseguem comparar indicadores e salvar 
 
 ### D38 · Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P2 · **Área:** Produto/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d38-transversal-gdelt · **Worktree:** ../telluspedia-wt/antigravity-d38
+- **Prioridade:** P2 · **Área:** Produto/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL
 
 **Contexto / problema**
 Dois requisitos explícitos do `DISCOVERY.md` ainda não têm implementação completa: `RN14` / `Fluxo 05` (linha do tempo transversal de uma personalidade influente ou tema, articulando múltiplos países/locais no globo e registrando a trilha de estudo `RN04`) e `RN13.8` (notícias e atualidades geopolíticas recentes vinculadas ao país via **GDELT Project API**).
@@ -2852,12 +2852,13 @@ Dois requisitos explícitos do `DISCOVERY.md` ainda não têm implementação co
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (resgate `RN04`/`RN13.8`/`RN14`, aprovada pelo Ayrton).
+- 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`4e6f330`) com grupos livres (`G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL`).
 
 ---
 
 ### D39 · Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d39-seismic-tectonics · **Worktree:** —
+- **Status:** DONE · **Responsável:** ayrton · **Branch:** task/d39-seismic-tectonics · **Worktree:** —
 - **Prioridade:** P1 · **Área:** 3D/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS
 
 **Contexto / problema**
@@ -2880,6 +2881,7 @@ O Observatório Planetário cobre queimadas, eventos severos, satélite GIBS, ó
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`9d70bef`) com grupos livres (`G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS`).
 - 2026-11-26 · antigravity · REVIEW · Implementado o Observatório Sísmico & Tectônico (`USGS_EARTHQUAKES`, 100% D14 bilíngue `pt-BR`/`en`): (1) Proxy `/api/observatory/earthquakes` (`seismic-source.ts`, `seismic-data.ts`, `seismic-types.ts`, bucket `observatory:earthquakes` em `rate-limit.ts`) consumindo os feeds oficiais **USGS Earthquake Hazards GeoJSON** nas janelas `24h` / `7d` / `30d` e limiares `M2.5+` / `M4.5+` / `M6.0+`, sob contrato estrito `T05` (`live`/`cache`/`stale`/`fallback` com TTL 5 min e `Cache-Control`) e sanitização estrita de URLs HTTPS `earthquake.usgs.gov`; (2) Camada 3D sob demanda (`SeismicTectonicLayer.tsx`) com epicentros instanciados (`THREE.InstancedMesh`) dimensionados por magnitude e coloridos pela profundidade hipocentral Wadati–Benioff (`< 70 km`, `70–300 km`, `> 300 km`), anéis concêntricos de ondas sísmicas em `M >= 5.0` / alerta de tsunami pausados em `isThrottled` (`RN22`), picking instantâneo + suporte completo no Mapa 2D (`map-2d-observatory.ts`, `useFlatMapObservatory.ts`); (3) Fronteiras de placas tectônicas contemporâneas **PB2002** (Peter Bird, 2003 — `public/data/tectonic-plates-pb2002.json`, 27 sistemas globais convergentes, divergentes e transformantes carregados sob demanda) com `dispose()` explícito na GPU (`RN21`) e atalho direto para comparar com Pangeia (`250 Ma`); (4) Controles D14 (`SeismicLayerControls.tsx`, `observatory-layer-options.ts`), ficha sísmica no `ObservatoryTelemetryHUD` (`EarthquakeTelemetryDetails.tsx` com magnitude, profundidade, alerta oceânico de tsunami e link oficial USGS), serialização em URL (`?camadas=USGS_EARTHQUAKES&sismos=...`), Estudos (`study-schema.ts`, `study-export.ts`), supressão em eras históricas/geológicas e busca `⌘K` (`search.ts`). Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` mantido em **163 kB**, `< 160 KiB` gzip em `bundle-budget.test.ts` 6/6), `texture-budget.test.ts` (3/3), `design-system.test.tsx` (106/106), `tw-merge-table.test.ts` (5/5), `seismic-tectonics-d39.test.tsx` (5/5), suíte completa `pnpm test` (`878/879`, 0 falhas) e Playwright Chromium WebGL E2E (`seismic-tectonics.spec.ts` 1/1, 0 erros de console).
+- 2026-11-26 · ayrton · DONE · Aprovada pelo Ayrton.
 
 ---
 
