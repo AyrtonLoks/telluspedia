@@ -36,11 +36,11 @@ Tarefas que alteram os mesmos arquivos ou conceitos pertencem ao mesmo **grupo**
 | `G-EPOCA` | Época ativa, stores Zustand, `GlobeCanvas`, `EarthSphere`, `OrbitingMoon`, `CountryBorders` (lógica de era), cenas históricas | T12, T13, T14, T15, D12, D15, D02, D24, D18, T22, D19, D25, T35, T36, T48, D29, D39, D41, D42, D43 |
 | `G-GLOBO` | `EarthShaderMaterial.ts`, `EarthSphere.tsx`, texturas da Terra, renderer/tone mapping | D01, D02, T14, T21, D05, T13, T31, T39, D25, D27, D21, D24, T45, T49, D29, D30, D31, D32, D33, D37, D39, D40, D41 |
 | `G-FRONTEIRAS` | `CountryBorders.tsx`, highlight, TopoJSON | T16, D03, T12, T13, D22, T35, T49, D31, D33, D34, D36, D38, D43 |
-| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28, T45, T49, D32, D34, D35, D36, D37, D38, D42, D44 |
+| `G-PAIS` | `country-data.ts`, `/api/countries`, HUD do país, Reader, Comparador, páginas `/pais` | T03, T06, T17, T26, D14, D20, T13, D15, T23, T25, T29, T32, T33, T35, T36, T38, D22, D28, T45, T49, D32, D34, D35, D36, D37, D38, D40, D42, D44 |
 | `G-ESTUDOS` | `/api/studies*`, `studies-store.ts`, `studyStore`, Prisma `Study`, migrations | T07, T08, T20, T13, T17, T30, T34, D22, D23, D19, D25, T47, T48, D29, D30, D31, D33, D34, D37, D39, D40, D44 |
 | `G-OBS` | `/api/observatory/*`, `observatory-data.ts`, `observatoryStore`, camadas do Observatório, `ObservatoryPanel` | T04, T05, T09, D04, D05, D06, D07, D08, D16, D14, T12, D15, T25, T35, D25, D27, T40, D19, D24, T41, T36, T43, T44, T45, T47, D29, D30, D31, D32, D38, D39, D40 |
 | `G-COSMOS` | `SkyStars`, `hyg-star-data`, `CometHalleyTrajectory`, `PlanetarySystem`, `CosmicInspectorHUD`, `astronomy-planets` | D09, D10, D11, D20, D15, D21, T36, T40, D18, D24, T35, T45, D41 |
-| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41, T44, T46, T49, D33, D34, D36, D37, D38 |
+| `G-SHELL` | `layout.tsx`, `page.tsx`, `globals.css`, Tailwind, navbar, painéis, design system | T01, D14, D15, D16, D17, D18, D19, T22, T25, T27, D20, T13, T31, T33, T35, T39, D22, D23, D28, D25, T41, T44, T46, T49, D33, D34, D36, D37, D38, D40 |
 | `G-TIMELINE` | `TimelineBar`, `TimelineAxis`, `MilestonePin`, `PresetSelector` | T02, D13, T23, D14, T12, T13, D15, T25, T22, D19, D24, D26, T35, T45, T48, D36, D38, D43 |
 | `G-PIPELINE` | `services/data-pipeline`, `/api/weather`, scripts de ingestão | T06, T10, T26, T32, T34, T43, T47, D30 |
 | `G-INFRA` | `package.json`, `next.config.mjs`, Dockerfile, CI, estrutura de testes, documentação | T07, T11, T18, T19, T25, T27, T28, T30, T34, T36, T37, T40, D19, T35, T42, T43, T44, T45, T46, T47 |
@@ -250,9 +250,9 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | DONE | ayrton | — | G-PAIS, G-CONTEUDO |
 | D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | DONE | ayrton | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
-| D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | REVIEW | antigravity | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL |
+| D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | DONE | ayrton | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL |
 | D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | DONE | ayrton | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
-| D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | TODO | — | — | G-OBS, G-GLOBO, G-ESTUDOS |
+| D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | IN_PROGRESS | antigravity | — | G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL |
 | D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | TODO | — | — | G-COSMOS, G-GLOBO, G-EPOCA |
 | D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | TODO | — | — | G-CONTEUDO, G-EPOCA, G-PAIS |
 | D43 | Cartografia Histórica Expandida: snapshots TopoJSON 1500 (Grandes Navegações) e 1815 (Congresso de Viena) + 2 novas cenas curadas | Conteúdo/3D | P2 | G | TODO | — | — | G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE |
@@ -2834,7 +2834,7 @@ Pesquisadores, professores e estudantes conseguem comparar indicadores e salvar 
 
 ### D38 · Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05)
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d38-transversal-gdelt · **Worktree:** —
+- **Status:** DONE · **Responsável:** ayrton · **Branch:** task/d38-transversal-gdelt · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Produto/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL
 
 **Contexto / problema**
@@ -2854,6 +2854,7 @@ Dois requisitos explícitos do `DISCOVERY.md` ainda não têm implementação co
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (resgate `RN04`/`RN13.8`/`RN14`, aprovada pelo Ayrton).
 - 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`4e6f330`) com grupos livres (`G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL`).
 - 2026-11-26 · antigravity · REVIEW · Implementadas a Visão Transversal de Personalidades/Temas com Trilha de Estudo (`RN14`/`RN04`) e as Atualidades Geopolíticas por País via GDELT 2.0 (`RN13.8`, 100% D14 bilíngue `pt-BR`/`en`): (1) **Visão Transversal & Trilha RN04** (`transversal-types.ts`, `transversal-meta.ts`, `transversal-catalog.ts`, `transversal-catalog-personalities.ts`, `transversal-catalog-themes.ts`, `transversal-milestone-registry.ts`, `transversalStore.ts`, `TransversalHud.tsx`, `StudyTrailBar.tsx`, `CountryTransversalSection.tsx`) cobrindo 5 personalidades (Milton Santos, Albert Einstein, Isaac Newton, Dom Pedro II, Luís de Camões) e 4 temas transnacionais (Corrida Espacial, Descolonização Afro-Asiática, Pandemias & Saúde Global, Revoluções Científicas & Computação), acionando destaque simultâneo multipaís no globo 3D (`CountryBorders.tsx`) e no Mapa 2D (`useFlatMapData.ts`), filtragem dedicada na `TimelineAxis.tsx`, botão `Transversal` na `TimelineBar.tsx`, breadcrumbs interativos de trilha de estudo (`RN04` integrado também ao `HoverCardPreview.tsx`), serialização em URL (`?trilha=`) e busca `⌘K` (`search.ts`); (2) **Atualidades via GDELT 2.0 Doc API** (`GET /api/countries/[iso]/news`, `gdelt-types.ts`, `gdelt-data.ts`, `gdelt-source.ts`, bucket `country:news` 90 req/min em `rate-limit.ts`) com cache SWR de 30 min, contrato `T05` (`live`/`cache`/`stale`/`fallback` honesto sem manchetes fabricadas — `T03`), sanitização estrita de URLs HTTPS públicas (rejeitando `javascript:`, `data:`, `http:`, credenciais, `localhost` e IPs literais), renderizada sem bloquear o país no `InspectorHUD.tsx` (`CountryNewsSection.tsx` + extração de `InspectorSourcesFooter.tsx`, suprimida em eras pré-1957 por `RN09`) e na dimensão `NEWS_CURRENT_AFFAIRS` do `ReaderMode` (`CountryNewsReaderView.tsx` com gerador de citações). Antes: timeline sem recorte transversal multipaís/breadcrumbs e dimensão `NEWS_CURRENT_AFFAIRS` vazia na maioria dos países. Depois: HUD transversal D14 à esquerda com chips multipaís iluminados simultaneamente no globo, trilha de breadcrumbs clicável e seção GDELT 2.0 com selo T05 no painel do país e no Reader. Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` mantido em **163 kB**, `< 160 KiB` gzip em `bundle-budget.test.ts` 6/6 após lazy-load de `GeologicalTimelineAxis` e isolamento de `transversal-meta.ts`/`emptyAisCorridorCounts`), `texture-budget.test.ts` (3/3, todos os arquivos ≤ 520 linhas), `design-system.test.tsx`, `tw-merge-table.test.ts`, `transversal-gdelt-d38.test.tsx` (5/5), suíte completa `pnpm test` (`889/890`, 0 falhas) e Playwright Chromium WebGL E2E (`transversal-gdelt.spec.ts` 1/1, 0 erros de console).
+- 2026-11-26 · ayrton · DONE · Aprovada pelo Ayrton.
 
 ---
 
@@ -2888,8 +2889,8 @@ O Observatório Planetário cobre queimadas, eventos severos, satélite GIBS, ó
 
 ### D40 · Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo)
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
-- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-ESTUDOS
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d40-cables-air-quality · **Worktree:** ../telluspedia-wt/antigravity-d40
+- **Prioridade:** P2 · **Área:** 3D/Dados · **Tamanho:** M · **Depende de:** — · **Grupos:** G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL
 
 **Contexto / problema**
 Mais de 95% do tráfego intercontinental de dados trafega por cabos submarinos que passam pelos mesmos gargalos geopolíticos já visíveis na camada marítima AIS (Mar Vermelho, Malaca, Suez, Atlântico Norte — dialogando diretamente com as *verticalidades* de Milton Santos em `D36`), enquanto a qualidade do ar (PM2.5/AQI) é um indicador ambiental imediato complementar ao clima ao vivo.
@@ -2908,6 +2909,7 @@ Mais de 95% do tráfego intercontinental de dados trafega por cabos submarinos q
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`cc316bc`) com grupos livres (`G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL`).
 
 ---
 
