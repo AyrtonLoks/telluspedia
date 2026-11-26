@@ -137,6 +137,7 @@ model Study {
   gibsMonth               String?  @db.VarChar(7)
   mapViewMode             String?  @db.VarChar(8)
   mapProjection           String?  @db.VarChar(24)
+  annotations             Json?
   createdAt               DateTime @default(now())
 
   parent                  Study?   @relation("StudyForks", fields: [parentId], references: [id], onDelete: SetNull)

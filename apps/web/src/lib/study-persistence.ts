@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "./prisma";
 import { serverLogger } from "./server-logger";
 import { getMemoryStudy, saveMemoryStudy, type StudyRecord } from "./studies-store";
@@ -52,7 +53,12 @@ export function temporaryStudyResponse(study: StudyRecord) {
 export async function persistStudy(study: StudyRecord, operation: "create" | "fork.create") {
   let created;
   try {
-    created = await prisma.study.create({ data: study });
+    created = await prisma.study.create({
+      data: {
+        ...study,
+        annotations: (study.annotations ?? []) as unknown as Prisma.InputJsonValue,
+      },
+    });
   } catch (error) {
     const unavailable = studyDatabaseFailure(operation, study.id, error);
     if (unavailable) return unavailable;

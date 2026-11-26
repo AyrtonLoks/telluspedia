@@ -3,7 +3,7 @@
 import React, { Suspense, lazy, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { handleCanvasPointerMissed } from "@/stores/actions";
 import * as THREE from "three";
-import { CheckCircle2, Cloud, CloudSun, RotateCcw, Sun, TriangleAlert } from "lucide-react";
+import { CheckCircle2, Cloud, CloudSun, MapPin, RotateCcw, Ruler, Sun, TriangleAlert } from "lucide-react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { attachWebGLContextListeners } from "@/lib/webgl-support";
 import { OrbitControls } from "@react-three/drei";
@@ -48,6 +48,8 @@ import { calculatePlanetaryPosition } from "@/lib/astronomy-planets";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
+import { useStudioToolsStore } from "@/stores/studioToolsStore";
+import { useStudyStore } from "@/stores/studyStore";
 import { useI18n } from "@/lib/i18n/useT";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -84,6 +86,13 @@ const SpeciesHudOverlay = lazy(() =>
 // Lentes de Geografia Crítica — Legado de Milton Santos (D36) só baixam quando ativadas.
 const CriticalGeoLayer = lazy(() =>
   import("./CriticalGeoLayer").then((m) => ({ default: m.CriticalGeoLayer }))
+);
+// Ferramentas de Estúdio 3D (D37: Régua Geodésica + Pinos Anotados) só baixam quando ativadas.
+const GeodesicRulerLayer = lazy(() =>
+  import("./GeodesicRulerLayer").then((m) => ({ default: m.GeodesicRulerLayer }))
+);
+const StudyAnnotationsLayer = lazy(() =>
+  import("./StudyAnnotationsLayer").then((m) => ({ default: m.StudyAnnotationsLayer }))
 );
 
 /**
@@ -181,6 +190,13 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
 
   const activeObservatoryLayers = useObservatoryStore((s) => s.activeLayers);
   const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
+  const isRulerActive = useStudioToolsStore((s) => s.isRulerActive);
+  const hasRulerPoints = useStudioToolsStore((s) => s.rulerPoints.length > 0);
+  const toggleRuler = useStudioToolsStore((s) => s.toggleRuler);
+  const isPinsPanelOpen = useStudioToolsStore((s) => s.isPinsPanelOpen);
+  const hasPendingPin = useStudioToolsStore((s) => s.pendingPinCoords !== null);
+  const togglePinsPanel = useStudioToolsStore((s) => s.togglePinsPanel);
+  const annotationsCount = useStudyStore((s) => s.annotations.length);
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const cosmicScaleMode = useCosmicStore((s) => s.scaleMode);
@@ -335,6 +351,16 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
                 <CriticalGeoLayer />
               </Suspense>
             )}
+            {!isCosmicMode && hasRulerPoints && (
+              <Suspense fallback={null}>
+                <GeodesicRulerLayer />
+              </Suspense>
+            )}
+            {!isCosmicMode && (annotationsCount > 0 || hasPendingPin) && (
+              <Suspense fallback={null}>
+                <StudyAnnotationsLayer />
+              </Suspense>
+            )}
           </EarthOrientationGroup>
         </group>
       </Canvas>
@@ -374,6 +400,35 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
           <Cloud aria-hidden="true" className="size-4" />
           <span className="sr-only sm:not-sr-only">{t("map.clouds", "Nuvens")}</span>
         </button>
+        {!isCosmicMode && !isGeological && (
+          <>
+            <button
+              type="button"
+              data-testid="globe-ruler-toggle"
+              aria-pressed={isRulerActive}
+              onClick={toggleRuler}
+              className={GLOBE_TOGGLE}
+              title={t("studio.rulerToggleTitle", "Régua geodésica 3D: medir distância ortodrômica (km / nm) e azimute")}
+            >
+              <Ruler aria-hidden="true" className="size-4" />
+              <span className="sr-only sm:not-sr-only">{t("studio.rulerShort", "Régua")}</span>
+            </button>
+            <button
+              type="button"
+              data-testid="globe-pins-toggle"
+              aria-pressed={isPinsPanelOpen}
+              onClick={togglePinsPanel}
+              className={GLOBE_TOGGLE}
+              title={t("studio.pinsToggleTitle", "Pinos anotados do estudo: fixar marcadores (lat, lng) compartilháveis")}
+            >
+              <MapPin aria-hidden="true" className="size-4" />
+              <span className="sr-only sm:not-sr-only">
+                {t("studio.pinsShort", "Pinos")}
+                {annotationsCount > 0 ? ` (${annotationsCount})` : ""}
+              </span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* T31: Aviso discreto de perda/restauração do contexto WebGL sem travar a interface */}

@@ -201,6 +201,16 @@ export function buildStudyAcademicMarkdown(
     lines.push("", "## Anotações Científicas", "", study.markdownNotes.trim());
   }
 
+  if (study.annotations && study.annotations.length > 0) {
+    lines.push("", "## Pinos Georreferenciados (D37)", "");
+    for (const pin of study.annotations) {
+      const notePart = pin.note ? ` — ${pin.note}` : "";
+      lines.push(
+        `- **${pin.title}** (\`${pin.lat.toFixed(4)}°, ${pin.lng.toFixed(4)}°\`)${notePart}`
+      );
+    }
+  }
+
   if (study.selectedCountryIsos.length > 0) {
     lines.push("", "## Países e Indicadores Auditados", "");
     for (const iso of study.selectedCountryIsos) {

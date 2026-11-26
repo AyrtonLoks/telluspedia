@@ -11,6 +11,7 @@ import {
   FileText,
   GitFork,
   Library,
+  MapPin,
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,7 @@ import {
 } from "@/lib/map-projections-types";
 import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
 import { useComparatorStore } from "@/stores/comparatorStore";
+import { useStudioToolsStore } from "@/stores/studioToolsStore";
 import { useI18n } from "@/lib/i18n/useT";
 
 export interface ForkStudyBannerProps {
@@ -148,6 +150,20 @@ export const ForkStudyBannerView: React.FC<ForkStudyBannerViewProps> = ({
                 >
                   2D · {study2dProjectionLabel}
                 </span>
+              )}
+
+              {(study?.annotations?.length ?? 0) > 0 && (
+                <button
+                  type="button"
+                  data-testid="study-annotations-count"
+                  onClick={() => useStudioToolsStore.getState().setPinsPanelOpen(true)}
+                  className="inline-flex items-center gap-1 rounded-control border border-accent/30 bg-accent/10 px-1.5 py-0.5 font-mono text-caption text-accent tabular-nums transition-colors duration-fast ease-out hover:bg-accent/20"
+                >
+                  <MapPin aria-hidden="true" className="size-3" />
+                  <span>
+                    {study?.annotations?.length} {t("fork.pinsShort", "pino(s)")}
+                  </span>
+                </button>
               )}
 
               {forkCount > 0 && (

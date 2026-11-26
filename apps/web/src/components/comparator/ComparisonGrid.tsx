@@ -8,8 +8,14 @@ import { useReaderStore } from "@/stores/readerStore";
 import { getSourceUrl } from "@/lib/citations";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
+import {
+  buildComparatorFilename,
+  buildComparisonGridCsv,
+  triggerBlobDownload,
+} from "@/lib/comparator-export";
 import { useI18n } from "@/lib/i18n/useT";
 import { formatCountryName, formatNumber } from "@/lib/i18n/format";
+import { ComparatorExportBar } from "./ComparatorExportBar";
 
 interface ComparisonCardProps {
   country: CountryData;
@@ -261,6 +267,16 @@ export const ComparisonGrid: React.FC = () => {
     });
   };
 
+  const handleDownloadGridCsv = () => {
+    const csv = buildComparisonGridCsv(countries, locale);
+    const filename = buildComparatorFilename(
+      countries.map((c) => c.isoCode),
+      "indicadores",
+      "csv"
+    );
+    triggerBlobDownload(new Blob([csv], { type: "text/csv;charset=utf-8" }), filename);
+  };
+
   return (
     <div className="overflow-x-auto">
       <div
@@ -306,7 +322,11 @@ export const ComparisonGrid: React.FC = () => {
           })}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <ComparatorExportBar
+            csvTestId="comparison-grid-export-csv"
+            onDownloadCsv={handleDownloadGridCsv}
+          />
           <Button
             variant="secondary"
             size="sm"

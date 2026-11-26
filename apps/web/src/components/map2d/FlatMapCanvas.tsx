@@ -8,6 +8,7 @@ import { HISTORICAL_ENTITIES } from "@/lib/historical-entities";
 import { formatCountryName } from "@/lib/i18n/format";
 import { useI18n } from "@/lib/i18n/useT";
 import { render2dMapFrame } from "@/lib/map-2d-renderer";
+import { interceptStudio2dClick } from "@/lib/map-2d-studio";
 import {
   pickObservatory2dHit,
   type Observatory2dHitTarget,
@@ -24,6 +25,8 @@ import { selectCountry } from "@/stores/actions";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useSpeciesStore } from "@/stores/speciesStore";
+import { useStudioToolsStore } from "@/stores/studioToolsStore";
+import { useStudyStore } from "@/stores/studyStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { Button } from "@/components/ui/Button";
 import { Panel } from "@/components/ui/Panel";
@@ -58,23 +61,12 @@ export const FlatMapCanvas: React.FC = () => {
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [showGraticule, setShowGraticule] = useState(true);
   const [azimuthalFollowSelected, setAzimuthalFollowSelected] = useState(true);
-  const [hoverPointer, setHoverPointer] = useState<{
-    x: number;
-    y: number;
-    iso: string;
-    lat: number;
-    lng: number;
-  } | null>(null);
-
-  const dragRef = useRef({
-    active: false,
-    pointerId: null as number | null,
-    startX: 0,
-    startY: 0,
-    originPanX: 0,
-    originPanY: 0,
-    moved: false,
-  });
+  const [hoverPointer, setHoverPointer] = useState<{ x: number; y: number; iso: string; lat: number; lng: number } | null>(null);
+  const dragRef = useRef({ active: false, pointerId: null as number | null, startX: 0, startY: 0, originPanX: 0, originPanY: 0, moved: false });
+  const rulerPoints = useStudioToolsStore((s) => s.rulerPoints);
+  const pendingPinCoords = useStudioToolsStore((s) => s.pendingPinCoords);
+  const selectedAnnotationId = useStudioToolsStore((s) => s.selectedAnnotationId);
+  const annotations = useStudyStore((s) => s.annotations);
 
   const projectionId = useGlobeStore((s) => s.projectionId);
   const setProjectionId = useGlobeStore((s) => s.setProjectionId);
@@ -149,9 +141,10 @@ export const FlatMapCanvas: React.FC = () => {
       biomes: data.biomesRenderData,
       observatory: isContemporary2d ? observatory : null,
       criticalGeo: data.criticalGeoRenderData,
+      studio: { rulerPoints, annotations, pendingPinCoords, selectedAnnotationId },
       azimuthalCenter: data.azimuthalCenter,
     });
-  }, [size, projection, projectionId, data, observatory, isContemporary2d, showGraticule, zoom]);
+  }, [size, projection, projectionId, data, observatory, isContemporary2d, showGraticule, zoom, rulerPoints, annotations, pendingPinCoords, selectedAnnotationId]);
 
   const handleSelectProjection = useCallback(
     (nextId: MapProjectionId) => {
@@ -284,6 +277,19 @@ export const FlatMapCanvas: React.FC = () => {
     if (wasMoved || event.button !== 0 || data.isGeological) return;
     const pos = getLocalCoords(event.clientX, event.clientY);
     if (!pos) return;
+    const studioState = useStudioToolsStore.getState();
+    if (
+      interceptStudio2dClick(projection, pos.x, pos.y, {
+        isRulerActive: studioState.isRulerActive,
+        isPinPlacementActive: studioState.isPinPlacementActive,
+        annotations: useStudyStore.getState().annotations,
+        onAddRulerPoint: studioState.addRulerPoint,
+        onPickPinCoords: studioState.pickPinCoordinates,
+        onSelectAnnotation: (pin) => studioState.selectAnnotation(pin.id),
+      })
+    ) {
+      return;
+    }
     const picked = pickCountryAt2dPoint(
       projection,
       projectionId,

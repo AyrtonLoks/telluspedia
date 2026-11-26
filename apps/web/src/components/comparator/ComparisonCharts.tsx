@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BarChart3, ExternalLink, Info, TrendingUp } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -25,9 +25,11 @@ import {
   type WorldBankTimeseriesDataset,
 } from "@/lib/worldbank-timeseries";
 import { cn } from "@/components/ui/cn";
+import { downloadComparisonChartArtifact } from "@/lib/comparator-export";
 import { useI18n } from "@/lib/i18n/useT";
 import { formatCountryName } from "@/lib/i18n/format";
 import { WORLD_COUNTRIES_CATALOG } from "@/lib/country-data";
+import { ComparatorExportBar } from "./ComparatorExportBar";
 import { ComparisonLatestChart } from "./ComparisonLatestChart";
 
 const COUNTRY_COLORS = [
@@ -56,6 +58,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
   initialTimeseries = null,
 }) => {
   const { locale, t } = useI18n();
+  const sectionRef = useRef<HTMLElement>(null);
   const localizeCountry = (isoCode: string, fallback: string) =>
     formatCountryName(WORLD_COUNTRIES_CATALOG[isoCode]?.iso2, fallback, locale);
   const storeSelectedIsos = useComparatorStore((s) => s.selectedIsos);
@@ -150,8 +153,30 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
     [latestDataset.entries, locale]
   );
 
+  const hasExportableChartData =
+    viewMode === "historical"
+      ? Boolean(metric.hasWorldBankTimeseries && historicalDataset && historicalDataset.activeSeries.length > 0)
+      : chartEntries.length > 0;
+
+  const triggerExport = (format: "csv" | "svg" | "png") =>
+    downloadComparisonChartArtifact({
+      format,
+      containerEl: sectionRef.current,
+      selectedIsos,
+      activeMetricId: activeMetric,
+      viewMode,
+      metric,
+      headingTitle,
+      metricUnit,
+      latestDataset,
+      historicalDataset,
+      locale,
+      localizeCountry,
+    });
+
   return (
     <section
+      ref={sectionRef}
       aria-label={t("comp.chartsAria", "Comparação gráfica de indicadores reais")}
       data-testid="comparison-charts"
       data-chart-mode={viewMode}
@@ -164,6 +189,17 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
             {t("comp.codeLabel", "Código")} {metric.indicatorCode} · {t("comp.unitLabel", "Unidade")}: {metricUnit}
           </span>
         </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <ComparatorExportBar
+            disabled={!hasExportableChartData}
+            csvTestId="comparison-chart-export-csv"
+            pngTestId="comparison-chart-export-png"
+            svgTestId="comparison-chart-export-svg"
+            onDownloadCsv={() => void triggerExport("csv")}
+            onDownloadPng={() => triggerExport("png")}
+            onDownloadSvg={() => void triggerExport("svg")}
+          />
 
         {/* Alternador de modo: Leitura mais recente vs Série histórica real (1990–2024) */}
         <div
@@ -201,6 +237,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({
             <TrendingUp aria-hidden="true" className="h-3.5 w-3.5" />
             <span>{t("comp.viewHistorical", "Série 1990–2024")}</span>
           </button>
+          </div>
         </div>
       </div>
 

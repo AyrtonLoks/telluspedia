@@ -16,6 +16,15 @@ import {
   MAP_PROJECTION_IDS,
   isMapProjectionId,
 } from "./map-projections-types";
+import {
+  MAX_ANNOTATION_ID_LENGTH,
+  MAX_ANNOTATION_NOTE_LENGTH,
+  MAX_ANNOTATION_TITLE_LENGTH,
+  MAX_STUDY_ANNOTATIONS,
+  STUDY_ANNOTATION_TONES,
+  sanitizeStudyAnnotations,
+  stripAnnotationControlChars,
+} from "./study-annotations";
 import { normalizeStudyEpoch, MAX_STUDY_GEOLOGICAL_MA } from "./study-epoch";
 import { ALL_COSMIC_LAYERS } from "../stores/cosmicStore";
 import { MAX_CAMERA_ALTITUDE, MIN_CAMERA_ALTITUDE } from "../stores/globeStore";
@@ -69,6 +78,22 @@ const latitude = z.number().min(-90).max(90);
 const longitude = z.number().min(-180).max(180);
 const altitude = z.number().min(MIN_CAMERA_ALTITUDE).max(MAX_CAMERA_ALTITUDE);
 const slug = z.string().max(MAX_STUDY_SLUG_LENGTH).regex(/^[A-Za-z0-9_-]+$/);
+const studyAnnotationInput = z.object({
+  id: z.string().trim().min(1).max(MAX_ANNOTATION_ID_LENGTH).regex(/^[A-Za-z0-9_-]+$/),
+  lat: latitude,
+  lng: longitude,
+  title: z
+    .string()
+    .transform((s) => stripAnnotationControlChars(s))
+    .pipe(z.string().min(1).max(MAX_ANNOTATION_TITLE_LENGTH)),
+  note: z
+    .string()
+    .transform((s) => stripAnnotationControlChars(s))
+    .pipe(z.string().max(MAX_ANNOTATION_NOTE_LENGTH))
+    .nullish(),
+  tone: z.enum(STUDY_ANNOTATION_TONES).nullish(),
+});
+const studyAnnotationsArraySchema = z.array(studyAnnotationInput).max(MAX_STUDY_ANNOTATIONS);
 
 export const studyInput = z.object({
   parentId: slug.nullish(),
@@ -96,6 +121,7 @@ export const studyInput = z.object({
   gibsMonth: gibsMonth.nullish(),
   mapViewMode: mapViewMode.nullish(),
   mapProjection: mapProjection.nullish(),
+  annotations: studyAnnotationsArraySchema.optional(),
 }).refine(
   ({ timelineStartYear, timelineEndYear }) =>
     timelineStartYear === undefined || timelineEndYear === undefined || timelineStartYear <= timelineEndYear,
@@ -115,7 +141,11 @@ function knownItems<T>(schema: z.ZodType<T>, input: unknown): T[] {
   });
 }
 
-export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
+export type SanitizeStudyInput = Omit<Partial<Omit<StudyRecord, "createdAt">>, "annotations"> & {
+  annotations?: unknown;
+};
+
+export function sanitizeStudy(input: SanitizeStudyInput) {
   const start = valid(year, input.timelineStartYear);
   const end = valid(year, input.timelineEndYear);
   const activeRouteId = valid(route, input.activeRouteId);
@@ -179,5 +209,6 @@ export function sanitizeStudy(input: Partial<Omit<StudyRecord, "createdAt">>) {
     ...gibs,
     mapViewMode: resolvedMapViewMode,
     mapProjection: resolvedMapProjection,
+    annotations: sanitizeStudyAnnotations(input.annotations),
   };
 }

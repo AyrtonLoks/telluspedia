@@ -1,3 +1,4 @@
+import type { StudyAnnotation } from "./study-annotations";
 import {
   MAX_STUDY_DESCRIPTION_LENGTH,
   MAX_STUDY_NOTES_LENGTH,
@@ -35,6 +36,8 @@ export interface StudyRecord {
   /** Modo 2D & projeção cartográfica (D33) congelados no snapshot. */
   mapViewMode?: string | null;
   mapProjection?: string | null;
+  /** Pinos georreferenciados anotados `(lat, lng)` imutáveis e herdados no fork (D37). */
+  annotations?: StudyAnnotation[];
   createdAt: string;
 }
 
@@ -91,6 +94,7 @@ Este estudo examina as repercussões da bipolaridade EUA-URSS nas instituições
   gibsMonth: null,
   mapViewMode: null,
   mapProjection: null,
+  annotations: [],
   createdAt: new Date("2026-10-19T00:00:00Z").toISOString(),
 });
 
@@ -140,9 +144,10 @@ export function forkStudyRecord(original: StoredStudy, newId?: string): StudyRec
   };
 }
 
-type StoredStudy = Partial<Omit<StudyRecord, "createdAt">> & {
+type StoredStudy = Omit<Partial<Omit<StudyRecord, "createdAt">>, "annotations"> & {
   id: string;
   title: string;
+  annotations?: unknown;
   createdAt?: Date | string;
 };
 

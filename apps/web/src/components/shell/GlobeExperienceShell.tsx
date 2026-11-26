@@ -12,8 +12,6 @@ import { DockSkeleton } from "@/components/layout/DockSkeleton";
 import { ModalSkeleton } from "@/components/ui/Skeleton";
 import { usePresence, useLastDefined } from "@/components/ui/motion";
 import { useEpochState } from "@/lib/epoch/useEpochState";
-import type { StudyLineageInfo, StudyRecord } from "@/lib/studies-store";
-import { restoreStudySnapshot, selectCountry } from "@/stores/actions";
 import { WebGLErrorBoundary } from "@/components/globe/WebGLErrorBoundary";
 import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "@/lib/explore/view-camera";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -26,12 +24,19 @@ import { preloadEnMessages, useLocaleStore } from "@/stores/localeStore";
 import { useI18n } from "@/lib/i18n/useT";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useReaderStore } from "@/stores/readerStore";
+import { useStudioToolsStore } from "@/stores/studioToolsStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { preloadFlatMapCanvas, preloadGraphicsQualityPanel } from "@/lib/panel-preload";
 import { getQualityProfile } from "@/lib/webgl-quality";
 import { useStoreSnapshot } from "@/lib/use-hydrated";
-import { DEFAULT_MAP_PROJECTION, DEFAULT_MAP_VIEW_MODE } from "@/lib/map-projections-types";
 import { cn } from "@/components/ui/cn";
+import {
+  applyInitialGlobeState,
+  getInitialGlobeStateKey,
+  type InitialGlobeState,
+} from "./initialGlobeState";
+
+export { applyInitialGlobeState, getInitialGlobeStateKey, type InitialGlobeState };
 
 // Load 3D WebGL Canvas client-side only (disables SSR for R3F / Three.js)
 const GlobeCanvas = dynamic(
@@ -110,6 +115,10 @@ const CriticalGeoHud = dynamic(
   () => import("@/components/critical-geo/CriticalGeoHud").then((m) => m.CriticalGeoHud),
   { ssr: false }
 );
+const StudioToolsHud = dynamic(
+  () => import("@/components/studio/StudioToolsHud").then((m) => m.StudioToolsHud),
+  { ssr: false }
+);
 const GraphicsQualityPanel = dynamic(
   () => import("@/components/globe/GraphicsQualityPanel").then((m) => m.GraphicsQualityPanel),
   { ssr: false }
@@ -133,72 +142,6 @@ function EntityLaunchGate() {
   const searchParams = useSearchParams();
   if (!searchParams.has("entity")) return null;
   return <EntityLaunch />;
-}
-
-export type InitialGlobeState =
-  | { kind: "default" }
-  | { kind: "study"; study: StudyRecord; lineage?: StudyLineageInfo }
-  | { kind: "country"; iso: string; latitude: number | null; longitude: number | null }
-  | { kind: "compare"; isos: string[] };
-
-export function getInitialGlobeStateKey(state: InitialGlobeState): string {
-  switch (state.kind) {
-    case "study":
-      return `study:${state.study.id}`;
-    case "country":
-      return `country:${state.iso}`;
-    case "compare":
-      return `compare:${state.isos.join(",")}`;
-    default:
-      return "default";
-  }
-}
-
-/**
- * Hydrates Zustand stores synchronously from server-loaded route state so the first
- * SSR HTML pass and the first client render already reflect the target study, country,
- * or comparison without flashing the default landing state.
- */
-export function applyInitialGlobeState(initialState: InitialGlobeState): void {
-  if (typeof window === "undefined") {
-    // Evita vazamento de estado de stores Zustand entre requisições SSR consecutivas
-    // no mesmo processo Node (ex.: `/pais/GRL` seguido de `/`, que causaria erro React #418).
-    selectCountry(null);
-    useGlobeStore.getState().setViewMode(DEFAULT_MAP_VIEW_MODE);
-    useGlobeStore.getState().setProjectionId(DEFAULT_MAP_PROJECTION);
-    useComparatorStore.getState().closeComparator();
-    useChoroplethStore.getState().restoreIndicator(null);
-    useCriticalGeoStore.getState().restoreLens(null);
-    useStudyStore.getState().setCurrentStudyId(null);
-  }
-
-  if (initialState.kind === "study") {
-    restoreStudySnapshot(initialState.study);
-    useChoroplethStore
-      .getState()
-      .restoreIndicator(initialState.study.choroplethIndicator, initialState.study.choroplethYear);
-    return;
-  }
-
-  if (initialState.kind === "country") {
-    selectCountry(initialState.iso);
-    if (
-      initialState.latitude !== null &&
-      initialState.longitude !== null &&
-      (initialState.latitude !== 0 || initialState.longitude !== 0)
-    ) {
-      useGlobeStore.getState().flyTo(initialState.latitude, initialState.longitude, 2.0);
-    }
-    return;
-  }
-
-  if (initialState.kind === "compare") {
-    const comparator = useComparatorStore.getState();
-    if (initialState.isos.length > 0) {
-      comparator.setSelectedIsos(initialState.isos);
-    }
-    comparator.openComparator();
-  }
 }
 
 /** Vira `true` depois da primeira montagem do shell no cliente (fim da hidratação inicial). */
@@ -259,6 +202,13 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
   const isChoroplethSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
   const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
+  const isStudioToolsVisible = useStudioToolsStore(
+    (s) =>
+      s.isRulerActive ||
+      s.rulerPoints.length > 0 ||
+      s.isPinsPanelOpen ||
+      s.selectedAnnotationId !== null
+  );
   const qualityPreset = useGraphicsQualityStore((s) => s.preset);
   const adaptiveDprScale = useGraphicsQualityStore((s) => s.adaptiveDprScale);
   const isQualityPanelOpen = useGraphicsQualityStore((s) => s.isPanelOpen);
@@ -276,6 +226,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const dismissStudyBanner = useCallback(() => {
     setDismissedStudyKey(stateKey);
     useStudyStore.getState().resetStudy();
+    useStudioToolsStore.getState().selectAnnotation(null);
     if (initialState.kind === "study" && initialState.study.choroplethIndicator) {
       useChoroplethStore.getState().resetChoropleth();
     }
@@ -283,6 +234,14 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
       window.history.replaceState(null, "", "/");
     }
   }, [stateKey, initialState]);
+
+  const unlockStudyDraftFork = useCallback(() => {
+    setDismissedStudyKey(stateKey);
+    useStudyStore.getState().unlockDraftFork();
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/study/")) {
+      window.history.replaceState(null, "", "/");
+    }
+  }, [stateKey]);
 
   // Ao voltar à era atual (Restaurar Cartografia Atual / Geografia Contemporânea / Resetar visão),
   // encerra o modo de visualização do snapshot imutável e oculta o cartão do estudo imediatamente.
@@ -494,6 +453,11 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
 
         {/* Lentes de Geografia Crítica — Legado de Milton Santos (D36 — carregado sob demanda) */}
         {activeCriticalLens !== null && <CriticalGeoHud />}
+
+        {/* Ferramentas de Estúdio: Régua Geodésica + Pinos Anotados (D37 — carregado sob demanda) */}
+        {!isCosmicMode && isStudioToolsVisible && (
+          <StudioToolsHud immutable={isStudyActive} onUnlockDraftFork={unlockStudyDraftFork} />
+        )}
 
         {/* Bottom Semantic Dynamic Timeline (50 Years Default) */}
         <TimelineBar />

@@ -24,6 +24,7 @@ import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { worldSunDirection } from "@/lib/earth-orientation";
 import { isDragRelease } from "@/lib/pointer-intent";
 import { useObservatoryStore } from "@/stores/observatoryStore";
+import { useStudioToolsStore } from "@/stores/studioToolsStore";
 import { pickLoadedBiomeAt } from "@/lib/biomes-types";
 import {
   loadHistoricalTopology,
@@ -400,9 +401,20 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
       setHoveredIso(null);
       return;
     }
-    if (!e.point || !activeSpatialIndex) return;
+    if (!e.point) return;
 
     const { lat, lng } = vector3ToLatLng(e.object.worldToLocal(e.point.clone()));
+    const studioState = useStudioToolsStore.getState();
+    if (studioState.isRulerActive) {
+      studioState.addRulerPoint(lat, lng);
+      return;
+    }
+    if (studioState.isPinPlacementActive) {
+      studioState.pickPinCoordinates(lat, lng);
+      return;
+    }
+
+    if (!activeSpatialIndex) return;
     const obsState = useObservatoryStore.getState();
     if (obsState.marineDebrisPickMode && obsState.activeLayers.includes("MARINE_DEBRIS")) {
       obsState.setMarineDebrisReleasePoint({

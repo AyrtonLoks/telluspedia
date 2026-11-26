@@ -17,7 +17,6 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { CHOROPLETH_INDICATORS } from "@/lib/choropleth";
-import { GIBS_PRODUCTS, formatGibsMonth } from "@/lib/gibs";
 import {
   MAP_PROJECTION_SHORT_LABELS,
   MAP_PROJECTION_SHORT_LABELS_EN,
@@ -25,6 +24,7 @@ import {
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/lib/i18n/useT";
+import { StudyShareBadges } from "./StudyShareBadges";
 
 export const StudyShareModal: React.FC = () => {
   const { locale, t } = useI18n();
@@ -39,6 +39,11 @@ export const StudyShareModal: React.FC = () => {
   const description = useStudyStore((s) => s.description);
   const notes = useStudyStore((s) => s.notes);
   const setNotes = useStudyStore((s) => s.setNotes);
+  const storeAnnotations = useStudyStore((s) => s.annotations);
+  const annotations =
+    typeof window === "undefined" ? useStudyStore.getState().annotations : storeAnnotations;
+  const currentStudyId = useStudyStore((s) => s.currentStudyId);
+  const draftParentId = useStudyStore((s) => s.parentId);
 
   const selectedIso = useGlobeStore((s) => s.selectedIso);
   const cameraLat = useGlobeStore((s) => s.cameraLat);
@@ -112,9 +117,6 @@ export const StudyShareModal: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  // Sem retorno antecipado: com `open` falso o Dialog não renderiza nada e anima a saída (D17).
-  // Era histórica, cena Apollo 11 e contemporaneidade vêm do seletor único (T12):
-  // a Apollo só conta quando o marco/estudo a ativou explicitamente, não pelo ano.
   const eraDef = HISTORICAL_ERAS[epoch.historicalEraId];
   const isHistoricalEraActive = epoch.mode !== "GEOLOGICAL" && eraDef.id !== "CONTEMPORARY";
   const isApollo11Active = sceneHasTrajectoryKind(epoch.activeScene, "cislunar");
@@ -130,7 +132,6 @@ export const StudyShareModal: React.FC = () => {
     ? CHOROPLETH_INDICATORS[effectiveChoroplethIndicator]
     : null;
 
-  // O estudo é um snapshot imutável: congela o mês mostrado agora, não "o mais recente" (D25).
   const gibsOn = effectiveObservatoryLayers.includes("NASA_GIBS");
   const gibsSnapshot = gibsOn
     ? { gibsProduct, gibsMonth: gibsShown?.product === gibsProduct ? gibsShown.month : null }
@@ -143,6 +144,7 @@ export const StudyShareModal: React.FC = () => {
     locale === "en"
       ? MAP_PROJECTION_SHORT_LABELS_EN[mapProjection]
       : MAP_PROJECTION_SHORT_LABELS[mapProjection];
+  const effectiveAnnotations = isCosmicMode ? [] : annotations;
 
   const handleGenerateLink = async () => {
     setLoading(true);
@@ -150,8 +152,10 @@ export const StudyShareModal: React.FC = () => {
     const selectedCountries = Array.from(
       new Set([selectedIso, ...comparatorIsos].filter(Boolean) as string[])
     );
+    const parentIdToPersist = currentStudyId === null && draftParentId ? draftParentId : null;
 
     const payload = {
+      ...(parentIdToPersist ? { parentId: parentIdToPersist } : {}),
       title,
       description,
       timelineStartYear: startYear,
@@ -172,6 +176,7 @@ export const StudyShareModal: React.FC = () => {
       activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
       choroplethIndicator: effectiveChoroplethIndicator,
       choroplethYear: effectiveChoroplethIndicator ? activeChoroplethYear : null,
+      annotations: effectiveAnnotations,
       ...gibsSnapshot,
       ...map2dSnapshot,
     };
@@ -204,6 +209,7 @@ export const StudyShareModal: React.FC = () => {
           focusedCelestialBody: focusedBodyId,
           activeCosmicLayers: isCosmicMode ? activeCosmicLayers : [],
           choroplethIndicator: effectiveChoroplethIndicator,
+          annotations: effectiveAnnotations,
         });
       } else if (res.status === 503) {
         setErrorMsg(t("study.errDbUnavailable", "O banco de dados de estudos está indisponível. Tente gerar o link novamente em instantes."));
@@ -284,150 +290,28 @@ export const StudyShareModal: React.FC = () => {
             />
           </div>
 
-          {/* Historical Era Badge inside Modal */}
-          {isHistoricalEraActive && (
-            <div
-              data-testid="modal-historical-era-badge"
-              className="flex items-center gap-2.5 rounded-card border border-warning/40 bg-warning/10 p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">🏛️</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.historical", "Cartografia Histórica Ativa Capturada")}</div>
-                <div className="text-caption text-warning">{eraDef.label}</div>
-              </div>
-            </div>
-          )}
-
-          {/* Apollo 11 Space Mission Badge */}
-          {isApollo11Active && (
-            <div
-              data-testid="modal-apollo11-badge"
-              className="flex items-center gap-2.5 rounded-card border border-accent/40 bg-accent/10 p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">🚀</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.apolloTitle", "Missão Espacial Apollo 11 (1969)")}</div>
-                <div className="text-caption text-accent">
-                  {t("study.badge.apolloDesc", "Trajetória Translunar 3D e telemetria incluídas no estudo.")}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Geological Era / Paleogeography Badge */}
-          {geologicalMa && (
-            <div
-              data-testid="modal-geological-era-badge"
-              className="flex items-center gap-2.5 rounded-card border border-success/40 bg-success/10 p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">🌋</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.geoTitle", "Paleogeografia & Deriva Continental Ativa")}</div>
-                <div className="text-caption text-success">
-                  {geologicalEraDef?.name || `${geologicalMa} Ma`}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Historical Route / Expedition Badge */}
-          {activeRouteId && (
-            <div
-              data-testid="modal-historical-route-badge"
-              className="flex items-center gap-2.5 rounded-card border border-cat-politics/40 bg-cat-politics/10 p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">⛵</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.routeTitle", "Rota de Expedição Histórica 3D")}</div>
-                <div className="text-caption text-cat-politics">
-                  {historicalRouteDef?.title || activeRouteId}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Planetary Observatory Badge */}
-          {effectiveObservatoryLayers.length > 0 && (
-            <div
-              data-testid="modal-observatory-badge"
-              className="flex items-center gap-2.5 rounded-card border border-accent/40 bg-accent/10 p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">📡</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.obsTitle", "Observatório Planetário Ativo")}</div>
-                <div className="text-caption text-accent">
-                  {effectiveObservatoryLayers.length} {t("study.badge.obsCaptured", "camada(s) científica(s) capturada(s)")} ({effectiveObservatoryLayers.join(", ")}).
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Thematic Choropleth Layer Badge (D22) */}
-          {choroplethMeta && (
-            <div
-              data-testid="modal-choropleth-badge"
-              className="flex items-center gap-2.5 rounded-card border border-accent/40 bg-accent/10 p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">🗺️</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.choroplethTitle", "Mapa Temático Coroplético Capturado")}</div>
-                <div className="text-caption text-accent">
-                  {t(`choropleth.ind.${choroplethMeta.id}.label`, choroplethMeta.label)}
-                  {activeChoroplethYear !== null ? ` · ${activeChoroplethYear}` : ""} ({choroplethMeta.sourcePrimary}) — {t("study.badge.choroplethRestored", "restaurado automaticamente ao abrir o link.")}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {gibsOn && (
-            <div
-              data-testid="modal-gibs-badge"
-              className="flex items-center gap-2.5 rounded-card border border-line bg-surface p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">🛰️</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.gibsTitle", "Imagem de Satélite Capturada")}</div>
-                <div className="text-caption text-fg-secondary">
-                  {t(`obs.gibs.${gibsProduct}.name`, GIBS_PRODUCTS[gibsProduct].name)}
-                  {gibsSnapshot.gibsMonth ? ` · ${formatGibsMonth(gibsSnapshot.gibsMonth, locale)}` : ""} (NASA GIBS) — {t("study.badge.gibsRestored", "restaurada ao abrir o link.")}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {is2dSnapshot && (
-            <div
-              data-testid="modal-map2d-badge"
-              className="flex items-center gap-2.5 rounded-card border border-accent/40 bg-accent/10 p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">🧭</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.map2dTitle", "Mapa 2D & Projeção Capturada")}</div>
-                <div className="text-caption text-accent">
-                  {projectionShortLabel} — {t("study.badge.map2dRestored", "restaurada automaticamente ao abrir o link.")}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Cosmic / Solar System Mode Badge */}
-          {isCosmicMode && (
-            <div
-              data-testid="modal-cosmic-badge"
-              className="flex items-center gap-2.5 rounded-card border border-warning/40 bg-warning/10 p-3 text-label"
-            >
-              <span aria-hidden="true" className="select-none text-title">🪐</span>
-              <div className="flex-1">
-                <div className="font-semibold text-fg">{t("study.badge.cosmicTitle", "Estudo Cósmico / Sistema Solar Ativo")}</div>
-                <div className="text-caption text-warning">
-                  {focusedBodyId
-                    ? `${t("study.badge.orbitalFocus", "Foco Orbital")}: ${focusedBodyId}`
-                    : t("study.badge.heliocentricOverview", "Visão Panorâmica Heliocêntrica")}{" "}
-                  · {activeCosmicLayers.length} {t("study.badge.cosmicCaptured", "camadas cósmicas capturadas.")}
-                </div>
-              </div>
-            </div>
-          )}
+          <StudyShareBadges
+            locale={locale}
+            isHistoricalEraActive={isHistoricalEraActive}
+            historicalEraLabel={eraDef.label}
+            isApollo11Active={isApollo11Active}
+            geologicalMa={geologicalMa}
+            geologicalEraName={geologicalEraDef?.name ?? null}
+            activeRouteId={activeRouteId}
+            historicalRouteTitle={historicalRouteDef?.title ?? null}
+            effectiveObservatoryLayers={effectiveObservatoryLayers}
+            choroplethMeta={choroplethMeta}
+            activeChoroplethYear={activeChoroplethYear}
+            gibsOn={gibsOn}
+            gibsProduct={gibsProduct}
+            gibsMonth={gibsSnapshot.gibsMonth}
+            is2dSnapshot={is2dSnapshot}
+            projectionShortLabel={projectionShortLabel}
+            isCosmicMode={Boolean(isCosmicMode)}
+            focusedBodyId={focusedBodyId}
+            activeCosmicLayers={activeCosmicLayers}
+            annotationsCount={effectiveAnnotations.length}
+          />
 
           <div className="space-y-1 rounded-card border border-line bg-surface-sunken p-3 text-caption text-fg-secondary">
             <div className="font-semibold text-fg">{t("study.autoCaptured", "Recorte capturado automaticamente:")}</div>
@@ -440,6 +324,11 @@ export const StudyShareModal: React.FC = () => {
             <div className="font-mono tabular-nums">
               • {t("study.cameraCoords", "Coordenadas da câmera")}: ({cameraLat.toFixed(1)}°, {cameraLng.toFixed(1)}°)
             </div>
+            {effectiveAnnotations.length > 0 && (
+              <div className="font-medium text-accent">
+                • {t("study.pinsCountLabel", "Pinos anotados")}: {effectiveAnnotations.length}
+              </div>
+            )}
             {isHistoricalEraActive && (
               <div className="font-medium text-warning">• {t("study.historicalEra", "Era Histórica")}: {eraDef.label}</div>
             )}

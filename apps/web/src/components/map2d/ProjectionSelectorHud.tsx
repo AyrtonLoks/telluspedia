@@ -6,9 +6,11 @@ import {
   Crosshair,
   Grid,
   Info,
+  MapPin,
   Minus,
   Plus,
   RotateCcw,
+  Ruler,
   X,
 } from "lucide-react";
 import {
@@ -23,6 +25,8 @@ import { IconButton } from "@/components/ui/IconButton";
 import { Panel } from "@/components/ui/Panel";
 import { cn } from "@/components/ui/cn";
 import { useI18n } from "@/lib/i18n/useT";
+import { useStudioToolsStore } from "@/stores/studioToolsStore";
+import { useStudyStore } from "@/stores/studyStore";
 
 export interface ProjectionSelectorHudProps {
   projectionId: MapProjectionId;
@@ -56,6 +60,11 @@ export const ProjectionSelectorHud: React.FC<ProjectionSelectorHudProps> = ({
 }) => {
   const { locale, t } = useI18n();
   const [showInfoCard, setShowInfoCard] = useState(true);
+  const isRulerActive = useStudioToolsStore((s) => s.isRulerActive);
+  const toggleRuler = useStudioToolsStore((s) => s.toggleRuler);
+  const isPinsPanelOpen = useStudioToolsStore((s) => s.isPinsPanelOpen);
+  const togglePinsPanel = useStudioToolsStore((s) => s.togglePinsPanel);
+  const annotationsCount = useStudyStore((s) => s.annotations.length);
   const activeMeta = MAP_PROJECTION_CATALOG[projectionId];
   const isEn = locale === "en";
 
@@ -149,6 +158,33 @@ export const ProjectionSelectorHud: React.FC<ProjectionSelectorHudProps> = ({
         >
           <Info aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
           <span className="hidden md:inline">{t("map2d.aboutProjection", "Propriedades")}</span>
+        </button>
+
+        <button
+          type="button"
+          data-testid="map-2d-ruler-toggle"
+          aria-pressed={isRulerActive}
+          onClick={toggleRuler}
+          title={t("studio.rulerToggleTitle", "Régua geodésica: medir distância ortodrômica (km / nm) e azimute")}
+          className={TOOL_BUTTON}
+        >
+          <Ruler aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+          <span className="hidden md:inline">{t("studio.rulerShort", "Régua")}</span>
+        </button>
+
+        <button
+          type="button"
+          data-testid="map-2d-pins-toggle"
+          aria-pressed={isPinsPanelOpen}
+          onClick={togglePinsPanel}
+          title={t("studio.pinsToggleTitle", "Pinos anotados do estudo: fixar marcadores (lat, lng) compartilháveis")}
+          className={TOOL_BUTTON}
+        >
+          <MapPin aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+          <span className="hidden md:inline">
+            {t("studio.pinsShort", "Pinos")}
+            {annotationsCount > 0 ? ` (${annotationsCount})` : ""}
+          </span>
         </button>
       </div>
 
