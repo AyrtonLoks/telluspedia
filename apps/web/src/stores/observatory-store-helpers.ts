@@ -44,6 +44,8 @@ import type {
   SeismicPayload,
   SeismicWindow,
 } from "@/lib/seismic-types";
+import type { AirQualityStationsPayload, AqiScaleMode } from "@/lib/air-quality-types";
+import type { CableBasinFilter } from "@/lib/submarine-cables-types";
 
 export interface FirmsWindow {
   days: FirmsWindowDays;
@@ -86,6 +88,8 @@ export const ALL_OBSERVATORY_LAYERS: readonly ObservatoryLayer[] = [
   "BIOMES_MAP",
   "SPECIES_MAP",
   "USGS_EARTHQUAKES",
+  "SUBMARINE_CABLES",
+  "AIR_QUALITY",
 ];
 
 export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
@@ -102,6 +106,8 @@ export const DEFAULT_LAYER_OPACITY: Record<ObservatoryLayer, number> = {
   BIOMES_MAP: 0.72,
   SPECIES_MAP: 0.95,
   USGS_EARTHQUAKES: 0.95,
+  SUBMARINE_CABLES: 0.9,
+  AIR_QUALITY: 0.95,
 };
 
 export function perLayer<T>(make: () => T): Record<ObservatoryLayer, T> {
@@ -119,6 +125,20 @@ export function buildBiomesMeta(scope: BiomeScope): ObservatoryMeta {
   return {
     source: "computed",
     provider: scope === "brazil" ? "IBGE Biomas 2019" : "WWF / RESOLVE 2017",
+    fetchedAt: new Date().toISOString(),
+    stale: false,
+  };
+}
+
+export function isBiomeScopeId(scope: BiomeScope, id: BiomeId | null): boolean {
+  if (!id) return false;
+  return scope === "brazil" ? id.startsWith("BR_") : id.startsWith("WWF_");
+}
+
+export function buildSubmarineCablesMeta(): ObservatoryMeta {
+  return {
+    source: "computed",
+    provider: "TeleGeography Submarine Cable Map (CC BY-SA 4.0)",
     fetchedAt: new Date().toISOString(),
     stale: false,
   };
@@ -244,6 +264,14 @@ export interface ObservatoryState {
   showTectonicPlates: boolean;
   setSeismicFilter: (filter: { window?: SeismicWindow; minMagnitude?: SeismicMinMagnitude }) => void;
   setShowTectonicPlates: (enabled: boolean) => void;
+  /** Infraestrutura Crítica & Qualidade do Ar (TeleGeography + Open-Meteo CAMS — D40). */
+  cableBasinFilter: CableBasinFilter;
+  showCableChokePoints: boolean;
+  setCableBasinFilter: (basin: CableBasinFilter) => void;
+  setShowCableChokePoints: (enabled: boolean) => void;
+  airQualityStations: AirQualityStationsPayload | null;
+  aqiScaleMode: AqiScaleMode;
+  setAqiScaleMode: (mode: AqiScaleMode) => void;
 
   isLoading: Record<ObservatoryLayer, boolean>;
   hasLoaded: Record<ObservatoryLayer, boolean>;

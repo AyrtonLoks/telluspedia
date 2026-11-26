@@ -56,6 +56,14 @@ const OBSERVATORY_SEARCH_LAYERS: Record<ObservatoryLayer, { title: string; keywo
     title: "Terremotos & Placas Tectônicas (USGS / PB2002)",
     keywords: "terremotos sismos abalos sismologia placas tectonicas falha subduccao dorsal mesoatlantica circulo de fogo tsunami USGS PB2002",
   },
+  SUBMARINE_CABLES: {
+    title: "Cabos Submarinos de Internet (TeleGeography)",
+    keywords: "cabos submarinos fibra optica internet infraestrutura telegeography ellalink 2africa firmina suez malaca fortaleza verticalidades",
+  },
+  AIR_QUALITY: {
+    title: "Qualidade do Ar — PM2.5 & AQI (Open-Meteo)",
+    keywords: "qualidade do ar poluicao pm25 pm10 aqi eaqi atmosfera open-meteo cams capitais saude",
+  },
 };
 
 const presets: Record<TimelinePreset, string> = {

@@ -70,7 +70,10 @@ export function ExplorerUrlSync({ view, immutable }: { view: ViewCamera; immutab
           state.gibsMonth !== previous.gibsMonth ||
           state.seismicWindow !== previous.seismicWindow ||
           state.seismicMinMagnitude !== previous.seismicMinMagnitude ||
-          state.showTectonicPlates !== previous.showTectonicPlates
+          state.showTectonicPlates !== previous.showTectonicPlates ||
+          state.cableBasinFilter !== previous.cableBasinFilter ||
+          state.showCableChokePoints !== previous.showCableChokePoints ||
+          state.aqiScaleMode !== previous.aqiScaleMode
         ) sync();
       }),
       useLayoutStore.subscribe(sync),

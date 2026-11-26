@@ -1,11 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame, Zap } from "lucide-react";
+import { X, Crosshair, ExternalLink, Radio, Activity, Plane, Anchor, Flame, Zap, Network, Wind } from "lucide-react";
 import { EarthquakeTelemetryDetails } from "./EarthquakeTelemetryDetails";
+import { EonetTelemetryDetails } from "./EonetTelemetryDetails";
+import {
+  AirQualityTelemetryDetails,
+  CableChokePointTelemetryDetails,
+  SubmarineCableTelemetryDetails,
+} from "./InfraAirTelemetryDetails";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useGlobeStore } from "@/stores/globeStore";
-import { EONET_CATEGORIES, formatEonetDate, observationLocation, type ObservatoryEntity } from "@/lib/observatory-data";
+import { type ObservatoryEntity } from "@/lib/observatory-data";
 import { firmsMapUrl, formatAcqTime, FIRMS_CONFIDENCE_LABEL } from "@/lib/firms-display";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { Button, buttonClasses } from "@/components/ui/Button";
@@ -30,6 +36,9 @@ const ENTITY_META: Record<ObservatoryEntity["type"], { title: string; tone: Tone
   VESSEL: { title: "Embarcação", tone: "layer-maritime", icon: <Anchor /> },
   MARITIME: { title: "Corredor Mercante", tone: "layer-maritime", icon: <Anchor /> },
   EARTHQUAKE: { title: "Boletim Sísmico (USGS)", tone: "warning", icon: <Zap /> },
+  SUBMARINE_CABLE: { title: "Cabo Submarino (TeleGeography)", tone: "accent", icon: <Network /> },
+  CABLE_CHOKE_POINT: { title: "Gargalo Estratégico Submarino", tone: "warning", icon: <Network /> },
+  AIR_QUALITY_STATION: { title: "Qualidade do Ar (Open-Meteo)", tone: "success", icon: <Wind /> },
 };
 
 /** Par rótulo/valor da telemetria; valores numéricos em mono tabular. */
@@ -201,12 +210,35 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
         )}
 
         {selectedEntity.type === "EONET" && (
-          <EonetDetails entity={selectedEntity} onFocus={handleFocus} onSelect={setSelectedEntity} />
+          <EonetTelemetryDetails entity={selectedEntity} onFocus={handleFocus} onSelect={setSelectedEntity} />
         )}
 
         {selectedEntity.type === "EARTHQUAKE" && (
           <EarthquakeTelemetryDetails
             event={selectedEntity.data}
+            meta={selectedEntity.meta}
+            onFocus={handleFocus}
+          />
+        )}
+
+        {selectedEntity.type === "SUBMARINE_CABLE" && (
+          <SubmarineCableTelemetryDetails
+            cable={selectedEntity.data}
+            landingName={selectedEntity.landingName}
+            onFocus={handleFocus}
+          />
+        )}
+
+        {selectedEntity.type === "CABLE_CHOKE_POINT" && (
+          <CableChokePointTelemetryDetails
+            chokePoint={selectedEntity.data}
+            onFocus={handleFocus}
+          />
+        )}
+
+        {selectedEntity.type === "AIR_QUALITY_STATION" && (
+          <AirQualityTelemetryDetails
+            station={selectedEntity.data}
             meta={selectedEntity.meta}
             onFocus={handleFocus}
           />
@@ -224,7 +256,7 @@ export const ObservatoryTelemetryHUD: React.FC = () => {
                     onClick={() => setSelectedEntity({ type: "EONET", data: event })}
                   >
                     {event.title}
-                    <span className="block text-caption text-fg-muted">{t(`obs.eonet.${event.category}`, EONET_CATEGORIES[event.category])}</span>
+                    <span className="block text-caption text-fg-muted">{event.category}</span>
                   </button>
                 </li>
               ))}
@@ -426,68 +458,5 @@ function VesselGroupDetails({ group, meta, onSelect, onFocus }: {
         {t("telemetry.zoomArea", "Aproximar área")}
       </Button>
     </div>
-  );
-}
-
-function EonetDetails({ entity, onFocus, onSelect }: {
-  entity: Extract<ObservatoryEntity, { type: "EONET" }>;
-  onFocus: (lat: number, lng: number, altitude?: number) => void;
-  onSelect: (entity: ObservatoryEntity) => void;
-}) {
-  const { locale, t } = useI18n();
-  const { data, observationIndex } = entity;
-  const geometry = data.geometry ?? [];
-  const observation = geometry[observationIndex ?? geometry.length - 1];
-  const { lat, lng } = observation ? observationLocation(observation) : data;
-  const { date, magnitudeValue, magnitudeUnit, magnitudeDescription } = observation ?? data;
-  const showTrack = data.category === "severeStorms" && geometry.length > 1;
-  return (
-    <>
-      <div className="space-y-0.5">
-        <div className="text-label font-medium text-fg">{data.title}</div>
-        <p className="text-caption text-fg-muted">{t(`obs.eonet.${data.category}`, EONET_CATEGORIES[data.category])} · {formatEonetDate(date)}</p>
-      </div>
-      <div className={cn(FIELD_GRID, "grid-cols-1")}>
-        <Field label={t("telemetry.observedMagnitude", "Magnitude observada")}>
-          {magnitudeValue == null ? t("common.unavailable", "Indisponível") : `${formatNumber(magnitudeValue, locale)} ${magnitudeUnit ?? ""}`}
-        </Field>
-        {magnitudeDescription && <span className="text-caption text-fg-muted">{magnitudeDescription}</span>}
-      </div>
-      {showTrack && (
-        <div className="space-y-1">
-          <p className="text-caption font-medium text-fg">{t("telemetry.trackObservations", "Observações da trajetória")}</p>
-          <ul className="flex max-h-24 flex-wrap gap-1 overflow-auto" aria-label={t("telemetry.trackObservations", "Observações da trajetória")}>
-            {geometry.map((point, index) => (
-              <li key={`${point.date}-${index}`}>
-                <button
-                  type="button"
-                  aria-pressed={point === observation}
-                  className="rounded-control border border-line px-2 py-1 text-caption text-fg-secondary aria-pressed:bg-surface-raised aria-pressed:text-fg"
-                  onClick={() => onSelect({ type: "EONET", data, observationIndex: index })}
-                >
-                  {formatEonetDate(point.date)}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <Button variant="primary" size="sm" className="w-full" onClick={() => onFocus(lat, lng, 1.8)}>
-        <Crosshair aria-hidden="true" className="h-4 w-4" />
-        {t("telemetry.focusEvent", "Focar Evento")}
-      </Button>
-      {data.sources.length > 0 && (
-        <ul aria-label={t("telemetry.eventSources", "Fontes do evento")} className="flex flex-wrap gap-1">
-          {data.sources.map(({ id, url }, index) => (
-            <li key={`${url}-${index}`}>
-              <a href={url} target="_blank" rel="noopener noreferrer" className={buttonClasses("secondary", "sm")}>
-                {id}
-                <ExternalLink aria-hidden="true" className="h-3 w-3" />
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
   );
 }

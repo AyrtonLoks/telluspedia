@@ -28,7 +28,7 @@ import { useStudioToolsStore } from "@/stores/studioToolsStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useTransversalStore } from "@/stores/transversalStore";
 import { preloadFlatMapCanvas, preloadGraphicsQualityPanel } from "@/lib/panel-preload";
-import { getQualityProfile } from "@/lib/webgl-quality";
+import { QUALITY_PRESET_LABELS } from "@/lib/webgl-quality-storage";
 import { useStoreSnapshot } from "@/lib/use-hydrated";
 import { cn } from "@/components/ui/cn";
 import {
@@ -405,7 +405,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
           <button
             type="button"
             data-testid="graphics-quality-trigger"
-            aria-label={`${t("quality.title", "Qualidade gráfica")}: ${t(`quality.${qualityPreset}.label`, getQualityProfile(qualityPreset).label)}`}
+            aria-label={`${t("quality.title", "Qualidade gráfica")}: ${t(`quality.${qualityPreset}.label`, QUALITY_PRESET_LABELS[qualityPreset])}`}
             aria-pressed={isQualityPanelOpen}
             aria-haspopup="dialog"
             onClick={toggleQualityPanel}
@@ -419,7 +419,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
           >
             <Gauge aria-hidden="true" className="h-4 w-4 shrink-0 text-accent" />
             <span className="hidden sm:inline">
-              {t(`quality.${qualityPreset}.label`, getQualityProfile(qualityPreset).label)}
+              {t(`quality.${qualityPreset}.label`, QUALITY_PRESET_LABELS[qualityPreset])}
             </span>
             {qualityPreset === "auto" && adaptiveDprScale < 0.99 && (
               <span aria-hidden="true" className="h-2 w-2 rounded-full bg-warning" />

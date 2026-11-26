@@ -1,30 +1,13 @@
 import { create } from "zustand";
 import { ISS_NORAD_ID, type SatelliteTle } from "@/lib/satellite-catalog";
 import type { SatRec } from "satellite.js";
-import { GIBS_DEFAULT_PRODUCT } from "@/lib/gibs-view";
-import {
-  DEFAULT_CURRENT_UNIT,
-  DEFAULT_FLOW_MODE,
-  DEFAULT_WIND_ALTITUDE,
-  DEFAULT_WIND_UNIT,
-} from "@/lib/winds-types";
-import {
-  DEFAULT_DEBRIS_HORIZON_MONTHS,
-  DEFAULT_DEBRIS_WINDAGE,
-} from "@/lib/marine-debris-types";
-import { DEFAULT_FIRE_SOURCE, DEFAULT_PRODES_BIOME } from "@/lib/inpe-types";
-import { DEFAULT_BIOME_SCOPE, isBiomeIdForScope } from "@/lib/biomes-types";
-import {
-  DEFAULT_SEISMIC_MIN_MAGNITUDE,
-  DEFAULT_SEISMIC_WINDOW,
-  DEFAULT_SHOW_TECTONIC_PLATES,
-} from "@/lib/seismic-types";
 import {
   buildBiomesMeta,
   DEFAULT_FIRMS_WINDOW,
   DEFAULT_LAYER_OPACITY,
   emptyAisCorridorCounts,
   initialLocalMeta,
+  isBiomeScopeId,
   isEonetSelection,
   perLayer,
   type FirmsWindow,
@@ -84,7 +67,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   firmsByCountry: null,
   eonetEvents: [],
   eonetCategory: "all",
-  gibsProduct: GIBS_DEFAULT_PRODUCT,
+  gibsProduct: "ndvi",
   gibsMonth: null,
   gibs: null,
   setGibsRequest: ({ product, month }) => {
@@ -96,12 +79,12 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     if (cur.activeLayers.includes("NASA_GIBS")) void get().loadLayerData("NASA_GIBS");
     else set((s) => ({ hasLoaded: { ...s.hasLoaded, NASA_GIBS: false } }));
   },
-  flowMode: DEFAULT_FLOW_MODE,
+  flowMode: "winds",
   winds: null,
-  windAltitude: DEFAULT_WIND_ALTITUDE,
-  windUnit: DEFAULT_WIND_UNIT,
+  windAltitude: "surface",
+  windUnit: "kmh",
   currents: null,
-  currentUnit: DEFAULT_CURRENT_UNIT,
+  currentUnit: "ms",
   currentsMeta: initialLocalMeta(),
   currentsLoading: false,
   currentsHasLoaded: false,
@@ -119,8 +102,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   setWindAltitude: (windAltitude) => set({ windAltitude }),
   setWindUnit: (windUnit) => set({ windUnit }),
   setCurrentUnit: (currentUnit) => set({ currentUnit }),
-  marineDebrisWindage: DEFAULT_DEBRIS_WINDAGE,
-  marineDebrisHorizonMonths: DEFAULT_DEBRIS_HORIZON_MONTHS,
+  marineDebrisWindage: 0.02,
+  marineDebrisHorizonMonths: 24,
   marineDebrisPickMode: false,
   marineDebrisReleasePoint: null,
   selectedGyreId: null,
@@ -130,10 +113,10 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   setMarineDebrisReleasePoint: (marineDebrisReleasePoint) =>
     set({ marineDebrisReleasePoint, marineDebrisPickMode: false }),
   setSelectedGyreId: (selectedGyreId) => set({ selectedGyreId }),
-  fireSource: DEFAULT_FIRE_SOURCE,
+  fireSource: "firms",
   inpeFires: null,
   inpeDeforestation: null,
-  prodesBiome: DEFAULT_PRODES_BIOME,
+  prodesBiome: "amazonia",
   setFireSource: (fireSource) => {
     if (get().fireSource === fireSource) return;
     set({ fireSource, selectedEntity: null });
@@ -142,7 +125,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     }
   },
   setProdesBiome: (prodesBiome) => set({ prodesBiome }),
-  biomeScope: DEFAULT_BIOME_SCOPE,
+  biomeScope: "global",
   biomeFilterId: null,
   selectedBiomeId: null,
   hoveredBiomeId: null,
@@ -150,8 +133,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   setBiomeScope: (biomeScope) =>
     set((s) => ({
       biomeScope,
-      biomeFilterId: isBiomeIdForScope(biomeScope, s.biomeFilterId) ? s.biomeFilterId : null,
-      selectedBiomeId: isBiomeIdForScope(biomeScope, s.selectedBiomeId) ? s.selectedBiomeId : null,
+      biomeFilterId: isBiomeScopeId(biomeScope, s.biomeFilterId) ? s.biomeFilterId : null,
+      selectedBiomeId: isBiomeScopeId(biomeScope, s.selectedBiomeId) ? s.selectedBiomeId : null,
       hoveredBiomeId: null,
       layerMeta: s.hasLoaded.BIOMES_MAP
         ? { ...s.layerMeta, BIOMES_MAP: buildBiomesMeta(biomeScope) }
@@ -162,9 +145,9 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   setHoveredBiomeId: (hoveredBiomeId) => set({ hoveredBiomeId }),
   setBiomePickMode: (biomePickMode) => set({ biomePickMode }),
   earthquakes: null,
-  seismicWindow: DEFAULT_SEISMIC_WINDOW,
-  seismicMinMagnitude: DEFAULT_SEISMIC_MIN_MAGNITUDE,
-  showTectonicPlates: DEFAULT_SHOW_TECTONIC_PLATES,
+  seismicWindow: "24h",
+  seismicMinMagnitude: "4.5",
+  showTectonicPlates: true,
   setSeismicFilter: (filter) => {
     const cur = get();
     const nextWindow = filter.window ?? cur.seismicWindow;
@@ -182,6 +165,13 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
     }
   },
   setShowTectonicPlates: (showTectonicPlates) => set({ showTectonicPlates }),
+  cableBasinFilter: "all",
+  showCableChokePoints: true,
+  setCableBasinFilter: (cableBasinFilter) => set({ cableBasinFilter }),
+  setShowCableChokePoints: (showCableChokePoints) => set({ showCableChokePoints }),
+  airQualityStations: null,
+  aqiScaleMode: "us_aqi",
+  setAqiScaleMode: (aqiScaleMode) => set({ aqiScaleMode }),
   loadCurrentsData: async () => {
     const { loadCurrentsLayer } = await loadObservatoryLoaders();
     return loadCurrentsLayer(set, get);
@@ -220,7 +210,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
         activeLayers: activeLayers.filter((id) => id !== layerId),
         selectedEntity:
           (layerId === "NASA_EONET" && isEonetSelection(state.selectedEntity)) ||
-          (layerId === "USGS_EARTHQUAKES" && state.selectedEntity?.type === "EARTHQUAKE")
+          (layerId === "USGS_EARTHQUAKES" && state.selectedEntity?.type === "EARTHQUAKE") ||
+          (layerId === "SUBMARINE_CABLES" &&
+            (state.selectedEntity?.type === "SUBMARINE_CABLE" ||
+              state.selectedEntity?.type === "CABLE_CHOKE_POINT")) ||
+          (layerId === "AIR_QUALITY" && state.selectedEntity?.type === "AIR_QUALITY_STATION")
             ? null
             : state.selectedEntity,
         marineDebrisPickMode: layerId === "MARINE_DEBRIS" ? false : state.marineDebrisPickMode,
@@ -236,7 +230,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       activeLayers: layers,
       selectedEntity:
         (!layers.includes("NASA_EONET") && isEonetSelection(state.selectedEntity)) ||
-        (!layers.includes("USGS_EARTHQUAKES") && state.selectedEntity?.type === "EARTHQUAKE")
+        (!layers.includes("USGS_EARTHQUAKES") && state.selectedEntity?.type === "EARTHQUAKE") ||
+        (!layers.includes("SUBMARINE_CABLES") &&
+          (state.selectedEntity?.type === "SUBMARINE_CABLE" ||
+            state.selectedEntity?.type === "CABLE_CHOKE_POINT")) ||
+        (!layers.includes("AIR_QUALITY") && state.selectedEntity?.type === "AIR_QUALITY_STATION")
           ? null
           : state.selectedEntity,
     }));
@@ -319,8 +317,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
       selectedBiomeId: null,
       hoveredBiomeId: null,
       biomePickMode: false,
-      seismicWindow: DEFAULT_SEISMIC_WINDOW,
-      seismicMinMagnitude: DEFAULT_SEISMIC_MIN_MAGNITUDE,
-      showTectonicPlates: DEFAULT_SHOW_TECTONIC_PLATES,
+      seismicWindow: "24h",
+      seismicMinMagnitude: "4.5",
+      showTectonicPlates: true,
+      cableBasinFilter: "all",
+      showCableChokePoints: true,
+      aqiScaleMode: "us_aqi",
     }),
 }));

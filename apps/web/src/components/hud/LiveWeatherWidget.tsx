@@ -1,9 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { Cloud, CloudRain, Sun, Wind, Droplets } from "lucide-react";
+import {
+  classifyUsAqiBand,
+  type AirQualityPointEnvelope,
+  type AirQualityReading,
+  type AqiHealthBand,
+} from "@/lib/air-quality-types";
+import { OPEN_METEO_AQI_DOCS_URL } from "@/lib/air-quality-data";
 import { fetchWeather, WeatherData } from "@/lib/api-client";
+import { Badge } from "@/components/ui/Badge";
+import { Skeleton } from "@/components/ui/Skeleton";
+import type { Tone } from "@/components/ui/tones";
 import { useI18n } from "@/lib/i18n/useT";
 
 interface LiveWeatherWidgetProps {
@@ -12,6 +21,15 @@ interface LiveWeatherWidgetProps {
   referenceName?: string | null;
 }
 
+const BAND_TONE: Readonly<Record<AqiHealthBand, Tone>> = {
+  good: "success",
+  moderate: "warning",
+  sensitive: "warning",
+  unhealthy: "danger",
+  very_unhealthy: "danger",
+  hazardous: "danger",
+};
+
 function formatMeasurement(value: number | null | undefined, unit: string) {
   return value == null ? "—" : `${Math.round(value)}${unit}`;
 }
@@ -19,6 +37,8 @@ function formatMeasurement(value: number | null | undefined, unit: string) {
 export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, referenceName }) => {
   const { locale, t } = useI18n();
   const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [aqi, setAqi] = useState<AirQualityReading | null>(null);
+  const [aqiDone, setAqiDone] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const referenceTimeFormat = useMemo(
     () =>
@@ -40,12 +60,17 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
   useEffect(() => {
     if (!hasCoords || lat === null || lng === null) {
       setWeather(null);
+      setAqi(null);
+      setAqiDone(true);
       setLoading(false);
       return;
     }
 
     let isMounted = true;
+    const controller = new AbortController();
     setLoading(true);
+    setAqi(null);
+    setAqiDone(false);
 
     fetchWeather(lat, lng)
       .then((data) => {
@@ -61,8 +86,30 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
         }
       });
 
+    fetch(`/api/observatory/air-quality?lat=${encodeURIComponent(String(lat))}&lng=${encodeURIComponent(String(lng))}`, {
+      signal: controller.signal,
+    })
+      .then(async (res) => {
+        if (!res.ok) return null;
+        const env = (await res.json()) as AirQualityPointEnvelope;
+        return env?.data ?? null;
+      })
+      .then((reading) => {
+        if (isMounted) {
+          setAqi(reading);
+          setAqiDone(true);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAqi(null);
+          setAqiDone(true);
+        }
+      });
+
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [lat, lng, hasCoords]);
 
@@ -90,6 +137,18 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
       </div>
     );
   }
+
+  const aqiBand = aqi ? classifyUsAqiBand(aqi.usAqi) : null;
+  const aqiBandText = aqiBand
+    ? {
+        good: t("aqi.band.good", "Bom"),
+        moderate: t("aqi.band.moderate", "Moderado"),
+        sensitive: t("aqi.band.sensitive", "Sensíveis"),
+        unhealthy: t("aqi.band.unhealthy", "Insalubre"),
+        very_unhealthy: t("aqi.band.veryUnhealthy", "Muito insalubre"),
+        hazardous: t("aqi.band.hazardous", "Perigoso"),
+      }[aqiBand]
+    : null;
 
   return (
     <div aria-busy={loading} className="flex min-w-0 flex-col gap-1.5 rounded-card border border-line bg-surface-raised px-3 py-2">
@@ -125,10 +184,37 @@ export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({ lat, lng, 
           {loading ? <Skeleton className="h-3 w-12" /> : <span>{formatMeasurement(current?.wind_speed, " km/h")}</span>}
         </div>
       </div>
+
+      {/* Qualidade do Ar (PM2.5 + US AQI / EAQI via Open-Meteo — D40) */}
+      <div
+        data-testid="live-weather-aqi"
+        className="space-y-1 border-t border-line pt-1.5 text-caption"
+      >
+        {!aqiDone ? (
+          <Skeleton className="h-3.5 w-28" />
+        ) : aqi && aqiBand && aqiBandText ? (
+          <div className="flex flex-wrap items-center justify-between gap-1">
+            <span className="font-mono tabular-nums text-fg">
+              AQI {aqi.usAqi ?? "—"}
+              {aqi.pm25 != null ? ` · PM2.5 ${aqi.pm25.toFixed(1)}` : ""}
+            </span>
+            <Badge tone={BAND_TONE[aqiBand]}>{aqiBandText}</Badge>
+          </div>
+        ) : (
+          <span className="text-fg-muted">
+            {t("weather.airQualityUnavailable", "Qualidade do ar indisponível")}
+          </span>
+        )}
+      </div>
+
       <p className="text-caption text-fg-muted">
         {t("weather.estimate", "Estimativa")}{" "}
         <a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer" className="text-accent underline hover:text-accent-hover">
           Open-Meteo
+        </a>
+        {" · "}
+        <a href={OPEN_METEO_AQI_DOCS_URL} target="_blank" rel="noreferrer" className="text-accent underline hover:text-accent-hover">
+          AQI
         </a>
         {hasReferenceTime && (
           <time className="block" dateTime={referenceTime.toISOString()}>

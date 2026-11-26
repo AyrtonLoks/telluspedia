@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Flame, Leaf, Plane, Satellite, Ship, TriangleAlert } from "lucide-react";
+import { Flame, Leaf, Network, Plane, Satellite, Ship, TriangleAlert, Wind } from "lucide-react";
 import { HORIZONTALITY_ZONES, VERTICALITY_HUBS } from "@/lib/critical-geo-catalog";
 import type { VerticalityFocusMode } from "@/lib/critical-geo-ids";
 import type { ObservatoryLayer } from "@/lib/observatory-data";
@@ -34,10 +34,12 @@ export const VerticalitiesHudSection: React.FC<VerticalitiesHudSectionProps> = (
     verticalityMode === "horizontalities"
       ? ([
           { id: "BIOMES_MAP", labelPt: "Biomas", labelEn: "Biomes", icon: Leaf, count: 0 },
+          { id: "AIR_QUALITY", labelPt: "Qualidade do Ar", labelEn: "Air Quality", icon: Wind, count: 0 },
           { id: "NASA_FIRMS", labelPt: "Queimadas", labelEn: "Wildfires", icon: Flame, count: 0 },
           { id: "NASA_EONET", labelPt: "Eventos Severos", labelEn: "Severe Events", icon: TriangleAlert, count: 0 },
         ] as const)
       : ([
+          { id: "SUBMARINE_CABLES", labelPt: "Cabos Submarinos", labelEn: "Subsea Cables", icon: Network, count: 0 },
           { id: "FLIGHTS_OPENSKY", labelPt: "Aviação", labelEn: "Aviation", icon: Plane, count: flightsCount },
           { id: "MARITIME_ROUTES", labelPt: "Marítimo AIS", labelEn: "AIS Maritime", icon: Ship, count: vesselsCount },
           { id: "ISS_SATELLITES", labelPt: "Satélites", labelEn: "Satellites", icon: Satellite, count: satellitesCount },

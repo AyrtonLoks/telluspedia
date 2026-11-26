@@ -10,6 +10,8 @@ import { ISS_NORAD_ID } from "@/lib/satellite-catalog";
 import { filterSpeciesCatalog } from "@/lib/species-catalog";
 import { getTectonicPlatesSync, loadTectonicPlates } from "@/lib/seismic-data";
 import type { TectonicPlatesCollection } from "@/lib/seismic-types";
+import { getSubmarineCablesSync, loadSubmarineCables } from "@/lib/submarine-cables-data";
+import type { SubmarineCablesDataset } from "@/lib/submarine-cables-types";
 import { loadSatelliteLib, useObservatoryStore } from "@/stores/observatoryStore";
 import { speciesCacheKey, useSpeciesStore } from "@/stores/speciesStore";
 
@@ -49,6 +51,10 @@ export function useFlatMapObservatory(enabled: boolean): Observatory2dRenderStat
   const inpeDeforestation = useObservatoryStore((s) => s.inpeDeforestation);
   const earthquakes = useObservatoryStore((s) => s.earthquakes);
   const showTectonicPlates = useObservatoryStore((s) => s.showTectonicPlates);
+  const cableBasinFilter = useObservatoryStore((s) => s.cableBasinFilter);
+  const showCableChokePoints = useObservatoryStore((s) => s.showCableChokePoints);
+  const airQualityStations = useObservatoryStore((s) => s.airQualityStations);
+  const aqiScaleMode = useObservatoryStore((s) => s.aqiScaleMode);
 
   const selectedSpeciesId = useSpeciesStore((s) => s.selectedSpeciesId);
   const hoveredSpeciesId = useSpeciesStore((s) => s.hoveredSpeciesId);
@@ -63,6 +69,7 @@ export function useFlatMapObservatory(enabled: boolean): Observatory2dRenderStat
   const isInpeDeforestActive = enabled && activeLayers.includes("INPE_DEFORESTATION");
   const isDebrisActive = enabled && activeLayers.includes("MARINE_DEBRIS");
   const isPlates2dActive = enabled && activeLayers.includes("USGS_EARTHQUAKES") && showTectonicPlates;
+  const isCables2dActive = enabled && activeLayers.includes("SUBMARINE_CABLES");
 
   // 1. Amostra equiretangular em memória da imagem NASA GIBS ativa para reprojeção 2D
   const [gibsPixels, setGibsPixels] = useState<GibsImagePixels | null>(null);
@@ -142,6 +149,25 @@ export function useFlatMapObservatory(enabled: boolean): Observatory2dRenderStat
       alive = false;
     };
   }, [isPlates2dActive]);
+
+  const [cablesDataset, setCablesDataset] = useState<SubmarineCablesDataset | null>(() =>
+    isCables2dActive ? getSubmarineCablesSync() : null
+  );
+  useEffect(() => {
+    if (!isCables2dActive) return;
+    const cached = getSubmarineCablesSync();
+    if (cached) {
+      setCablesDataset(cached);
+      return;
+    }
+    let alive = true;
+    void loadSubmarineCables().then((loaded) => {
+      if (alive && loaded) setCablesDataset(loaded);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [isCables2dActive]);
 
   // 3. Propagação periódica leve (2s) da ISS e satélites artificiais no Modo 2D
   const [satelliteSnapshots, setSatelliteSnapshots] = useState<SatelliteSnapshot[]>([]);
@@ -259,5 +285,13 @@ export function useFlatMapObservatory(enabled: boolean): Observatory2dRenderStat
     seismicEvents: earthquakes?.events ?? [],
     showTectonicPlates,
     tectonicPlates,
+    submarineCables: cablesDataset
+      ? cableBasinFilter === "all"
+        ? cablesDataset.cables
+        : cablesDataset.cables.filter((c) => c.basin === cableBasinFilter)
+      : [],
+    cableChokePoints: showCableChokePoints && cablesDataset ? cablesDataset.chokePoints : [],
+    airQualityStations: airQualityStations?.stations ?? [],
+    aqiScaleMode,
   };
 }

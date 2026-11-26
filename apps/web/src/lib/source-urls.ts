@@ -149,6 +149,12 @@ export function getSourceUrl(source?: string, indicatorCode?: string): string {
   if (s.includes("gdelt")) {
     return "https://www.gdeltproject.org/";
   }
+  if (s.includes("telegeography") || s.includes("submarine cable")) {
+    return "https://www.submarinecablemap.com/";
+  }
+  if (s.includes("open-meteo")) {
+    return "https://open-meteo.com/en/docs/air-quality-api";
+  }
   if (s.includes("royal society")) {
     return "https://royalsociety.org/";
   }

@@ -82,6 +82,20 @@ const SeismicLayerControls = dynamic(
     loading: () => <div className="h-24" aria-hidden="true" />,
   }
 );
+const SubmarineCablesControls = dynamic(
+  () => import("./SubmarineCablesControls").then((m) => m.SubmarineCablesControls),
+  {
+    ssr: false,
+    loading: () => <div className="h-24" aria-hidden="true" />,
+  }
+);
+const AirQualityControls = dynamic(
+  () => import("./AirQualityControls").then((m) => m.AirQualityControls),
+  {
+    ssr: false,
+    loading: () => <div className="h-24" aria-hidden="true" />,
+  }
+);
 
 /** Opacidade da camada no globo (o store guarda 0–1; as camadas já leem `layerOpacity`). */
 const LayerOpacity: React.FC<{ layer: LayerOption }> = ({ layer }) => {
@@ -275,6 +289,8 @@ export const ObservatoryPanel: React.FC<{ initialExpanded?: ObservatoryLayer[] }
                     {layerDesc} <span className="text-fg-muted">{t("common.source", "Fonte")}: {layer.source}.</span>
                   </p>
                   {layer.id === "USGS_EARTHQUAKES" && <SeismicLayerControls />}
+                  {layer.id === "SUBMARINE_CABLES" && <SubmarineCablesControls />}
+                  {layer.id === "AIR_QUALITY" && <AirQualityControls />}
                   {layer.id === "NASA_EONET" && <EonetLayerControls />}
                   {layer.id === "ISS_SATELLITES" && <SatelliteLayerControls />}
                   {layer.id === "NASA_GIBS" && <GibsLayerControls />}

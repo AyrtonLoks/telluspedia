@@ -84,6 +84,12 @@ const SpeciesLayer = lazy(() =>
 const SeismicTectonicLayer = lazy(() =>
   import("./SeismicTectonicLayer").then((m) => ({ default: m.SeismicTectonicLayer }))
 );
+const SubmarineCablesLayer = lazy(() =>
+  import("./SubmarineCablesLayer").then((m) => ({ default: m.SubmarineCablesLayer }))
+);
+const AirQualityLayer = lazy(() =>
+  import("./AirQualityLayer").then((m) => ({ default: m.AirQualityLayer }))
+);
 const SpeciesHudOverlay = lazy(() =>
   import("@/components/observatory/SpeciesHudOverlay").then((m) => ({ default: m.SpeciesHudOverlay }))
 );
@@ -353,6 +359,16 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
             {isContemporary && activeObservatoryLayers.includes("USGS_EARTHQUAKES") && (
               <Suspense fallback={null}>
                 <SeismicTectonicLayer />
+              </Suspense>
+            )}
+            {isContemporary && activeObservatoryLayers.includes("SUBMARINE_CABLES") && (
+              <Suspense fallback={null}>
+                <SubmarineCablesLayer />
+              </Suspense>
+            )}
+            {isContemporary && activeObservatoryLayers.includes("AIR_QUALITY") && (
+              <Suspense fallback={null}>
+                <AirQualityLayer />
               </Suspense>
             )}
             {isContemporary && activeCriticalLens !== null && (

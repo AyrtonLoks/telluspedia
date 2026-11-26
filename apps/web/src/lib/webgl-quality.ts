@@ -6,10 +6,25 @@
  * de estrelas/asteroides, além da máquina de estados de adaptação por FPS sustentado.
  */
 
-export const GRAPHICS_QUALITY_STORAGE_KEY = "telluspedia.graphics-quality.v1";
+import {
+  GRAPHICS_QUALITY_PRESETS,
+  GRAPHICS_QUALITY_STORAGE_KEY,
+  isGraphicsQualityPreset,
+  QUALITY_PRESET_LABELS,
+  readStoredQualityPreset,
+  writeStoredQualityPreset,
+  type GraphicsQualityPreset,
+} from "./webgl-quality-storage";
 
-export const GRAPHICS_QUALITY_PRESETS = ["auto", "high", "medium", "low"] as const;
-export type GraphicsQualityPreset = (typeof GRAPHICS_QUALITY_PRESETS)[number];
+export {
+  GRAPHICS_QUALITY_PRESETS,
+  GRAPHICS_QUALITY_STORAGE_KEY,
+  isGraphicsQualityPreset,
+  QUALITY_PRESET_LABELS,
+  readStoredQualityPreset,
+  writeStoredQualityPreset,
+  type GraphicsQualityPreset,
+};
 
 export type EarthTextureTier = "2k" | "4k";
 
@@ -80,34 +95,8 @@ export const GRAPHICS_QUALITY_PROFILES: Readonly<
   },
 };
 
-export function isGraphicsQualityPreset(value: unknown): value is GraphicsQualityPreset {
-  return (
-    typeof value === "string" &&
-    (GRAPHICS_QUALITY_PRESETS as readonly string[]).includes(value)
-  );
-}
-
 export function getQualityProfile(preset: GraphicsQualityPreset): GraphicsQualityProfile {
   return GRAPHICS_QUALITY_PROFILES[preset];
-}
-
-export function readStoredQualityPreset(): GraphicsQualityPreset {
-  if (typeof window === "undefined") return "auto";
-  try {
-    const raw = window.localStorage.getItem(GRAPHICS_QUALITY_STORAGE_KEY);
-    return isGraphicsQualityPreset(raw) ? raw : "auto";
-  } catch {
-    return "auto";
-  }
-}
-
-export function writeStoredQualityPreset(preset: GraphicsQualityPreset): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(GRAPHICS_QUALITY_STORAGE_KEY, preset);
-  } catch {
-    // Armazenamento bloqueado (modo privado/política do navegador): ignora sem erro.
-  }
 }
 
 /**

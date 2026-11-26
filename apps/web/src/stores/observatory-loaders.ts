@@ -125,6 +125,21 @@ export async function loadObservatoryLayer(
       applyMeta("BIOMES_MAP", buildBiomesMeta(get().biomeScope));
     } else if (layerId === "SPECIES_MAP") {
       applyMeta("SPECIES_MAP", buildSpeciesMeta());
+    } else if (layerId === "SUBMARINE_CABLES") {
+      const { loadSubmarineCables } = await import("@/lib/submarine-cables-data");
+      const { buildSubmarineCablesMeta } = await import("./observatory-store-helpers");
+      const dataset = await loadSubmarineCables();
+      if (!dataset) throw new Error("Dataset TeleGeography indisponível");
+      applyMeta("SUBMARINE_CABLES", buildSubmarineCablesMeta());
+    } else if (layerId === "AIR_QUALITY") {
+      const body = await fetchEnvelope("/api/observatory/air-quality");
+      const data = isObservatoryEnvelope(body)
+        ? (body.data as { stations?: unknown; totalCount?: unknown })
+        : null;
+      if (isObservatoryEnvelope(body) && data && Array.isArray(data.stations)) {
+        set({ airQualityStations: body.data as ReturnType<typeof get>["airQualityStations"] });
+        applyMeta("AIR_QUALITY", body.meta);
+      } else throw new Error("Resposta Open-Meteo Air Quality inválida");
     } else if (layerId === "USGS_EARTHQUAKES") {
       const { seismicWindow, seismicMinMagnitude } = get();
       const [{ isValidSeismicPayload }, body] = await Promise.all([
@@ -262,6 +277,10 @@ export async function loadObservatoryLayer(
       const { buildFallbackSeismicPayload } = await import("@/lib/seismic-data");
       const { seismicWindow, seismicMinMagnitude } = get();
       set({ earthquakes: buildFallbackSeismicPayload(seismicWindow, seismicMinMagnitude) });
+    }
+    if (layerId === "AIR_QUALITY") {
+      const { buildFallbackAirQualityStations } = await import("@/lib/air-quality-data");
+      set({ airQualityStations: buildFallbackAirQualityStations() });
     }
   } finally {
     set((s) => ({

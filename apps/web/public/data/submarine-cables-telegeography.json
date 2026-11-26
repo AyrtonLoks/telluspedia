@@ -1,0 +1,399 @@
+{
+  "metadata": {
+    "source": "TeleGeography Submarine Cable Map",
+    "license": "CC BY-SA 4.0",
+    "sourceUrl": "https://www.submarinecablemap.com/",
+    "referenceYear": 2026
+  },
+  "chokePoints": [
+    {
+      "id": "suez-red-sea",
+      "namePt": "Canal de Suez & Mar Vermelho",
+      "nameEn": "Suez Canal & Red Sea",
+      "lat": 27.8,
+      "lng": 34.2,
+      "cableCount": 16,
+      "summaryPt": "Corredor crítico entre Europa, Golfo Pérsico, Índia e Sudeste Asiático em águas rasas de intenso tráfego mercante.",
+      "summaryEn": "Critical corridor linking Europe, the Persian Gulf, India, and Southeast Asia through shallow high-traffic waters."
+    },
+    {
+      "id": "bab-el-mandeb",
+      "namePt": "Estreito de Bab el-Mandeb",
+      "nameEn": "Bab el-Mandeb Strait",
+      "lat": 12.58,
+      "lng": 43.33,
+      "cableCount": 15,
+      "summaryPt": "Gargalo estratégico de 29 km entre Djibuti e Iêmen por onde passa a maior parte da capacidade Euro-Asiática.",
+      "summaryEn": "29 km strategic bottleneck between Djibouti and Yemen carrying the bulk of Europe–Asia fiber capacity."
+    },
+    {
+      "id": "malacca-singapore",
+      "namePt": "Estreito de Malaca & Singapura",
+      "nameEn": "Strait of Malaca & Singapore",
+      "lat": 1.26,
+      "lng": 103.82,
+      "cableCount": 24,
+      "summaryPt": "Principal entroncamento indo-pacífico conectando o Oceano Índico ao Mar do Sul da China e ao Leste Asiático.",
+      "summaryEn": "Primary Indo-Pacific junction linking the Indian Ocean to the South China Sea and East Asia."
+    },
+    {
+      "id": "luzon-strait",
+      "namePt": "Estreito de Luzon",
+      "nameEn": "Luzon Strait",
+      "lat": 20.4,
+      "lng": 121.5,
+      "cableCount": 14,
+      "summaryPt": "Zona sismicamente ativa entre Taiwan e Filipinas que concentra cabos transpacíficos e intra-asiáticos.",
+      "summaryEn": "Seismically active corridor between Taiwan and the Philippines concentrating transpacific and intra-Asian cables."
+    },
+    {
+      "id": "fortaleza-hub",
+      "namePt": "Hub Atlântico de Fortaleza",
+      "nameEn": "Fortaleza Atlantic Hub",
+      "lat": -3.73,
+      "lng": -38.48,
+      "cableCount": 16,
+      "summaryPt": "Maior ponto de aterramento da América do Sul, interligando Brasil, América do Norte, Península Ibérica e África.",
+      "summaryEn": "South America's premier landing hub interconnecting Brazil, North America, Iberia, and West/Southern Africa."
+    },
+    {
+      "id": "cornwall-channel",
+      "namePt": "Cornualha & Canal da Mancha",
+      "nameEn": "Cornwall & English Channel",
+      "lat": 50.83,
+      "lng": -4.55,
+      "cableCount": 18,
+      "summaryPt": "Porta de entrada histórica e contemporânea dos sistemas transatlânticos de alta capacidade no norte da Europa.",
+      "summaryEn": "Historic and contemporary gateway for high-capacity North Atlantic cable systems into Europe."
+    }
+  ],
+  "cables": [
+    {
+      "id": "2africa",
+      "name": "2Africa",
+      "rfsYear": 2024,
+      "lengthKm": 45000,
+      "designCapacityTbps": 180,
+      "owners": "Meta, China Mobile, MTN, Orange, Vodafone, WIOCC, Telecom Egypt, Zain",
+      "basin": "afro-eurasian",
+      "chokePoints": ["suez-red-sea", "bab-el-mandeb"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/2africa",
+      "landingPoints": [
+        { "name": "Carcavelos", "countryIso": "PRT", "lat": 38.68, "lng": -9.33 },
+        { "name": "Barcelona", "countryIso": "ESP", "lat": 41.39, "lng": 2.17 },
+        { "name": "Genoa", "countryIso": "ITA", "lat": 44.41, "lng": 8.93 },
+        { "name": "Port Said", "countryIso": "EGY", "lat": 31.26, "lng": 32.3 },
+        { "name": "Jeddah", "countryIso": "SAU", "lat": 21.49, "lng": 39.19 },
+        { "name": "Djibouti", "countryIso": "DJI", "lat": 11.59, "lng": 43.15 },
+        { "name": "Mombasa", "countryIso": "KEN", "lat": -4.04, "lng": 39.67 },
+        { "name": "Cape Town", "countryIso": "ZAF", "lat": -33.92, "lng": 18.42 },
+        { "name": "Lagos", "countryIso": "NGA", "lat": 6.45, "lng": 3.39 },
+        { "name": "Dakar", "countryIso": "SEN", "lat": 14.69, "lng": -17.45 },
+        { "name": "Mumbai", "countryIso": "IND", "lat": 19.08, "lng": 72.88 }
+      ],
+      "segments": [
+        [[-9.33, 38.68], [-12.5, 33.0], [-17.45, 14.69], [-12.0, 4.0], [3.39, 6.45], [8.5, -6.0], [11.5, -18.0], [18.42, -33.92], [32.0, -30.5], [40.5, -16.0], [39.67, -4.04], [50.0, 8.0], [43.15, 11.59], [39.19, 21.49], [32.3, 31.26], [18.0, 36.5], [8.93, 44.41], [2.17, 41.39], [-5.6, 35.95], [-9.33, 38.68]],
+        [[43.15, 11.59], [54.0, 14.5], [63.0, 17.5], [72.88, 19.08]]
+      ]
+    },
+    {
+      "id": "ellalink",
+      "name": "EllaLink",
+      "rfsYear": 2021,
+      "lengthKm": 6200,
+      "designCapacityTbps": 100,
+      "owners": "EllaLink, EMACOM, RedCLARA / GÉANT (BELLA)",
+      "basin": "atlantic",
+      "chokePoints": ["fortaleza-hub"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/ellalink",
+      "landingPoints": [
+        { "name": "Fortaleza", "countryIso": "BRA", "lat": -3.73, "lng": -38.48 },
+        { "name": "Praia", "countryIso": "PRT", "lat": 32.65, "lng": -16.91 },
+        { "name": "Sines", "countryIso": "PRT", "lat": 37.96, "lng": -8.87 }
+      ],
+      "segments": [
+        [[-38.48, -3.73], [-31.0, 6.5], [-24.5, 17.5], [-16.91, 32.65], [-8.87, 37.96]]
+      ]
+    },
+    {
+      "id": "sacs",
+      "name": "SACS (South Atlantic Cable System)",
+      "rfsYear": 2018,
+      "lengthKm": 6165,
+      "designCapacityTbps": 40,
+      "owners": "Angola Cables",
+      "basin": "atlantic",
+      "chokePoints": ["fortaleza-hub"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/south-atlantic-cable-system-sacs",
+      "landingPoints": [
+        { "name": "Fortaleza", "countryIso": "BRA", "lat": -3.73, "lng": -38.48 },
+        { "name": "Sangano (Luanda)", "countryIso": "AGO", "lat": -9.53, "lng": 13.21 }
+      ],
+      "segments": [
+        [[-38.48, -3.73], [-24.0, -5.8], [-8.0, -7.8], [13.21, -9.53]]
+      ]
+    },
+    {
+      "id": "firmina",
+      "name": "Firmina",
+      "rfsYear": 2024,
+      "lengthKm": 14500,
+      "designCapacityTbps": 144,
+      "owners": "Google (Alphabet)",
+      "basin": "atlantic",
+      "chokePoints": ["fortaleza-hub"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/firmina",
+      "landingPoints": [
+        { "name": "Myrtle Beach, SC", "countryIso": "USA", "lat": 33.69, "lng": -78.89 },
+        { "name": "Praia Grande (SP)", "countryIso": "BRA", "lat": -24.01, "lng": -46.41 },
+        { "name": "Punta del Este", "countryIso": "URY", "lat": -34.96, "lng": -54.94 },
+        { "name": "Las Toninas", "countryIso": "ARG", "lat": -36.48, "lng": -56.7 }
+      ],
+      "segments": [
+        [[-78.89, 33.69], [-68.0, 23.0], [-52.0, 10.0], [-36.0, -3.5], [-34.0, -14.0], [-41.0, -22.5], [-46.41, -24.01], [-51.5, -31.0], [-54.94, -34.96], [-56.7, -36.48]]
+      ]
+    },
+    {
+      "id": "monet",
+      "name": "Monet",
+      "rfsYear": 2017,
+      "lengthKm": 10556,
+      "designCapacityTbps": 64,
+      "owners": "Google, Algar Telecom, Antel, Angola Cables",
+      "basin": "atlantic",
+      "chokePoints": ["fortaleza-hub"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/monet",
+      "landingPoints": [
+        { "name": "Boca Raton, FL", "countryIso": "USA", "lat": 26.36, "lng": -80.08 },
+        { "name": "Fortaleza", "countryIso": "BRA", "lat": -3.73, "lng": -38.48 },
+        { "name": "Praia Grande (SP)", "countryIso": "BRA", "lat": -24.01, "lng": -46.41 }
+      ],
+      "segments": [
+        [[-80.08, 26.36], [-69.0, 19.5], [-54.0, 9.5], [-38.48, -3.73], [-33.5, -11.0], [-39.5, -21.0], [-46.41, -24.01]]
+      ]
+    },
+    {
+      "id": "marea",
+      "name": "MAREA",
+      "rfsYear": 2018,
+      "lengthKm": 6605,
+      "designCapacityTbps": 200,
+      "owners": "Microsoft, Meta, Telxius",
+      "basin": "atlantic",
+      "chokePoints": [],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/marea",
+      "landingPoints": [
+        { "name": "Virginia Beach, VA", "countryIso": "USA", "lat": 36.85, "lng": -75.98 },
+        { "name": "Sopelana (Bilbao)", "countryIso": "ESP", "lat": 43.38, "lng": -2.98 }
+      ],
+      "segments": [
+        [[-75.98, 36.85], [-58.0, 39.5], [-38.0, 42.0], [-18.0, 43.5], [-2.98, 43.38]]
+      ]
+    },
+    {
+      "id": "grace-hopper",
+      "name": "Grace Hopper",
+      "rfsYear": 2022,
+      "lengthKm": 6250,
+      "designCapacityTbps": 340,
+      "owners": "Google (Alphabet)",
+      "basin": "atlantic",
+      "chokePoints": ["cornwall-channel"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/grace-hopper",
+      "landingPoints": [
+        { "name": "Bellport, NY", "countryIso": "USA", "lat": 40.76, "lng": -72.94 },
+        { "name": "Bude (Cornwall)", "countryIso": "GBR", "lat": 50.83, "lng": -4.55 },
+        { "name": "Sopelana (Bilbao)", "countryIso": "ESP", "lat": 43.38, "lng": -2.98 }
+      ],
+      "segments": [
+        [[-72.94, 40.76], [-54.0, 44.5], [-32.0, 47.5], [-14.0, 48.5], [-4.55, 50.83]],
+        [[-14.0, 48.5], [-7.5, 45.8], [-2.98, 43.38]]
+      ]
+    },
+    {
+      "id": "amitie",
+      "name": "Amitié (AEC-3)",
+      "rfsYear": 2023,
+      "lengthKm": 6792,
+      "designCapacityTbps": 400,
+      "owners": "Meta, Microsoft, Aqua Comms, Orange, Vodafone",
+      "basin": "atlantic",
+      "chokePoints": ["cornwall-channel"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/amitie",
+      "landingPoints": [
+        { "name": "Lynn, MA", "countryIso": "USA", "lat": 42.47, "lng": -70.95 },
+        { "name": "Bude (Cornwall)", "countryIso": "GBR", "lat": 50.83, "lng": -4.55 },
+        { "name": "Le Porge (Bordeaux)", "countryIso": "FRA", "lat": 44.87, "lng": -1.22 }
+      ],
+      "segments": [
+        [[-70.95, 42.47], [-50.0, 46.5], [-28.0, 49.0], [-12.0, 49.2], [-4.55, 50.83]],
+        [[-12.0, 49.2], [-5.5, 46.5], [-1.22, 44.87]]
+      ]
+    },
+    {
+      "id": "equiano",
+      "name": "Equiano",
+      "rfsYear": 2023,
+      "lengthKm": 15000,
+      "designCapacityTbps": 144,
+      "owners": "Google (Alphabet)",
+      "basin": "atlantic",
+      "chokePoints": [],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/equiano",
+      "landingPoints": [
+        { "name": "Sesimbra (Lisboa)", "countryIso": "PRT", "lat": 38.44, "lng": -9.1 },
+        { "name": "Lagos", "countryIso": "NGA", "lat": 6.45, "lng": 3.39 },
+        { "name": "Swakopmund", "countryIso": "NAM", "lat": -22.68, "lng": 14.53 },
+        { "name": "Melkbosstrand (Cape Town)", "countryIso": "ZAF", "lat": -33.73, "lng": 18.44 }
+      ],
+      "segments": [
+        [[-9.1, 38.44], [-15.5, 28.0], [-19.0, 14.0], [-10.0, 3.0], [3.39, 6.45], [6.5, -6.0], [11.0, -16.0], [14.53, -22.68], [18.44, -33.73]]
+      ]
+    },
+    {
+      "id": "sea-me-we-6",
+      "name": "SEA-ME-WE 6",
+      "rfsYear": 2026,
+      "lengthKm": 19200,
+      "designCapacityTbps": 126,
+      "owners": "Singtel, Orange, Bharti Airtel, Telekom Malaysia, Telecom Egypt, Djibouti Telecom",
+      "basin": "indo-eurasian",
+      "chokePoints": ["suez-red-sea", "bab-el-mandeb", "malacca-singapore"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/sea-me-we-6",
+      "landingPoints": [
+        { "name": "Marseille", "countryIso": "FRA", "lat": 43.3, "lng": 5.37 },
+        { "name": "Port Said", "countryIso": "EGY", "lat": 31.26, "lng": 32.3 },
+        { "name": "Yanbu", "countryIso": "SAU", "lat": 24.09, "lng": 38.06 },
+        { "name": "Djibouti", "countryIso": "DJI", "lat": 11.59, "lng": 43.15 },
+        { "name": "Mumbai", "countryIso": "IND", "lat": 19.08, "lng": 72.88 },
+        { "name": "Tuas (Singapore)", "countryIso": "SGP", "lat": 1.32, "lng": 103.64 }
+      ],
+      "segments": [
+        [[5.37, 43.3], [14.0, 38.0], [25.0, 34.0], [32.3, 31.26], [35.0, 27.5], [38.06, 24.09], [41.5, 16.5], [43.15, 11.59], [54.0, 14.0], [72.88, 19.08], [79.5, 6.0], [95.0, 6.2], [100.5, 3.0], [103.64, 1.32]]
+      ]
+    },
+    {
+      "id": "peace",
+      "name": "PEACE Cable",
+      "rfsYear": 2022,
+      "lengthKm": 15000,
+      "designCapacityTbps": 192,
+      "owners": "PEACE Cable International, PCCW Global, Telecom Egypt",
+      "basin": "indo-eurasian",
+      "chokePoints": ["suez-red-sea", "bab-el-mandeb", "malacca-singapore"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/peace-cable",
+      "landingPoints": [
+        { "name": "Marseille", "countryIso": "FRA", "lat": 43.3, "lng": 5.37 },
+        { "name": "Abu Talat (Alexandria)", "countryIso": "EGY", "lat": 31.07, "lng": 29.7 },
+        { "name": "Djibouti", "countryIso": "DJI", "lat": 11.59, "lng": 43.15 },
+        { "name": "Karachi", "countryIso": "PAK", "lat": 24.86, "lng": 67.01 },
+        { "name": "Mombasa", "countryIso": "KEN", "lat": -4.04, "lng": 39.67 },
+        { "name": "Singapore", "countryIso": "SGP", "lat": 1.35, "lng": 103.82 }
+      ],
+      "segments": [
+        [[5.37, 43.3], [16.5, 36.5], [29.7, 31.07], [34.2, 27.5], [43.15, 11.59], [56.0, 17.5], [67.01, 24.86]],
+        [[43.15, 11.59], [49.5, 6.0], [39.67, -4.04]],
+        [[56.0, 17.5], [76.0, 6.5], [95.5, 5.8], [103.82, 1.35]]
+      ]
+    },
+    {
+      "id": "sjc2",
+      "name": "SJC2 (Southeast Asia–Japan 2)",
+      "rfsYear": 2024,
+      "lengthKm": 10500,
+      "designCapacityTbps": 144,
+      "owners": "Meta, KDDI, Singtel, China Mobile, SK Broadband, Chunghwa Telecom, VNPT",
+      "basin": "pacific",
+      "chokePoints": ["malacca-singapore", "luzon-strait"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/southeast-asia-japan-cable-2-sjc2",
+      "landingPoints": [
+        { "name": "Changi (Singapore)", "countryIso": "SGP", "lat": 1.38, "lng": 103.99 },
+        { "name": "Chung Hom Kok (Hong Kong)", "countryIso": "CHN", "lat": 22.21, "lng": 114.2 },
+        { "name": "Busan", "countryIso": "KOR", "lat": 35.18, "lng": 129.08 },
+        { "name": "Chikura", "countryIso": "JPN", "lat": 34.96, "lng": 139.95 }
+      ],
+      "segments": [
+        [[103.99, 1.38], [109.5, 11.0], [114.2, 22.21], [121.5, 20.4], [126.5, 28.5], [129.08, 35.18]],
+        [[126.5, 28.5], [134.5, 31.8], [139.95, 34.96]]
+      ]
+    },
+    {
+      "id": "faster",
+      "name": "FASTER",
+      "rfsYear": 2016,
+      "lengthKm": 11629,
+      "designCapacityTbps": 60,
+      "owners": "Google, KDDI, Singtel, China Mobile, China Telecom, Global Transit",
+      "basin": "pacific",
+      "chokePoints": ["luzon-strait"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/faster",
+      "landingPoints": [
+        { "name": "Chikura", "countryIso": "JPN", "lat": 34.96, "lng": 139.95 },
+        { "name": "Bandon, OR", "countryIso": "USA", "lat": 43.12, "lng": -124.41 }
+      ],
+      "segments": [
+        [[139.95, 34.96], [160.0, 41.0], [180.0, 44.5]],
+        [[-180.0, 44.5], [-152.0, 45.0], [-124.41, 43.12]]
+      ]
+    },
+    {
+      "id": "jupiter",
+      "name": "JUPITER",
+      "rfsYear": 2020,
+      "lengthKm": 14557,
+      "designCapacityTbps": 60,
+      "owners": "Amazon, Meta, SoftBank, NTT, PCCW Global, PLDT",
+      "basin": "pacific",
+      "chokePoints": ["luzon-strait"],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/jupiter",
+      "landingPoints": [
+        { "name": "Daet", "countryIso": "PHL", "lat": 14.11, "lng": 122.95 },
+        { "name": "Maruyama", "countryIso": "JPN", "lat": 35.04, "lng": 139.98 },
+        { "name": "Hermosa Beach, CA", "countryIso": "USA", "lat": 33.86, "lng": -118.4 }
+      ],
+      "segments": [
+        [[122.95, 14.11], [131.0, 23.0], [139.98, 35.04], [162.0, 38.0], [180.0, 39.0]],
+        [[-180.0, 39.0], [-150.0, 37.5], [-118.4, 33.86]]
+      ]
+    },
+    {
+      "id": "southern-cross-next",
+      "name": "Southern Cross NEXT",
+      "rfsYear": 2022,
+      "lengthKm": 15840,
+      "designCapacityTbps": 72,
+      "owners": "Southern Cross Cables (Spark NZ, Telstra, Verizon)",
+      "basin": "pacific",
+      "chokePoints": [],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/southern-cross-next",
+      "landingPoints": [
+        { "name": "Sydney", "countryIso": "AUS", "lat": -33.87, "lng": 151.21 },
+        { "name": "Auckland", "countryIso": "NZL", "lat": -36.85, "lng": 174.76 },
+        { "name": "Hermosa Beach, CA", "countryIso": "USA", "lat": 33.86, "lng": -118.4 }
+      ],
+      "segments": [
+        [[151.21, -33.87], [163.0, -35.0], [174.76, -36.85], [180.0, -26.0]],
+        [[-180.0, -26.0], [-160.0, -8.0], [-140.0, 12.0], [-118.4, 33.86]]
+      ]
+    },
+    {
+      "id": "curie",
+      "name": "Curie",
+      "rfsYear": 2019,
+      "lengthKm": 10476,
+      "designCapacityTbps": 72,
+      "owners": "Google (Alphabet)",
+      "basin": "pacific",
+      "chokePoints": [],
+      "officialUrl": "https://www.submarinecablemap.com/submarine-cable/curie",
+      "landingPoints": [
+        { "name": "Los Angeles, CA", "countryIso": "USA", "lat": 33.92, "lng": -118.43 },
+        { "name": "Balboa", "countryIso": "PAN", "lat": 8.95, "lng": -79.57 },
+        { "name": "Valparaíso", "countryIso": "CHL", "lat": -33.05, "lng": -71.62 }
+      ],
+      "segments": [
+        [[-118.43, 33.92], [-105.0, 20.0], [-88.0, 8.5], [-79.57, 8.95], [-82.5, -5.0], [-78.0, -18.0], [-71.62, -33.05]]
+      ]
+    }
+  ]
+}

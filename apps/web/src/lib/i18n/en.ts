@@ -5,6 +5,7 @@ import { EN_PANEL_STUDY_MESSAGES } from "./en-panels-study";
 import { EN_COUNTRY_META_MESSAGES } from "./en-country-meta";
 import { EN_TELLUSLAB_MESSAGES } from "./en-telluslab";
 import { EN_TRANSVERSAL_MESSAGES } from "./en-transversal";
+import { EN_INFRA_AQI_MESSAGES } from "./en-infra-aqi";
 
 /**
  * Dicionário inglês (`en`) carregado sob demanda (lazy import) apenas quando `locale === "en"`,
@@ -17,6 +18,7 @@ export const EN_MESSAGES = {
   ...EN_COUNTRY_META_MESSAGES,
   ...EN_TELLUSLAB_MESSAGES,
   ...EN_TRANSVERSAL_MESSAGES,
+  ...EN_INFRA_AQI_MESSAGES,
 } as const satisfies MessageDictionary;
 
 export type EnMessageKey = keyof typeof EN_MESSAGES;

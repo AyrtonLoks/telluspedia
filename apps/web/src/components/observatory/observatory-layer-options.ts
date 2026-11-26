@@ -4,6 +4,7 @@ import {
   Anchor,
   Flame,
   Leaf,
+  Network,
   PawPrint,
   Plane,
   Radio,
@@ -214,5 +215,29 @@ export const LAYER_OPTIONS: readonly LayerOption[] = [
     icon: PawPrint,
     tone: "accent",
     badgeText: (_s, _locale, t) => t("obs.species.badgeSummary", "28 espécies · IUCN + GBIF"),
+  },
+  {
+    id: "SUBMARINE_CABLES",
+    name: "Cabos Submarinos de Internet",
+    source: "TeleGeography (CC BY-SA 4.0)",
+    description:
+      "Sistemas troncais transoceânicos de fibra óptica, estações de aterramento e gargalos geopolíticos estratégicos.",
+    icon: Network,
+    tone: "accent",
+    badgeText: (_s, _locale, t) => t("obs.cables.badgeSummary", "15 sistemas · 6 gargalos"),
+  },
+  {
+    id: "AIR_QUALITY",
+    name: "Qualidade do Ar (PM2.5 & AQI)",
+    source: "Open-Meteo Air Quality (CAMS)",
+    description:
+      "Material particulado fino (PM2.5/PM10), US AQI (EPA) e European AQI (EEA) em estações capitais globais.",
+    icon: Wind,
+    tone: "success",
+    badgeText: (s, locale, t) => {
+      const count = s.airQualityStations?.totalCount ?? 28;
+      const scale = s.aqiScaleMode === "european_aqi" ? "EAQI" : "US AQI";
+      return `${formatNumber(count, locale)} ${t("obs.aqi.stationsShort", "estações")} · ${scale}`;
+    },
   },
 ];

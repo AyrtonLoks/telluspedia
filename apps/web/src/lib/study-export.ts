@@ -87,6 +87,12 @@ export function collectStudyPrimarySources(study: StudyRecord): PrimarySourceEnt
     add("USGS Earthquake Hazards Program (ANSS ComCat GeoJSON)", "https://earthquake.usgs.gov/");
     add("Peter Bird (2003) PB2002 — Limites de Placas Tectônicas", "https://peterbird.name/oldFTP/PB2002/");
   }
+  if (study.activeObservatoryLayers?.includes("SUBMARINE_CABLES")) {
+    add("TeleGeography — Submarine Cable Map (CC BY-SA 4.0)", "https://www.submarinecablemap.com/");
+  }
+  if (study.activeObservatoryLayers?.includes("AIR_QUALITY")) {
+    add("Open-Meteo Air Quality API (Copernicus CAMS)", "https://open-meteo.com/en/docs/air-quality-api");
+  }
 
   return Array.from(byKey.values());
 }

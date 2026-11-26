@@ -7,6 +7,8 @@ import { geoPath, type GeoPermissibleObjects, type GeoProjection } from "d3-geo"
 import { vesselIsMoving } from "@/lib/ais-data";
 import type { MapProjectionId } from "@/lib/map-projections-types";
 import { PLATE_BOUNDARY_COLORS_HEX, SEISMIC_DEPTH_COLORS_HEX } from "@/lib/seismic-data";
+import { AQI_BAND_COLORS_HEX } from "@/lib/air-quality-data";
+import { CABLE_BASIN_COLORS_HEX } from "@/lib/submarine-cables-data";
 import { IUCN_STATUS_META } from "@/lib/species-catalog";
 import {
   drawInpeDeforestation2d,
@@ -134,6 +136,87 @@ export function renderObservatory2dLayers(
         y: pt[1],
         radius: Math.max(9, radius + 4),
         entity: { type: "EARTHQUAKE", data: ev, meta: state.layerMeta.USGS_EARTHQUAKES },
+      });
+    }
+    ctx.restore();
+  }
+
+  // Cabos Submarinos de Internet (TeleGeography — D40)
+  if (active.has("SUBMARINE_CABLES")) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0.25, state.layerOpacity.SUBMARINE_CABLES ?? 0.9);
+    for (const cable of state.submarineCables ?? []) {
+      const color = CABLE_BASIN_COLORS_HEX[cable.basin] ?? "#38bdf8";
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.45;
+      for (const seg of cable.segments) {
+        drawSplitGeodesicLine(
+          ctx,
+          seg.map(([lng, lat]) => ({ lat, lng })),
+          projection,
+          projectionId,
+          width,
+          height
+        );
+      }
+      for (const lp of cable.landingPoints) {
+        const pt = projectPointSafe(projection, projectionId, lp.lng, lp.lat, width, height);
+        if (!pt) continue;
+        ctx.beginPath();
+        ctx.arc(pt[0], pt[1], 3.1, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        hits.push({
+          kind: "ENTITY",
+          x: pt[0],
+          y: pt[1],
+          radius: 9,
+          entity: { type: "SUBMARINE_CABLE", data: cable, landingName: lp.name },
+        });
+      }
+    }
+    for (const cp of state.cableChokePoints ?? []) {
+      const pt = projectPointSafe(projection, projectionId, cp.lng, cp.lat, width, height);
+      if (!pt) continue;
+      ctx.beginPath();
+      ctx.arc(pt[0], pt[1], 7.5, 0, Math.PI * 2);
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      hits.push({
+        kind: "ENTITY",
+        x: pt[0],
+        y: pt[1],
+        radius: 11,
+        entity: { type: "CABLE_CHOKE_POINT", data: cp },
+      });
+    }
+    ctx.restore();
+  }
+
+  // Qualidade do Ar — PM2.5 & AQI (Open-Meteo CAMS — D40)
+  if (active.has("AIR_QUALITY")) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0.25, state.layerOpacity.AIR_QUALITY ?? 0.95);
+    const scale = state.aqiScaleMode ?? "us_aqi";
+    for (const st of state.airQualityStations ?? []) {
+      const pt = projectPointSafe(projection, projectionId, st.lng, st.lat, width, height);
+      if (!pt) continue;
+      const band = scale === "european_aqi" ? st.bandEu : st.bandUs;
+      const color = AQI_BAND_COLORS_HEX[band] ?? "#22c55e";
+      ctx.beginPath();
+      ctx.arc(pt[0], pt[1], 5.2, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = "#0b1120";
+      ctx.lineWidth = 1.0;
+      ctx.stroke();
+      hits.push({
+        kind: "ENTITY",
+        x: pt[0],
+        y: pt[1],
+        radius: 10,
+        entity: { type: "AIR_QUALITY_STATION", data: st, meta: state.layerMeta.AIR_QUALITY },
       });
     }
     ctx.restore();

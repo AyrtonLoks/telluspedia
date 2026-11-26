@@ -32,6 +32,8 @@ import type {
 import type { ObservatoryMeta } from "@/lib/observatory-source";
 import type { SpeciesCatalogEntry, SpeciesOccurrencePoint } from "@/lib/species-types";
 import type { SeismicEvent, TectonicPlatesCollection } from "@/lib/seismic-types";
+import type { AirQualityStation, AqiScaleMode } from "@/lib/air-quality-types";
+import type { CableChokePoint, SubmarineCableSystem } from "@/lib/submarine-cables-types";
 import type { FlowMode, OceanCurrentGrid, WindAltitude, WindFieldPayload } from "@/lib/winds-types";
 
 export interface GibsImagePixels {
@@ -72,6 +74,10 @@ export interface Observatory2dRenderState {
   seismicEvents?: readonly SeismicEvent[];
   showTectonicPlates?: boolean;
   tectonicPlates?: TectonicPlatesCollection | null;
+  submarineCables?: readonly SubmarineCableSystem[];
+  cableChokePoints?: readonly CableChokePoint[];
+  airQualityStations?: readonly AirQualityStation[];
+  aqiScaleMode?: AqiScaleMode;
 }
 
 export type Observatory2dHitTarget =

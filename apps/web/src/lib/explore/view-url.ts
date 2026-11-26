@@ -13,6 +13,13 @@ import {
   encodeSeismicView,
   readSeismicView,
 } from "@/lib/seismic-types";
+import { DEFAULT_AQI_SCALE_MODE, isAqiScaleMode } from "@/lib/air-quality-types";
+import {
+  DEFAULT_CABLE_BASIN_FILTER,
+  DEFAULT_SHOW_CABLE_CHOKE_POINTS,
+  encodeCablesView,
+  readCablesView,
+} from "@/lib/submarine-cables-types";
 import { DEFAULT_MAP_PROJECTION, readMapView } from "@/lib/map-projections-types";
 import {
   CHOROPLETH_MAX_YEAR,
@@ -51,10 +58,12 @@ const layerIds: readonly ObservatoryLayer[] = [
   "BIOMES_MAP",
   "SPECIES_MAP",
   "USGS_EARTHQUAKES",
+  "SUBMARINE_CABLES",
+  "AIR_QUALITY",
 ];
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
-  "camadas", "gibs", "bioma", "sismos", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
+  "camadas", "gibs", "bioma", "sismos", "cabos", "aqi", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
   "mapa", "proj", "coropletico", "coropleticoAno", "lente", "trilha",
 ];
 
@@ -117,6 +126,15 @@ export function encodeView(view: ViewCamera) {
         observatory.showTectonicPlates
       )
     );
+  }
+  if (observatory.activeLayers.includes("SUBMARINE_CABLES")) {
+    params.set(
+      "cabos",
+      encodeCablesView(observatory.cableBasinFilter, observatory.showCableChokePoints)
+    );
+  }
+  if (observatory.activeLayers.includes("AIR_QUALITY") && observatory.aqiScaleMode !== DEFAULT_AQI_SCALE_MODE) {
+    params.set("aqi", observatory.aqiScaleMode);
   }
   if (observatory.isPanelOpen) params.set("observatorio", "1");
   const choropleth = useChoroplethStore.getState();
@@ -202,6 +220,11 @@ export function restoreView(search: string, view: ViewCamera) {
     minMagnitude: seismicView?.minMagnitude ?? DEFAULT_SEISMIC_MIN_MAGNITUDE,
   });
   observatory.setShowTectonicPlates(seismicView?.showPlates ?? DEFAULT_SHOW_TECTONIC_PLATES);
+  const cablesView = readCablesView(params.get("cabos"));
+  observatory.setCableBasinFilter(cablesView?.basin ?? DEFAULT_CABLE_BASIN_FILTER);
+  observatory.setShowCableChokePoints(cablesView?.showChokePoints ?? DEFAULT_SHOW_CABLE_CHOKE_POINTS);
+  const aqiParam = params.get("aqi");
+  observatory.setAqiScaleMode(isAqiScaleMode(aqiParam) ? aqiParam : DEFAULT_AQI_SCALE_MODE);
   if (layers.length !== observatory.activeLayers.length || layers.some((id) => !observatory.activeLayers.includes(id))) {
     observatory.setAllLayers(layers);
   }

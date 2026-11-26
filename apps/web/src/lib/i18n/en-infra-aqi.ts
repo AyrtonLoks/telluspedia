@@ -1,0 +1,45 @@
+import type { MessageDictionary } from "./types";
+
+export const EN_INFRA_AQI_MESSAGES = {
+  "obs.layer.SUBMARINE_CABLES.name": "Submarine Internet Cables",
+  "obs.layer.SUBMARINE_CABLES.desc": "Transoceanic fiber-optic backbone systems, coastal landing stations, and strategic geopolitical choke points.",
+  "obs.layer.AIR_QUALITY.name": "Air Quality (PM2.5 & AQI)",
+  "obs.layer.AIR_QUALITY.desc": "Particulate matter (PM2.5/PM10), US AQI (EPA), and European AQI (EEA) across global capital stations via Open-Meteo CAMS.",
+
+  "obs.cables.badgeSummary": "15 systems · 6 choke points",
+  "obs.cables.basinHeading": "Ocean basin",
+  "obs.cables.basin.all": "All",
+  "obs.cables.basin.atlantic": "Atlantic",
+  "obs.cables.basin.pacific": "Pacific",
+  "obs.cables.basin.indoEurasian": "Indo-Eurasian",
+  "obs.cables.basin.afroEurasian": "Afro-Eurasian",
+  "obs.cables.chokeToggle": "Strategic geopolitical choke points",
+  "obs.cables.chokeShortcuts": "Inspect strategic choke point:",
+
+  "obs.aqi.stationsShort": "stations",
+  "obs.aqi.scaleHeading": "Regulatory index scale",
+  "aqi.band.good": "Good",
+  "aqi.band.moderate": "Moderate",
+  "aqi.band.sensitive": "Sensitive",
+  "aqi.band.unhealthy": "Unhealthy",
+  "aqi.band.veryUnhealthy": "Very Unhealthy",
+  "aqi.band.hazardous": "Hazardous",
+
+  "telemetry.type.SUBMARINE_CABLE": "Submarine Cable (TeleGeography)",
+  "telemetry.type.CABLE_CHOKE_POINT": "Submarine Choke Point",
+  "telemetry.type.AIR_QUALITY_STATION": "Air Quality Bulletin (Open-Meteo)",
+  "telemetry.cable.landingSelected": "Selected landing station",
+  "telemetry.cable.capacity": "Design capacity",
+  "telemetry.cable.length": "Subsea length",
+  "telemetry.cable.owners": "Consortium / Operators",
+  "telemetry.cable.landings": "Landing stations",
+  "telemetry.cable.focus": "Focus cable system",
+  "telemetry.cable.systemsCount": "subsea systems",
+  "telemetry.cable.focusChoke": "Focus strategic choke point",
+  "telemetry.aqi.whoGuideline": "WHO 24-hour PM2.5 guideline: ≤ 15 µg/m³. Atmospheric data: Open-Meteo Air Quality API (CAMS).",
+  "telemetry.aqi.focusStation": "Focus station",
+
+  "weather.airQualityLabel": "Air quality",
+  "weather.airQualityUnavailable": "Air quality unavailable",
+  "weather.airQualitySource": "Open-Meteo Air Quality",
+} as const satisfies MessageDictionary;

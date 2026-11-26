@@ -4,7 +4,7 @@ import {
   readStoredQualityPreset,
   writeStoredQualityPreset,
   type GraphicsQualityPreset,
-} from "@/lib/webgl-quality";
+} from "@/lib/webgl-quality-storage";
 
 interface GraphicsQualityState {
   preset: GraphicsQualityPreset;

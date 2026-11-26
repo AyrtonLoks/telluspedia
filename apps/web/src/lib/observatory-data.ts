@@ -1,6 +1,8 @@
 import type { AisVessel, VesselGroup } from "./ais-data";
+import type { AirQualityStation } from "./air-quality-types";
 import type { ObservatoryMeta } from "./observatory-source";
 import type { SeismicEvent } from "./seismic-types";
+import type { CableChokePoint, SubmarineCableSystem } from "./submarine-cables-types";
 
 /** Camadas que a busca ⌘K, a URL compartilhável e os estudos conhecem. */
 export type ObservatoryLayerId =
@@ -22,7 +24,9 @@ export type ObservatoryLayer =
   | "INPE_DEFORESTATION"
   | "BIOMES_MAP"
   | "SPECIES_MAP"
-  | "USGS_EARTHQUAKES";
+  | "USGS_EARTHQUAKES"
+  | "SUBMARINE_CABLES"
+  | "AIR_QUALITY";
 
 export interface FirmsHotspot {
   id: string;
@@ -176,7 +180,10 @@ export type ObservatoryEntity =
   | { type: "MARITIME"; data: MaritimeRoute }
   | { type: "VESSEL"; data: AisVessel; meta: ObservatoryMeta; group?: VesselGroup }
   | { type: "VESSEL_GROUP"; data: VesselGroup; meta: ObservatoryMeta }
-  | { type: "EARTHQUAKE"; data: SeismicEvent; meta: ObservatoryMeta };
+  | { type: "EARTHQUAKE"; data: SeismicEvent; meta: ObservatoryMeta }
+  | { type: "SUBMARINE_CABLE"; data: SubmarineCableSystem; landingName?: string }
+  | { type: "CABLE_CHOKE_POINT"; data: CableChokePoint }
+  | { type: "AIR_QUALITY_STATION"; data: AirQualityStation; meta: ObservatoryMeta };
 
 
 /**
