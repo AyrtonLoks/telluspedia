@@ -6,6 +6,7 @@ import { encodeView, mergeView, restoreView } from "@/lib/explore/view-url";
 import type { ViewCamera } from "@/lib/explore/view-camera";
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
+import { useTransversalStore } from "@/stores/transversalStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -81,6 +82,11 @@ export function ExplorerUrlSync({ view, immutable }: { view: ViewCamera; immutab
       }),
       useCriticalGeoStore.subscribe((state, previous) => {
         if (state.activeLens !== previous.activeLens) {
+          sync();
+        }
+      }),
+      useTransversalStore.subscribe((state, previous) => {
+        if (state.activeEntityId !== previous.activeEntityId) {
           sync();
         }
       }),

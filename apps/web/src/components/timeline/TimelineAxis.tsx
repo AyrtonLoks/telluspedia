@@ -1,10 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { MilestonePin } from "./MilestonePin";
 import { MilestoneCluster } from "./MilestoneCluster";
-import { GeologicalTimelineAxis } from "./GeologicalTimelineAxis";
+
+const GeologicalTimelineAxis = dynamic(
+  () => import("./GeologicalTimelineAxis").then((m) => m.GeologicalTimelineAxis),
+  { ssr: false }
+);
 import {
   adaptiveTicks,
   clusterPins,
@@ -19,6 +24,7 @@ import {
 } from "@/lib/timeline/axis";
 import { GLOBAL_MILESTONES, findMilestoneById, getCountryMilestones, type MilestoneItem } from "@/lib/milestones";
 import { useGlobeStore } from "@/stores/globeStore";
+import { useTransversalStore } from "@/stores/transversalStore";
 import { cn } from "@/components/ui/cn";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 
@@ -29,8 +35,12 @@ export const TimelineAxis: React.FC = () => {
   const selectMilestone = useTimelineStore((s) => s.selectMilestone);
   const storeSelectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
   const storeSelectedIso = useGlobeStore((s) => s.selectedIso);
+  const storeActiveTransversal = useTransversalStore((s) => s.activeEntity);
 
   const isServer = typeof window === "undefined";
+  const activeTransversal = isServer
+    ? useTransversalStore.getState().activeEntity
+    : storeActiveTransversal;
   const startYear = isServer ? useTimelineStore.getState().startYear : storeStartYear;
   const endYear = isServer ? useTimelineStore.getState().endYear : storeEndYear;
   const activeCategories = isServer
@@ -46,11 +56,13 @@ export const TimelineAxis: React.FC = () => {
 
   const isGeological = epoch.mode === "GEOLOGICAL";
 
-  // Aggregate Milestones (Global + Selected Country if any)
+  // Aggregate Milestones (Transversal lens when active; otherwise Global + Selected Country)
   const milestones = useMemo(() => {
-    const all: MilestoneItem[] = [...GLOBAL_MILESTONES];
+    const all: MilestoneItem[] = activeTransversal
+      ? [...activeTransversal.milestones]
+      : [...GLOBAL_MILESTONES];
 
-    if (selectedIso) {
+    if (!activeTransversal && selectedIso) {
       for (const cm of getCountryMilestones(selectedIso)) {
         if (!all.some((m) => m.id === cm.id)) {
           all.push({
@@ -74,7 +86,7 @@ export const TimelineAxis: React.FC = () => {
 
     // Sort chronologically
     return filtered.sort((a, b) => a.year - b.year);
-  }, [startYear, endYear, activeCategories, selectedIso, selectedMilestoneId]);
+  }, [startYear, endYear, activeCategories, selectedIso, selectedMilestoneId, activeTransversal]);
 
   const handleAxisBackgroundClick = () => {
     selectMilestone(null);

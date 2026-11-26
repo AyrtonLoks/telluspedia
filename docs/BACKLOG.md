@@ -250,7 +250,7 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D35 | Expansão dos Perfis Editoriais dos Países (`RN13`): narrativas multidisciplinares auditadas (`pt-BR`/`en`) para G20 + Lusofonia + América Latina | Conteúdo | P1 | G | DONE | ayrton | — | G-PAIS, G-CONTEUDO |
 | D36 | Geografia Crítica & Legado de Milton Santos: dossiê/figura, lentes espaciais (Meio Técnico-Científico-Informacional, Verticalidades, 4 Brasis) | Conteúdo/UX | P1 | G | DONE | ayrton | — | G-CONTEUDO, G-PAIS, G-FRONTEIRAS, G-TIMELINE, G-SHELL |
 | D37 | Ferramentas de Estúdio: régua geodésica 3D no globo, exportação CSV/PNG no Comparador e pinos anotados `(lat, lng)` em Estudos | Produto/UX | P1 | G | DONE | ayrton | — | G-GLOBO, G-PAIS, G-ESTUDOS, G-SHELL |
-| D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | IN_PROGRESS | antigravity | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL |
+| D38 | Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05) | Produto/Dados | P2 | G | REVIEW | antigravity | — | G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL |
 | D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | DONE | ayrton | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | TODO | — | — | G-OBS, G-GLOBO, G-ESTUDOS |
 | D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | TODO | — | — | G-COSMOS, G-GLOBO, G-EPOCA |
@@ -2834,7 +2834,7 @@ Pesquisadores, professores e estudantes conseguem comparar indicadores e salvar 
 
 ### D38 · Linha do Tempo Transversal de Personalidade ou Tema (`RN14`/`RN04`) + Atualidades geopolíticas por país via GDELT (`RN13.8`, T05)
 
-- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d38-transversal-gdelt · **Worktree:** ../telluspedia-wt/antigravity-d38
+- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** task/d38-transversal-gdelt · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Produto/Dados · **Tamanho:** G · **Depende de:** — · **Grupos:** G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL
 
 **Contexto / problema**
@@ -2845,14 +2845,15 @@ Dois requisitos explícitos do `DISCOVERY.md` ainda não têm implementação co
 2. **Atualidades por País via GDELT (`RN13.8`)**: criar proxy server-side `/api/countries/[iso]/news` consultando a **GDELT 2.0 Doc API** (gratuita, sem chave, cache SWR 30 min, contrato `T05`), exibindo manchetes recentes auditadas com fonte e data no painel/Reader do país, com degradação limpa caso o provedor fique indisponível.
 
 **Critérios de aceite**
-- [ ] Personalidades e temas transversais acionam destaque multipaís no globo, timeline filtrada e trilha de estudo (`breadcrumbs`) em `pt-BR` e `en`.
-- [ ] Feed GDELT respeita contrato `T05`, rate-limit (`T43`), sanitização estrita de URLs externas e nunca bloqueia o carregamento do país.
+- [x] Personalidades e temas transversais acionam destaque multipaís no globo, timeline filtrada e trilha de estudo (`breadcrumbs`) em `pt-BR` e `en`.
+- [x] Feed GDELT respeita contrato `T05`, rate-limit (`T43`), sanitização estrita de URLs externas e nunca bloqueia o carregamento do país.
 
 **Como verificar**: `pnpm typecheck && pnpm lint && pnpm test && pnpm build`.
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (resgate `RN04`/`RN13.8`/`RN14`, aprovada pelo Ayrton).
 - 2026-11-26 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`4e6f330`) com grupos livres (`G-TIMELINE, G-PAIS, G-CONTEUDO, G-OBS, G-FRONTEIRAS, G-SHELL`).
+- 2026-11-26 · antigravity · REVIEW · Implementadas a Visão Transversal de Personalidades/Temas com Trilha de Estudo (`RN14`/`RN04`) e as Atualidades Geopolíticas por País via GDELT 2.0 (`RN13.8`, 100% D14 bilíngue `pt-BR`/`en`): (1) **Visão Transversal & Trilha RN04** (`transversal-types.ts`, `transversal-meta.ts`, `transversal-catalog.ts`, `transversal-catalog-personalities.ts`, `transversal-catalog-themes.ts`, `transversal-milestone-registry.ts`, `transversalStore.ts`, `TransversalHud.tsx`, `StudyTrailBar.tsx`, `CountryTransversalSection.tsx`) cobrindo 5 personalidades (Milton Santos, Albert Einstein, Isaac Newton, Dom Pedro II, Luís de Camões) e 4 temas transnacionais (Corrida Espacial, Descolonização Afro-Asiática, Pandemias & Saúde Global, Revoluções Científicas & Computação), acionando destaque simultâneo multipaís no globo 3D (`CountryBorders.tsx`) e no Mapa 2D (`useFlatMapData.ts`), filtragem dedicada na `TimelineAxis.tsx`, botão `Transversal` na `TimelineBar.tsx`, breadcrumbs interativos de trilha de estudo (`RN04` integrado também ao `HoverCardPreview.tsx`), serialização em URL (`?trilha=`) e busca `⌘K` (`search.ts`); (2) **Atualidades via GDELT 2.0 Doc API** (`GET /api/countries/[iso]/news`, `gdelt-types.ts`, `gdelt-data.ts`, `gdelt-source.ts`, bucket `country:news` 90 req/min em `rate-limit.ts`) com cache SWR de 30 min, contrato `T05` (`live`/`cache`/`stale`/`fallback` honesto sem manchetes fabricadas — `T03`), sanitização estrita de URLs HTTPS públicas (rejeitando `javascript:`, `data:`, `http:`, credenciais, `localhost` e IPs literais), renderizada sem bloquear o país no `InspectorHUD.tsx` (`CountryNewsSection.tsx` + extração de `InspectorSourcesFooter.tsx`, suprimida em eras pré-1957 por `RN09`) e na dimensão `NEWS_CURRENT_AFFAIRS` do `ReaderMode` (`CountryNewsReaderView.tsx` com gerador de citações). Antes: timeline sem recorte transversal multipaís/breadcrumbs e dimensão `NEWS_CURRENT_AFFAIRS` vazia na maioria dos países. Depois: HUD transversal D14 à esquerda com chips multipaís iluminados simultaneamente no globo, trilha de breadcrumbs clicável e seção GDELT 2.0 com selo T05 no painel do país e no Reader. Validado: `typecheck` (0 erros), `lint` (0 erros), `build` (`/` mantido em **163 kB**, `< 160 KiB` gzip em `bundle-budget.test.ts` 6/6 após lazy-load de `GeologicalTimelineAxis` e isolamento de `transversal-meta.ts`/`emptyAisCorridorCounts`), `texture-budget.test.ts` (3/3, todos os arquivos ≤ 520 linhas), `design-system.test.tsx`, `tw-merge-table.test.ts`, `transversal-gdelt-d38.test.tsx` (5/5), suíte completa `pnpm test` (`889/890`, 0 falhas) e Playwright Chromium WebGL E2E (`transversal-gdelt.spec.ts` 1/1, 0 erros de console).
 
 ---
 

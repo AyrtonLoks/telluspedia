@@ -146,6 +146,24 @@ export function getSourceUrl(source?: string, indicatorCode?: string): string {
   if (s.includes("nara") || s.includes("national archives")) {
     return "https://www.archives.gov/";
   }
+  if (s.includes("gdelt")) {
+    return "https://www.gdeltproject.org/";
+  }
+  if (s.includes("royal society")) {
+    return "https://royalsociety.org/";
+  }
+  if (s.includes("einstein")) {
+    return "https://einsteinpapers.press.princeton.edu/";
+  }
+  if (s.includes("torre do tombo")) {
+    return "https://antt.dglab.gov.pt/";
+  }
+  if (s.includes("biblioteca nacional")) {
+    return "https://www.gov.br/bn/";
+  }
+  if (s.includes("ieb") || s.includes("usp")) {
+    return "https://www.ieb.usp.br/";
+  }
   if (s.includes("onu") || s.includes("un ") || s.includes("united nations") || s.includes("dppa")) {
     return "https://data.un.org/";
   }

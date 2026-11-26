@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import React, { useEffect, useRef } from "react";
-import { ChevronUp, ChevronDown, Clock, Play, Pause, FastForward } from "lucide-react";
+import { ChevronUp, ChevronDown, Clock, Play, Pause, FastForward, GitBranch } from "lucide-react";
 
 const StudyContext = dynamic(
   () => import("@/components/tellus-bridge/StudyContext").then((m) => m.StudyContext),
@@ -11,6 +11,7 @@ const StudyContext = dynamic(
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { useTransversalStore } from "@/stores/transversalStore";
 import { PresetSelector } from "./PresetSelector";
 import { CategoryFilterPills } from "./CategoryFilterPills";
 import { TimelineAxis } from "./TimelineAxis";
@@ -27,7 +28,11 @@ import { useI18n } from "@/lib/i18n/useT";
 const YEAR_INPUT = "w-16 rounded-control border border-line bg-surface-sunken px-1.5 py-1 text-center font-mono text-label tabular-nums text-fg";
 
 export const TimelineBar: React.FC = () => {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
+  const activeTransversal = useTransversalStore((s) => s.activeEntity);
+  const activeTransversalId = useTransversalStore((s) => s.activeEntityId);
+  const isTransversalSelectorOpen = useTransversalStore((s) => s.isSelectorOpen);
+  const toggleTransversalSelector = useTransversalStore((s) => s.toggleSelector);
   const { expanded: isExpanded, automatic } = useTimelineExpanded();
   const setExpanded = useTimelineStore((s) => s.setExpanded);
   const footer = useRef<HTMLElement>(null);
@@ -142,6 +147,29 @@ export const TimelineBar: React.FC = () => {
             <Clock aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span className="hidden whitespace-nowrap md:inline">{t("timeline.title", "Linha do Tempo")}</span>
           </div>
+
+          <button
+            type="button"
+            data-testid="timeline-transversal-button"
+            aria-label={t("transversal.buttonAria", "Abrir linha do tempo transversal de personalidade ou tema")}
+            aria-pressed={activeTransversalId !== null || isTransversalSelectorOpen}
+            onClick={toggleTransversalSelector}
+            className={cn(
+              "inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-control border px-2.5 text-caption font-medium transition-colors duration-fast ease-out",
+              activeTransversalId !== null || isTransversalSelectorOpen
+                ? "border-accent/50 bg-accent/15 text-accent"
+                : "border-line bg-surface-raised text-fg-secondary hover:bg-surface-hover hover:text-fg"
+            )}
+          >
+            <GitBranch aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+            <span>
+              {activeTransversal
+                ? locale === "en"
+                  ? activeTransversal.shortLabelEn
+                  : activeTransversal.shortLabelPt
+                : t("transversal.buttonLabel", "Transversal")}
+            </span>
+          </button>
 
           <PresetSelector />
         </div>

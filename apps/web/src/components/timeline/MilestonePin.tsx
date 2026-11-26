@@ -12,6 +12,8 @@ import { useSceneStore } from "@/stores/sceneStore";
 import { sceneOpenedBy } from "@/lib/scenes/catalog";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useReaderStore } from "@/stores/readerStore";
+import { useTransversalStore } from "@/stores/transversalStore";
+import { getRegisteredTransversalMilestone } from "@/lib/transversal-milestone-registry";
 import { getSourceUrl } from "@/lib/source-urls";
 import {
   preloadCitationModal,
@@ -65,8 +67,11 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
   percent,
 }) => {
   const { locale, t, tRaw } = useI18n();
-  const displayTitle = tRaw(`event.${id}`, title);
-  const displaySummary = tRaw(`event.${id}.summary`, summary);
+  const registeredTrv = getRegisteredTransversalMilestone(id);
+  const displayTitle =
+    locale === "en" && registeredTrv ? registeredTrv.titleEn : tRaw(`event.${id}`, title);
+  const displaySummary =
+    locale === "en" && registeredTrv ? registeredTrv.summaryEn : tRaw(`event.${id}.summary`, summary);
   const pinRef = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
@@ -107,7 +112,14 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
       // dispara ao soltar o botão depois de girar o globo, e não pode desmarcar nada (D24).
       if (target.closest("canvas")) return;
       // Do not dismiss when interacting with HUD, timeline bar or the scene player the pin opened (D24)
-      if (target.closest("[data-inspector-hud]") || target.closest("[data-timeline-bar]") || target.closest("[data-scene-player-overlay]")) return;
+      if (
+        target.closest("[data-inspector-hud]") ||
+        target.closest("[data-timeline-bar]") ||
+        target.closest("[data-scene-player-overlay]") ||
+        target.closest("[data-testid='transversal-active-hud']")
+      ) {
+        return;
+      }
       selectMilestone(null);
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -119,6 +131,23 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
     };
   }, [isSelected, selectMilestone]);
 
+  const recordTrailIfTransversal = () => {
+    const trv = useTransversalStore.getState();
+    if (trv.activeEntityId || (blocIsos && blocIsos.length > 0)) {
+      trv.pushTrailStep({
+        key: `milestone:${id}`,
+        kind: "milestone",
+        id,
+        labelPt: title,
+        labelEn: registeredTrv?.titleEn ?? tRaw(`event.${id}`, title),
+        year,
+        lat: latitude,
+        lng: longitude,
+        altitude: preferredAltitude ?? 1.8,
+      });
+    }
+  };
+
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Toggle: clicking an already selected pin deselects it
@@ -127,6 +156,7 @@ export const MilestonePin: React.FC<MilestonePinProps> = ({
     } else {
       selectMilestone(id);
       selectYear(year);
+      recordTrailIfTransversal();
       if (latitude !== undefined && longitude !== undefined) {
         flyTo(latitude, longitude, preferredAltitude ?? 1.8);
       }

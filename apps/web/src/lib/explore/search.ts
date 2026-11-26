@@ -16,6 +16,9 @@ import {
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { isCriticalGeoLensId } from "@/lib/critical-geo-ids";
 import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
+import { TRANSVERSAL_ENTITIES_META } from "@/lib/transversal-meta";
+import { isTransversalEntityId } from "@/lib/transversal-types";
+import { useTransversalStore } from "@/stores/transversalStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { ALL_COSMIC_LAYERS, COSMIC_LAYER_LABELS, useCosmicStore, type CosmicLayerId } from "@/stores/cosmicStore";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -170,6 +173,13 @@ const entries: SearchResult[] = [
   },
   { id: "map:2d", group: "command", title: "Alternar para Mapa 2D (Projeções)", detail: "2D", keywords: "mapa plano 2d projecao cartografica equal earth mercator robinson azimutal" },
   { id: "map:3d", group: "command", title: "Alternar para Globo 3D", detail: "3D", keywords: "globo 3d esfera planeta" },
+  ...TRANSVERSAL_ENTITIES_META.map((item) => ({
+    id: `transversal:${item.id}`,
+    group: "command" as const,
+    title: `Linha Transversal: ${item.titlePt}`,
+    detail: item.spanLabel,
+    keywords: `transversal personalidade tema trilha biografia ${item.titleEn} ${item.countryIsos.join(" ")} ${item.id}`,
+  })),
   ...MAP_PROJECTION_IDS.map((id) => ({
     id: `proj:${id}`,
     group: "command" as const,
@@ -380,6 +390,9 @@ export function runSearchResult(result: SearchResult) {
         showEarth();
         globe.setProjectionId(value);
         globe.setViewMode("2d");
+      } else if (result.id.startsWith("transversal:") && isTransversalEntityId(value)) {
+        showEarth();
+        void useTransversalStore.getState().activateEntity(value);
       } else if (result.id.startsWith("lens:") && isCriticalGeoLensId(value)) {
         if (!getEpochState().isContemporary) restoreContemporaryTimeline();
         showEarth();

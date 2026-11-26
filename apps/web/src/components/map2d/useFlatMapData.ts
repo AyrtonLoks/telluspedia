@@ -52,6 +52,8 @@ import { useComparatorStore } from "@/stores/comparatorStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useTimelineStore } from "@/stores/timelineStore";
+import { useTransversalStore } from "@/stores/transversalStore";
+import { TRANSVERSAL_META_BY_ID } from "@/lib/transversal-meta";
 
 function addHighlight(
   isos: Set<string>,
@@ -86,6 +88,7 @@ export function useFlatMapData(
   const isComparatorOpen = useComparatorStore((s) => s.isOpen);
   const comparatorIsos = useComparatorStore((s) => s.selectedIsos);
   const selectedMilestoneId = useTimelineStore((s) => s.selectedMilestoneId);
+  const activeTransversalId = useTransversalStore((s) => s.activeEntityId);
 
   const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
   const choroplethYear = useChoroplethStore((s) => s.year);
@@ -293,12 +296,17 @@ export function useFlatMapData(
     if (isComparatorOpen) {
       for (const iso of comparatorIsos) addHighlight(isos, iso, effectiveYear);
     }
+    if (activeTransversalId) {
+      for (const iso of TRANSVERSAL_META_BY_ID[activeTransversalId].countryIsos) {
+        addHighlight(isos, iso, effectiveYear);
+      }
+    }
     const milestone = selectedMilestoneId ? findMilestoneById(selectedMilestoneId) : null;
     addHighlight(isos, milestone?.countryIso, effectiveYear);
     for (const iso of milestone?.blocIsos ?? []) addHighlight(isos, iso, effectiveYear);
     for (const iso of selectedSet) isos.delete(iso);
     return isos;
-  }, [isComparatorOpen, comparatorIsos, selectedMilestoneId, effectiveYear, selectedSet]);
+  }, [isComparatorOpen, comparatorIsos, activeTransversalId, selectedMilestoneId, effectiveYear, selectedSet]);
 
   const biomesRenderData = useMemo<FlatMapBiomesState | null>(() => {
     if (!isBiomesActive || !biomeTopology || isHistorical || isGeological) return null;

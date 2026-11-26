@@ -52,6 +52,27 @@ export interface FirmsWindow {
 
 export const DEFAULT_FIRMS_WINDOW: FirmsWindow = { days: 1, confidence: "nominal" };
 
+export function initialLocalMeta(): ObservatoryMeta {
+  return {
+    source: "fallback",
+    provider: "TellusPedia (dataset local)",
+    fetchedAt: new Date(0).toISOString(),
+    stale: false,
+    reason: "Dados ainda não carregados do servidor",
+  };
+}
+
+export function emptyAisCorridorCounts(): AisSnapshot["corridorCounts"] {
+  return {
+    "route-malacca": 0,
+    "route-suez": 0,
+    "route-english-channel": 0,
+    "route-santos": 0,
+    "route-panama": 0,
+    "route-cape-good-hope": 0,
+  };
+}
+
 export const ALL_OBSERVATORY_LAYERS: readonly ObservatoryLayer[] = [
   "NASA_FIRMS",
   "NASA_EONET",

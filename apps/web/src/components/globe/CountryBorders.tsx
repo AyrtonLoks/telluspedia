@@ -9,6 +9,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
 import { useTimelineStore } from "@/stores/timelineStore";
+import { useTransversalStore } from "@/stores/transversalStore";
+import { TRANSVERSAL_META_BY_ID } from "@/lib/transversal-meta";
 import { findMilestoneById } from "@/lib/milestones";
 import {
   getBaseBorderPositions,
@@ -315,6 +317,7 @@ export function CountryBorders() {
   const isComparatorOpen = useComparatorStore((state) => state.isOpen);
   const comparatorIsos = useComparatorStore((state) => state.selectedIsos);
   const selectedMilestoneId = useTimelineStore((state) => state.selectedMilestoneId);
+  const activeTransversalId = useTransversalStore((state) => state.activeEntityId);
 
   const epoch = useEpochState();
   const isGeological = epoch.mode === "GEOLOGICAL";
@@ -411,12 +414,17 @@ export function CountryBorders() {
     if (isComparatorOpen) {
       for (const iso of comparatorIsos) addHighlight(isos, iso, effectiveYear);
     }
+    if (activeTransversalId) {
+      for (const iso of TRANSVERSAL_META_BY_ID[activeTransversalId].countryIsos) {
+        addHighlight(isos, iso, effectiveYear);
+      }
+    }
     const milestone = selectedMilestoneId ? findMilestoneById(selectedMilestoneId) : null;
     addHighlight(isos, milestone?.countryIso, effectiveYear);
     for (const iso of milestone?.blocIsos ?? []) addHighlight(isos, iso, effectiveYear);
     for (const iso of selected) isos.delete(iso);
     return combinePositions(isos, (iso) => getCountryOutline(topology, iso));
-  }, [isGeological, topology, isComparatorOpen, comparatorIsos, selectedMilestoneId, effectiveYear, selected]);
+  }, [isGeological, topology, isComparatorOpen, comparatorIsos, activeTransversalId, selectedMilestoneId, effectiveYear, selected]);
 
   return (
     <group ref={groupRef}>

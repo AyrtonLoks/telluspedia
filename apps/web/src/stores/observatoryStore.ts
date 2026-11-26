@@ -1,6 +1,4 @@
 import { create } from "zustand";
-import { emptyAisCounts } from "@/lib/ais-data";
-import { initialLocalMeta } from "@/lib/observatory-source";
 import { ISS_NORAD_ID, type SatelliteTle } from "@/lib/satellite-catalog";
 import type { SatRec } from "satellite.js";
 import { GIBS_DEFAULT_PRODUCT } from "@/lib/gibs-view";
@@ -25,6 +23,8 @@ import {
   buildBiomesMeta,
   DEFAULT_FIRMS_WINDOW,
   DEFAULT_LAYER_OPACITY,
+  emptyAisCorridorCounts,
+  initialLocalMeta,
   isEonetSelection,
   perLayer,
   type FirmsWindow,
@@ -192,7 +192,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => ({
   showIssGroundTrack: false,
   aircraftFleet: [],
   maritimeRoutes: [],
-  ais: { vessels: [], corridorCounts: emptyAisCounts() },
+  ais: { vessels: [], corridorCounts: emptyAisCorridorCounts() },
   vesselsMovingOnly: false,
   setVesselsMovingOnly: (enabled) => set((state) => ({
     vesselsMovingOnly: enabled,

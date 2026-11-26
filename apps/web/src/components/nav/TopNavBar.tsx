@@ -11,6 +11,7 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
+import { useTransversalStore } from "@/stores/transversalStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { panelButtonAction, useRightDock } from "@/components/layout/useRightDock";
@@ -74,6 +75,7 @@ export const TopNavBar: React.FC = () => {
     resetGlobeView();
     useChoroplethStore.getState().resetChoropleth();
     useCriticalGeoStore.getState().resetCriticalGeo();
+    useTransversalStore.getState().resetTransversal();
     useStudyStore.getState().resetStudy();
     if (typeof window !== "undefined" && window.location.pathname.startsWith("/study/")) {
       window.history.replaceState(null, "", "/");

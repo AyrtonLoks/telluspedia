@@ -6,7 +6,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { getCountryData } from "@/lib/country-data";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useComparatorStore } from "@/stores/comparatorStore";
+import { useLayoutStore } from "@/stores/layoutStore";
 import { useTimelineStore } from "@/stores/timelineStore";
+import { useTransversalStore } from "@/stores/transversalStore";
+import { formatCountryName } from "@/lib/i18n/format";
 
 interface HoverCardPreviewProps {
   isoCode: string;
@@ -68,8 +71,22 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({
 
   const handleFocusGlobe = (e: React.MouseEvent) => {
     e.stopPropagation();
+    useGlobeStore.getState().setReaderOpen(false);
     selectCountry(isoCode);
+    useLayoutStore.getState().setActiveRightPanel("country");
     useTimelineStore.getState().selectMilestone(null);
+    if (country) {
+      useTransversalStore.getState().pushTrailStep({
+        key: `country:${isoCode}`,
+        kind: "country",
+        id: isoCode,
+        labelPt: country.nameCommon,
+        labelEn: formatCountryName(country.iso2, country.nameCommon, "en"),
+        lat: country.latitude ?? undefined,
+        lng: country.longitude ?? undefined,
+        altitude: 2.0,
+      });
+    }
     if (
       country &&
       country.latitude !== null &&

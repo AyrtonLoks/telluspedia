@@ -9,7 +9,6 @@ import {
   BarChart2,
   Share2,
   ExternalLink,
-  Quote,
   History,
 } from "lucide-react";
 import { useGlobeStore } from "@/stores/globeStore";
@@ -32,6 +31,7 @@ import { LocalClockWidget } from "./LocalClockWidget";
 import { LiveWeatherWidget } from "./LiveWeatherWidget";
 import { CountryMetricsGrid } from "./CountryMetricsGrid";
 import { CountryMiniTimeline } from "./CountryMiniTimeline";
+import { InspectorSourcesFooter } from "./InspectorSourcesFooter";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
@@ -40,6 +40,16 @@ import { formatCountryName } from "@/lib/i18n/format";
 
 const CountryFaunaSection = dynamic(
   () => import("./CountryFaunaSection").then((m) => m.CountryFaunaSection),
+  { ssr: false }
+);
+
+const CountryNewsSection = dynamic(
+  () => import("./CountryNewsSection").then((m) => m.CountryNewsSection),
+  { ssr: false }
+);
+
+const CountryTransversalSection = dynamic(
+  () => import("./CountryTransversalSection").then((m) => m.CountryTransversalSection),
   { ssr: false }
 );
 
@@ -80,7 +90,6 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
 
   const resetActiveDimension = useReaderStore((s) => s.resetActiveDimension);
   const setActiveDimension = useReaderStore((s) => s.setActiveDimension);
-  const setCitationModalOpen = useReaderStore((s) => s.setCitationModalOpen);
 
   // Synchronize with active historical timeline reference year
   const storeSelectedYear = useTimelineStore((s) => s.selectedYear);
@@ -324,7 +333,11 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
       />
 
       {!currentCountry.isHistoricalEntity && (
-        <CountryFaunaSection isoCode={currentCountry.isoCode} />
+        <>
+          <CountryFaunaSection isoCode={currentCountry.isoCode} />
+          <CountryTransversalSection isoCode={currentCountry.isoCode} />
+          <CountryNewsSection isoCode={currentCountry.isoCode} />
+        </>
       )}
 
       <StudyContext entityId={`country:${currentCountry.isoCode}`} />
@@ -353,8 +366,14 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         <Button
           variant="primary"
           className="flex-1"
-          onMouseEnter={preloadReaderMode}
-          onFocus={preloadReaderMode}
+          onMouseEnter={() => {
+            preloadReaderMode();
+            preloadCitationModal();
+          }}
+          onFocus={() => {
+            preloadReaderMode();
+            preloadCitationModal();
+          }}
           onClick={handleDeepReading}
         >
           <BookOpen aria-hidden="true" className="h-4 w-4" />
@@ -384,120 +403,14 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
         />
       </div>
 
-      {/* Subtle Permanent Institutional Footer with Cited Sources */}
-      <footer className="mt-3 border-t border-line pt-2.5 text-caption text-fg-muted">
-        <div className="flex items-center justify-between mb-1">
-          <span className="font-medium text-fg-secondary">{t("inspector.auditedSources", "Fontes Primárias Auditadas:")}</span>
-          <button
-            type="button"
-            onMouseEnter={preloadCitationModal}
-            onFocus={preloadCitationModal}
-            onClick={() => {
-              const url =
-                typeof window !== "undefined"
-                  ? `${window.location.origin}/pais/${currentCountry.isoCode}`
-                  : `https://telluspedia.org/pais/${currentCountry.isoCode}`;
-              setCitationModalOpen(true, {
-                title: `Dossiê Geral e Indicadores: ${displayName}`,
-                countryName: displayName,
-                url,
-                accessDate: new Date(),
-                publicationYear: 2026,
-              });
-            }}
-            className="inline-flex items-center gap-1 text-accent hover:text-accent-hover hover:underline"
-            title={t("inspector.generateCitationTitle", "Gerar Citação Oficial deste País")}
-          >
-            <Quote aria-hidden="true" className="h-3 w-3" />
-            <span>{t("inspector.generateCitation", "Gerar Citação")}</span>
-          </button>
-        </div>
-        <p className="space-x-1">
-          {currentCountry.isHistoricalEntity ? (
-            <>
-              <a
-                href={getSourceUrl("Maddison")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg hover:underline"
-              >
-                Maddison Project Database
-              </a>
-              ,
-              <a
-                href={getSourceUrl("Correlates of War")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg hover:underline"
-              >
-                Correlates of War
-              </a>
-              ,
-              <a
-                href={getSourceUrl("Natural Earth")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg hover:underline"
-              >
-                {t("common.naturalEarth", "Cartografia Natural Earth")}
-              </a>
-              .
-            </>
-          ) : currentCountry.completeness === "none" ? (
-            <>
-              <a
-                href={currentCountry.sourceUrl || getSourceUrl("Natural Earth")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg hover:underline"
-              >
-                {t("common.naturalEarth", "Cartografia Natural Earth (1:110m)")}
-              </a>
-              {" "}{t("inspector.isoCldrNote", "e padrão ISO 3166-1 / Unicode CLDR")}
-              {currentCountry.referenceDate ? ` (ref. ${currentCountry.referenceDate})` : ""}.
-            </>
-          ) : (
-            <>
-              <a
-                href={getSourceUrl("Banco Mundial")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg hover:underline"
-              >
-                {t("common.worldBank", "Banco Mundial")}
-              </a>
-              ,
-              <a
-                href={getSourceUrl("ONU")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg hover:underline"
-              >
-                {t("common.unStats", "Divisão de Estatística da ONU")}
-              </a>
-              ,
-              <a
-                href={getSourceUrl("IBGE")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg hover:underline"
-              >
-                IBGE
-              </a>
-              ,
-              <a
-                href={getSourceUrl("Natural Earth")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg hover:underline"
-              >
-                {t("common.naturalEarth", "Cartografia Natural Earth (1:110m)")}
-              </a>
-              .
-            </>
-          )}
-        </p>
-      </footer>
+      <InspectorSourcesFooter
+        isoCode={currentCountry.isoCode}
+        displayName={displayName}
+        isHistoricalEntity={currentCountry.isHistoricalEntity}
+        completeness={currentCountry.completeness}
+        sourceUrl={currentCountry.sourceUrl}
+        referenceDate={currentCountry.referenceDate}
+      />
     </aside>
   );
 };

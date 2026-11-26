@@ -4,6 +4,7 @@
  * re-exporta tudo daqui para manter os imports antigos.
  */
 import { countryMilestones, globalMilestones } from "./scenes/catalog";
+import { getRegisteredTransversalMilestone } from "./transversal-milestone-registry";
 
 export interface MilestoneItem {
   id: string;
@@ -43,5 +44,5 @@ export function findMilestoneById(id: string): MilestoneItem | undefined {
     const found = getCountryMilestones(iso).find((m) => m.id === id);
     if (found) return { ...found, countryIso: found.countryIso || iso };
   }
-  return undefined;
+  return getRegisteredTransversalMilestone(id);
 }

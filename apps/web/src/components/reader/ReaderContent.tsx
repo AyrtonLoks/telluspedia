@@ -9,6 +9,7 @@ import { getSourceUrl } from "@/lib/citations";
 import { HoverCardPreview } from "./HoverCardPreview";
 import { HoverCitationCard } from "./HoverCitationCard";
 import { AnalyticalProfileView } from "./AnalyticalProfileView";
+import { CountryNewsReaderView } from "./CountryNewsReaderView";
 import { COUNTRY_NAME_TO_ISO, createReaderTokenRegex } from "./reader-country-links";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -108,6 +109,11 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({
   // Perfil Analítico & Posição Global (T38): disponível para todos os 177 países contemporâneos
   if (activeDimension === "ANALYTICAL_PROFILE" && !country.isHistoricalEntity) {
     return <AnalyticalProfileView country={country} />;
+  }
+
+  // Atualidades Geopolíticas via GDELT 2.0 Doc API (D38 / RN13.8): disponível para todos os 177 países contemporâneos
+  if (activeDimension === "NEWS_CURRENT_AFFAIRS" && !country.isHistoricalEntity) {
+    return <CountryNewsReaderView country={country} />;
   }
 
   if (!section && isLoadingEditorial) {

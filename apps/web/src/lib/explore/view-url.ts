@@ -23,6 +23,8 @@ import {
 import { useChoroplethStore } from "@/stores/choroplethStore";
 import { isCriticalGeoLensId } from "@/lib/critical-geo-ids";
 import { useCriticalGeoStore } from "@/stores/criticalGeoStore";
+import { isTransversalEntityId } from "@/lib/transversal-types";
+import { useTransversalStore } from "@/stores/transversalStore";
 import { ALL_COSMIC_LAYERS, useCosmicStore } from "@/stores/cosmicStore";
 import { selectCountry } from "@/stores/actions";
 import { useComparatorStore } from "@/stores/comparatorStore";
@@ -53,7 +55,7 @@ const layerIds: readonly ObservatoryLayer[] = [
 const viewKeys = [
   "visao", "pais", "ano", "periodo", "ma", "marco", "categorias", "modo", "corpo", "escala",
   "camadas", "gibs", "bioma", "sismos", "camadasCosmos", "observatorio", "painel", "comparar", "camera",
-  "mapa", "proj", "coropletico", "coropleticoAno", "lente",
+  "mapa", "proj", "coropletico", "coropleticoAno", "lente", "trilha",
 ];
 
 function numberIn(value: string | null, min: number, max: number) {
@@ -127,6 +129,10 @@ export function encodeView(view: ViewCamera) {
   const criticalGeo = useCriticalGeoStore.getState();
   if (criticalGeo.activeLens && !cosmic.isCosmicMode) {
     params.set("lente", criticalGeo.activeLens);
+  }
+  const transversal = useTransversalStore.getState();
+  if (transversal.activeEntityId && !cosmic.isCosmicMode) {
+    params.set("trilha", transversal.activeEntityId);
   }
   if (panel) params.set("painel", panel);
   if (comparator.isOpen) params.set("comparar", comparator.selectedIsos.join(","));
@@ -230,6 +236,10 @@ export function restoreView(search: string, view: ViewCamera) {
   if (validLens) {
     useChoroplethStore.getState().clearIndicator();
   }
+
+  const trilhaParam = params.get("trilha");
+  const validTrilha = !isCosmicMode && isTransversalEntityId(trilhaParam) ? trilhaParam : null;
+  useTransversalStore.getState().restoreEntityFromUrl(validTrilha);
 
   const camera = parseCameraOffset(params.get("camera"));
   view.offset = camera ?? DEFAULT_CAMERA_OFFSET;

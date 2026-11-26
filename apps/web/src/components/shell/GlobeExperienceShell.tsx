@@ -26,6 +26,7 @@ import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useReaderStore } from "@/stores/readerStore";
 import { useStudioToolsStore } from "@/stores/studioToolsStore";
 import { useStudyStore } from "@/stores/studyStore";
+import { useTransversalStore } from "@/stores/transversalStore";
 import { preloadFlatMapCanvas, preloadGraphicsQualityPanel } from "@/lib/panel-preload";
 import { getQualityProfile } from "@/lib/webgl-quality";
 import { useStoreSnapshot } from "@/lib/use-hydrated";
@@ -115,6 +116,10 @@ const CriticalGeoHud = dynamic(
   () => import("@/components/critical-geo/CriticalGeoHud").then((m) => m.CriticalGeoHud),
   { ssr: false }
 );
+const TransversalHud = dynamic(
+  () => import("@/components/transversal/TransversalHud").then((m) => m.TransversalHud),
+  { ssr: false }
+);
 const StudioToolsHud = dynamic(
   () => import("@/components/studio/StudioToolsHud").then((m) => m.StudioToolsHud),
   { ssr: false }
@@ -202,6 +207,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const activeChoropleth = useChoroplethStore((s) => s.activeIndicator);
   const isChoroplethSelectorOpen = useChoroplethStore((s) => s.isSelectorOpen);
   const activeCriticalLens = useCriticalGeoStore((s) => s.activeLens);
+  const isTransversalVisible = useTransversalStore(
+    (s) => s.isSelectorOpen || s.activeEntityId !== null || s.trail.length > 0
+  );
   const isStudioToolsVisible = useStudioToolsStore(
     (s) =>
       s.isRulerActive ||
@@ -453,6 +461,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
 
         {/* Lentes de Geografia Crítica — Legado de Milton Santos (D36 — carregado sob demanda) */}
         {activeCriticalLens !== null && <CriticalGeoHud />}
+
+        {/* Linha do Tempo Transversal & Trilha de Estudo RN14/RN04 (D38 — carregado sob demanda) */}
+        {!isCosmicMode && isTransversalVisible && <TransversalHud />}
 
         {/* Ferramentas de Estúdio: Régua Geodésica + Pinos Anotados (D37 — carregado sob demanda) */}
         {!isCosmicMode && isStudioToolsVisible && (
