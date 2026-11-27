@@ -74,6 +74,38 @@ test.describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo no M
     await expect.poll(() => page.url(), { timeout: 10000 }).not.toContain("modo=cosmos");
     await snap("d41-globe-sobral.png");
 
+    // 3b. Regressão visual em janela baixa de notebook (1366x650): zero sobreposição com TimelineBar e HistoricalEraBadge
+    await page.setViewportSize({ width: 1366, height: 650 });
+    await expect(page.getByTestId("historical-era-badge")).toBeVisible();
+    await expect(page.locator("[data-timeline-bar='true']")).toBeVisible();
+
+    await expect
+      .poll(
+        async () => {
+          const [hudBox, timelineBox, eraBox] = await Promise.all([
+            page.getByTestId("eclipse-hud").boundingBox(),
+            page.locator("[data-timeline-bar='true']").boundingBox(),
+            page.getByTestId("historical-era-badge").boundingBox(),
+          ]);
+          if (!hudBox || !timelineBox || !eraBox) return "missing";
+          const clearsTimeline = hudBox.y + hudBox.height <= timelineBox.y - 6;
+          const clearsEraBadge =
+            hudBox.x + hudBox.width <= eraBox.x - 8 || hudBox.y >= eraBox.y + eraBox.height + 6;
+          return clearsTimeline && clearsEraBadge
+            ? "ok"
+            : `overlap(hudBottom=${Math.round(hudBox.y + hudBox.height)},timelineTop=${Math.round(timelineBox.y)},hudRight=${Math.round(hudBox.x + hudBox.width)},eraLeft=${Math.round(eraBox.x)})`;
+        },
+        { timeout: 8000 }
+      )
+      .toBe("ok");
+    await snap("d41-globe-sobral-650p.png");
+
+    // Botão de recolher/expandir mantém o cabeçalho acessível sem ocupar a lateral
+    await page.getByTestId("eclipse-minimize-toggle").click();
+    await expect(page.getByTestId("eclipse-hud")).toHaveAttribute("data-minimized", "true");
+    await page.getByTestId("eclipse-minimize-toggle").click();
+    await expect(page.getByTestId("eclipse-hud")).toHaveAttribute("data-minimized", "false");
+
     // 4. Alternar idioma para EN e validar traduções completas
     await page.getByTestId("locale-switcher").click();
     await expect(page.getByTestId("locale-switcher")).toHaveText("EN");

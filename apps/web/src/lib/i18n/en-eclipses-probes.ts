@@ -24,6 +24,8 @@ export const EN_ECLIPSES_PROBES_MESSAGES = {
   "eclipse.lunarZenithAt": "Phase / sublunar zenith:",
   "eclipse.kicker": "Syzygy Ephemeris · NASA GSFC",
   "eclipse.closeAria": "Close eclipse simulation",
+  "eclipse.minimizeAria": "Minimize eclipse panel",
+  "eclipse.expandAria": "Expand eclipse panel",
   "eclipse.phaseSlider": "Umbra sweep phase",
   "eclipse.resetPeak": "Return to primary station",
   "eclipse.maxDuration": "Max duration",

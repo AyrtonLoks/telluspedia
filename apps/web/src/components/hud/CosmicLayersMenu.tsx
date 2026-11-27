@@ -59,7 +59,7 @@ export const CosmicLayersMenu: React.FC<CosmicLayersMenuProps> = ({
       </button>
 
       {showLayerPanel && (
-        <Panel className="max-h-[calc(100dvh-6.5rem-var(--timeline-obstruction,0px))] w-56 space-y-3 overflow-y-auto p-3 text-label">
+        <Panel className="max-h-[calc(100dvh-8.5rem-var(--timeline-obstruction,0px))] w-56 space-y-3 overflow-y-auto p-3 text-label">
           <div className="space-y-1.5">
             <h4 className="text-caption font-medium text-fg-muted">
               {t("cosmic.visualLayers", "Camadas visuais")}
