@@ -84,6 +84,35 @@ function eclipticAuToScene(xEcl: number, yEcl: number, zEcl: number): THREE.Vect
 }
 
 /**
+ * Base ortonormal canônica da sonda na cena cósmica:
+ * - `+Z` aponta de volta para o Sol / Terra (`toOrigin`), alinhando HGA e escudo térmico do JWST;
+ * - `+X` é tangente prógrado ao plano da eclíptica;
+ * - `+Y` aponta para o hemisfério norte eclíptico.
+ */
+export function computeProbeBasis(scenePosition: THREE.Vector3): {
+  xAxis: THREE.Vector3;
+  yAxis: THREE.Vector3;
+  zAxis: THREE.Vector3;
+  quaternion: THREE.Quaternion;
+} {
+  const zAxis =
+    scenePosition.lengthSq() > 1e-6
+      ? scenePosition.clone().negate().normalize()
+      : new THREE.Vector3(0, 0, 1);
+  const worldUp = new THREE.Vector3(0, 1, 0);
+  const xAxis = new THREE.Vector3().crossVectors(worldUp, zAxis);
+  if (xAxis.lengthSq() < 1e-6) {
+    xAxis.set(1, 0, 0);
+  } else {
+    xAxis.normalize();
+  }
+  const yAxis = new THREE.Vector3().crossVectors(zAxis, xAxis).normalize();
+  const rotMat = new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis);
+  const quaternion = new THREE.Quaternion().setFromRotationMatrix(rotMat);
+  return { xAxis, yAxis, zAxis, quaternion };
+}
+
+/**
  * Formata o atraso de sinal eletromagnético (tempo-luz) em segundos, minutos ou horas+minutos.
  */
 export function formatLightTime(seconds: number, locale: "pt-BR" | "en" = "pt-BR"): string {

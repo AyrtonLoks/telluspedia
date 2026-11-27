@@ -16,7 +16,12 @@ import {
   currentMoonWorldPos,
   calculatePlanetaryPosition,
 } from "@/lib/astronomy-planets";
-import { calculateProbePosition, type DeepSpaceProbeId } from "@/lib/deep-space-probes";
+import {
+  calculateProbePosition,
+  computeProbeBasis,
+  type DeepSpaceProbeId,
+} from "@/lib/deep-space-probes";
+import { ECLIPSE_KIND_BY_ID, resolveEclipseDecimalYear, type EclipseId } from "@/lib/eclipses-ids";
 import { bodySceneRadius, earthSystemScale, scaledViewDistance, SUN_CORONA_RATIO, type CosmicScaleMode } from "@/lib/cosmic-scale";
 import {
   easeInOutCubic,
@@ -54,12 +59,18 @@ function resetControlsDeltas(controls: OrbitControlsImpl | null) {
 // Helper to obtain current 3D position of celestial body
 function getBodyPosition(
   id: CelestialBodyId | null,
-  year: number,
+  epoch: Date | number,
   isCosmic: boolean
 ): THREE.Vector3 {
+  const numericYear =
+    typeof epoch === "number"
+      ? epoch
+      : epoch.getUTCFullYear() +
+        (epoch.getTime() - Date.UTC(epoch.getUTCFullYear(), 0, 1)) /
+          (Date.UTC(epoch.getUTCFullYear() + 1, 0, 1) - Date.UTC(epoch.getUTCFullYear(), 0, 1));
   if (!id || id === "SUN") return new THREE.Vector3(0, 0, 0);
   if (id === "HALLEY") {
-    const h = calculateHalleyPosition(year);
+    const h = calculateHalleyPosition(numericYear);
     return h.scenePosition;
   }
   if (id === "MOON") {
@@ -68,10 +79,9 @@ function getBodyPosition(
   }
   if (id === "EARTH") {
     if (!isCosmic) return new THREE.Vector3(0, 0, 0);
-    const planets = computeAllPlanetaryPositions(year);
-    return planets.EARTH.scenePosition.clone();
+    return calculatePlanetaryPosition("EARTH", epoch).scenePosition.clone();
   }
-  const planets = computeAllPlanetaryPositions(year);
+  const planets = computeAllPlanetaryPositions(numericYear);
   if (id in planets) {
     return planets[id as keyof typeof planets].scenePosition;
   }
@@ -123,25 +133,94 @@ export function getScaledBodyViewOffset(id: CelestialBodyId | null, mode: Cosmic
   return base.normalize().multiplyScalar(distance);
 }
 
-/** Offset seguro da câmera para sondas do espaço profundo (livre de vetor nulo / NaN — AGENTS.md §1). */
+/**
+ * Offset 3D seguro e enquadramento heroico em três-quartos para sondas do espaço profundo
+ * (livre de vetor nulo / NaN — AGENTS.md §1):
+ * - Voyager 1/2 e New Horizons: observa a parabólica HGA iluminada pelo Sol, o Disco de Ouro e as hastes;
+ * - JWST: posiciona a câmera no lado frio anti-solar diante dos 18 hexágonos dourados e das 5 camadas
+ *   de Kapton, mantendo a Terra e o Sol visíveis ao fundo atrás do escudo térmico.
+ */
 export function getProbeViewOffset(
   probeId: DeepSpaceProbeId,
-  mode: CosmicScaleMode
+  mode: CosmicScaleMode,
+  epoch: Date | number = 2026
 ): THREE.Vector3 {
+  const pos = calculateProbePosition(probeId, epoch, mode).scenePosition;
+  const { xAxis, yAxis, zAxis } = computeProbeBasis(pos);
+
   if (probeId === "JWST") {
-    const s = mode === "real" ? 0.55 : 1.0;
-    return new THREE.Vector3(0, 1.05 * s, 2.35 * s);
+    const dist = mode === "real" ? 0.44 : 1.12;
+    return new THREE.Vector3()
+      .addScaledVector(zAxis, -0.74)
+      .addScaledVector(xAxis, 0.56)
+      .addScaledVector(yAxis, 0.36)
+      .normalize()
+      .multiplyScalar(dist);
   }
-  return new THREE.Vector3(0, 1.6, 3.4);
+
+  const dist = mode === "real" ? 1.08 : 1.62;
+  return new THREE.Vector3()
+    .addScaledVector(zAxis, 0.32)
+    .addScaledVector(xAxis, 0.84)
+    .addScaledVector(yAxis, 0.44)
+    .normalize()
+    .multiplyScalar(dist);
 }
 
-/** Zoom mínimo do OrbitControls no modo Cosmos: 1,0 no visual; perto do corpo no modo real. */
+/**
+ * Enquadramento orbital determinístico do par Terra–Lua no Modo Cosmos durante um eclipse ativo:
+ * - Eclipse solar: enquadra simultaneamente a Lua Nova, o cone estreito de sombra e a faixa de
+ *   totalidade iluminada na superfície terrestre;
+ * - Eclipse lunar: enquadra simultaneamente a Terra noturna, o cone avermelhado de umbra terrestre e
+ *   a Lua de Sangue imersa no cone, sem depender de `currentMoonWorldPos` assíncrono.
+ */
+function getEclipseCosmicFraming(
+  eclipseId: EclipseId,
+  epoch: Date | number,
+  mode: CosmicScaleMode
+): { target: THREE.Vector3; offset: THREE.Vector3 } {
+  const earthPos = calculatePlanetaryPosition("EARTH", epoch).scenePosition;
+  const s = earthSystemScale(mode);
+  const toSun =
+    earthPos.lengthSq() > 1e-6
+      ? earthPos.clone().negate().normalize()
+      : new THREE.Vector3(1, 0, 0);
+  const up = new THREE.Vector3(0, 1, 0);
+  const side = new THREE.Vector3().crossVectors(up, toSun);
+  if (side.lengthSq() < 1e-6) side.set(0, 0, 1);
+  side.normalize();
+
+  if (ECLIPSE_KIND_BY_ID[eclipseId] === "lunar_total") {
+    const target = earthPos.clone().addScaledVector(toSun, -1.85 * s);
+    const offset = new THREE.Vector3()
+      .addScaledVector(toSun, 0.34)
+      .addScaledVector(side, 0.88)
+      .addScaledVector(up, 0.32)
+      .normalize()
+      .multiplyScalar(Math.max(0.75, 5.8 * s));
+    return { target, offset };
+  }
+
+  const target = earthPos.clone().addScaledVector(toSun, 1.3 * s);
+  const offset = new THREE.Vector3()
+    .addScaledVector(toSun, 0.44)
+    .addScaledVector(side, -0.83)
+    .addScaledVector(up, 0.34)
+    .normalize()
+    .multiplyScalar(Math.max(1.5, 5.9 * s));
+  return { target, offset };
+}
+
+/** Zoom mínimo do OrbitControls no modo Cosmos: seguro contra corte de plano near e NaN. */
 export function cosmicMinDistance(
   id: CelestialBodyId | null,
   mode: CosmicScaleMode,
   probeId: DeepSpaceProbeId | null = null
 ): number {
-  if (probeId) return probeId === "JWST" && mode === "real" ? 0.45 : 0.85;
+  if (probeId) {
+    if (probeId === "JWST") return mode === "real" ? 0.18 : 0.36;
+    return mode === "real" ? 0.36 : 0.55;
+  }
   if (mode === "visual" || !id || id === "SUN" || id === "HALLEY") return 1.0;
   if (id === "EARTH") return 1.0;
   if (id === "MOON") return 0.4;
@@ -155,8 +234,14 @@ export const CosmicCameraController: React.FC = () => {
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const focusedBodyId = useCosmicStore((s) => s.focusedBodyId);
   const focusedProbeId = useCosmicStore((s) => s.focusedProbeId);
+  const activeEclipseId = useCosmicStore((s) => s.activeEclipseId);
+  const eclipseOffsetMinutes = useCosmicStore((s) => s.eclipseOffsetMinutes);
   const scaleMode = useCosmicStore((s) => s.scaleMode);
   const selectedYear = useTimelineStore((s) => s.selectedYear) || new Date().getUTCFullYear();
+  // Primitivo numérico estável (evita instanciar `new Date()` a cada render em dependências de layoutEffect)
+  const effectiveEpoch: number = activeEclipseId
+    ? resolveEclipseDecimalYear(activeEclipseId, eclipseOffsetMinutes)
+    : selectedYear;
 
   // Transição em andamento (D17): estados inicial/final, tempo e limites de zoom a aplicar no fim.
   const transition = useRef<{
@@ -171,6 +256,7 @@ export const CosmicCameraController: React.FC = () => {
   const prevCosmicMode = useRef<boolean>(false);
   const prevFocusedId = useRef<CelestialBodyId | null>(null);
   const prevFocusedProbeId = useRef<DeepSpaceProbeId | null>(null);
+  const prevEclipseId = useRef<EclipseId | null>(null);
   const prevScaleMode = useRef<CosmicScaleMode>(scaleMode);
 
   // Layout effect: a reancoragem precisa acontecer antes do próximo quadro, senão a troca de
@@ -181,6 +267,8 @@ export const CosmicCameraController: React.FC = () => {
     const cosmicModeChanged = prevCosmicMode.current !== isCosmicMode;
     const focusChanged =
       prevFocusedId.current !== focusedBodyId || prevFocusedProbeId.current !== focusedProbeId;
+    const eclipseChanged =
+      prevEclipseId.current !== activeEclipseId && isCosmicMode && activeEclipseId !== null;
     // Trocar a escala com um corpo ou sonda focada reenquadra a câmera no novo tamanho.
     const scaleChanged =
       prevScaleMode.current !== scaleMode &&
@@ -188,7 +276,8 @@ export const CosmicCameraController: React.FC = () => {
       (focusedBodyId !== null || focusedProbeId !== null);
     const previousScale = prevScaleMode.current;
     prevScaleMode.current = scaleMode;
-    if (!cosmicModeChanged && !focusChanged && !scaleChanged) return;
+    prevEclipseId.current = activeEclipseId;
+    if (!cosmicModeChanged && !focusChanged && !scaleChanged && !eclipseChanged) return;
     prevCosmicMode.current = isCosmicMode;
     prevFocusedId.current = focusedBodyId;
     prevFocusedProbeId.current = focusedProbeId;
@@ -202,7 +291,7 @@ export const CosmicCameraController: React.FC = () => {
     if (cosmicModeChanged) {
       const home = { center: new THREE.Vector3(), scale: 1 };
       const orbit = {
-        center: calculatePlanetaryPosition("EARTH", selectedYear).scenePosition.clone(),
+        center: calculatePlanetaryPosition("EARTH", effectiveEpoch).scenePosition.clone(),
         scale: earthSystemScale(isCosmicMode ? scaleMode : previousScale),
       };
       from = isCosmicMode ? reanchorOrbit(from, home, orbit) : reanchorOrbit(from, orbit, home);
@@ -217,7 +306,7 @@ export const CosmicCameraController: React.FC = () => {
     if (isCosmicMode) {
       obstacles.push({ center: new THREE.Vector3(), radius: bodySceneRadius(ASTROPHYSICAL_CATALOG.SUN.equatorialRadiusKm, scaleMode) * SUN_CORONA_RATIO * 1.15 });
       obstacles.push({
-        center: calculatePlanetaryPosition("EARTH", selectedYear).scenePosition.clone(),
+        center: calculatePlanetaryPosition("EARTH", effectiveEpoch).scenePosition.clone(),
         radius: earthSystemScale(scaleMode) * 1.5,
       });
     } else {
@@ -233,21 +322,36 @@ export const CosmicCameraController: React.FC = () => {
     } else if (!isCosmicMode && focusedBodyId === "MOON") {
       // Modo normal: inspeção da Lua
       limits = { min: 0.4, max: 6.0 };
-      const bodyPos = getBodyPosition("MOON", selectedYear, false);
+      const bodyPos = getBodyPosition("MOON", effectiveEpoch, false);
       to = { target: bodyPos.clone(), camera: bodyPos.clone().add(getBodyViewOffset("MOON")) };
     } else if (isCosmicMode && focusedProbeId) {
       // Sonda do espaço profundo selecionada (Voyager 1/2, New Horizons, JWST)
       limits = { min: cosmicMinDistance(null, scaleMode, focusedProbeId), max: 1600.0 };
-      const probePos = calculateProbePosition(focusedProbeId, selectedYear, scaleMode).scenePosition;
+      const probePos = calculateProbePosition(focusedProbeId, effectiveEpoch, scaleMode).scenePosition;
       to = {
         target: probePos.clone(),
-        camera: probePos.clone().add(getProbeViewOffset(focusedProbeId, scaleMode)),
+        camera: probePos.clone().add(getProbeViewOffset(focusedProbeId, scaleMode, effectiveEpoch)),
+      };
+    } else if (
+      isCosmicMode &&
+      activeEclipseId &&
+      (focusedBodyId === "MOON" || focusedBodyId === "EARTH")
+    ) {
+      // Vista cósmica em eclipse: enquadra o sistema Terra + Cone de Sombra + Lua inteiro
+      limits = { min: cosmicMinDistance(focusedBodyId, scaleMode), max: 1600.0 };
+      const framing = getEclipseCosmicFraming(activeEclipseId, effectiveEpoch, scaleMode);
+      to = {
+        target: framing.target,
+        camera: framing.target.clone().add(framing.offset),
       };
     } else {
-      // Vista cósmica
+      // Vista cósmica padrão
       limits = { min: cosmicMinDistance(focusedBodyId, scaleMode), max: 1600.0 };
-      const bodyPos = getBodyPosition(focusedBodyId, selectedYear, isCosmicMode);
-      to = { target: bodyPos.clone(), camera: bodyPos.clone().add(getScaledBodyViewOffset(focusedBodyId, scaleMode)) };
+      const bodyPos = getBodyPosition(focusedBodyId, effectiveEpoch, isCosmicMode);
+      to = {
+        target: bodyPos.clone(),
+        camera: bodyPos.clone().add(getScaledBodyViewOffset(focusedBodyId, scaleMode)),
+      };
     }
 
     const duration = prefersReducedMotion() ? 0 : orbitTransitionDuration(from, to);
@@ -271,7 +375,7 @@ export const CosmicCameraController: React.FC = () => {
     transition.current = { from, to, obstacles, elapsed: 0, duration, limits };
     orbitTransition.active = true;
     orbitTransition.progress = 0;
-  }, [isCosmicMode, focusedBodyId, focusedProbeId, scaleMode, controlsHook, camera, selectedYear]);
+  }, [isCosmicMode, focusedBodyId, focusedProbeId, activeEclipseId, scaleMode, controlsHook, camera, effectiveEpoch]);
 
   useFrame((_, delta) => {
     if (!controlsHook) return;
@@ -294,14 +398,24 @@ export const CosmicCameraController: React.FC = () => {
       }
       controlsHook.update();
     } else if (isCosmicMode && focusedProbeId) {
-      const probeTarget = calculateProbePosition(focusedProbeId, selectedYear, scaleMode).scenePosition;
+      const probeTarget = calculateProbePosition(focusedProbeId, effectiveEpoch, scaleMode).scenePosition;
       const deltaTarget = probeTarget.clone().sub(controlsHook.target);
       controlsHook.target.copy(probeTarget);
       camera.position.add(deltaTarget);
       controlsHook.update();
+    } else if (
+      isCosmicMode &&
+      activeEclipseId &&
+      (focusedBodyId === "MOON" || focusedBodyId === "EARTH")
+    ) {
+      const framing = getEclipseCosmicFraming(activeEclipseId, effectiveEpoch, scaleMode);
+      const deltaTarget = framing.target.clone().sub(controlsHook.target);
+      controlsHook.target.copy(framing.target);
+      camera.position.add(deltaTarget);
+      controlsHook.update();
     } else if (focusedBodyId && focusedBodyId !== "SUN") {
       // Acompanha o alvo em órbita em tempo real
-      const currentTargetPos = getBodyPosition(focusedBodyId, selectedYear, isCosmicMode);
+      const currentTargetPos = getBodyPosition(focusedBodyId, effectiveEpoch, isCosmicMode);
       const deltaTarget = currentTargetPos.clone().sub(controlsHook.target);
       controlsHook.target.copy(currentTargetPos);
       camera.position.add(deltaTarget);

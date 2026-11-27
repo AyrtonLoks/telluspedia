@@ -13,7 +13,8 @@ import { calculateLunarPosition } from "@/lib/astronomy";
 import { calculatePlanetaryPosition, currentMoonWorldPos, ASTROPHYSICAL_CATALOG } from "@/lib/astronomy-planets";
 import { bodySceneRadius, celestialLabelPriority, earthSystemScale } from "@/lib/cosmic-scale";
 import { CelestialLabel, CelestialLabelChip } from "./CelestialLabel";
-import { ECLIPSE_KIND_BY_ID } from "@/lib/eclipses-ids";
+import { ECLIPSE_KIND_BY_ID, resolveEclipseTargetDate } from "@/lib/eclipses-ids";
+import { computeEclipseGeometry } from "@/lib/eclipses-geometry";
 import { sceneHasTrajectoryKind } from "@/lib/scenes/catalog";
 
 import { isDragRelease } from "@/lib/pointer-intent";
@@ -61,14 +62,15 @@ void main() {
   vec3 earthshine = albedo * vec3(0.05, 0.06, 0.085);
   vec3 sunlit = albedo * lit * 1.18;
   // Rayleigh-refracted copper-red umbral glow during a Total Lunar Eclipse ('Blood Moon', D41)
-  vec3 bloodMoon = albedo * lit * vec3(0.76, 0.20, 0.08);
-  sunlit = mix(sunlit, bloodMoon, clamp(uLunarUmbra, 0.0, 1.0));
+  float bloodWrap = smoothstep(-0.4, 0.35, ndotl);
+  vec3 bloodMoon = albedo * (0.30 + 0.85 * bloodWrap) * vec3(0.92, 0.24, 0.08);
+  vec3 baseLunar = mix(earthshine + sunlit, bloodMoon, clamp(uLunarUmbra, 0.0, 1.0));
 
   // Soft selection/hover rim highlight without washing out the astronomical phase
   float fresnel = pow(1.0 - max(0.0, dot(N, viewDir)), 2.5);
   vec3 highlight = uHighlightColor * (uHighlightStrength * (0.18 + 0.55 * fresnel));
 
-  gl_FragColor = vec4(earthshine + sunlit + highlight, 1.0);
+  gl_FragColor = vec4(baseLunar + highlight, 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }
@@ -193,20 +195,29 @@ export const OrbitingMoon: React.FC = () => {
   const isFocused = focusedBodyId === "MOON";
   const isHovered = hoveredBodyId === "MOON";
 
-  // Real geocentric lunar ephemeris (Meeus Ch. 47) synchronized with canonical solar date & direction (T14 + T15)
+  // Real geocentric lunar ephemeris (Meeus Ch. 47) synchronized with canonical solar date & direction (T14 + T15).
+  // Nota crítica de referencial: `OrbitingMoon` é filho de `EarthOrientationGroup`, que já rotaciona o
+  // referencial fixo da Terra (`lunar.scenePosition`) para a eclíptica no Modo Cosmos. Durante um eclipse
+  // ativo (`D41`), usamos `syzygyMoonLocalPos` para colinearidade geométrica estrita Sol–Lua–Umbra.
   const { targetLocalPos, earthModeSunDir } = useMemo(() => {
+    if (activeEclipseId) {
+      const ecGeom = computeEclipseGeometry(activeEclipseId, eclipseOffsetMinutes);
+      return {
+        targetLocalPos: ecGeom.syzygyMoonLocalPos,
+        earthModeSunDir: sun.direction,
+      };
+    }
     const lunar = calculateLunarPosition(sun.targetDate);
-    const localPos = isCosmicMode ? lunar.cosmicRelativePosition : lunar.scenePosition;
-
     return {
-      targetLocalPos: localPos,
+      targetLocalPos: lunar.scenePosition,
       earthModeSunDir: sun.direction,
     };
-  }, [sun.targetDate, sun.direction, isCosmicMode]);
+  }, [activeEclipseId, eclipseOffsetMinutes, sun.targetDate, sun.direction]);
 
   // Imperative animated position state (prevents React re-render 1-frame snap flashes)
   const initializedRef = useRef<boolean>(false);
   const prevCosmicModeRef = useRef<boolean>(isCosmicMode);
+  const prevEclipseKeyRef = useRef<string>("");
   const currentLocalPosRef = useRef<THREE.Vector3>(targetLocalPos.clone());
   const currentSunDirRef = useRef<THREE.Vector3>(earthModeSunDir.clone());
 
@@ -275,12 +286,15 @@ export const OrbitingMoon: React.FC = () => {
     };
   }, [moonGeo, moonMat, placeholderTex, ringGeo, ringMat]);
 
-  // Place Moon at exact astronomical position on initial mount or coordinate-frame switch
+  // Place Moon at exact astronomical position on initial mount, coordinate-frame switch, or eclipse selection
   useEffect(() => {
     const modeChanged = prevCosmicModeRef.current !== isCosmicMode;
     prevCosmicModeRef.current = isCosmicMode;
+    const eclipseKey = activeEclipseId ? `${activeEclipseId}:${eclipseOffsetMinutes}` : "";
+    const eclipseJump = eclipseKey !== "" && prevEclipseKeyRef.current !== eclipseKey;
+    prevEclipseKeyRef.current = eclipseKey;
 
-    if (!initializedRef.current || modeChanged) {
+    if (!initializedRef.current || modeChanged || eclipseJump) {
       initializedRef.current = true;
       currentLocalPosRef.current.copy(targetLocalPos);
       currentSunDirRef.current.copy(earthModeSunDir);
@@ -296,11 +310,15 @@ export const OrbitingMoon: React.FC = () => {
         moonMat.uniforms.uSunDirection.value.copy(earthModeSunDir);
         currentMoonWorldPos.copy(targetLocalPos);
       } else {
-        const earthPos = calculatePlanetaryPosition(
-          "EARTH",
-          selectedYear || new Date().getUTCFullYear()
-        ).scenePosition;
-        currentMoonWorldPos.copy(earthPos).add(targetLocalPos);
+        const epochArg = activeEclipseId
+          ? resolveEclipseTargetDate(activeEclipseId, eclipseOffsetMinutes)
+          : selectedYear || new Date().getUTCFullYear();
+        const earthPos = calculatePlanetaryPosition("EARTH", epochArg).scenePosition;
+        if (moonRef.current) {
+          moonRef.current.getWorldPosition(currentMoonWorldPos);
+        } else {
+          currentMoonWorldPos.copy(earthPos).add(targetLocalPos);
+        }
         if (currentMoonWorldPos.lengthSq() > 1e-6) {
           moonMat.uniforms.uSunDirection.value.copy(currentMoonWorldPos).negate().normalize();
         }
@@ -321,6 +339,8 @@ export const OrbitingMoon: React.FC = () => {
     isFocused,
     isHovered,
     isCosmicMode,
+    activeEclipseId,
+    eclipseOffsetMinutes,
     lunarUmbraStrength,
     sun.isLiveClock,
     sun.timestamp,
@@ -335,9 +355,9 @@ export const OrbitingMoon: React.FC = () => {
     if (!moonGroupRef.current || !moonRef.current) return;
 
     const nextLocalPos = stepOrbitalPosition(currentLocalPosRef.current, targetLocalPos, delta, {
-      isPlaying,
+      isPlaying: isPlaying && !activeEclipseId,
       playbackSpeed,
-      isApolloScene,
+      isApolloScene: isApolloScene || activeEclipseId !== null,
     });
     currentLocalPosRef.current.copy(nextLocalPos);
 

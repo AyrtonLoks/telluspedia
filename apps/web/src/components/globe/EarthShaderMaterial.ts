@@ -30,6 +30,10 @@ export const EarthShader = {
     uAtmosphereColor: { value: new THREE.Color("#00d4ff") },
     uAtmospherePower: { value: 3.2 },
     uTime: { value: 0 },
+    /** Sombra física de umbra/penumbra durante eclipses solares em espaço mundial (D41). */
+    uEclipseDir: { value: new THREE.Vector3(1, 0, 0) },
+    uEclipseRadii: { value: new THREE.Vector2(0.028, 0.45) },
+    uEclipseStrength: { value: 0.0 },
   },
 
   vertexShader: `
@@ -63,6 +67,9 @@ export const EarthShader = {
     uniform vec3 uAtmosphereColor;
     uniform float uAtmospherePower;
     uniform float uTime;
+    uniform vec3 uEclipseDir;
+    uniform vec2 uEclipseRadii;
+    uniform float uEclipseStrength;
 
     varying vec3 vNormal;
     varying vec3 vWorldPosition;
@@ -121,6 +128,23 @@ export const EarthShader = {
         * smoothstep(0.0, 0.12, nDotL) * (1.0 - uStudyLighting);
       dayComposite += specular;
 
+      // Sombra lunar física de umbra e penumbra na superfície terrestre (D41):
+      // escurece a luz diurna, apaga o reflexo oceânico sob a totalidade e acende sutilmente as luzes urbanas.
+      float eclipseUmbra = 0.0;
+      float eclipseCorona = 0.0;
+      if (uEclipseStrength > 0.001) {
+        float cosEc = clamp(dot(normal, normalize(uEclipseDir)), -1.0, 1.0);
+        float ecAng = acos(cosEc);
+        float penumbra = 1.0 - smoothstep(uEclipseRadii.x, uEclipseRadii.y, ecAng);
+        float umbra = 1.0 - smoothstep(uEclipseRadii.x * 0.55, uEclipseRadii.x * 1.2, ecAng);
+        eclipseCorona = smoothstep(uEclipseRadii.x * 0.72, uEclipseRadii.x * 1.05, ecAng)
+          * (1.0 - smoothstep(uEclipseRadii.x * 1.05, uEclipseRadii.x * 1.65, ecAng))
+          * uEclipseStrength;
+        eclipseUmbra = umbra * uEclipseStrength;
+        float eclipseAttenuation = 1.0 - clamp((penumbra * 0.62 + umbra * 0.34) * uEclipseStrength, 0.0, 0.95);
+        dayComposite *= eclipseAttenuation;
+      }
+
       // City texture contributes emission over the dark navy of the night side.
       vec3 nightBase = vec3(0.012, 0.022, 0.042);
       vec3 nightComposite = nightColor * 1.05 * uCityLights + nightBase;
@@ -132,9 +156,11 @@ export const EarthShader = {
       // Subtle, physically realistic atmospheric terminator glow along the solar terminator
       float sunsetRing = smoothstep(0.0, 0.035, 0.035 - abs(nDotL));
       vec3 sunsetColor = vec3(1.0, 0.52, 0.22) * sunsetRing * 0.055 * (1.0 - uStudyLighting);
+      vec3 eclipseHorizonGlow = vec3(1.0, 0.60, 0.24) * eclipseCorona * 0.14 * dayFactor;
 
-      // Composite earth surface
-      vec3 surfaceColor = mix(finalNight, dayComposite, dayFactor) + sunsetColor;
+      // Composite earth surface (acende luzes urbanas sutilmente no interior escuro da umbra total)
+      vec3 surfaceColor = mix(finalNight, dayComposite + finalNight * (eclipseUmbra * 0.55), dayFactor)
+        + sunsetColor + eclipseHorizonGlow;
 
       // Fresnel Atmospheric Glow on the silhouette
       float fresnel = pow(1.0 - max(0.0, dot(viewDir, normal)), uAtmospherePower);

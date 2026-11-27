@@ -22,6 +22,7 @@ import {
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { worldSunDirection } from "@/lib/earth-orientation";
+import { syncEclipseShaderUniforms } from "@/lib/eclipse-shader-state";
 import { isDragRelease } from "@/lib/pointer-intent";
 import { useObservatoryStore } from "@/stores/observatoryStore";
 import { useLayoutStore } from "@/stores/layoutStore";
@@ -316,11 +317,13 @@ export const EarthSphere: React.FC<{ studyLighting: boolean; atmosphere?: boolea
   // Astronomical Sun Synchronization (RN10, T14 — single source of truth via useSunDirection)
   useEffect(() => {
     worldSunDirection(sun.direction, earthMaterial.uniforms.uSunDirection.value);
+    syncEclipseShaderUniforms(earthMaterial.uniforms);
     invalidate();
   }, [earthMaterial, sun.direction, sun.timestamp, invalidate]);
-  // No Cosmos o globo gira para a eclíptica (D21): a direção do Sol acompanha a rotação a cada quadro.
+  // No Cosmos o globo gira para a eclíptica (D21): a direção do Sol e da umbra acompanham a rotação a cada quadro.
   useFrame(() => {
     worldSunDirection(sun.direction, earthMaterial.uniforms.uSunDirection.value);
+    syncEclipseShaderUniforms(earthMaterial.uniforms);
   });
 
   // Helper to resolve ISO / canonical historical entity from picked TopoJSON feature

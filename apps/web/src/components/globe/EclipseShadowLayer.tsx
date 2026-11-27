@@ -3,77 +3,40 @@
 import React, { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
-import { calculateLunarPosition } from "@/lib/astronomy";
+import { ASTROPHYSICAL_CATALOG } from "@/lib/astronomy-planets";
+import { bodySceneRadius, earthSystemScale } from "@/lib/cosmic-scale";
+import {
+  clearEclipseSurfaceShadow,
+  setEclipseSurfaceShadow,
+} from "@/lib/eclipse-shader-state";
 import { ECLIPSES_CATALOG } from "@/lib/eclipses-catalog";
 import {
   buildTotalityCenterlinePoints,
   buildTotalityRibbonGeometry,
   computeEclipseGeometry,
-  ECLIPSE_SHADOW_SHELL_RADIUS,
+  TOTALITY_CENTERLINE_RADIUS,
 } from "@/lib/eclipses-geometry";
+import { latLngToVector3 } from "@/lib/geo-spatial";
 import { useCosmicStore } from "@/stores/cosmicStore";
 
 const ignoreRaycast = () => null;
-
-const shadowShellVertexShader = `
-varying vec3 vLocalDir;
-
-void main() {
-  // Direção esférica no referencial fixo da Terra (filho de EarthOrientationGroup:
-  // rotaciona solidariamente à Terra tanto na visão terrestre quanto no Modo Cosmos).
-  vLocalDir = normalize(position);
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-`;
-
-const shadowShellFragmentShader = `
-uniform vec3 uShadowDir;
-uniform float uUmbraRad;
-uniform float uPenumbraRad;
-uniform float uIsSolar;
-uniform float uActiveStrength;
-
-varying vec3 vLocalDir;
-
-void main() {
-  if (uIsSolar < 0.5 || uActiveStrength <= 0.001) {
-    discard;
-  }
-
-  vec3 pDir = normalize(vLocalDir);
-  vec3 sDir = normalize(uShadowDir);
-  float cosAng = clamp(dot(pDir, sDir), -1.0, 1.0);
-  float ang = acos(cosAng);
-
-  if (ang > uPenumbraRad) {
-    discard;
-  }
-
-  // Penumbra suave da borda até o núcleo de umbra + anel coronal âmbar sutil na borda da umbra
-  float penumbraT = 1.0 - smoothstep(uUmbraRad, uPenumbraRad, ang);
-  float umbraCore = 1.0 - smoothstep(uUmbraRad * 0.45, uUmbraRad * 1.15, ang);
-  float coronaRim = smoothstep(uUmbraRad * 0.65, uUmbraRad, ang)
-    * (1.0 - smoothstep(uUmbraRad, uUmbraRad * 1.45, ang));
-
-  float alpha = clamp((penumbraT * 0.52 + umbraCore * 0.40) * uActiveStrength, 0.0, 0.90);
-  vec3 shadowTint = mix(vec3(0.015, 0.022, 0.048), vec3(0.005, 0.008, 0.02), umbraCore);
-  vec3 coronaColor = vec3(1.0, 0.66, 0.24) * coronaRim * 0.42;
-
-  gl_FragColor = vec4(shadowTint + coronaColor, alpha);
-}
-`;
+const MOON_LOCAL_BASE_RADIUS = 0.27;
 
 /**
  * Camada 3D de Eclipses Solares & Lunares (D41):
- * - Projeta a sombra física de umbra e penumbra sobre a Terra (`ECLIPSE_SHADOW_SHELL_RADIUS`);
- * - Renderiza a faixa de totalidade geodésica e a linha central em 3D;
- * - Desenha o cone translúcido de sombra entre a Lua e a superfície terrestre (ou Terra → Lua no eclipse lunar);
+ * - Sincroniza `eclipseShaderState` para escurecer fisicamente `EarthSphere` e `CloudLayer`;
+ * - Desenha acima das nuvens (`R > 1.006`) o corredor geodésico de totalidade, as linhas-limite
+ *   norte/sul, a linha central dourada, o anel coronal móvel da umbra e os marcos das estações;
+ * - Projeta cones 3D com orientação e abertura físicas reais:
+ *   • Solar: da Lua (`0.27 * moonScale`) afunilando até a mancha de umbra sobre a cidade eclipsada;
+ *   • Lunar: do terminador terrestre (`R = 0.99`) envolvendo a Lua Cheia em crepúsculo avermelhado;
  * - Nunca intercepta cliques sobre países (`raycast={() => null}`) e descarta 100% da GPU (`RN21`).
  */
 export const EclipseShadowLayer: React.FC = () => {
   const activeEclipseId = useCosmicStore((s) => s.activeEclipseId);
   const offsetMinutes = useCosmicStore((s) => s.eclipseOffsetMinutes);
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
+  const scaleMode = useCosmicStore((s) => s.scaleMode);
   const invalidate = useThree((s) => s.invalidate);
 
   const instant = useMemo(() => {
@@ -83,58 +46,83 @@ export const EclipseShadowLayer: React.FC = () => {
 
   const eclipseEntry = activeEclipseId ? ECLIPSES_CATALOG[activeEclipseId] : null;
 
-  const { shellGeo, shellMat, ringGeo, ringMat, coneGeo, coneMat } = useMemo(() => {
-    const sGeo = new THREE.SphereGeometry(ECLIPSE_SHADOW_SHELL_RADIUS, 72, 54);
-    const sMat = new THREE.ShaderMaterial({
-      vertexShader: shadowShellVertexShader,
-      fragmentShader: shadowShellFragmentShader,
-      uniforms: {
-        uShadowDir: { value: new THREE.Vector3(1, 0, 0) },
-        uUmbraRad: { value: 0.032 },
-        uPenumbraRad: { value: 0.45 },
-        uIsSolar: { value: 1.0 },
-        uActiveStrength: { value: 1.0 },
-      },
-      transparent: true,
-      depthWrite: false,
-    });
-    const rGeo = new THREE.RingGeometry(0.022, 0.032, 36);
-    const rMat = new THREE.MeshBasicMaterial({
+  const moonEffectiveRadius = useMemo(() => {
+    if (!isCosmicMode) return MOON_LOCAL_BASE_RADIUS;
+    return (
+      bodySceneRadius(ASTROPHYSICAL_CATALOG.MOON.equatorialRadiusKm, scaleMode) /
+      earthSystemScale(scaleMode)
+    );
+  }, [isCosmicMode, scaleMode]);
+
+  const staticVisuals = useMemo(() => {
+    const coronaRingGeo = new THREE.RingGeometry(0.022, 0.035, 48);
+    const coronaRingMat = new THREE.MeshBasicMaterial({
       color: "#fbbf24",
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.94,
       depthWrite: false,
       toneMapped: false,
     });
-    const cGeo = new THREE.CylinderGeometry(0.03, 0.27, 1.0, 24, 1, true);
-    const cMat = new THREE.MeshBasicMaterial({
-      color: "#0f172a",
+    const umbraCoreGeo = new THREE.CircleGeometry(0.022, 36);
+    const umbraCoreMat = new THREE.MeshBasicMaterial({
+      color: "#020617",
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.18,
+      opacity: 0.88,
+      depthWrite: false,
+    });
+    const stationDotGeo = new THREE.SphereGeometry(0.0085, 12, 12);
+    const stationDotMat = new THREE.MeshBasicMaterial({
+      color: "#fef08a",
+      toneMapped: false,
+    });
+    // CylinderGeometry(radiusTop = +Y = end, radiusBottom = -Y = start, height = 1)
+    const solarConeGeo = new THREE.CylinderGeometry(1.0, 0.09, 1.0, 32, 1, true);
+    const solarConeMat = new THREE.MeshBasicMaterial({
+      color: "#020617",
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.22,
+      depthWrite: false,
+    });
+    const lunarConeGeo = new THREE.CylinderGeometry(0.64, 0.99, 1.0, 36, 1, true);
+    const lunarConeMat = new THREE.MeshBasicMaterial({
+      color: "#991b1b",
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.2,
       depthWrite: false,
     });
     return {
-      shellGeo: sGeo,
-      shellMat: sMat,
-      ringGeo: rGeo,
-      ringMat: rMat,
-      coneGeo: cGeo,
-      coneMat: cMat,
+      coronaRingGeo,
+      coronaRingMat,
+      umbraCoreGeo,
+      umbraCoreMat,
+      stationDotGeo,
+      stationDotMat,
+      solarConeGeo,
+      solarConeMat,
+      lunarConeGeo,
+      lunarConeMat,
     };
   }, []);
 
   useEffect(() => {
     return () => {
-      shellGeo.dispose();
-      shellMat.dispose();
-      ringGeo.dispose();
-      ringMat.dispose();
-      coneGeo.dispose();
-      coneMat.dispose();
+      clearEclipseSurfaceShadow();
+      staticVisuals.coronaRingGeo.dispose();
+      staticVisuals.coronaRingMat.dispose();
+      staticVisuals.umbraCoreGeo.dispose();
+      staticVisuals.umbraCoreMat.dispose();
+      staticVisuals.stationDotGeo.dispose();
+      staticVisuals.stationDotMat.dispose();
+      staticVisuals.solarConeGeo.dispose();
+      staticVisuals.solarConeMat.dispose();
+      staticVisuals.lunarConeGeo.dispose();
+      staticVisuals.lunarConeMat.dispose();
     };
-  }, [shellGeo, shellMat, ringGeo, ringMat, coneGeo, coneMat]);
+  }, [staticVisuals]);
 
   const totalityVisuals = useMemo(() => {
     if (!eclipseEntry || eclipseEntry.kind !== "solar_total") return null;
@@ -143,13 +131,50 @@ export const EclipseShadowLayer: React.FC = () => {
       eclipseEntry.umbraWidthKm
     );
     const ribbonMat = new THREE.MeshBasicMaterial({
-      color: "#090d1a",
+      color: "#050814",
       transparent: true,
-      opacity: 0.56,
+      opacity: 0.64,
       side: THREE.DoubleSide,
       depthWrite: false,
     });
-    const pts = buildTotalityCenterlinePoints(eclipseEntry.centerline);
+
+    // Extrai as bordas norte e sul diretamente dos pares de vértices da fita de totalidade
+    const ribAttr = ribbonGeo.getAttribute("position");
+    const borderPos: number[] = [];
+    const pairs = Math.floor(ribAttr.count / 2);
+    for (let i = 1; i < pairs; i++) {
+      const l0 = (i - 1) * 2;
+      const l1 = i * 2;
+      borderPos.push(
+        ribAttr.getX(l0),
+        ribAttr.getY(l0),
+        ribAttr.getZ(l0),
+        ribAttr.getX(l1),
+        ribAttr.getY(l1),
+        ribAttr.getZ(l1)
+      );
+      const r0 = l0 + 1;
+      const r1 = l1 + 1;
+      borderPos.push(
+        ribAttr.getX(r0),
+        ribAttr.getY(r0),
+        ribAttr.getZ(r0),
+        ribAttr.getX(r1),
+        ribAttr.getY(r1),
+        ribAttr.getZ(r1)
+      );
+    }
+    const borderGeo = new THREE.BufferGeometry();
+    borderGeo.setAttribute("position", new THREE.Float32BufferAttribute(borderPos, 3));
+    const borderMat = new THREE.LineBasicMaterial({
+      color: "#fde68a",
+      transparent: true,
+      opacity: 0.52,
+      depthWrite: false,
+      toneMapped: false,
+    });
+
+    const pts = buildTotalityCenterlinePoints(eclipseEntry.centerline, TOTALITY_CENTERLINE_RADIUS);
     const linePos: number[] = [];
     for (let i = 1; i < pts.length; i++) {
       const a = pts[i - 1]!;
@@ -161,11 +186,16 @@ export const EclipseShadowLayer: React.FC = () => {
     const lineMat = new THREE.LineBasicMaterial({
       color: "#f59e0b",
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.94,
       depthWrite: false,
       toneMapped: false,
     });
-    return { ribbonGeo, ribbonMat, lineGeo, lineMat };
+
+    const stationPositions = eclipseEntry.stations.map((st) =>
+      latLngToVector3(st.lat, st.lng, 1.0086)
+    );
+
+    return { ribbonGeo, ribbonMat, borderGeo, borderMat, lineGeo, lineMat, stationPositions };
   }, [eclipseEntry]);
 
   useEffect(() => {
@@ -174,30 +204,39 @@ export const EclipseShadowLayer: React.FC = () => {
       if (!totalityVisuals) return;
       totalityVisuals.ribbonGeo.dispose();
       totalityVisuals.ribbonMat.dispose();
+      totalityVisuals.borderGeo.dispose();
+      totalityVisuals.borderMat.dispose();
       totalityVisuals.lineGeo.dispose();
       totalityVisuals.lineMat.dispose();
     };
   }, [totalityVisuals, invalidate]);
 
   useEffect(() => {
-    if (!instant) return;
-    shellMat.uniforms.uShadowDir.value.copy(instant.shadowDirection);
-    shellMat.uniforms.uUmbraRad.value = instant.umbraAngularRad;
-    shellMat.uniforms.uPenumbraRad.value = instant.penumbraAngularRad;
-    shellMat.uniforms.uIsSolar.value = instant.eclipse.kind === "solar_total" ? 1.0 : 0.0;
-    shellMat.uniforms.uActiveStrength.value = instant.isTotalityActive ? 1.0 : 0.45;
-    coneMat.color.set(instant.eclipse.kind === "lunar_total" ? "#991b1b" : "#020617");
-    coneMat.opacity = instant.eclipse.kind === "lunar_total" ? 0.22 : 0.16;
+    if (!instant) {
+      clearEclipseSurfaceShadow();
+      invalidate();
+      return;
+    }
+    const solarStrength =
+      instant.eclipse.kind === "solar_total" ? (instant.isTotalityActive ? 1.0 : 0.45) : 0.0;
+    setEclipseSurfaceShadow(
+      instant.shadowDirection,
+      instant.umbraAngularRad,
+      instant.penumbraAngularRad,
+      solarStrength
+    );
     invalidate();
-  }, [instant, shellMat, coneMat, invalidate]);
+  }, [instant, invalidate]);
 
   const coneTransform = useMemo(() => {
     if (!instant) return null;
-    const lunar = calculateLunarPosition(instant.targetDate);
-    const moonPos = isCosmicMode ? lunar.cosmicRelativePosition : lunar.scenePosition;
-    const surfaceSpot = instant.shadowDirection.clone().multiplyScalar(1.003);
-    const start = instant.eclipse.kind === "solar_total" ? surfaceSpot : new THREE.Vector3(0, 0, 0);
-    const end = moonPos;
+    const isSolar = instant.eclipse.kind === "solar_total";
+    const start = isSolar
+      ? instant.shadowDirection.clone().multiplyScalar(1.006)
+      : new THREE.Vector3(0, 0, 0);
+    const end = isSolar
+      ? instant.syzygyMoonLocalPos.clone()
+      : instant.syzygyMoonLocalPos.clone().multiplyScalar(1.12);
     const axis = end.clone().sub(start);
     const length = axis.length();
     if (length < 0.2) return null;
@@ -206,12 +245,13 @@ export const EclipseShadowLayer: React.FC = () => {
       new THREE.Vector3(0, 1, 0),
       axis.clone().normalize()
     );
-    return { mid, quat, length };
-  }, [instant, isCosmicMode]);
+    const radialScale = isSolar ? moonEffectiveRadius : 1.0;
+    return { isSolar, mid, quat, scale: [radialScale, length, radialScale] as [number, number, number] };
+  }, [instant, moonEffectiveRadius]);
 
   if (!instant) return null;
 
-  const markerPos = instant.shadowDirection.clone().multiplyScalar(1.0038);
+  const markerPos = instant.shadowDirection.clone().multiplyScalar(1.0086);
   const markerQuat = new THREE.Quaternion().setFromUnitVectors(
     new THREE.Vector3(0, 0, 1),
     instant.shadowDirection
@@ -219,8 +259,6 @@ export const EclipseShadowLayer: React.FC = () => {
 
   return (
     <group name="eclipse-shadow-layer">
-      <mesh geometry={shellGeo} material={shellMat} raycast={ignoreRaycast} renderOrder={8} />
-
       {totalityVisuals && (
         <>
           <mesh
@@ -230,32 +268,58 @@ export const EclipseShadowLayer: React.FC = () => {
             renderOrder={9}
           />
           <lineSegments
-            geometry={totalityVisuals.lineGeo}
-            material={totalityVisuals.lineMat}
+            geometry={totalityVisuals.borderGeo}
+            material={totalityVisuals.borderMat}
             raycast={ignoreRaycast}
             renderOrder={10}
           />
+          <lineSegments
+            geometry={totalityVisuals.lineGeo}
+            material={totalityVisuals.lineMat}
+            raycast={ignoreRaycast}
+            renderOrder={11}
+          />
+          {totalityVisuals.stationPositions.map((pos, idx) => (
+            <mesh
+              key={idx}
+              position={pos}
+              geometry={staticVisuals.stationDotGeo}
+              material={staticVisuals.stationDotMat}
+              raycast={ignoreRaycast}
+              renderOrder={12}
+            />
+          ))}
         </>
       )}
 
       {instant.eclipse.kind === "solar_total" && (
-        <mesh
-          position={markerPos}
-          quaternion={markerQuat}
-          geometry={ringGeo}
-          material={ringMat}
-          raycast={ignoreRaycast}
-          renderOrder={11}
-        />
+        <group position={markerPos} quaternion={markerQuat}>
+          <mesh
+            geometry={staticVisuals.umbraCoreGeo}
+            material={staticVisuals.umbraCoreMat}
+            raycast={ignoreRaycast}
+            renderOrder={12}
+          />
+          <mesh
+            geometry={staticVisuals.coronaRingGeo}
+            material={staticVisuals.coronaRingMat}
+            raycast={ignoreRaycast}
+            renderOrder={13}
+          />
+        </group>
       )}
 
       {coneTransform && (
         <mesh
           position={coneTransform.mid}
           quaternion={coneTransform.quat}
-          scale={[1, coneTransform.length, 1]}
-          geometry={coneGeo}
-          material={coneMat}
+          scale={coneTransform.scale}
+          geometry={
+            coneTransform.isSolar ? staticVisuals.solarConeGeo : staticVisuals.lunarConeGeo
+          }
+          material={
+            coneTransform.isSolar ? staticVisuals.solarConeMat : staticVisuals.lunarConeMat
+          }
           raycast={ignoreRaycast}
           renderOrder={7}
         />

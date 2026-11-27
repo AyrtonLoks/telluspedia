@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { useCosmicStore } from "@/stores/cosmicStore";
 import { useTimelineStore } from "@/stores/timelineStore";
-import { getLunarPhase } from "@/lib/astronomy";
+import { getLunarPhase, resolveAstronomicalDate } from "@/lib/astronomy";
+import { resolveEclipseTargetDate } from "@/lib/eclipses-ids";
 import {
   ASTROPHYSICAL_CATALOG,
   computeAllPlanetaryPositions,
@@ -31,6 +32,7 @@ import { formatNumber } from "@/lib/i18n/format";
 import { CosmicLayersMenu } from "./CosmicLayersMenu";
 import { CosmicHalleyCard } from "./CosmicHalleyCard";
 import { CosmicProbeInspectorCard } from "./CosmicProbeInspectorCard";
+import { CosmicEclipseSection } from "./CosmicEclipseSection";
 
 function formatCosmicEpoch(decimalYear: number): string {
   const wholeYear = Math.floor(decimalYear);
@@ -85,6 +87,17 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
       ? useCosmicStore.getState().activeCosmicLayers
       : storeActiveLayers;
 
+  const storeActiveEclipseId = useCosmicStore((s) => s.activeEclipseId);
+  const storeEclipseOffset = useCosmicStore((s) => s.eclipseOffsetMinutes);
+  const activeEclipseId =
+    typeof window === "undefined"
+      ? useCosmicStore.getState().activeEclipseId
+      : storeActiveEclipseId;
+  const eclipseOffsetMinutes =
+    typeof window === "undefined"
+      ? useCosmicStore.getState().eclipseOffsetMinutes
+      : storeEclipseOffset;
+
   const focusBody = useCosmicStore((s) => s.focusBody);
   const toggleLayer = useCosmicStore((s) => s.toggleLayer);
   const scaleMode = useCosmicStore((s) => s.scaleMode);
@@ -99,7 +112,10 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
   const [copiedCitation, setCopiedCitation] = useState(false);
 
   const isNormalModeMoon = !isCosmicMode && focusedBodyId === "MOON";
-  const lunarPhase = focusedBodyId === "MOON" ? getLunarPhase(new Date()) : null;
+  const lunarRefDate = activeEclipseId
+    ? resolveEclipseTargetDate(activeEclipseId, eclipseOffsetMinutes)
+    : resolveAstronomicalDate({ selectedYear });
+  const lunarPhase = focusedBodyId === "MOON" ? getLunarPhase(lunarRefDate) : null;
 
   if (!isCosmicMode && !isNormalModeMoon) return null;
 
@@ -236,6 +252,11 @@ export const CosmicInspectorHUD: React.FC<CosmicInspectorHUDProps> = ({ placemen
           selectedYear={selectedYear}
           auUnit={auUnit}
         />
+      )}
+
+      {/* Simulador de Eclipses Solares & Lunares ao inspecionar a Lua (ou a Terra com eclipse ativo — D41) */}
+      {(focusedBodyId === "MOON" || (focusedBodyId === "EARTH" && activeEclipseId !== null)) && (
+        <CosmicEclipseSection />
       )}
 
       {/* Astrophysical Fact Sheet */}

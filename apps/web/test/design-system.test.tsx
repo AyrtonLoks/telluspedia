@@ -183,6 +183,7 @@ const MIGRATED = [
   "src/components/transversal/StudyTrailBar.tsx",
   "src/components/transversal/TransversalHud.tsx",
   "src/components/eclipse/EclipseHud.tsx",
+  "src/components/hud/CosmicEclipseSection.tsx",
   "src/components/hud/CosmicProbeInspectorCard.tsx",
   "src/components/dossiers/MiltonSantosDossierView.tsx",
   "src/components/dossiers/MiltonSantosCitations.tsx",

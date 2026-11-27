@@ -246,7 +246,12 @@ const HistoricalAxis: React.FC<{
 
   // Scrubber: ano selecionado (ou o fim do período quando nenhum foi escolhido), arrastável.
   const scrubYear = selectedYear ?? Math.floor(bounds.end);
-  const scrubPercent = yearToPercent(Math.min(bounds.end, scrubYear + 0.5), view);
+  const scrubDisplayYear = Math.floor(scrubYear);
+  const hasFractionalScrub = Math.abs(scrubYear - scrubDisplayYear) > 1e-4;
+  const scrubPercent = yearToPercent(
+    Math.min(bounds.end, hasFractionalScrub ? scrubYear : scrubYear + 0.5),
+    view
+  );
   const scrubVisible = scrubPercent >= 0 && scrubPercent <= 100;
   const yearFromClientX = (clientX: number) => Math.min(Math.floor(bounds.end), Math.max(Math.floor(bounds.start), Math.floor(anchorAt(clientX))));
   const onScrubPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
@@ -334,7 +339,7 @@ const HistoricalAxis: React.FC<{
             aria-label="Ano selecionado"
             aria-valuemin={Math.floor(bounds.start)}
             aria-valuemax={Math.floor(bounds.end)}
-            aria-valuenow={scrubYear}
+            aria-valuenow={scrubDisplayYear}
             title="Arraste para mudar o ano no globo (setas ← →)"
             onPointerDown={onScrubPointerDown}
             onPointerMove={onScrubPointerMove}
@@ -345,7 +350,7 @@ const HistoricalAxis: React.FC<{
               selectedYear === null ? "border-line bg-surface text-fg-muted" : "border-accent bg-accent text-accent-on"
             )}
           >
-            {scrubYear}
+            {scrubDisplayYear}
           </button>
         </div>
       )}

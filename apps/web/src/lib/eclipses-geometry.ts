@@ -1,10 +1,17 @@
 /**
- * Geometria física de umbra/penumbra e faixa de totalidade 3D para eclipses solares e lunares (D41).
+ * Geometria física de umbra/penumbra, alinhamento orbital colinear Terra–Lua–Sol e faixa de
+ * totalidade 3D acima das nuvens para eclipses solares e lunares (D41).
  * Alinhada estritamente à projeção esférica não-espelhada do Three.js (AGENTS.md §1).
  */
 
 import * as THREE from "three";
-import { calculateLunarPosition, calculateSubsolarPoint, getSunDirectionVector } from "./astronomy";
+import {
+  calculateLunarPosition,
+  calculateSubsolarPoint,
+  getSunDirectionVector,
+  MOON_MEAN_DISTANCE_KM,
+  MOON_SCENE_ORBIT_RADIUS,
+} from "./astronomy";
 import { ECLIPSES_CATALOG, type EclipseCatalogEntry } from "./eclipses-catalog";
 import {
   clampEclipseOffsetMinutes,
@@ -18,52 +25,51 @@ export const MOON_RADIUS_KM_ECLIPSE = 1737.4;
 export const SUN_RADIUS_KM_ECLIPSE = 695700.0;
 export const AU_KM_ECLIPSE = 149597870.7;
 
-export const TOTALITY_RIBBON_RADIUS = 1.0028;
-export const TOTALITY_CENTERLINE_RADIUS = 1.0033;
-export const ECLIPSE_SHADOW_SHELL_RADIUS = 1.0018;
+/** Acima da camada de nuvens (`CLOUD_RADIUS = 1.006`) para nitidez cartográfica total. */
+export const TOTALITY_RIBBON_RADIUS = 1.0074;
+export const TOTALITY_CENTERLINE_RADIUS = 1.008;
+export const ECLIPSE_SHADOW_SHELL_RADIUS = 1.007;
 
 export interface EclipseInstantGeometry {
   eclipse: EclipseCatalogEntry;
   targetDate: Date;
   offsetMinutes: number;
-  /** Ponto subsolar em coordenadas geográficas (graus). */
   subsolarLat: number;
   subsolarLng: number;
-  /** Ponto sublunar em coordenadas geográficas (graus, Meeus Cap. 47). */
   sublunarLat: number;
   sublunarLng: number;
-  /** Distância geocêntrica Terra–Lua em km no instante do eclipse. */
   lunarDistanceKm: number;
-  /** Separação angular geocêntrica entre os vetores Sol e Lua (graus: ~0° solar, ~180° lunar). */
   sunMoonSeparationDeg: number;
-  /** Comprimento do cone de umbra lunar (km) a partir do centro da Lua. */
   umbralConeLengthKm: number;
-  /** Raio físico da umbra projetada na superfície terrestre (km). */
   umbraRadiusKm: number;
-  /** Raio físico da penumbra projetada na superfície terrestre (km). */
   penumbraRadiusKm: number;
-  /** Raio angular da umbra sobre a esfera terrestre (radianos, com piso mínimo de legibilidade visual). */
   umbraAngularRad: number;
-  /** Raio angular da penumbra sobre a esfera terrestre (radianos). */
   penumbraAngularRad: number;
-  /** Coordenada instantânea do centro da sombra (ou zênite sublunar no eclipse lunar). */
   shadowLat: number;
   shadowLng: number;
+  /** Rótulo da estação ou região imediatamente sob o eixo da umbra no minuto selecionado. */
+  activeLocationPt: string;
+  activeLocationEn: string;
   /** Vetor unitário 3D no referencial fixo da Terra apontando para o centro da sombra. */
   shadowDirection: THREE.Vector3;
   /** Vetor direção solar no referencial fixo da Terra. */
   sunDirection: THREE.Vector3;
-  /** Vetor direção lunar no referencial fixo da Terra. */
+  /** Vetor direção lunar geocêntrica real (Meeus Cap. 47) no referencial fixo da Terra. */
   moonDirection: THREE.Vector3;
-  /** Fração de imersão da Lua na umbra terrestre em [0, 1] (0 em eclipses solares). */
+  /**
+   * Posição 3D da Lua no referencial local de `EarthOrientationGroup` em sizígia colinear estrita:
+   * - Solar: sobre o raio exato `surfaceSpot + d * sunDirection` (compensa a compressão orbital de 60,3 → 3,62 R⊕
+   *   para que o cone de umbra aponte paralelamente aos raios solares diretamente sobre a cidade eclipsada);
+   * - Lunar: imersa no eixo anti-solar `-sunDirection` dentro do cone de umbra terrestre.
+   */
+  syzygyMoonLocalPos: THREE.Vector3;
   lunarUmbraImmersion: number;
-  /** Verdadeiro enquanto o offset está dentro da janela central de totalidade na superfície. */
   isTotalityActive: boolean;
 }
 
 /**
- * Interpola na esfera (SLERP) a posição instantânea do eixo de umbra ao longo da linha central
- * calibrada do eclipse, garantindo que `offsetMinutes = 0` coincida exatamente com `(greatestLat, greatestLng)`.
+ * Interpola na esfera (SLERP) a posição instantânea do eixo de umbra usando os instantes UTC
+ * calibrados (`timedCenterline`), garantindo precisão geográfica sobre cada cidade na hora real.
  */
 export function interpolateCenterlineAtOffset(
   eclipse: EclipseCatalogEntry,
@@ -72,36 +78,56 @@ export function interpolateCenterlineAtOffset(
   const [minM, maxM] = eclipse.windowMinutes;
   const clamped = clampEclipseOffsetMinutes(offsetMinutes);
   const active = clamped >= minM && clamped <= maxM;
-  const pts = eclipse.centerline;
-  const gIdx = Math.max(0, Math.min(pts.length - 1, eclipse.greatestCenterlineIndex));
+  const timed = eclipse.timedCenterline;
 
-  if (pts.length === 0) {
+  if (timed.length === 0) {
     const dir = latLngToVector3(eclipse.greatestLat, eclipse.greatestLng, 1.0).normalize();
     return { lat: eclipse.greatestLat, lng: eclipse.greatestLng, direction: dir, active };
   }
-  if (Math.abs(clamped) < 1e-4 || pts.length === 1) {
-    const [gLat, gLng] = pts[gIdx]!;
-    const dir = latLngToVector3(gLat, gLng, 1.0).normalize();
-    return { lat: gLat, lng: gLng, direction: dir, active };
+
+  const effectiveM = Math.max(timed[0]![2], Math.min(timed[timed.length - 1]![2], clamped));
+  if (Math.abs(effectiveM) < 1e-4) {
+    const dir = latLngToVector3(eclipse.greatestLat, eclipse.greatestLng, 1.0).normalize();
+    return { lat: eclipse.greatestLat, lng: eclipse.greatestLng, direction: dir, active };
   }
 
-  let floatIdx: number;
-  if (clamped < 0) {
-    const frac = minM < 0 ? Math.min(1, Math.max(0, (clamped - minM) / (0 - minM))) : 1;
-    floatIdx = frac * gIdx;
-  } else {
-    const frac = maxM > 0 ? Math.min(1, Math.max(0, clamped / maxM)) : 0;
-    floatIdx = gIdx + frac * (pts.length - 1 - gIdx);
+  let segIdx = 0;
+  for (let i = 0; i < timed.length - 1; i++) {
+    if (effectiveM >= timed[i]![2] && effectiveM <= timed[i + 1]![2]) {
+      segIdx = i;
+      break;
+    }
   }
 
-  const i0 = Math.max(0, Math.min(pts.length - 1, Math.floor(floatIdx)));
-  const i1 = Math.max(0, Math.min(pts.length - 1, Math.ceil(floatIdx)));
-  const t = floatIdx - i0;
-  const v0 = latLngToVector3(pts[i0]![0], pts[i0]![1], 1.0);
-  const v1 = latLngToVector3(pts[i1]![0], pts[i1]![1], 1.0);
-  const dir = (i0 === i1 ? v0 : slerpVectors(v0, v1, t)).normalize();
+  const a = timed[segIdx]!;
+  const b = timed[Math.min(timed.length - 1, segIdx + 1)]!;
+  const span = Math.max(1e-6, b[2] - a[2]);
+  const t = Math.min(1, Math.max(0, (effectiveM - a[2]) / span));
+
+  const v0 = latLngToVector3(a[0], a[1], 1.0);
+  const v1 = latLngToVector3(b[0], b[1], 1.0);
+  const dir = (t <= 1e-5 ? v0 : t >= 1 - 1e-5 ? v1 : slerpVectors(v0, v1, t)).normalize();
   const { lat, lng } = vector3ToLatLng(dir);
   return { lat, lng, direction: dir, active };
+}
+
+function resolveNearestStationLabels(
+  eclipse: EclipseCatalogEntry,
+  offsetMinutes: number
+): { pt: string; en: string } {
+  let best = eclipse.stations[0];
+  let bestDiff = Infinity;
+  for (const st of eclipse.stations) {
+    const d = Math.abs(st.offsetMinutes - offsetMinutes);
+    if (d < bestDiff) {
+      bestDiff = d;
+      best = st;
+    }
+  }
+  if (best && bestDiff <= 14) {
+    return { pt: best.labelPt, en: best.labelEn };
+  }
+  return { pt: eclipse.regionPt, en: eclipse.regionEn };
 }
 
 /**
@@ -123,20 +149,15 @@ export function computeEclipseGeometry(
   const dotSM = Math.max(-1, Math.min(1, sunDirection.dot(moonDirection)));
   const sunMoonSeparationDeg = THREE.MathUtils.radToDeg(Math.acos(dotSM));
 
-  // Distância Sol–Lua aproximada durante sizígia
   const dSunMoonKm =
     eclipse.kind === "solar_total"
       ? AU_KM_ECLIPSE - lunar.distanceKm
       : AU_KM_ECLIPSE + lunar.distanceKm;
 
-  // Comprimento do cone de umbra lunar: L_u = R_Moon * d_SunMoon / (R_Sun - R_Moon)
   const umbralConeLengthKm =
     (MOON_RADIUS_KM_ECLIPSE * dSunMoonKm) / (SUN_RADIUS_KM_ECLIPSE - MOON_RADIUS_KM_ECLIPSE);
-
-  // Distância da superfície terrestre sublunar ao centro da Lua
   const surfaceToMoonKm = Math.max(300_000, lunar.distanceKm - EARTH_RADIUS_KM_ECLIPSE);
 
-  // Raios físicos da umbra e penumbra na superfície terrestre
   const rawUmbraRadiusKm = Math.max(
     eclipse.umbraWidthKm * 0.5,
     ((umbralConeLengthKm - surfaceToMoonKm) / umbralConeLengthKm) * MOON_RADIUS_KM_ECLIPSE
@@ -151,17 +172,41 @@ export function computeEclipseGeometry(
   const umbraRadiusKm =
     eclipse.kind === "solar_total" ? rawUmbraRadiusKm : eclipse.umbraWidthKm * 0.5;
 
-  // Raios angulares na esfera unitária (piso visual sutil de 0.028 rad ≈ 180 km para a umbra ser legível do espaço)
   const umbraAngularRad =
     eclipse.kind === "solar_total"
-      ? Math.max(0.028, umbraRadiusKm / EARTH_RADIUS_KM_ECLIPSE)
+      ? Math.max(0.026, umbraRadiusKm / EARTH_RADIUS_KM_ECLIPSE)
       : 0.42;
   const penumbraAngularRad =
     eclipse.kind === "solar_total"
-      ? Math.min(0.62, Math.max(0.28, penumbraRadiusKm / EARTH_RADIUS_KM_ECLIPSE))
+      ? Math.min(0.58, Math.max(0.28, penumbraRadiusKm / EARTH_RADIUS_KM_ECLIPSE))
       : Math.PI * 0.5;
 
   const interp = interpolateCenterlineAtOffset(eclipse, safeOffset);
+  const labels = resolveNearestStationLabels(eclipse, safeOffset);
+
+  const compressedOrbitR =
+    MOON_SCENE_ORBIT_RADIUS * (lunar.distanceKm / MOON_MEAN_DISTANCE_KM);
+  let syzygyMoonLocalPos: THREE.Vector3;
+
+  if (eclipse.kind === "solar_total") {
+    const proj = Math.max(0, interp.direction.dot(sunDirection));
+    const rayDist = Math.max(2.35, compressedOrbitR - proj);
+    syzygyMoonLocalPos = interp.direction
+      .clone()
+      .addScaledVector(sunDirection, rayDist);
+  } else {
+    const antiSun = sunDirection.clone().negate();
+    const northPerp = new THREE.Vector3(0, 1, 0)
+      .addScaledVector(antiSun, -antiSun.y)
+      .normalize();
+    const eastPerp = new THREE.Vector3().crossVectors(northPerp, antiSun).normalize();
+    const sweepCross = (safeOffset / Math.max(1, eclipse.windowMinutes[1])) * 0.42;
+    syzygyMoonLocalPos = antiSun
+      .clone()
+      .multiplyScalar(compressedOrbitR)
+      .addScaledVector(northPerp, eclipse.gamma * 0.16)
+      .addScaledVector(eastPerp, sweepCross);
+  }
 
   let lunarUmbraImmersion = 0;
   if (eclipse.kind === "lunar_total") {
@@ -187,16 +232,19 @@ export function computeEclipseGeometry(
     penumbraAngularRad,
     shadowLat: Number(interp.lat.toFixed(4)),
     shadowLng: Number(interp.lng.toFixed(4)),
+    activeLocationPt: labels.pt,
+    activeLocationEn: labels.en,
     shadowDirection: interp.direction,
     sunDirection,
     moonDirection,
+    syzygyMoonLocalPos,
     lunarUmbraImmersion: Number(lunarUmbraImmersion.toFixed(3)),
     isTotalityActive: interp.active,
   };
 }
 
 /**
- * Gera a fita geodésica 3D (malha triangular sobre a esfera) da faixa de totalidade de um eclipse solar.
+ * Gera a fita geodésica 3D (malha triangular + bordas norte/sul) da faixa de totalidade sobre a esfera.
  */
 export function buildTotalityRibbonGeometry(
   centerline: ReadonlyArray<readonly [lat: number, lng: number]>,
@@ -215,8 +263,7 @@ export function buildTotalityRibbonGeometry(
     }
   }
 
-  // Meia-largura angular real com piso mínimo de legibilidade cartográfica (~115 km = 0.018 rad)
-  const halfAngleRad = Math.max(0.018, (umbraWidthKm * 0.5) / EARTH_RADIUS_KM_ECLIPSE);
+  const halfAngleRad = Math.max(0.019, (umbraWidthKm * 0.5) / EARTH_RADIUS_KM_ECLIPSE);
   const sinH = Math.sin(halfAngleRad);
   const cosH = Math.cos(halfAngleRad);
 

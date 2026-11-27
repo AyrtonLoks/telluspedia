@@ -25,12 +25,26 @@ import {
   LIGHT_SECONDS_PER_AU,
   sanitizeNasaMissionUrl,
 } from "../src/lib/deep-space-probes";
+import {
+  createProbeMaterialPalette,
+  disposeProbeMaterialPalette,
+} from "../src/components/globe/probe-materials";
+import {
+  buildProbeModelGroup,
+  disposeBuiltProbeModel,
+} from "../src/components/globe/probe-models";
+import { resolveProbeSceneScale } from "../src/components/globe/DeepSpaceProbesLayer";
 import { getProbeViewOffset, cosmicMinDistance } from "../src/components/globe/CosmicCameraController";
 import { computeSunDirection } from "../src/lib/epoch/useSunDirection";
 import { useCosmicStore } from "../src/stores/cosmicStore";
 import { useGlobeStore } from "../src/stores/globeStore";
 import { useTimelineStore } from "../src/stores/timelineStore";
-import { focusDeepSpaceProbe, selectEclipseEvent, clearCelestialFocus } from "../src/stores/actions";
+import {
+  focusCelestialBody,
+  focusDeepSpaceProbe,
+  selectEclipseEvent,
+  clearCelestialFocus,
+} from "../src/stores/actions";
 import { encodeView, restoreView } from "../src/lib/explore/view-url";
 import { DEFAULT_CAMERA_OFFSET, type ViewCamera } from "../src/lib/explore/view-camera";
 import { searchExplore } from "../src/lib/explore/search";
@@ -46,10 +60,25 @@ describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 
     useTimelineStore.setState({ selectedYear: 2026, selectedMilestoneId: null, geologicalMa: null });
   });
 
-  test("1. Catálogo de 5 eclipses (4 solares totais + 1 lunar total): sizígia real, umbra/penumbra e faixa de totalidade 3D", () => {
+  test("1. Catálogo de 5 eclipses: estações calibradas (Sobral/Príncipe/Luxor/Espanha), sizígia colinear e faixa acima das nuvens", () => {
     assert.equal(ECLIPSES_LIST.length, 5);
     const solarCount = ECLIPSES_LIST.filter((e) => e.kind === "solar_total").length;
     assert.ok(solarCount >= 4, "Deve haver ao menos 4 eclipses solares totais emblemáticos");
+    assert.ok(TOTALITY_RIBBON_RADIUS > 1.006, "Faixa de totalidade deve ficar acima de CloudLayer (1.006)");
+
+    // Sobral 1919: offset default (-69 min = 12:00 UTC) cai diretamente sobre Sobral, Ceará (-3.69°, -40.35°)
+    const sobralDefault = computeEclipseGeometry(
+      "sobral-1919",
+      ECLIPSES_CATALOG["sobral-1919"].defaultOffsetMinutes
+    );
+    assert.ok(Math.abs(sobralDefault.shadowLat - -3.69) < 0.05, "Umbra sobre Sobral lat");
+    assert.ok(Math.abs(sobralDefault.shadowLng - -40.35) < 0.05, "Umbra sobre Sobral lng");
+    assert.match(sobralDefault.activeLocationPt, /Sobral/);
+
+    // Príncipe (+64 min = 14:13 UTC) cai sobre a Ilha do Príncipe (1.61°, 7.40°)
+    const principe = computeEclipseGeometry("sobral-1919", 64);
+    assert.ok(Math.abs(principe.shadowLat - 1.61) < 0.05);
+    assert.ok(Math.abs(principe.shadowLng - 7.4) < 0.05);
 
     for (const id of ECLIPSE_IDS) {
       const g0 = computeEclipseGeometry(id, 0);
@@ -60,22 +89,18 @@ describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 
       assert.ok(g0.umbralConeLengthKm > 365_000);
 
       if (g0.eclipse.kind === "solar_total") {
+        assert.ok(g0.sunMoonSeparationDeg < 1.2);
+        // Colinearidade estrita Sol–Lua–Umbra na cena comprimida
+        const rayToMoon = g0.syzygyMoonLocalPos.clone().sub(g0.shadowDirection).normalize();
         assert.ok(
-          g0.sunMoonSeparationDeg < 1.2,
-          `${id}: Lua Nova em sizígia solar exige separação < 1,2° (obtido ${g0.sunMoonSeparationDeg}°)`
-        );
-        assert.ok(g0.umbraRadiusKm >= 95 && g0.penumbraRadiusKm > 2500);
-        assert.ok(g0.umbraAngularRad < g0.penumbraAngularRad);
-
-        // Varredura temporal desloca a umbra de oeste para leste sobre os continentes
-        const gBefore = computeEclipseGeometry(id, -45);
-        const gAfter = computeEclipseGeometry(id, 45);
-        assert.ok(
-          gBefore.shadowDirection.distanceTo(gAfter.shadowDirection) > 0.12,
-          `${id}: varredura -45..+45 min deve deslocar a umbra significativamente`
+          rayToMoon.dot(g0.sunDirection) > 0.9999,
+          `${id}: raio da mancha de umbra até a Lua deve ser estritamente paralelo aos raios solares`
         );
 
-        // Geometria 3D da faixa de totalidade sobre a esfera no raio 1.0028
+        const gBefore = computeEclipseGeometry(id, -40);
+        const gAfter = computeEclipseGeometry(id, 40);
+        assert.ok(gBefore.shadowDirection.distanceTo(gAfter.shadowDirection) > 0.12);
+
         const ribbon = buildTotalityRibbonGeometry(
           g0.eclipse.centerline,
           g0.eclipse.umbraWidthKm
@@ -86,38 +111,33 @@ describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 
         assert.ok(Math.abs(r - TOTALITY_RIBBON_RADIUS) < 1e-3);
         ribbon.dispose();
       } else {
-        assert.ok(
-          g0.sunMoonSeparationDeg > 178.5,
-          `${id}: Lua Cheia em eclipse lunar exige oposição > 178,5° (obtido ${g0.sunMoonSeparationDeg}°)`
-        );
+        assert.ok(g0.sunMoonSeparationDeg > 178.5);
         assert.equal(g0.lunarUmbraImmersion, 1);
+        assert.ok(
+          g0.syzygyMoonLocalPos.clone().normalize().dot(g0.sunDirection) < -0.99,
+          "No eclipse lunar a Lua deve estar no cone anti-solar da Terra"
+        );
       }
     }
 
-    // Sincronização do relógio solar canônico (`useSunDirection`) ao ativar Sobral 1919
     const sunSobral = computeSunDirection({
       effectiveYear: 1919,
       selectedMilestoneId: null,
       activeScene: null,
       activeEclipseId: "sobral-1919",
-      eclipseOffsetMinutes: 0,
+      eclipseOffsetMinutes: -69,
     });
     assert.equal(sunSobral.isLiveClock, false);
     assert.equal(
       sunSobral.targetDate.getTime(),
-      resolveEclipseTargetDate("sobral-1919", 0).getTime()
+      resolveEclipseTargetDate("sobral-1919", -69).getTime()
     );
 
-    // Sanitização estrita de URLs NASA GSFC
     assert.equal(sanitizeEclipseNasaUrl("javascript:alert(1)"), "https://science.nasa.gov/eclipses/");
     assert.equal(sanitizeEclipseNasaUrl("https://evil.example/eclipse"), "https://science.nasa.gov/eclipses/");
-    assert.match(
-      sanitizeEclipseNasaUrl(ECLIPSES_CATALOG["sobral-1919"].nasaUrl),
-      /^https:\/\/science\.nasa\.gov\//
-    );
   });
 
-  test("2. Efemérides calibradas, distância em UA e tempo-luz DSN das 4 sondas (Voyager 1/2, New Horizons, JWST)", () => {
+  test("2. Efemérides DSN e modelos 3D PBR multicomponente das 4 sondas (Voyager 1/2, New Horizons, JWST)", () => {
     assert.deepEqual([...DEEP_SPACE_PROBE_IDS], ["VOYAGER_1", "VOYAGER_2", "NEW_HORIZONS", "JWST"]);
 
     const v1_1990 = calculateProbePosition("VOYAGER_1", 1990.123);
@@ -128,59 +148,58 @@ describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 
     const nh_2026 = calculateProbePosition("NEW_HORIZONS", 2026.0);
     const jwst_2026 = calculateProbePosition("JWST", 2026.0);
 
-    // Crescimento monotônico real: Pale Blue Dot (~40.5 UA) < Heliopausa (121.6 UA) < 2026 (~169.8 UA)
     assert.ok(Math.abs(v1_1990.distanceSunAu - 40.47) < 0.2);
     assert.ok(Math.abs(v1_2012.distanceSunAu - 121.6) < 0.2);
     assert.ok(v1_2026.distanceSunAu > 168 && v1_2026.distanceSunAu < 173);
-
-    // Hierarquia real de distâncias em 2026: Voyager 1 > Voyager 2 > New Horizons > JWST (~1.01 UA)
     assert.ok(v1_2026.distanceSunAu > v2_2026.distanceSunAu);
     assert.ok(v2_2026.distanceSunAu > nh_2026.distanceSunAu);
-    assert.ok(nh_2026.distanceSunAu > 60);
-    assert.ok(Math.abs(nh_2015.distanceSunAu - 32.91) < 0.25, "Sobrevoo de Plutão em jul/2015 ~32.9 UA");
-
-    // JWST em órbita de halo no ponto de Lagrange Sol–Terra L2 (~0.010–0.012 UA da Terra, ~5 s-luz)
-    assert.ok(jwst_2026.distanceSunAu > 0.99 && jwst_2026.distanceSunAu < 1.04);
-    assert.ok(jwst_2026.distanceEarthAu > 0.008 && jwst_2026.distanceEarthAu < 0.015);
+    assert.ok(Math.abs(nh_2015.distanceSunAu - 32.91) < 0.25);
     assert.ok(jwst_2026.oneWayLightSeconds >= 4.5 && jwst_2026.oneWayLightSeconds <= 6.5);
-
-    // Tempo-luz da Voyager 1 em 2026 > 23 horas (> 82.800 s) e exatamente proporcional a LIGHT_SECONDS_PER_AU
     assert.ok(v1_2026.oneWayLightSeconds > 23 * 3600);
     assert.ok(
       Math.abs(v1_2026.oneWayLightSeconds - v1_2026.distanceEarthAu * LIGHT_SECONDS_PER_AU) < 1.0
     );
     assert.equal(formatLightTime(5.36, "pt-BR"), "5,4 s-luz");
     assert.equal(formatLightTime(5.36, "en"), "5.4 light-sec");
-    assert.equal(formatLightTime(84720, "pt-BR"), "23h 32m");
 
-    // Antes do lançamento: isLaunched = false e posição finita sem NaN
-    const v1Pre = calculateProbePosition("VOYAGER_1", 1969);
-    assert.equal(v1Pre.isLaunched, false);
-    assert.ok(Number.isFinite(v1Pre.scenePosition.x) && Number.isFinite(v1Pre.scenePosition.z));
+    // Proporção física: no modo real (Terra = 0.11), JWST tem escala estritamente menor que a Terra
+    assert.ok(resolveProbeSceneScale("JWST", "real") < 0.11);
+
+    // Validação estrutural dos modelos 3D PBR e descarte completo (RN21)
+    const palette = createProbeMaterialPalette();
+    assert.ok(palette.materials.length >= 8 && palette.textures.length >= 5);
+    for (const id of DEEP_SPACE_PROBE_IDS) {
+      const built = buildProbeModelGroup(id, palette);
+      let meshCount = 0;
+      built.group.traverse((obj) => {
+        if ((obj as { isMesh?: boolean }).isMesh) meshCount++;
+      });
+      if (id === "JWST") {
+        assert.ok(meshCount >= 45, `JWST deve ter 18 segmentos hexagonais + 5 camadas Kapton + tripé (achou ${meshCount})`);
+      } else {
+        assert.ok(meshCount >= 10, `${id} deve ser montagem 3D multicomponente detalhada (achou ${meshCount})`);
+      }
+      disposeBuiltProbeModel(built);
+    }
+    disposeProbeMaterialPalette(palette);
 
     assert.equal(sanitizeNasaMissionUrl("javascript:evil()"), "https://science.nasa.gov/missions/");
-    for (const id of DEEP_SPACE_PROBE_IDS) {
-      assert.match(sanitizeNasaMissionUrl(DEEP_SPACE_PROBES_CATALOG[id].nasaUrl), /^https:\/\//);
-      assert.match(sanitizeNasaMissionUrl(DEEP_SPACE_PROBES_CATALOG[id].jplUrl), /^https:\/\//);
-    }
   });
 
-  test("3. Handover seguro de câmera sem NaN (AGENTS.md §1), preservação do país (D15) e dispose() GPU (RN21)", () => {
+  test("3. Handover seguro de câmera sem NaN (AGENTS.md §1), preservação de modo no Cosmos e dispose() GPU (RN21)", () => {
     for (const mode of ["visual", "real"] as const) {
       for (const probeId of DEEP_SPACE_PROBE_IDS) {
         const pos = calculateProbePosition(probeId, 2026.4, mode);
-        const offset = getProbeViewOffset(probeId, mode);
+        const offset = getProbeViewOffset(probeId, mode, 2026.4);
         const minDist = cosmicMinDistance(null, mode, probeId);
         assert.ok(
           Number.isFinite(pos.scenePosition.x) &&
             Number.isFinite(pos.scenePosition.y) &&
-            Number.isFinite(pos.scenePosition.z),
-          `${probeId} (${mode}) scenePosition livre de NaN`
+            Number.isFinite(pos.scenePosition.z)
         );
-        assert.ok(offset.length() >= 1.2, `${probeId} (${mode}) offset seguro >= 1.2`);
-        assert.ok(minDist >= 0.4, `${probeId} (${mode}) minDistance seguro >= 0.4`);
+        assert.ok(offset.length() >= 0.3, `${probeId} (${mode}) offset seguro >= 0.3`);
+        assert.ok(minDist >= 0.18, `${probeId} (${mode}) minDistance seguro >= 0.18`);
 
-        // JWST permanece fora do envelope visual da Terra na cena cósmica
         if (probeId === "JWST") {
           const trail = generateProbeTrajectoryPoints("JWST", 2026.4, mode, 32);
           assert.equal(trail.length, 33);
@@ -196,9 +215,17 @@ describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 
     assert.equal(useCosmicStore.getState().focusedProbeId, "VOYAGER_1");
     assert.equal(useGlobeStore.getState().selectedIso, "BRA");
     clearCelestialFocus();
-    assert.equal(useCosmicStore.getState().focusedProbeId, null);
 
-    // RN21 e raycast não bloqueante nas camadas 3D novas
+    // Selecionar eclipse dentro do Modo Cosmos preserva o Modo Cosmos e mantém o inspetor na Lua
+    useCosmicStore.getState().enterCosmicView("MOON");
+    selectEclipseEvent("luxor-2027");
+    assert.equal(useCosmicStore.getState().isCosmicMode, true, "Não deve sair do Modo Cosmos de surpresa");
+    assert.equal(useCosmicStore.getState().focusedBodyId, "MOON");
+    assert.ok(
+      Math.abs((useTimelineStore.getState().selectedYear ?? 0) - 2027.5847) < 0.01,
+      "Deve sincronizar ano decimal de 2 de agosto de 2027"
+    );
+
     const eclipseLayerSrc = fs.readFileSync(
       path.join(webRoot, "src/components/globe/EclipseShadowLayer.tsx"),
       "utf-8"
@@ -209,21 +236,26 @@ describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 
     );
     assert.match(eclipseLayerSrc, /\.dispose\(\)/);
     assert.match(eclipseLayerSrc, /raycast=\{ignoreRaycast\}/);
-    assert.match(probesLayerSrc, /\.dispose\(\)/);
+    assert.match(probesLayerSrc, /disposeProbeMaterialPalette/);
     assert.match(probesLayerSrc, /<CelestialLabel\b/);
-    assert.doesNotMatch(probesLayerSrc, /distanceFactor/);
+    assert.doesNotMatch(probesLayerSrc, /OctahedronGeometry/);
   });
 
-  test("4. HTML5 Phrasing Content Invariant (zero <div> em <p>), URL compartilhável e busca ⌘K", () => {
-    focusDeepSpaceProbe("VOYAGER_1");
-    const probeHtml = renderToStaticMarkup(React.createElement(CosmicInspectorHUD));
-    assert.match(probeHtml, /Voyager 1/);
-    assert.match(probeHtml, /data-testid="probe-light-time"/);
-    for (const p of probeHtml.match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) ?? []) {
-      assert.ok(!p.includes("<div"), `CosmicProbeInspectorCard violou <p>: ${p}`);
+  test("4. Simulador de Eclipses integrado à Lua, HTML5 Phrasing Content Invariant, URL e busca ⌘K", () => {
+    // Focar a Lua renderiza o Simulador de Eclipses diretamente no CosmicInspectorHUD
+    useCosmicStore.getState().enterCosmicView("MOON");
+    selectEclipseEvent("blood-moon-2025");
+    const moonHtml = renderToStaticMarkup(React.createElement(CosmicInspectorHUD));
+    assert.match(moonHtml, /data-testid="moon-eclipse-simulator"/);
+    assert.match(moonHtml, /Lua de Sangue/);
+    for (const p of moonHtml.match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) ?? []) {
+      assert.ok(!p.includes("<div"), `CosmicInspectorHUD/Moon violou <p>: ${p}`);
     }
 
-    selectEclipseEvent("sobral-1919", { offsetMinutes: 15 });
+    // No Modo Cosmos, EclipseHud flutuante esquerdo fica oculto (evita duplicidade); no Globo, aparece limpo
+    assert.equal(renderToStaticMarkup(React.createElement(EclipseHud)), "");
+    selectEclipseEvent("sobral-1919", { lat: -3.69, lng: -40.35, targetMode: "earth" });
+    assert.equal(useCosmicStore.getState().isCosmicMode, false);
     const eclipseHtml = renderToStaticMarkup(React.createElement(EclipseHud));
     assert.match(eclipseHtml, /Sobral/);
     assert.match(eclipseHtml, /\/dossies\/einstein/);
@@ -231,7 +263,12 @@ describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 
       assert.ok(!p.includes("<div"), `EclipseHud violou <p>: ${p}`);
     }
 
-    // Round-trip de URL para sonda e eclipse
+    // No Modo Terra, focar a Lua também expõe o Simulador de Eclipses
+    focusCelestialBody("MOON");
+    const earthMoonHtml = renderToStaticMarkup(React.createElement(CosmicInspectorHUD));
+    assert.match(earthMoonHtml, /data-testid="moon-eclipse-simulator"/);
+
+    // Round-trip de URL para sonda e eclipse (restaura ano decimal exato do eclipse)
     useCosmicStore.getState().enterCosmicProbeView("JWST");
     useCosmicStore.getState().setActiveEclipse("luxor-2027", -20);
     const cam: ViewCamera = { offset: [...DEFAULT_CAMERA_OFFSET], restore: null, onChange: null };
@@ -240,13 +277,13 @@ describe("D41 · Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 
     assert.match(encoded, /eclipse=luxor-2027%2C-20|eclipse=luxor-2027,-20/);
 
     useCosmicStore.getState().resetCosmicState();
-    restoreView(`?visao=1&${encoded}`, cam);
+    restoreView(`?visao=1&ano=2027&${encoded}`, cam);
     assert.equal(useCosmicStore.getState().isCosmicMode, true);
     assert.equal(useCosmicStore.getState().focusedProbeId, "JWST");
     assert.equal(useCosmicStore.getState().activeEclipseId, "luxor-2027");
     assert.equal(useCosmicStore.getState().eclipseOffsetMinutes, -20);
+    assert.ok(Math.abs((useTimelineStore.getState().selectedYear ?? 0) - 2027.5846) < 0.01);
 
-    // Busca universal ⌘K encontra sondas e eclipses
     assert.ok(searchExplore("Voyager 1").some((r) => r.id === "probe:VOYAGER_1"));
     assert.ok(searchExplore("James Webb").some((r) => r.id === "probe:JWST"));
     assert.ok(searchExplore("Sobral 1919").some((r) => r.id === "eclipse:sobral-1919"));

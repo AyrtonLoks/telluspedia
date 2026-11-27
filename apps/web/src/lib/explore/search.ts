@@ -433,7 +433,17 @@ export function runSearchResult(result: SearchResult) {
         useLayoutStore.getState().setActiveRightPanel("cosmos");
       } else if (result.id.startsWith("eclipse:") && isEclipseId(value)) {
         const ec = ECLIPSES_CATALOG[value];
-        selectEclipseEvent(value, { lat: ec.greatestLat, lng: ec.greatestLng });
+        const defSt = ec.stations.find((s) => s.offsetMinutes === ec.defaultOffsetMinutes);
+        selectEclipseEvent(value, {
+          lat: defSt?.lat ?? ec.greatestLat,
+          lng: defSt?.lng ?? ec.greatestLng,
+          offsetMinutes: ec.defaultOffsetMinutes,
+          targetMode: useCosmicStore.getState().isCosmicMode
+            ? "preserve"
+            : ec.kind === "lunar_total"
+              ? "preserve"
+              : "earth",
+        });
       } else if (result.id.startsWith("transversal:") && isTransversalEntityId(value)) {
         showEarth();
         void useTransversalStore.getState().activateEntity(value);

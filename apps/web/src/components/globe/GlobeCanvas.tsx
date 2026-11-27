@@ -50,6 +50,7 @@ import { useStudioToolsStore } from "@/stores/studioToolsStore";
 import { useStudyStore } from "@/stores/studyStore";
 import { useI18n } from "@/lib/i18n/useT";
 import { useCosmicStore } from "@/stores/cosmicStore";
+import { resolveEclipseDecimalYear } from "@/lib/eclipses-ids";
 import { useEpochState } from "@/lib/epoch/useEpochState";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
 
@@ -170,17 +171,21 @@ export const GlobeCanvas: React.FC<{ viewCamera: ViewCamera }> = ({ viewCamera }
 
   const isCosmicMode = useCosmicStore((s) => s.isCosmicMode);
   const activeEclipseId = useCosmicStore((s) => s.activeEclipseId);
+  const eclipseOffsetMinutes = useCosmicStore((s) => s.eclipseOffsetMinutes);
   const cosmicScaleMode = useCosmicStore((s) => s.scaleMode);
   // D11: no modo Cosmos o grupo Terra + Lua segue a política única de escala.
   const earthGroupScale = isCosmicMode ? earthSystemScale(cosmicScaleMode) : 1;
   const solarSystemVisible = useSolarSystemVisible();
 
-  // Compute Earth's position in cosmic space or origin for earth mode
+  // Compute Earth's position in cosmic space (sincronizado ao minuto UTC exato durante eclipses D41) or origin for earth mode
   const earthPosition = useMemo(() => {
     if (!isCosmicMode) return [0, 0, 0] as [number, number, number];
-    const pos = calculatePlanetaryPosition("EARTH", selectedYear || new Date().getUTCFullYear()).scenePosition;
+    const epochArg = activeEclipseId
+      ? resolveEclipseDecimalYear(activeEclipseId, eclipseOffsetMinutes)
+      : selectedYear || new Date().getUTCFullYear();
+    const pos = calculatePlanetaryPosition("EARTH", epochArg).scenePosition;
     return [pos.x, pos.y, pos.z] as [number, number, number];
-  }, [isCosmicMode, selectedYear]);
+  }, [isCosmicMode, activeEclipseId, eclipseOffsetMinutes, selectedYear]);
 
   // Click-outside handler on celestial vault to deselect active selection
   const handlePointerMissed = (event: MouseEvent) => {

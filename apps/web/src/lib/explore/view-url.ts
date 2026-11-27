@@ -3,6 +3,7 @@ import { isDeepSpaceProbeId } from "@/lib/deep-space-probes-ids";
 import {
   clampEclipseOffsetMinutes,
   isEclipseId,
+  resolveEclipseDecimalYear,
 } from "@/lib/eclipses-ids";
 import { GEOLOGICAL_MILESTONE_MA } from "@/lib/epoch/constants";
 import { COUNTRY_ISO_CODES } from "@/lib/country-isos";
@@ -213,6 +214,11 @@ export function restoreView(search: string, view: ViewCamera) {
   const eclipseOffsetMinutes = activeEclipseId
     ? clampEclipseOffsetMinutes(Number(rawEclipseOffset ?? "0"))
     : 0;
+  if (activeEclipseId && ma === null) {
+    useTimelineStore.setState({
+      selectedYear: resolveEclipseDecimalYear(activeEclipseId, eclipseOffsetMinutes),
+    });
+  }
   const isCosmicMode = params.get("modo") === "cosmos" || probeCandidate !== null;
   const focusedProbeId = isCosmicMode ? probeCandidate : null;
   const focus =

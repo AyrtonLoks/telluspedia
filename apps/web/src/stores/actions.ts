@@ -5,7 +5,13 @@ import { readGibsView } from "@/lib/gibs-view";
 import { DEFAULT_MAP_PROJECTION, isMapProjectionId } from "@/lib/map-projections-types";
 import type { CelestialBodyId } from "@/lib/astronomy-planets";
 import type { DeepSpaceProbeId } from "@/lib/deep-space-probes-ids";
-import { ECLIPSE_YEAR_BY_ID, type EclipseId } from "@/lib/eclipses-ids";
+import {
+  ECLIPSE_DEFAULT_OFFSET_MINUTES,
+  ECLIPSE_KIND_BY_ID,
+  ECLIPSE_YEAR_BY_ID,
+  resolveEclipseDecimalYear,
+  type EclipseId,
+} from "@/lib/eclipses-ids";
 import type { StudyRecord } from "@/lib/studies-store";
 import { normalizeStudyEpoch } from "@/lib/study-epoch";
 import {
@@ -207,35 +213,97 @@ export function focusDeepSpaceProbe(id: DeepSpaceProbeId) {
   }
 }
 
-/** Ativa ou limpa um eclipse solar/lunar emblemático, sincronizando o ano da timeline e a câmera. */
+/**
+ * Ativa ou limpa um eclipse solar/lunar emblemático, sincronizando a data decimal exata na timeline
+ * e preservando o modo atual (Cosmos vs Globo) por padrão — evitando trocas de visão inesperadas.
+ */
 export function selectEclipseEvent(
   eclipseId: EclipseId | null,
-  options?: { lat?: number; lng?: number; offsetMinutes?: number; keepCosmicMode?: boolean }
+  options?: {
+    lat?: number;
+    lng?: number;
+    offsetMinutes?: number;
+    targetMode?: "preserve" | "earth" | "cosmos";
+  }
 ) {
   const cosmic = useCosmicStore.getState();
   if (!eclipseId) {
     cosmic.setActiveEclipse(null, 0);
     return;
   }
+
+  const offset = options?.offsetMinutes ?? ECLIPSE_DEFAULT_OFFSET_MINUTES[eclipseId];
   const year = ECLIPSE_YEAR_BY_ID[eclipseId];
+  const decimalYear = resolveEclipseDecimalYear(eclipseId, offset);
+
   useSceneStore.getState().closeScene({ restore: false });
   const tl = useTimelineStore.getState();
   const nextRange =
     year >= tl.startYear && year <= tl.endYear
       ? {}
       : { startYear: Math.max(1400, year - 25), endYear: Math.min(2100, year + 25) };
+
   useTimelineStore.setState({
     ...nextRange,
     geologicalMa: null,
-    selectedYear: year,
+    selectedYear: decimalYear,
     selectedMilestoneId: null,
   });
-  cosmic.setActiveEclipse(eclipseId, options?.offsetMinutes ?? 0);
-  if (!options?.keepCosmicMode && cosmic.isCosmicMode) {
-    cosmic.exitToEarthView();
+
+  cosmic.setPlayback(false);
+  cosmic.setActiveEclipse(eclipseId, offset);
+
+  const mode = options?.targetMode ?? "preserve";
+  const kind = ECLIPSE_KIND_BY_ID[eclipseId];
+
+  if (mode === "earth") {
+    if (cosmic.isCosmicMode || cosmic.focusedBodyId !== null) {
+      cosmic.exitToEarthView();
+    }
+    if (options?.lat !== undefined && options?.lng !== undefined) {
+      useGlobeStore.getState().flyTo(options.lat, options.lng, 1.95);
+    }
+    return;
   }
-  if (options?.lat !== undefined && options?.lng !== undefined && !useCosmicStore.getState().isCosmicMode) {
-    useGlobeStore.getState().flyTo(options.lat, options.lng, 2.05);
+
+  if (mode === "cosmos") {
+    cosmic.enterCosmicView(kind === "lunar_total" ? "MOON" : "EARTH");
+    return;
+  }
+
+  // Modo "preserve": nunca arranca o usuário do Modo Cosmos de surpresa e mantém o inspetor na Lua.
+  if (cosmic.isCosmicMode) {
+    cosmic.focusBody("MOON");
+    return;
+  }
+
+  // No modo Terra: eclipses lunares focam a Lua; eclipses solares voam até a estação na Terra se a Lua não estiver aberta
+  if (kind === "lunar_total") {
+    cosmic.focusBody("MOON");
+  } else if (
+    cosmic.focusedBodyId !== "MOON" &&
+    options?.lat !== undefined &&
+    options?.lng !== undefined
+  ) {
+    useGlobeStore.getState().flyTo(options.lat, options.lng, 1.95);
+  }
+}
+
+/** Atualiza o minuto do eclipse mantendo `selectedYear` sincronizado com a hora UTC exata. */
+export function seekEclipseOffsetMinutes(
+  offsetMinutes: number,
+  flyCoords?: { lat: number; lng: number }
+) {
+  const cosmic = useCosmicStore.getState();
+  const eclipseId = cosmic.activeEclipseId;
+  cosmic.setEclipseOffsetMinutes(offsetMinutes);
+  if (!eclipseId) return;
+  const clamped = useCosmicStore.getState().eclipseOffsetMinutes;
+  useTimelineStore.setState({
+    selectedYear: resolveEclipseDecimalYear(eclipseId, clamped),
+  });
+  if (flyCoords && !cosmic.isCosmicMode && cosmic.focusedBodyId !== "MOON") {
+    useGlobeStore.getState().flyTo(flyCoords.lat, flyCoords.lng, 1.95);
   }
 }
 

@@ -5,11 +5,11 @@ import { Eclipse, Layers, Rocket } from "lucide-react";
 import {
   ALL_COSMIC_LAYERS,
   COSMIC_LAYER_LABELS,
-  useCosmicStore,
   type CosmicLayerId,
 } from "@/stores/cosmicStore";
 import { DEEP_SPACE_PROBE_IDS, DEEP_SPACE_PROBES_CATALOG } from "@/lib/deep-space-probes";
-import { focusDeepSpaceProbe } from "@/stores/actions";
+import { focusCelestialBody, focusDeepSpaceProbe } from "@/stores/actions";
+import { useLayoutStore } from "@/stores/layoutStore";
 import type { CosmicScaleMode } from "@/lib/cosmic-scale";
 import { Panel } from "@/components/ui/Panel";
 import { cn } from "@/components/ui/cn";
@@ -37,7 +37,7 @@ export const CosmicLayersMenu: React.FC<CosmicLayersMenuProps> = ({
   return (
     <aside
       className={cn(
-        "fixed top-20 z-20 flex flex-col items-end gap-2",
+        "fixed top-20 z-30 flex flex-col items-end gap-2",
         isDockVisible ? "right-6 lg:right-[26.5rem]" : "right-6"
       )}
     >
@@ -59,7 +59,7 @@ export const CosmicLayersMenu: React.FC<CosmicLayersMenuProps> = ({
       </button>
 
       {showLayerPanel && (
-        <Panel className="w-56 space-y-3 p-3 text-label">
+        <Panel className="max-h-[calc(100dvh-6.5rem-var(--timeline-obstruction,0px))] w-56 space-y-3 overflow-y-auto p-3 text-label">
           <div className="space-y-1.5">
             <h4 className="text-caption font-medium text-fg-muted">
               {t("cosmic.visualLayers", "Camadas visuais")}
@@ -143,7 +143,10 @@ export const CosmicLayersMenu: React.FC<CosmicLayersMenuProps> = ({
                     key={probeId}
                     type="button"
                     data-testid={`cosmic-probe-btn-${probeId}`}
-                    onClick={() => focusDeepSpaceProbe(probeId)}
+                    onClick={() => {
+                      focusDeepSpaceProbe(probeId);
+                      setShowLayerPanel(false);
+                    }}
                     className="rounded-control border border-line bg-surface-raised px-2 py-1 text-left text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover hover:text-fg"
                   >
                     {p.id === "JWST" ? "JWST · L2" : p.namePt}
@@ -154,11 +157,15 @@ export const CosmicLayersMenu: React.FC<CosmicLayersMenuProps> = ({
             <button
               type="button"
               data-testid="cosmic-open-eclipses"
-              onClick={() => useCosmicStore.getState().setEclipseMenuOpen(true)}
+              onClick={() => {
+                focusCelestialBody("MOON");
+                useLayoutStore.getState().setActiveRightPanel("cosmos");
+                setShowLayerPanel(false);
+              }}
               className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-control border border-line bg-surface-raised px-2.5 py-1.5 text-caption font-medium text-fg-secondary transition-colors duration-fast ease-out hover:border-line-strong hover:bg-surface-hover hover:text-fg"
             >
               <Eclipse aria-hidden="true" className="h-3.5 w-3.5 text-warning" />
-              <span>{t("eclipse.openMenu", "Simulador de Eclipses")}</span>
+              <span>{t("eclipse.openMoonSimulator", "Lua · Simulador de Eclipses")}</span>
             </button>
           </div>
 

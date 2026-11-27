@@ -214,9 +214,9 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   const isTransversalVisible = useTransversalStore(
     (s) => s.isSelectorOpen || s.activeEntityId !== null || s.trail.length > 0
   );
-  const isEclipseVisible = useCosmicStore(
-    (s) => s.isEclipseMenuOpen || s.activeEclipseId !== null
-  );
+  // Carrega o chunk de EclipseHud em segundo plano assim que um eclipse é ativado (ele próprio
+  // retorna null no Cosmos/Lua e renderiza instantaneamente no 1º commit ao descer ao Globo).
+  const isEclipseVisible = useCosmicStore((s) => s.activeEclipseId !== null);
   const isStudioToolsVisible = useStudioToolsStore(
     (s) =>
       s.isRulerActive ||
@@ -303,7 +303,7 @@ export const GlobeExperienceShell: React.FC<GlobeExperienceShellProps> = ({
   ]);
 
   const showHistoricalBadge =
-    epoch.mode !== "GEOLOGICAL" && epoch.historicalEraId !== "CONTEMPORARY";
+    !isCosmicMode && epoch.mode !== "GEOLOGICAL" && epoch.historicalEraId !== "CONTEMPORARY";
   const showPaleoBadge = epoch.mode === "GEOLOGICAL";
   // Abertura e fechamento animados (D17): cada painel fica montado durante a saída.
   // Painel do player de cenas (D12c): só com uma cena ativa (carregado sob demanda — T25).

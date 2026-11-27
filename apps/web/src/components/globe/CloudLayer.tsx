@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useSunDirection } from "@/lib/epoch/useSunDirection";
 import { worldSunDirection } from "@/lib/earth-orientation";
+import { syncEclipseShaderUniforms } from "@/lib/eclipse-shader-state";
 import { loadGlobeTexture } from "@/lib/textures/globeTextures";
 import { getQualityProfile } from "@/lib/webgl-quality";
 import { useGraphicsQualityStore } from "@/stores/graphicsQualityStore";
@@ -38,6 +39,9 @@ const FRAGMENT = /* glsl */ `
   uniform sampler2D uClouds;
   uniform vec3 uSunDirection;
   uniform float uOpacity;
+  uniform vec3 uEclipseDir;
+  uniform vec2 uEclipseRadii;
+  uniform float uEclipseStrength;
   varying vec3 vNormal;
   varying vec2 vUv;
 
@@ -47,10 +51,20 @@ const FRAGMENT = /* glsl */ `
     float alpha = smoothstep(0.12, 0.85, c) * uOpacity;
     if (alpha < 0.004) discard;
 
-    float nDotL = dot(normalize(vNormal), normalize(uSunDirection));
+    vec3 nrm = normalize(vNormal);
+    float nDotL = dot(nrm, normalize(uSunDirection));
     float day = smoothstep(-0.12, 0.22, nDotL);
     float twilight = smoothstep(-0.2, 0.0, nDotL) * (1.0 - smoothstep(0.0, 0.25, nDotL));
     vec3 lit = vec3(1.0, 0.99, 0.97) * (0.72 + 0.38 * max(nDotL, 0.0));
+
+    if (uEclipseStrength > 0.001) {
+      float ecAng = acos(clamp(dot(nrm, normalize(uEclipseDir)), -1.0, 1.0));
+      float penumbra = 1.0 - smoothstep(uEclipseRadii.x, uEclipseRadii.y, ecAng);
+      float umbra = 1.0 - smoothstep(uEclipseRadii.x * 0.55, uEclipseRadii.x * 1.2, ecAng);
+      float ecShade = 1.0 - clamp((penumbra * 0.68 + umbra * 0.30) * uEclipseStrength, 0.0, 0.96);
+      lit *= ecShade;
+    }
+
     vec3 color = mix(vec3(0.035, 0.045, 0.06), lit, day) + vec3(1.0, 0.5, 0.22) * twilight * 0.25;
 
     gl_FragColor = vec4(color, alpha * mix(0.25, 1.0, day));
@@ -79,6 +93,9 @@ export const CloudLayer: React.FC<{ enabled: boolean; geological: boolean; study
           uClouds: { value: null as THREE.Texture | null },
           uSunDirection: { value: new THREE.Vector3(1, 0, 0) },
           uOpacity: { value: 0 },
+          uEclipseDir: { value: new THREE.Vector3(1, 0, 0) },
+          uEclipseRadii: { value: new THREE.Vector2(0.028, 0.45) },
+          uEclipseStrength: { value: 0.0 },
         },
         transparent: true,
         depthWrite: false,
@@ -105,11 +122,13 @@ export const CloudLayer: React.FC<{ enabled: boolean; geological: boolean; study
 
   useEffect(() => {
     worldSunDirection(sun.direction, material.uniforms.uSunDirection.value);
+    syncEclipseShaderUniforms(material.uniforms);
     invalidate();
   }, [material, sun.direction, sun.timestamp, invalidate]);
-  // Acompanha a rotação do globo no Cosmos (D21).
+  // Acompanha a rotação do globo no Cosmos (D21) e a sombra do eclipse (D41).
   useFrame(() => {
     worldSunDirection(sun.direction, material.uniforms.uSunDirection.value);
+    syncEclipseShaderUniforms(material.uniforms);
   });
 
   useEffect(() => () => material.dispose(), [material]);
