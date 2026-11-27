@@ -254,8 +254,8 @@ Se você perceber que sua tarefa vai tocar arquivos de um grupo que não está l
 | D39 | Observatório Sísmico & Tectônico: terremotos em tempo real (USGS GeoJSON, T05) + placas tectônicas contemporâneas | 3D/Dados | P1 | G | DONE | ayrton | — | G-OBS, G-GLOBO, G-EPOCA, G-ESTUDOS |
 | D40 | Infraestrutura Crítica Global & Qualidade do Ar: cabos submarinos de internet (TeleGeography) e PM2.5/AQI (Open-Meteo) | 3D/Dados | P2 | M | DONE | ayrton | — | G-OBS, G-GLOBO, G-ESTUDOS, G-PAIS, G-SHELL |
 | D41 | Eclipses Solares/Lunares & Sondas do Espaço Profundo (Voyager 1/2, JWST, New Horizons) no Modo Cosmos | 3D/Cosmos | P2 | G | DONE | ayrton | — | G-COSMOS, G-GLOBO, G-EPOCA, G-TIMELINE |
-| D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | REVIEW | antigravity | — | G-CONTEUDO, G-EPOCA, G-PAIS |
-| D43 | Cartografia Histórica Expandida: snapshots TopoJSON 1500 (Grandes Navegações) e 1815 (Congresso de Viena) + 2 novas cenas curadas | Conteúdo/3D | P2 | G | TODO | — | — | G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE |
+| D42 | i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto | Produto/Conteúdo | P2 | G | DONE | ayrton | — | G-CONTEUDO, G-EPOCA, G-PAIS |
+| D43 | Cartografia Histórica Expandida: snapshots TopoJSON 1500 (Grandes Navegações) e 1815 (Congresso de Viena) + 2 novas cenas curadas | Conteúdo/3D | P2 | G | IN_PROGRESS | antigravity | — | G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE |
 | D44 | TellusBridge v2: cobertura 100% dos 299 nós (biomas, Milton Santos, sismologia, eclipses), trilhas em `/study/[slug]` e selos no globo | Produto/Conteúdo | P2 | M | TODO | — | D31, D36, D39, D41 | G-CONTEUDO, G-ESTUDOS, G-PAIS |
 
 ---
@@ -2951,7 +2951,7 @@ O Modo Cosmos (`Horizonte 4`) já modela o Sistema Solar, Halley, asteroides, ch
 
 ### D42 · i18n Profundo (Fase 3): Player de Cenas (`ScenePlayerOverlay` e 7 crônicas), entidades históricas e textos editoriais dos 6 países-piloto
 
-- **Status:** REVIEW · **Responsável:** antigravity · **Branch:** — · **Worktree:** —
+- **Status:** DONE · **Responsável:** ayrton · **Branch:** — · **Worktree:** —
 - **Prioridade:** P2 · **Área:** Produto/Conteúdo · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-EPOCA, G-PAIS
 
 **Contexto / problema**
@@ -2973,12 +2973,13 @@ Embora toda a casca, painéis, metadados SSR, `/studies`, `/telluslab` e os 14 d
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
 - 2026-11-27 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`e505f15`) com grupos livres (`G-CONTEUDO, G-EPOCA, G-PAIS`).
 - 2026-11-27 · antigravity · REVIEW · Implementado o i18n profundo sob demanda (`en`) para cenas históricas, entidades extintas e países-piloto com impacto **zero** no First Load JS de `/`: (1) **Player de Cenas e 7 Crônicas (`ScenePlayerOverlay.tsx`, `SceneDetailsSection.tsx`, `en-scenes*.ts`)**: internacionalizados todos os controles, telemetria cislunar/náutica (`formatNumber` + `fmtPartialDate` bilíngues) e criados pacotes modulares sob demanda traduzindo títulos, subtítulos, resumos, etapas/fases, citações do diário de Pigafetta, participantes, crônicas e dossiês de `polo-1271`, `gama-1497`, `magellan-1519`, `glo-1914`, `glo-1939`, `glo-1969` e `glo-1989`, respeitando a invariante sem nomes de evento em `ScenePlayerOverlay.tsx` (`scenes.test.ts`); (2) **8 Entidades Históricas (`en-historical*.ts`, `en-country-meta.ts`, `InspectorHUD`, `CountryHeader`, `CountryMetricsGrid`, `CountryMiniTimeline`, `SearchPalette`, `FlatMapCanvas`)**: traduzidos nomes comuns/oficiais, capitais, regimes, governantes, resumos, indicadores auditados e dossiês narrativos de `PRU`, `AHU`, `TUR_HIST`, `SUN`, `GDR`, `FRG`, `YUG` e `CSK` (priorizando `country.<HIST>.name` antes de `Intl.DisplayNames` para evitar códigos ISO-2 obsoletos/reatribuídos como `SU`/`CS`); (3) **6 Países-Piloto & Reader (`en-pilots.ts`, `deep-i18n-registry.ts`, `useLocalizedCountry.ts`, `ReaderMode`, `ReaderContent`, `HoverCardPreview`, `HoverCitationCard`)**: traduzidas sob demanda todas as seções narrativas de `country-pilots.ts` (`BRA`, `DEU`, `USA`, `JPN`, `ZAF`, `EGY`) e popovers de fraseamento com zero `<div>` dentro de `<p>`, além de excluir `src/lib/i18n` do scanner `build-tw-merge-table.ts` para não inflar `tw-merge-table.ts` com palavras da prosa inglesa. **Antes/Depois visual (4 capturas Chromium WebGL em `1366×850`)**: *Antes*: em `EN`, `ScenePlayerOverlay` exibia `"CIRCUM-NAVEGAÇÃO"`, `"Léguas navegadas"`, diário e participantes em português, `PRU` mostrava `"Reino da Prússia"` / `"Monarquia Constitucional Autocrática"` / dossiê em português, e `ReaderContent` síncrono dos pilotos caía em português; *Depois*: `magellan-1519` exibe `"CIRCUMNAVIGATION"`, `"Leagues sailed"`, diário de Pigafetta e `"Participants (5)"` em inglês; `PRU` exibe `"Kingdom of Prussia"`, `"Autocratic Constitutional Monarchy"` e `"The Rise of Prussia and German Unification"` em Merriweather; e `BRA` abre `"Continental Dimensions, Biomes, and Natural Resources"` com `0` `p div`. Validado com `typecheck`, `lint`, `build` (`/` = `163 kB`, `bundle-budget.test.ts` `6/6` `< 160 KiB` gzip), `912/913` testes unitários (`0` falhas, incluindo `deep-i18n-d42.test.tsx` `5/5`) e E2E Playwright (`deep-i18n.spec.ts` `1/1`).
+- 2026-11-27 · ayrton · DONE · Aceita pelo Ayrton após validação.
 
 ---
 
 ### D43 · Cartografia Histórica Expandida: snapshots TopoJSON 1500 (Grandes Navegações) e 1815 (Congresso de Viena) + 2 novas cenas curadas
 
-- **Status:** TODO · **Responsável:** — · **Branch:** — · **Worktree:** —
+- **Status:** IN_PROGRESS · **Responsável:** antigravity · **Branch:** task/d43-historical-cartography · **Worktree:** ../telluspedia-wt/antigravity-d43
 - **Prioridade:** P2 · **Área:** Conteúdo/3D · **Tamanho:** G · **Depende de:** — · **Grupos:** G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE
 
 **Contexto / problema**
@@ -2998,6 +2999,7 @@ Os snapshots cartográficos históricos atuais cobrem apenas o século XIX tardi
 
 **Log**
 - 2026-11-23 · antigravity · TODO · Tarefa criada na auditoria do Ciclo 3 (aprovada pelo Ayrton).
+- 2026-11-27 · antigravity · IN_PROGRESS · Tarefa reivindicada a partir de `origin/master` (`4570e1d`) com grupos livres (`G-CONTEUDO, G-FRONTEIRAS, G-EPOCA, G-TIMELINE`).
 
 ---
 
