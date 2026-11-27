@@ -52,7 +52,7 @@ const SpeciesHudOverlay = lazy(() =>
 const DRAG_THRESHOLD_PX = 5;
 
 export const FlatMapCanvas: React.FC = () => {
-  const { locale, t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
   const instructionsId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -414,10 +414,10 @@ export const FlatMapCanvas: React.FC = () => {
   const hoveredLabel = useMemo(() => {
     if (!hoverPointer) return null;
     const hist = HISTORICAL_ENTITIES[hoverPointer.iso];
-    if (hist) return hist.nameCommon;
+    if (hist) return tRaw(`country.${hist.id}.name`, hist.nameCommon);
     const country = getCountryData(hoverPointer.iso);
     return country ? formatCountryName(country.iso2, country.nameCommon, locale) : hoverPointer.iso;
-  }, [hoverPointer, locale]);
+  }, [hoverPointer, locale, tRaw]);
 
   return (
     <div

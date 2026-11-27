@@ -123,6 +123,17 @@ const eventRecords = [
   return true;
 });
 
+const HIST_EN_KEYWORDS: Record<string, string> = {
+  PRU: "Kingdom of Prussia Berlin Bismarck",
+  AHU: "Austria-Hungary Habsburg Vienna Budapest",
+  TUR_HIST: "Ottoman Empire Sublime Porte Constantinople Istanbul",
+  SUN: "Soviet Union USSR Moscow Cold War",
+  GDR: "East Germany GDR German Democratic Republic East Berlin",
+  FRG: "West Germany FRG Bonn",
+  YUG: "Yugoslavia Belgrade Tito",
+  CSK: "Czechoslovakia Prague Dubcek",
+};
+
 const entries: SearchResult[] = [
   ...Object.values(WORLD_COUNTRIES_CATALOG).map((country) => ({
     id: `country:${country.isoCode}`, group: "country" as const, title: country.nameCommon,
@@ -130,7 +141,8 @@ const entries: SearchResult[] = [
   })),
   ...Object.values(HISTORICAL_ENTITIES).map((entity) => ({
     id: `historical:${entity.id}`, group: "historical" as const, title: entity.nameCommon,
-    detail: `${entity.startYear}–${entity.endYear}`, keywords: `${entity.id} ${entity.nameOfficial}`,
+    detail: `${entity.startYear}–${entity.endYear}`,
+    keywords: `${entity.id} ${entity.nameOfficial} ${HIST_EN_KEYWORDS[entity.id] ?? ""}`,
   })),
   ...eventRecords.map((event) => ({
     id: `event:${event.id}`, group: "event" as const, title: event.title,

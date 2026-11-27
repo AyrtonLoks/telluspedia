@@ -36,6 +36,7 @@ import {
 } from "@/lib/historical-topology";
 import { formatCountryName } from "@/lib/i18n/format";
 import type { Locale } from "@/lib/i18n/types";
+import { useI18n } from "@/lib/i18n/useT";
 import type { MapProjectionId } from "@/lib/map-projections-types";
 import { findMilestoneById } from "@/lib/milestones";
 import { selectCountry } from "@/stores/actions";
@@ -260,17 +261,23 @@ export function useFlatMapData(
     );
   }, [activeChoropleth, isHistorical, isGeological, firmsByCountry, choroplethYear, timeseries]);
 
+  const { tRaw } = useI18n();
   const selectedCenter = useMemo<{ label: string; center: readonly [number, number] } | null>(() => {
     if (!selectedIso) return null;
     const hist = HISTORICAL_ENTITIES[selectedIso];
-    if (hist) return { label: hist.nameCommon, center: [hist.longitude, hist.latitude] };
+    if (hist) {
+      return {
+        label: tRaw(`country.${hist.id}.name`, hist.nameCommon),
+        center: [hist.longitude, hist.latitude],
+      };
+    }
     const data = WORLD_COUNTRIES_CATALOG[selectedIso] ?? PILOT_COUNTRIES[selectedIso];
     if (!data || data.longitude === null || data.latitude === null) return null;
     return {
       label: formatCountryName(data.iso2, data.nameCommon, locale),
       center: [data.longitude, data.latitude] as const,
     };
-  }, [selectedIso, locale]);
+  }, [selectedIso, locale, tRaw]);
 
   const azimuthalCenter = useMemo<readonly [number, number] | null>(() => {
     if (projectionId !== "azimuthal") return null;

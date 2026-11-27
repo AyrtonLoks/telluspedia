@@ -172,6 +172,7 @@ const MIGRATED = [
   "src/components/globe/PaleoEraBadge.tsx",
   "src/components/globe/GraphicsQualityPanel.tsx",
   "src/components/scenes/ScenePlayerOverlay.tsx",
+  "src/components/scenes/SceneDetailsSection.tsx",
   "src/components/globe/CelestialLabel.tsx",
   "src/components/globe/WebGLErrorBoundary.tsx",
   "src/components/shell/GlobalErrorView.tsx",

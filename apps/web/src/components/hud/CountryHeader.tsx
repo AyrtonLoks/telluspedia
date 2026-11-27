@@ -35,8 +35,14 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
   completeness,
 }) => {
   const { locale, t, tRaw } = useI18n();
-  const displayName = formatCountryName(iso2, nameCommon, locale);
+  const curatedHistName = tRaw(`country.${isoCode}.name`, "");
+  const displayName = curatedHistName
+    ? curatedHistName
+    : iso2
+    ? formatCountryName(iso2, nameCommon, locale)
+    : nameCommon;
   const displayOfficial = nameOfficial ? tRaw(`country.${isoCode}.official`, nameOfficial) : null;
+  const displayCapital = capital ? tRaw(`capital.${capital}`, capital) : null;
   const [flagError, setFlagError] = React.useState(false);
 
   React.useEffect(() => {
@@ -96,8 +102,8 @@ export const CountryHeader: React.FC<CountryHeaderProps> = ({
           <MapPin aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
           <span>
             {t("inspector.capital", "Capital")}:{" "}
-            {capital ? (
-              <strong className="font-medium text-fg">{capital}</strong>
+            {displayCapital ? (
+              <strong className="font-medium text-fg">{displayCapital}</strong>
             ) : (
               <span className="text-fg-muted">{t("common.dataUnavailable", "Dado indisponível")}</span>
             )}

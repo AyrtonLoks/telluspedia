@@ -15,6 +15,7 @@ import { Button, buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { useI18n } from "@/lib/i18n/useT";
 import { formatCountryName } from "@/lib/i18n/format";
+import { useLocalizedCountryData } from "@/lib/i18n/useLocalizedCountry";
 
 interface ReaderContentProps {
   country: CountryData;
@@ -31,12 +32,18 @@ interface FootnoteEntry {
 }
 
 export const ReaderContent: React.FC<ReaderContentProps> = ({
-  country,
+  country: rawCountry,
   dimension,
   isLoadingEditorial = false,
 }) => {
-  const { locale, t } = useI18n();
-  const displayName = formatCountryName(country.iso2, country.nameCommon, locale);
+  const { locale, t, tRaw } = useI18n();
+  const country = useLocalizedCountryData(rawCountry, locale) ?? rawCountry;
+  const displayName = country.isHistoricalEntity
+    ? tRaw(`country.${country.isoCode}.name`, country.nameCommon)
+    : formatCountryName(country.iso2, country.nameCommon, locale);
+  const displayOfficial = country.nameOfficial
+    ? tRaw(`country.${country.isoCode}.official`, country.nameOfficial)
+    : null;
   const storeDimension = useReaderStore((s) => s.activeDimension);
   const activeDimension =
     dimension ||
@@ -155,8 +162,8 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({
           <h1 className="mt-4 font-serif text-display font-bold leading-snug text-fg">
             {displayName}
           </h1>
-          {country.nameOfficial && (
-            <p className="mt-1 text-caption text-fg-secondary">{country.nameOfficial}</p>
+          {displayOfficial && (
+            <p className="mt-1 text-caption text-fg-secondary">{displayOfficial}</p>
           )}
         </div>
 
@@ -377,7 +384,7 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({
       <div className="border-b border-line pb-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="neutral">{activeDimension}</Badge>
+            <Badge tone="neutral">{tRaw(`reader.dim.${activeDimension}`, activeDimension)}</Badge>
             <span className="flex items-center gap-1 font-mono text-caption tabular-nums text-fg-muted">
               <Clock aria-hidden="true" className="h-3.5 w-3.5" />
               <span>{t("reader.readingTime", "Leitura de ~")}{section.estimatedReadMin || 6} min</span>
@@ -413,9 +420,9 @@ export const ReaderContent: React.FC<ReaderContentProps> = ({
         </div>
 
         <h1 className="mt-4 font-serif text-display font-bold leading-snug text-fg">{title}</h1>
-        {country.nameOfficial && (
+        {displayOfficial && (
           <p className="mt-1 text-caption text-fg-muted">
-            {country.nameOfficial} · TellusPedia Planetary &amp; Geopolitical Knowledge Base
+            {displayOfficial} · TellusPedia Planetary &amp; Geopolitical Knowledge Base
           </p>
         )}
       </div>

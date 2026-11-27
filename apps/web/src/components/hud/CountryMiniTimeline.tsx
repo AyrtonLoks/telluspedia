@@ -80,7 +80,9 @@ export const CountryMiniTimeline: React.FC<CountryMiniTimelineProps> = ({ milest
                     {m.year}
                   </span>
                 </span>
-                <span className={cn("mt-1 block text-caption text-fg-secondary", !isSelected && "line-clamp-2")}>{m.summary}</span>
+                <span className={cn("mt-1 block text-caption text-fg-secondary", !isSelected && "line-clamp-2")}>
+                  {tRaw(`event.${m.id}.summary`, m.summary)}
+                </span>
               </button>
 
               {(m.sourcePrimary || isSelected) && (

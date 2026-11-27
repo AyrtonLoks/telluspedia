@@ -10,6 +10,7 @@ import { useLayoutStore } from "@/stores/layoutStore";
 import { useTimelineStore } from "@/stores/timelineStore";
 import { useTransversalStore } from "@/stores/transversalStore";
 import { formatCountryName } from "@/lib/i18n/format";
+import { useI18n } from "@/lib/i18n/useT";
 
 interface HoverCardPreviewProps {
   isoCode: string;
@@ -22,6 +23,7 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({
   children,
   defaultOpen = false,
 }) => {
+  const { locale, t, tRaw } = useI18n();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [placement, setPlacement] = useState<"top" | "bottom">("top");
   const [flagError, setFlagError] = useState(false);
@@ -144,7 +146,9 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({
                 </span>
               )}
               <span className="block truncate text-label font-semibold text-fg">
-                {country.nameCommon}
+                {country.isHistoricalEntity
+                  ? tRaw(`country.${country.isoCode}.name`, country.nameCommon)
+                  : formatCountryName(country.iso2, country.nameCommon, locale)}
               </span>
               <span className="ml-auto block rounded-sm border border-line-strong bg-surface-raised px-1.5 py-0.5 font-mono text-caption text-fg-secondary">
                 {country.isoCode}
@@ -152,7 +156,9 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({
             </span>
 
             <span className="mb-3 block line-clamp-3 text-caption leading-relaxed text-fg-secondary">
-              {country.summary || "Dados descritivos ainda indisponíveis na base local."}
+              {country.summary
+                ? tRaw(`country.${country.isoCode}.summary`, country.summary)
+                : t("reader.hover.noSummary", "Dados descritivos ainda indisponíveis na base local.")}
             </span>
 
             <span className="flex items-center gap-1.5 border-t border-line pt-2">
@@ -161,14 +167,14 @@ export const HoverCardPreview: React.FC<HoverCardPreviewProps> = ({
                 onClick={handleFocusGlobe}
                 className="flex-1 cursor-pointer rounded-control border border-accent/50 bg-accent/15 px-2 py-1 text-center text-caption font-medium text-accent transition-colors duration-fast ease-out hover:bg-accent/25"
               >
-                Focar Globo
+                {t("reader.hover.focusGlobe", "Focar Globo")}
               </button>
               <button
                 type="button"
                 onClick={handleCompare}
                 className="flex-1 cursor-pointer rounded-control border border-line bg-surface-raised px-2 py-1 text-center text-caption font-medium text-fg transition-colors duration-fast ease-out hover:bg-surface-hover"
               >
-                Comparar
+                {t("reader.hover.compare", "Comparar")}
               </button>
             </span>
           </span>

@@ -16,8 +16,10 @@ const OUT = path.join(SRC, "components/ui/tw-merge-table.ts");
 
 /** Classes "base" (sem variantes `hover:` etc. e sem `!`) encontradas em strings do código-fonte. */
 export function collectSourceClasses(dir: string = SRC): string[] {
+  const i18nDir = path.join(SRC, "lib/i18n");
   const tokens = new Set<string>();
   const walk = (d: string) => {
+    if (d === i18nDir) return;
     for (const f of fs.readdirSync(d)) {
       const p = path.join(d, f);
       if (fs.statSync(p).isDirectory()) walk(p);

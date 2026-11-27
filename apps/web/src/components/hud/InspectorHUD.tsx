@@ -37,6 +37,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { cn } from "@/components/ui/cn";
 import { useI18n } from "@/lib/i18n/useT";
 import { formatCountryName } from "@/lib/i18n/format";
+import { useLocalizedCountryData } from "@/lib/i18n/useLocalizedCountry";
 
 const CountryFaunaSection = dynamic(
   () => import("./CountryFaunaSection").then((m) => m.CountryFaunaSection),
@@ -131,10 +132,11 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
     });
   }, [selectedYear, selectedMilestoneId, startYear, endYear]);
 
-  const currentCountry = useMemo(() => {
+  const rawCountry = useMemo(() => {
     if (!selectedIso) return null;
     return getCountryData(selectedIso, effectiveYear);
   }, [selectedIso, effectiveYear]);
+  const currentCountry = useLocalizedCountryData(rawCountry, locale);
 
   if (!selectedIso || isReaderOpen || !currentCountry) return null;
 
@@ -173,7 +175,9 @@ export const InspectorHUD: React.FC<InspectorHUDProps> = (props) => {
       ? "Natural Earth"
       : "ONU");
 
-  const displayName = formatCountryName(currentCountry.iso2, currentCountry.nameCommon, locale);
+  const displayName = currentCountry.isHistoricalEntity
+    ? tRaw(`country.${currentCountry.isoCode}.name`, currentCountry.nameCommon)
+    : formatCountryName(currentCountry.iso2, currentCountry.nameCommon, locale);
 
   return (
     <aside

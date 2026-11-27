@@ -19,9 +19,10 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { useI18n } from "@/lib/i18n/useT";
 import { formatCountryName } from "@/lib/i18n/format";
+import { useLocalizedCountryData } from "@/lib/i18n/useLocalizedCountry";
 
 export const ReaderMode: React.FC = () => {
-  const { locale, t } = useI18n();
+  const { locale, t, tRaw } = useI18n();
   const isReaderOpen = useGlobeStore((s) => s.isReaderOpen);
   const setReaderOpen = useGlobeStore((s) => s.setReaderOpen);
   const selectedIso = useGlobeStore((s) => s.selectedIso);
@@ -98,7 +99,8 @@ export const ReaderMode: React.FC = () => {
     }
   }, [selectedIso, resetActiveDimension, setActiveDimension]);
 
-  const baseCountry = selectedIso ? getCountryData(selectedIso) : null;
+  const rawCountry = selectedIso ? getCountryData(selectedIso) : null;
+  const baseCountry = useLocalizedCountryData(rawCountry, locale);
   const activeEditorial = React.useMemo(() => {
     if (!selectedIso) return null;
     if (editorialState?.iso === selectedIso) return editorialState.record;
@@ -126,7 +128,9 @@ export const ReaderMode: React.FC = () => {
 
   // Fechado, o Dialog não renderiza nada; manter montado deixa a saída animar (D17).
   if (!selectedIso || !country) return null;
-  const displayName = formatCountryName(country.iso2, country.nameCommon, locale);
+  const displayName = country.isHistoricalEntity
+    ? tRaw(`country.${country.isoCode}.name`, country.nameCommon)
+    : formatCountryName(country.iso2, country.nameCommon, locale);
 
   return (
     <Dialog open={isReaderOpen} onOpenChange={(open) => setReaderOpen(open)}>

@@ -1,7 +1,20 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { BookOpen, Calendar, ChevronLeft, ChevronRight, Eye, MapPin, Maximize2, Minimize2, Pause, Play, RotateCcw, ScrollText, Users, X } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  MapPin,
+  Maximize2,
+  Minimize2,
+  Pause,
+  Play,
+  RotateCcw,
+  X,
+} from "lucide-react";
 import { useSceneStore } from "@/stores/sceneStore";
 import { useGlobeStore } from "@/stores/globeStore";
 import { useEpochState } from "@/lib/epoch/useEpochState";
@@ -9,19 +22,24 @@ import { isPlayableScene, isSceneLoaded } from "@/lib/scenes/catalog";
 import { useScene } from "@/lib/scenes/useScene";
 import type { Scene, SceneTrajectory } from "@/lib/scenes/schema";
 import { cislunarTelemetry } from "@/lib/scenes/cislunar";
+import { formatNumber } from "@/lib/i18n/format";
+import type { Locale } from "@/lib/i18n/types";
+import { useI18n } from "@/lib/i18n/useT";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/components/ui/cn";
 import { PanelSkeleton } from "@/components/ui/Skeleton";
+import {
+  EN_MONTHS,
+  fmtPartialDate,
+  primeSceneLocalizer,
+  SceneDetailsSection,
+  useLocalizedScene,
+} from "./SceneDetailsSection";
 
-/**
- * Painel genérico do player de cenas (D12c, parte 2). Mostra a cena ativa com os textos e as
- * estatísticas definidos nos dados (`hud`), o passo atual (ponto da rota ou fase da missão),
- * a citação, os controles de reprodução e a barra de progresso. Substitui os
- * painéis antigos, feitos à mão para cada evento.
- */
+export { fmtPartialDate, primeSceneLocalizer };
 
 type Surface = Extract<SceneTrajectory, { kind: "surface" }>;
 type Cislunar = Extract<SceneTrajectory, { kind: "cislunar" }>;
@@ -58,23 +76,37 @@ function usePlayback() {
   };
 }
 
-const fmtNumber = (v: number) => v.toLocaleString("pt-BR");
-const fmtCoords = (lat: number, lng: number) => `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? "N" : "S"}, ${Math.abs(lng).toFixed(2)}°${lng >= 0 ? "E" : "W"}`;
-const fmtDate = (iso: string) => {
+const fmtCoords = (lat: number, lng: number) =>
+  `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? "N" : "S"}, ${Math.abs(lng).toFixed(2)}°${lng >= 0 ? "E" : "W"}`;
+
+const fmtDate = (iso: string, locale: Locale = "pt-BR") => {
   const [y, m, d] = iso.slice(0, 10).split("-");
+  if (locale === "en") {
+    const mName = EN_MONTHS[Number(m) - 1] ?? m;
+    return `${mName} ${Number(d)}, ${y}`;
+  }
   return `${d}/${m}/${y}`;
 };
 
-export const ScenePlayerOverlay: React.FC<{ sceneId?: string; closing?: boolean }> = ({ sceneId, closing = false }) => {
+export const ScenePlayerOverlay: React.FC<{ sceneId?: string; closing?: boolean }> = ({
+  sceneId,
+  closing = false,
+}) => {
+  const { locale, t, tRaw } = useI18n();
   const activeScene = useEpochState().activeScene;
   const id = sceneId ?? activeScene ?? undefined;
-  const scene = useScene(id);
-  // Cena sob demanda (D24): enquanto a trajetória não chega, um esqueleto no lugar do painel. (Cenas
-  // que já têm trajetória no bundle aparecem na hora; só a crônica e os participantes chegam depois.)
+  const rawScene = useScene(id);
+  const scene = useLocalizedScene(rawScene, locale);
+
   if (scene && !isSceneLoaded(scene.id) && scene.trajectories.length === 0 && isPlayableScene(scene)) {
+    const displayTitle = locale === "en" ? tRaw(`event.${scene.id}`, scene.title) : scene.title;
     return (
-      <Panel data-scene-player-overlay="true" data-testid="scene-player-overlay-loading" className="fixed left-3 top-[var(--map-overlay-top)] z-20 w-96 max-w-[calc(100vw-1.5rem)] animate-rise-in">
-        <PanelSkeleton label={`Carregando ${scene.title}`} rows={3} />
+      <Panel
+        data-scene-player-overlay="true"
+        data-testid="scene-player-overlay-loading"
+        className="fixed left-3 top-[var(--map-overlay-top)] z-20 w-96 max-w-[calc(100vw-1.5rem)] animate-rise-in"
+      >
+        <PanelSkeleton label={`${t("scene.loadingPrefix", "Carregando")} ${displayTitle}`} rows={3} />
       </Panel>
     );
   }
@@ -83,26 +115,54 @@ export const ScenePlayerOverlay: React.FC<{ sceneId?: string; closing?: boolean 
   return <SceneHud scene={scene} trajectory={trajectory} closing={closing} />;
 };
 
-const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: boolean }> = ({ scene, trajectory, closing }) => {
+const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: boolean }> = ({
+  scene,
+  trajectory,
+  closing,
+}) => {
+  const { locale, t } = useI18n();
   const hud = scene.hud!;
   const pb = usePlayback();
   const flyTo = useGlobeStore((s) => s.flyTo);
 
   const step = useMemo(() => {
     if (trajectory.kind === "surface") {
-      const t = trajectory as Surface;
-      const i = Math.max(0, Math.min(t.points.length - 1, pb.index));
-      const p = t.points[i];
-      return { kind: "surface" as const, index: i, total: t.points.length, title: p.name, facts: p.facts ?? {}, description: p.description, date: fmtDate(p.time), lat: p.lat, lng: p.lng, quoteText: (hud.quoteFact && p.facts?.[hud.quoteFact] !== undefined ? String(p.facts[hud.quoteFact]) : p.quote?.text) ?? null };
+      const tr = trajectory as Surface;
+      const i = Math.max(0, Math.min(tr.points.length - 1, pb.index));
+      const p = tr.points[i];
+      const quoteText =
+        (hud.quoteFact && p.facts?.[hud.quoteFact] !== undefined
+          ? String(p.facts[hud.quoteFact])
+          : p.quote?.text) ?? null;
+      return {
+        kind: "surface" as const,
+        index: i,
+        total: tr.points.length,
+        title: p.name,
+        facts: p.facts ?? {},
+        description: p.description,
+        date: fmtDate(p.time, locale),
+        lat: p.lat,
+        lng: p.lng,
+        quoteText,
+      };
     }
-    const t = trajectory as Cislunar;
-    const tel = cislunarTelemetry(t, pb.progress);
-    const ph = t.phases[tel.phaseIndex];
-    return { kind: "cislunar" as const, index: tel.phaseIndex, total: t.phases.length, title: ph.label, facts: ph.facts ?? {}, description: ph.description, telemetry: tel, quoteText: null as string | null };
-  }, [trajectory, pb.index, pb.progress, hud.quoteFact]);
+    const tr = trajectory as Cislunar;
+    const tel = cislunarTelemetry(tr, pb.progress);
+    const ph = tr.phases[tel.phaseIndex];
+    return {
+      kind: "cislunar" as const,
+      index: tel.phaseIndex,
+      total: tr.phases.length,
+      title: ph.label,
+      facts: ph.facts ?? {},
+      description: ph.description,
+      telemetry: tel,
+      quoteText: null as string | null,
+    };
+  }, [trajectory, pb.index, pb.progress, hud.quoteFact, locale]);
 
   const pct = Math.round(pb.progress * 100);
-  // Sair da cena restaura o estado de antes da abertura (timeline, país e câmera).
   const closeScene = () => useSceneStore.getState().closeScene();
 
   return (
@@ -117,7 +177,6 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
         pb.minimized ? "w-80" : "w-96"
       )}
     >
-      {/* Cabeçalho */}
       <div className={cn("flex items-center justify-between gap-2", !pb.minimized && "border-b border-line pb-3")}>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -127,8 +186,13 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
           {hud.subtitle && <p className="text-caption text-fg-muted">{hud.subtitle}</p>}
         </div>
         <div className="flex shrink-0 items-center gap-1">
-          <IconButton label={pb.minimized ? "Expandir HUD" : "Minimizar HUD"} size="sm" icon={pb.minimized ? <Maximize2 /> : <Minimize2 />} onClick={pb.toggleMinimized} />
-          <IconButton label="Fechar cena" size="sm" icon={<X />} onClick={closeScene} />
+          <IconButton
+            label={pb.minimized ? t("scene.expandHud", "Expandir HUD") : t("scene.minimizeHud", "Minimizar HUD")}
+            size="sm"
+            icon={pb.minimized ? <Maximize2 /> : <Minimize2 />}
+            onClick={pb.toggleMinimized}
+          />
+          <IconButton label={t("scene.closeScene", "Fechar cena")} size="sm" icon={<X />} onClick={closeScene} />
         </div>
       </div>
 
@@ -141,13 +205,21 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
         </div>
       ) : (
         <>
-          {/* Estatísticas do passo atual (configuradas nos dados) */}
           {(hud.stepStats.length > 0 || step.kind === "cislunar") && (
             <div className="my-3 grid grid-cols-2 gap-2">
               {step.kind === "cislunar" && (
                 <>
-                  <Stat label="Distância da Terra" value={fmtNumber(step.telemetry.distanceKm)} unit="km" note="escala aproximada" />
-                  <Stat label="Tempo de missão (GET)" value={step.telemetry.getFormatted} unit="HHH:MM:SS" />
+                  <Stat
+                    label={t("scene.earthDistance", "Distância da Terra")}
+                    value={formatNumber(step.telemetry.distanceKm, locale)}
+                    unit="km"
+                    note={t("scene.approxScale", "escala aproximada")}
+                  />
+                  <Stat
+                    label={t("scene.missionTimeGet", "Tempo de missão (GET)")}
+                    value={step.telemetry.getFormatted}
+                    unit="HHH:MM:SS"
+                  />
                 </>
               )}
               {hud.stepStats.map((s) => {
@@ -157,16 +229,19 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
                   <Stat
                     key={s.fact}
                     label={s.label}
-                    value={typeof v === "number" ? fmtNumber(v) : v}
+                    value={typeof v === "number" ? formatNumber(v, locale) : v}
                     unit={s.unit}
-                    note={s.approx && typeof v === "number" ? `≈ ${(v * s.approx.factor).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} ${s.approx.unit}` : s.note}
+                    note={
+                      s.approx && typeof v === "number"
+                        ? `≈ ${formatNumber(v * s.approx.factor, locale, { maximumFractionDigits: 0 })} ${s.approx.unit}`
+                        : s.note
+                    }
                   />
                 );
               })}
             </div>
           )}
 
-          {/* Passo atual: ponto da rota ou fase da missão */}
           <div className="my-2 space-y-1.5 rounded-card border border-line bg-surface-raised p-2.5">
             <div className="flex items-center justify-between gap-2 text-label">
               <span className="flex min-w-0 items-center gap-1.5 font-semibold text-fg">
@@ -174,9 +249,15 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
                 <span className="truncate">{step.title}</span>
               </span>
               {step.kind === "surface" && (
-                <Button variant="secondary" size="sm" className="shrink-0" onClick={() => flyTo(step.lat, step.lng, 2.5)} title="Centralizar câmera no veículo">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="shrink-0"
+                  onClick={() => flyTo(step.lat, step.lng, 2.5)}
+                  title={t("scene.centerCameraVehicle", "Centralizar câmera no veículo")}
+                >
                   <Eye aria-hidden="true" className="h-3 w-3 text-accent" />
-                  <span>Focar</span>
+                  <span>{t("scene.focusStep", "Focar")}</span>
                 </Button>
               )}
             </div>
@@ -189,16 +270,21 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
                 <span className="text-fg-secondary">{fmtCoords(step.lat, step.lng)}</span>
               </div>
             ) : (
-              step.description && <p className="border-t border-line pt-1.5 text-caption leading-snug text-fg-secondary">{step.description}</p>
+              step.description && (
+                <p className="border-t border-line pt-1.5 text-caption leading-snug text-fg-secondary">
+                  {step.description}
+                </p>
+              )
             )}
             {step.kind === "surface" && step.description && !step.quoteText && (
-              <p className="border-t border-line pt-1.5 text-caption leading-snug text-fg-secondary">{step.description}</p>
+              <p className="border-t border-line pt-1.5 text-caption leading-snug text-fg-secondary">
+                {step.description}
+              </p>
             )}
           </div>
 
-          {/* Fases (missões Terra–Lua): saltar para uma fase */}
           {trajectory.kind === "cislunar" && (
-            <div role="group" aria-label="Fases da missão" className="my-3 grid grid-cols-2 gap-1.5">
+            <div role="group" aria-label={t("scene.missionPhases", "Fases da missão")} className="my-3 grid grid-cols-2 gap-1.5">
               {(trajectory as Cislunar).phases.map((ph, i) => {
                 const active = i === step.index;
                 return (
@@ -224,19 +310,19 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
             </div>
           )}
 
-          {/* Citação do passo */}
           {step.quoteText && (
             <div className="my-3 space-y-1.5 rounded-card border border-warning/30 bg-warning/10 p-3 text-caption">
               <div className="flex items-center gap-1.5 font-medium text-warning">
                 <BookOpen aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
-                <span>{hud.quoteTitle ?? "Citação"}</span>
+                <span>{hud.quoteTitle ?? t("scene.quoteFallback", "Citação")}</span>
               </div>
-              <blockquote className="my-1 border-l-2 border-warning/50 pl-2.5 font-serif italic leading-relaxed text-fg">&ldquo;{step.quoteText}&rdquo;</blockquote>
+              <blockquote className="my-1 border-l-2 border-warning/50 pl-2.5 font-serif italic leading-relaxed text-fg">
+                &ldquo;{step.quoteText}&rdquo;
+              </blockquote>
               {step.description && <p className="font-sans leading-snug text-fg-secondary">{step.description}</p>}
             </div>
           )}
 
-          {/* Linha do tempo da cena */}
           <div className="my-3 space-y-1">
             <div className="flex items-center justify-between font-mono text-caption tabular-nums text-fg-muted">
               <span>{hud.startLabel}</span>
@@ -257,18 +343,22 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
             />
           </div>
 
-          {/* Controles */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1">
-              <IconButton label="Passo anterior" size="sm" icon={<ChevronLeft />} onClick={pb.prev} />
-              <Button variant="primary" size="sm" onClick={pb.togglePlay} aria-label={pb.isPlaying ? "Pausar cena" : "Reproduzir cena"}>
+              <IconButton label={t("scene.prevStep", "Passo anterior")} size="sm" icon={<ChevronLeft />} onClick={pb.prev} />
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={pb.togglePlay}
+                aria-label={pb.isPlaying ? t("scene.pauseAria", "Pausar cena") : t("scene.playAria", "Reproduzir cena")}
+              >
                 {pb.isPlaying ? <Pause aria-hidden="true" className="h-3.5 w-3.5" /> : <Play aria-hidden="true" className="h-3.5 w-3.5" />}
-                <span>{pb.isPlaying ? "Pausar" : "Reproduzir"}</span>
+                <span>{pb.isPlaying ? t("scene.pause", "Pausar") : t("scene.play", "Reproduzir")}</span>
               </Button>
-              <IconButton label="Próximo passo" size="sm" icon={<ChevronRight />} onClick={pb.next} />
-              <IconButton label="Reiniciar cena" size="sm" icon={<RotateCcw />} onClick={pb.reset} />
+              <IconButton label={t("scene.nextStep", "Próximo passo")} size="sm" icon={<ChevronRight />} onClick={pb.next} />
+              <IconButton label={t("scene.resetScene", "Reiniciar cena")} size="sm" icon={<RotateCcw />} onClick={pb.reset} />
             </div>
-            <div role="group" aria-label="Velocidade da cena" className="flex items-center gap-1">
+            <div role="group" aria-label={t("scene.speedAria", "Velocidade da cena")} className="flex items-center gap-1">
               {hud.speeds.map((v) => (
                 <button
                   key={v}
@@ -298,13 +388,15 @@ const SceneHud: React.FC<{ scene: Scene; trajectory: SceneTrajectory; closing: b
           )}
 
           {hud.finalQuote && pb.progress >= hud.finalQuote.minProgress && (
-            <p className="mt-3 rounded-card border border-success/30 bg-success/10 p-2.5 text-caption italic text-fg">&ldquo;{hud.finalQuote.text}&rdquo;</p>
+            <p className="mt-3 rounded-card border border-success/30 bg-success/10 p-2.5 text-caption italic text-fg">
+              &ldquo;{hud.finalQuote.text}&rdquo;
+            </p>
           )}
 
-          <SceneDetails scene={scene} />
+          <SceneDetailsSection scene={scene} locale={locale} />
 
           <p className="mt-3 border-t border-line pt-2 text-caption text-fg-muted">
-            Fonte: {scene.sources.map((s) => s.label).join(" · ")}
+            {t("scene.sourcePrefix", "Fonte:")} {scene.sources.map((s) => s.label).join(" · ")}
           </p>
         </>
       )}
@@ -321,58 +413,3 @@ const Stat: React.FC<{ label: string; value: string; unit?: string; note?: strin
     {note && <span className="truncate text-caption text-fg-muted">{note}</span>}
   </div>
 );
-
-/** Data parcial ISO ("1500", "1500-04", "1500-04-22") no formato brasileiro. */
-export function fmtPartialDate(iso: string): string {
-  const [y, m, d] = iso.split(/(?<=\d)-/);
-  if (d) return `${d}/${m}/${y}`;
-  if (m) return `${m}/${y}`;
-  return y;
-}
-
-/** Participantes e crônica da cena (D24), recolhidos por padrão para não alongar o painel. */
-const SceneDetails: React.FC<{ scene: Scene }> = ({ scene }) => {
-  if (scene.participants.length === 0 && scene.chronicle.length === 0) return null;
-  return (
-    <div className="mt-3 space-y-2 border-t border-line pt-2.5">
-      {scene.participants.length > 0 && (
-        <details className="group rounded-card border border-line bg-surface-raised" data-testid="scene-participants">
-          <summary className="flex cursor-pointer items-center gap-1.5 p-2.5 text-label font-medium text-fg">
-            <Users aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-accent" />
-            Participantes <span className="font-mono text-caption tabular-nums text-fg-muted">({scene.participants.length})</span>
-          </summary>
-          <ul className="space-y-2 px-2.5 pb-2.5">
-            {scene.participants.map((p) => (
-              <li key={p.name} className="text-caption leading-snug">
-                <span className="font-medium text-fg">{p.name}</span> <span className="text-fg-muted">· {p.role}</span>
-                {p.description && <p className="text-fg-secondary">{p.description}</p>}
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
-      {scene.chronicle.length > 0 && (
-        <details className="group rounded-card border border-line bg-surface-raised" data-testid="scene-chronicle">
-          <summary className="flex cursor-pointer items-center gap-1.5 p-2.5 text-label font-medium text-fg">
-            <ScrollText aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-accent" />
-            Crônica <span className="font-mono text-caption tabular-nums text-fg-muted">({scene.chronicle.length})</span>
-          </summary>
-          <ol className="space-y-2.5 px-2.5 pb-2.5">
-            {scene.chronicle.map((c, i) => (
-              <li key={`${c.date}-${i}`} className="border-l-2 border-line pl-2 text-caption leading-snug">
-                <span className="font-mono tabular-nums text-fg-muted">{fmtPartialDate(c.date)}</span>
-                {c.place && <span className="text-fg-muted"> · {c.place}</span>}
-                <p className="text-fg-secondary">{c.text}</p>
-                {c.quote && (
-                  <blockquote className="mt-1 font-serif italic text-fg">
-                    &ldquo;{c.quote.text}&rdquo; <span className="font-sans not-italic text-fg-muted">— {c.quote.source}</span>
-                  </blockquote>
-                )}
-              </li>
-            ))}
-          </ol>
-        </details>
-      )}
-    </div>
-  );
-};

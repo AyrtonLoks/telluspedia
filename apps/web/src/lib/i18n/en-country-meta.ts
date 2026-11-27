@@ -27,8 +27,56 @@ export const EN_COUNTRY_META_MESSAGES = {
   "region.Ásia": "Asia",
   "region.Europa": "Europe",
   "region.Oceania": "Oceania",
+  "region.História Geopolítica": "Geopolitical History",
+
+  // Capitais principais e históricas
+  "capital.Berlim": "Berlin",
+  "capital.Tóquio": "Tokyo",
+  "capital.Pretória": "Pretoria",
+  "capital.Moscou": "Moscow",
+  "capital.Viena": "Vienna",
+  "capital.Praga": "Prague",
+  "capital.Belgrado": "Belgrade",
+  "capital.Bonn": "Bonn",
+  "capital.Berlim Oriental": "East Berlin",
+  "capital.Berlim / Königsberg": "Berlin / Königsberg",
+  "capital.Constantinopla (Istambul)": "Constantinople (Istanbul)",
+  "capital.Viena (Cisleitânia) / Budapeste (Transleitânia)":
+    "Vienna (Cisleithania) / Budapest (Transleithania)",
+
+  // Chefias de Estado e títulos históricos
+  "head.Presidente da República": "President of the Republic",
+  "head.Presidente Federal": "Federal President",
+  "head.Chanceler Federal": "Federal Chancellor",
+  "head.Presidente dos Estados Unidos": "President of the United States",
+  "head.Imperador do Japão": "Emperor of Japan",
+  "head.Primeiro-Ministro do Japão": "Prime Minister of Japan",
+  "head.Presidente da África do Sul": "President of South Africa",
+  "head.Rei da Prússia / Chanceler Imperial": "King of Prussia / Imperial Chancellor",
+  "head.Imperador da Áustria e Rei Apostólico da Hungria":
+    "Emperor of Austria and Apostolic King of Hungary",
+  "head.Sultão e Califa do Islã / Grão-Vizir": "Sultan and Caliph of Islam / Grand Vizier",
+  "head.Secretário-Geral do Partido Comunista": "General Secretary of the Communist Party",
+  "head.Primeiro-Secretário do Comitê Central da SED":
+    "First Secretary of the SED Central Committee",
+  "head.Presidente da República / Marechal da Iugoslávia":
+    "President of the Republic / Marshal of Yugoslavia",
+  "head.Primeiro-Secretário do Partido Comunista / Presidente":
+    "First Secretary of the Communist Party / President",
 
   // Regimes políticos
+  "gov.Monarquia Constitucional Autocrática": "Autocratic Constitutional Monarchy",
+  "gov.Monarquia Dual Constitucional": "Constitutional Dual Monarchy",
+  "gov.Monarquia Constitucional Parlamentar (Segunda Era Constitucional)":
+    "Parliamentary Constitutional Monarchy (Second Constitutional Era)",
+  "gov.Estado Socialista Federal de Partido Único":
+    "Federal Single-Party Socialist State",
+  "gov.República Socialista de Partido Hegemônico (SED)":
+    "Hegemonic-Party Socialist Republic (SED)",
+  "gov.República Socialista Federal Não-Alinhada":
+    "Non-Aligned Federal Socialist Republic",
+  "gov.República Socialista Federal (Pacto de Varsóvia)":
+    "Federal Socialist Republic (Warsaw Pact)",
   "gov.Monarquia Constitucional Federal": "Federal Constitutional Monarchy",
   "gov.Monarquia Constitucional Federal Parlamentar": "Federal Parliamentary Constitutional Monarchy",
   "gov.Monarquia Constitucional Parlamentar": "Parliamentary Constitutional Monarchy",
@@ -46,6 +94,41 @@ export const EN_COUNTRY_META_MESSAGES = {
   "gov.República Presidencialista Plurinacional": "Plurinational Presidential Republic",
   "gov.República Semipresidencialista": "Semi-Presidential Republic",
   "gov.República Socialista de Partido Único": "Single-Party Socialist Republic",
+
+  // 8 entidades históricas (nomes, nomes oficiais e resumos para HUD, busca e mapa 2D)
+  "country.PRU.name": "Kingdom of Prussia",
+  "country.PRU.official": "Kingdom of Prussia (Königreich Preußen)",
+  "country.PRU.summary":
+    "Germanic state renowned for military and administrative statecraft that led the North German Confederation and achieved German Unification in 1871 under Chancellor Otto von Bismarck and King William I.",
+  "country.AHU.name": "Austria-Hungary",
+  "country.AHU.official":
+    "The Kingdoms and Lands Represented in the Imperial Council and the Lands of the Holy Hungarian Crown of St. Stephen",
+  "country.AHU.summary":
+    "Multinational Central European empire created by the Austro-Hungarian Compromise of 1867, encompassing over ten nationalities; its political crisis after the 1914 Sarajevo assassination triggered World War I.",
+  "country.TUR_HIST.name": "Ottoman Empire",
+  "country.TUR_HIST.official": "The Sublime Ottoman State (Devlet-i ʿAlīye-i ʿOsmānīye)",
+  "country.TUR_HIST.summary":
+    "Transcontinental Islamic empire that governed Southeastern Europe, Western Asia, and North Africa for over six centuries, commanding the Bosporus and the Levant until its partition after World War I.",
+  "country.SUN.name": "Soviet Union",
+  "country.SUN.official": "Union of Soviet Socialist Republics (USSR)",
+  "country.SUN.summary":
+    "Eurasian socialist superpower uniting 15 constituent republics, decisive victor on the Eastern Front in World War II, and rival pole to the United States throughout the Cold War and the Space Race.",
+  "country.GDR.name": "East Germany (GDR)",
+  "country.GDR.official": "German Democratic Republic (Deutsche Demokratische Republik)",
+  "country.GDR.summary":
+    "Sovereign socialist state established in the Soviet occupation zone of Germany in 1949, key Warsaw Pact member, and leading industrial economy of the Eastern Bloc until the fall of the Berlin Wall in 1989.",
+  "country.FRG.name": "West Germany (FRG)",
+  "country.FRG.official": "Federal Republic of Germany (Bundesrepublik Deutschland)",
+  "country.FRG.summary":
+    "Western parliamentary democracy founded in May 1949 across the American, British, and French zones, engine of the German Economic Miracle (Wirtschaftswunder), and architect of Ostpolitik under Willy Brandt.",
+  "country.YUG.name": "Yugoslavia",
+  "country.YUG.official": "Socialist Federal Republic of Yugoslavia (SFRY)",
+  "country.YUG.summary":
+    "Multinational Balkan socialist federation forged out of Josip Broz Tito's Partisan resistance, co-founder of the Non-Aligned Movement (NAM), and pioneer of workers' self-management.",
+  "country.CSK.name": "Czechoslovakia",
+  "country.CSK.official": "Czechoslovak Socialist Republic (ČSSR)",
+  "country.CSK.summary":
+    "Sovereign Central European union of Czechs and Slovaks, advanced industrial manufacturer renowned for the 1968 Prague Spring under Alexander Dubček and its vision of 'socialism with a human face.'",
 
   // 6 países-piloto (nome oficial, moeda, resumo)
   "country.BRA.official": "Federative Republic of Brazil",

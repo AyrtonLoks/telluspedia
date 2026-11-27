@@ -129,6 +129,8 @@ export function SearchPalette({ onClose, previousFocus }: { onClose: () => void;
                         if (result.group === "country") {
                           const iso2 = result.keywords?.split(" ")[0];
                           displayTitle = formatCountryName(iso2, result.title, "en");
+                        } else if (result.group === "historical" && result.id.startsWith("historical:")) {
+                          displayTitle = tRaw(`country.${result.id.slice("historical:".length)}.name`, result.title);
                         } else if (result.group === "body" && result.keywords) {
                           displayTitle = result.keywords;
                         } else if (result.group === "event" && result.id.startsWith("event:")) {

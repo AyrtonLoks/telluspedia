@@ -296,6 +296,8 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
 
   const sharedCard = { unavailableText, citeLabel, openRepoText, sourcePrefix, locale };
   const localizedGov = governmentType ? tRaw(`gov.${governmentType}`, governmentType) : null;
+  const localizedHead = headOfState ? tRaw(`head.${headOfState}`, headOfState) : null;
+  const localizedLeaderTitle = leaderTitle ? tRaw(`head.${leaderTitle}`, leaderTitle) : null;
   const localizedCurrency = currencyName
     ? isoCode
       ? tRaw(`country.${isoCode}.currency`, currencyName)
@@ -426,12 +428,12 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
             <Landmark aria-hidden="true" className="h-4 w-4 shrink-0 text-fg-muted" />
             <span>{t("metrics.regimeHeading", "Regime político e chefia")}</span>
           </div>
-          {localizedGov || headOfState ? (
+          {localizedGov || localizedHead ? (
             <div className="font-medium text-fg">
               {localizedGov || unavailableText}
-              {headOfState && (
+              {localizedHead && (
                 <>
-                  {" "}· <span className="text-fg-secondary">{headOfState}</span>
+                  {" "}· <span className="text-fg-secondary">{localizedHead}</span>
                 </>
               )}
             </div>
@@ -440,7 +442,7 @@ export const CountryMetricsGrid: React.FC<CountryMetricsGridProps> = ({
           )}
           {historicalLeader && (
             <div className="flex items-center gap-1 text-caption">
-              <span className="text-fg-muted">{leaderTitle || t("metrics.eraLeader", "Líder da Época")}:</span>
+              <span className="text-fg-muted">{localizedLeaderTitle || t("metrics.eraLeader", "Líder da Época")}:</span>
               <strong className="font-medium text-fg">{historicalLeader}</strong>
             </div>
           )}

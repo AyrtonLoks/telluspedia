@@ -58,6 +58,7 @@ export const COUNTRY_NAME_TO_ISO: Readonly<Record<string, string>> = {
   Uruguai: "URY",
   Uruguay: "URY",
   Polônia: "POL",
+  Poland: "POL",
 };
 
 const SORTED_COUNTRY_NAMES = Object.keys(COUNTRY_NAME_TO_ISO)
